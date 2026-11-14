@@ -477,6 +477,34 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   #toolbar .tl { display: none; }
   #sheet { max-height: 96%; padding: 10px 12px 14px; }
 }
+.ess-om { font-style: normal; font-size: 10px; font-weight: 700; color: #6b7a88; margin-left: 4px; white-space: nowrap; }
+.ess-om.mv { color: #b0650b; }
+.fchip.call { background: linear-gradient(180deg, #6a2357, #4c1640); border-color: #b04a96; color: #ffe0f4; }
+.clc-row.ess-call { background: #fbe9f5; border-left: 4px solid #a83a86; }
+.clc-row.ess-call.cur { background: #ffd9f0; box-shadow: 0 0 0 2px #a83a86 inset; }
+.clc-row.ess-call.ok { background: #e3f4e6; border-left-color: #2e8b45; }
+.call-tag { display: inline-block; font-family: system-ui, -apple-system, sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .6px; color: #fff; background: #a83a86; border-radius: 5px; padding: 1px 6px; margin-right: 6px; vertical-align: middle; }
+.call-txt { font-size: 15px; color: #5a1048; }
+.btn.call-btn { background: linear-gradient(180deg, #7a2a63, #5a1a48); border-color: #a83a86; color: #ffe0f4; font-weight: 800; }
+.toast-item.call { background: #5a1a48; border-color: #b04a96; color: #ffe0f4; }
+.ec-f { -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.i-btn { display: inline-block; width: 18px; height: 18px; line-height: 16px; padding: 0; border-radius: 4px; border: 1px solid #3a8fd0; background: #0f2a44; color: #8fd0ff; font: italic 700 11px Georgia, serif; text-align: center; vertical-align: middle; margin-left: 4px; cursor: pointer; }
+.i-btn.on { background: #3a8fd0; color: #fff; }
+.ec-def { width: 100%; margin-top: 6px; padding: 7px 9px; border-radius: 8px; background: #0f2034; border: 1px solid #22426a; color: #cfe3f7; font-size: 12px; line-height: 1.4; }
+/* Class test */
+.ct-card { background: #0f1a2c; border: 1px solid #22385a; border-radius: 14px; padding: 14px; margin: 10px 0; }
+.ct-q { font-weight: 700; font-size: 15px; line-height: 1.4; margin-bottom: 10px; }
+.ct-n { display: inline-block; min-width: 26px; height: 26px; line-height: 26px; text-align: center; border-radius: 8px; background: #1f7a8a; color: #fff; margin-right: 8px; font-size: 13px; }
+.ct-o { display: block; width: 100%; text-align: left; margin: 0 0 6px; padding: 9px 12px; border-radius: 10px; background: #13213a; border: 1px solid #22385a; font-size: 14px; line-height: 1.35; white-space: normal; height: auto; }
+.ct-o.good { background: #10391f; border-color: #2fb35a; color: #d6ffe2; }
+.ct-o.bad { background: #3d1418; border-color: #c03a44; color: #ffd9dc; }
+.ct-exp { margin: 10px 0; }
+.ct-why { font-size: 13.5px; line-height: 1.45; margin: 8px 0 4px; }
+.ct-src { font-size: 12px; color: #8fd0ff; margin-bottom: 6px; }
+.ct-prog { height: 6px; border-radius: 3px; background: #1b2a40; overflow: hidden; margin-top: 6px; } .ct-prog i { display: block; height: 100%; background: #2fc0d0; }
+.ct-meta { font-size: 12px; color: #8fa1b8; margin: 6px 0; }
+.ct-end { text-align: center; }
+.ct-o[disabled] { opacity: 1; cursor: default; }
 
 </style>
 </head>
@@ -490,7 +518,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     <div class="mode-chip" id="modeChip">Cockpit libre</div>
     <div class="spacer"></div>
     <button class="tb primary" id="btnHome"><span class="ico">✈︎</span><span class="lbl">Mon vol</span></button>
-    <button class="tb" id="btnEss"><span class="ico">📘</span><span class="lbl">L'essentiel</span></button>
+    <button class="tb" id="btnEss" title="Procédures complètes (OM-B, check-lists, PDP)"><span class="ico">📚</span><span class="lbl">Procédures complètes</span></button>
     <button class="tb" id="btnProfile"><span class="ico">●</span><span class="lbl" id="profileName">Pilote</span></button>
     <button class="tb icon" id="btnLabels" title="Afficher le nom des commandes">Aa</button>
     <button class="tb icon" id="btnSound" title="Son et voix">🔊</button>
@@ -534,7 +562,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '3.3';
+  TF.VERSION = '4.0';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -3150,6 +3178,32 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     ] }
   ];
 
+  /* Définition de chaque vitesse (case « i » en consultation) — OM-B §1.5 Definitions p.6 (sauf mention) */
+  var VDEF = {
+    'VNE': 'Never Exceed Speed — vitesse à ne jamais dépasser, quelle que soit l\'opération (air calme). OM-B p.6.',
+    'VNO': 'Maximum Structural Cruising Speed — vitesse maximale de croisière structurale ; ne peut être dépassée qu\'en air calme, avec prudence (arc jaune). OM-B p.6.',
+    'VO': 'Operating Maneuvering Speed — au-dessus, pas de braquage complet ou brutal des gouvernes. L\'OM-B la donne selon la masse : 112 kt (≤ 1 700 kg), 119 kt (1 700–1 800 kg), 122 kt (> 1 800 kg). OM-B p.6 et limitations p.23.',
+    'VS0': 'Stalling Speed — vitesse de décrochage (vitesse minimale contrôlable) en configuration atterrissage. OM-B p.6.',
+    'VS1': 'Stalling Speed — vitesse de décrochage volets et train rentrés (configuration lisse). OM-B p.6.',
+    'VFE APP': 'Maximum Flaps Extended Speed — à ne pas dépasser volets APP. OM-B p.6 ; limitation 133 KIAS p.23.',
+    'VFE LDG': 'Maximum Flaps Extended Speed — à ne pas dépasser volets LDG. OM-B p.6 ; limitation 113 KIAS p.23.',
+    'VLO / VLE': 'VLOE : vitesse maximale pour manœuvrer le train à la sortie. VLE : vitesse maximale train sorti. 188 KIAS pour les deux. OM-B p.6 et p.23.',
+    'VLO rentrée': 'VLOR : vitesse maximale pour manœuvrer le train à la rentrée (152 KIAS). OM-B p.6 et p.23.',
+    'VMCA': 'Minimum Control Speed – Airborne — vitesse minimale pour contrôler l\'avion avec un moteur en panne (trait rouge). 71 KIAS volets UP, 68 KIAS volets APP. OM-B p.6 et p.23.',
+    'VYSE': 'Best Rate-of-Climb Speed, one engine inoperative — meilleur taux de montée sur un moteur (trait bleu « BLUE LINE »). OM-B p.6.',
+    'VYSE en givrage': 'VYSE majorée en conditions givrantes (notes de cours).',
+    'VR': 'Rotation speed — vitesse de lever de la roue avant (« Nose wheel lift-off, VR min »). OM-B p.64.',
+    'VX': 'Best Angle-of-Climb Speed — meilleure pente de montée. OM-B p.6.',
+    'VY': 'Best Rate-of-Climb Speed — meilleur taux de montée (vitesse ascensionnelle maximale). OM-B p.6.',
+    'Vitesse de montée en croisière': 'Vitesse de montée retenue en exploitation (notes de cours).',
+    'Vmin givrage': 'Minimum airspeed for continuous operation in icing conditions — vitesse minimale en vol continu en conditions givrantes (118 KIAS). OM-B supplément dégivrage p.338.',
+    'Vmax givrage': 'Maximum airspeed for continuous operation in icing conditions — vitesse maximale en vol continu en conditions givrantes (156 KIAS). OM-B supplément dégivrage p.338.',
+    'VREF': 'Reference landing speed — vitesse de référence en finale (≈ 1,3 VS0). L\'OM-B donne 84 KIAS jusqu\'à 1 900 kg, 86 KIAS au-dessus (volets LDG). OM-B p.217 (performances, go-around).',
+    'VREF un moteur': 'Vitesse d\'approche finale avec un moteur en panne (notes de cours).',
+    'Décrochage à la masse max': 'Vitesse de décrochage lisse à la masse maximale (notes de cours, partie performances).'
+  };
+  TF.DATA.essFiche.forEach(function (c) { c.facts.forEach(function (f) { if (VDEF[f.k]) f.def = VDEF[f.k]; }); });
+
   /* ------------------------------ Flow (time line) ------------------------------
    * chips : { t: mot-clé tel qu'écrit, say: phrase dite, ctls: commandes ou zones à balayer, doubt }
    * Une puce sans ctls est une vérification « je dis / je fais » (rien à toucher dans le cockpit). */
@@ -3169,43 +3223,64 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     { id: 'tour', icon: '🚶', title: 'Tour avion', sub: 'Check Pitot — voir l\'onglet Tour avion', ref: om('B02 §2 Pre-flight — Walk-Around', 49), walk: true, chips: [
       C('check Pitot', 'Walk-around, pitot probe', 'CHECK', null)
     ] },
-    { id: 'ret', icon: '🪑', title: 'Retour dans l\'avion', sub: 'Cabin preparation (OM-B B02 §2.12 e-a) — « commence aux pumps » : la console d\'abord, puis le tableau', ref: om('B02 §2 Pre-flight — Cabin Preparation', 55), chips: [
-      C('Pumps', 'Auxiliary pumps', 'OFF', ['aux_pump_l', 'aux_pump_r'], { note: 'Les « pumps » du début = AUX PUMPS (derrière la roue de trim, OM-B p.333). Les Fuel pumps LH/RH viennent en dernier.' }),
-      C('Trims', 'Trims', 'CHECK', ['elev_trim']),
-      C('Fuel selector', 'Fuel selectors', 'ON', ['fuel_sel_l', 'fuel_sel_r']),
-      C('Power levers', 'Power levers', 'CHECK, SET IDLE', ['power_l', 'power_r']),
-      C('Gear', 'Gear selector', 'DOWN', ['gear_lever']),
-      C('Avionic master', 'Avionic Master', 'OFF', ['av_master']),
-      C('Elect master', 'Elect. Master', 'OFF', ['elec_master']),
-      C('Engine masters', 'Engine Masters', 'BOTH OFF', ['eng_master_l', 'eng_master_r']),
-      C('Start key', 'Start key', 'OUT', ['start_key']),
-      C('Pitot heat', 'Pitot heat', 'OFF', ['pitot_heat']),
-      C('Alternators', 'Alternators', 'ON', ['alt_l', 'alt_r']),
-      C('Voters', 'Voter switches', 'AUTO', ['voter_l', 'voter_r']),
-      C('Emergency switch', 'Emergency switch', 'OFF AND GUARDED', ['emergency_sw']),
-      C('Stand-by instruments', 'Stand-by instruments', 'CHECKED', ['stby']),
-      C('ELT', 'ELT', 'ARMED', ['elt']),
-      C('Circuit breakers', 'Circuit breakers', 'CHECKED', ['cb_panel']),
-      C('Flaps', 'Flap selector', 'UP', ['flaps']),
-      C('Fuel pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { add: true })
+    { id: 'ret', icon: '🪑', title: 'Préparation cabine', sub: 'Ordre de l\'équipage, corrélé à l\'OM-B B02 §2.12 Cabin preparation (a → z, a) — se termine par « Pre-flight inspection complete »', ref: om('B02 §2 Pre-flight — Cabin Preparation', 55), chips: [
+      C('Siège et palonniers', 'Adjustable backrests, rudder pedals', 'ADJUSTED', null, { om: '12.a-b' }),
+      C('Frein de park', 'Parking brake', 'ON', ['parking_brake'], { om: '12.c' }),
+      C('Commandes', 'Flight controls', 'FREE', null, { om: '12.d' }),
+      C('Aux pump', 'Auxiliary pumps', 'OFF', ['aux_pump_l', 'aux_pump_r'], { om: '12.e', note: 'Deux interrupteurs AUX PUMP derrière la roue de trim, sur la console (OM-B p.333). Ils transfèrent le carburant des réservoirs auxiliaires (si installés) vers les réservoirs principaux.' }),
+      C('Trim', 'Trims', 'CHECK', ['elev_trim'], { om: '12.f' }),
+      C('Fuel selector', 'Fuel selectors', 'ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '12.g' }),
+      C('Power lever', 'Power levers', 'CHECK, SET IDLE', ['power_l', 'power_r'], { om: '12.h' }),
+      C('Alternate air', 'Alternate air', 'CLOSED', null, { om: '12.i', note: 'Réponse OM-B « CLOSED » (absente de la liste). Commande non représentée sur la photo.' }),
+      C('Manual gear extension', 'Manual gear extension', 'PUSHED IN', null, { om: '12.j', note: 'Réponse OM-B « PUSHED IN » (absente de la liste). Commande non représentée sur la photo.' }),
+      C('Alternate static', 'Alternate static source', 'CLOSED', null, { om: '12.k', note: 'Commande non représentée sur la photo.' }),
+      C('Gear', 'Gear selector', 'DOWN', ['gear_lever'], { om: '12.l' }),
+      C('Avionic master', 'Avionic Master', 'OFF', ['av_master'], { om: '12.m' }),
+      C('Elec master', 'Elect. Master', 'OFF', ['elec_master'], { om: '12.n' }),
+      C('Engine masters', 'Engine Masters', 'BOTH OFF', ['eng_master_l', 'eng_master_r'], { om: '12.o' }),
+      C('Start key', 'Start key', 'OUT', ['start_key'], { om: '12.p' }),
+      C('Pitot', 'Pitot heat', 'OFF', ['pitot_heat'], { om: '12.q' }),
+      C('Alternator', 'Alternators', 'ON', ['alt_l', 'alt_r'], { om: '12.s' }),
+      C('Aux power switch', 'Aux power switch (if air conditioning installed)', 'OFF', null, { om: '12.r', moved: true, note: 'Seulement si l\'avion est équipé de la climatisation « Recirculating Air - Cabin Cooling » (OÄM 42-193). Interrupteur sur la paroi latérale gauche (OM-B p.301), non représenté sur la photo. Il alimente la climatisation par un alternateur supplémentaire sur le moteur gauche.' }),
+      C('Voters', 'Voter switches', 'AUTO', ['voter_l', 'voter_r'], { om: '12.t' }),
+      C('All electric equipment', 'All electrical equipment', 'OFF', null, { om: '12.u' }),
+      C('Emergency switch', 'Emergency switch', 'OFF AND GUARDED', ['emergency_sw'], { om: '12.v' }),
+      C('Stby instruments', 'Stand-by instruments', 'CHECKED', ['stby'], { om: '12.w' }),
+      C('ELT', 'ELT', 'ARMED', ['elt'], { om: '12.x' }),
+      C('Circuit breakers', 'Circuit breakers', 'CHECKED', ['cb_panel'], { om: '12.y' }),
+      C('Flaps', 'Flap selector', 'UP', ['flaps'], { om: '12.z' }),
+      C('Fuel pump LH/RH', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '12.a (2e)', note: 'Liste reçue : « UP » — l\'OM-B dit OFF (interrupteurs de pompes, pas de position UP). Corrigé en OFF.' }),
+      C('Pre-flight inspection', 'Pre-flight inspection', 'COMPLETE', null, { om: 'Before starting engine 1' })
     ] },
-    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before start procedure (OM-B B02 §3 5.a-j) — ordre de l\'OM-B', ref: om('B02 §3 Before Starting Engine', 56), chips: [
-      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage']),
-      C('Power', 'Elect. Master', 'ON', ['elec_master']),
-      C('Lights', 'Nav lights', 'ON', ['position_lights']),
-      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test']),
-      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun']),
-      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'])
+    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before starting engine (OM-B B02 §3, p.56) — ordre de l\'équipage', ref: om('B02 §3 Before Starting Engine', 56), chips: [
+      C('Porte, passagers, verrière', 'Rear door, closed and locked. Passengers, briefed. Front canopy', 'POSITION 1 OR 2', null, { om: '2-4', lines: [['Rear door', 'CLOSED AND LOCKED'], ['Passengers', 'BRIEFED'], ['Front canopy', 'POSITION 1 OR 2']] }),
+      C('« Before start procedure »', 'Before start procedure', 'ANNONCE', null, { om: '5', call: 'Before start procedure' }),
+      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage'], { om: '5.a' }),
+      C('Power', 'Elect. Master', 'ON', ['elec_master'], { om: '5.b' }),
+      C('Lights', 'Nav lights', 'ON', ['position_lights'], { om: '5.c' }),
+      C('ESP', 'ESP', 'VERIFY', null, { om: '5.d' }),
+      C('G1000', 'G1000', 'DATA BASE CHECKED', ['mfd'], { om: '5.e' }),
+      C('Fuel / FMS', 'Fuel quantity and FMS', 'SET', ['mfd'], { om: '5.f' }),
+      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test'], { om: '5.g' }),
+      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun'], { om: '5.h' }),
+      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j' }),
+      C('« Before start procedure complete »', 'Before start procedure complete', 'ANNONCE, PUIS BEFORE START CHECK-LIST DONE', null, { om: '6', call: 'Before start procedure complete' })
     ] },
-    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Start-up procedure (OM-B B02 §3, p.57-58)', ref: om('B02 §3 Engine Start-up', 57), chips: [
-      C('Strobe', 'Strobe lights', 'ON', ['strobe'], { add: true }),
-      C('Clear', 'Propeller area', 'CLEAR', null),
-      C('Master', 'Engine Master, left first', 'ON', ['eng_master_l']),
-      C('Glow', 'L ENGINE GLOW annunciation', 'CHECK ON, wait until off', ['pfd']),
-      C('Key', 'Start key', 'START', ['start_key']),
-      C('Param', 'Starter off, oil pressure, idle RPM', 'CHECK', ['mfd']),
-      C('Breakers', 'Circuit breaker', 'CHECK', ['cb_panel']),
-      C('→ R', 'Repeat with right engine', 'SAME FLOW', null)
+    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage', ref: om('B02 §3 Engine Start-up', 57), chips: [
+      C('« Start-up procedure »', 'Start-up procedure', 'ANNONCE', null, { om: '1', call: 'Start-up procedure' }),
+      C('Keys', 'Keys', 'IN PLACE', ['start_key'], { om: '1.a' }),
+      C('Strobe', 'Strobe lights', 'ON', ['strobe'], { om: '1.b' }),
+      C('Clear', 'Propeller area', 'CLEAR', null, { om: 'avertissement p.57' }),
+      C('Master', 'Engine Master, left first', 'ON', ['eng_master_l'], { om: '1.c' }),
+      C('Glow', 'L ENGINE GLOW annunciation', 'CHECK ON', ['pfd'], { om: '1.d' }),
+      C('Pages', 'Annunciations, engine and system page', 'CHECK', ['mfd'], { om: '1.e' }),
+      C('Key', 'Start key, when L ENGINE GLOW is off', 'START (10 s max)', ['start_key'], { om: '1.f' }),
+      C('Param', 'Annunciations, starter, oil pressure', 'CHECK', null, { om: '1.g-i', lines: [['Annunciations / Engine / System page', 'CHECK'], ['L STARTER annunciation (PFD)', 'CHECK OFF'], ['Oil pressure', 'CHECKED (out of red within 3 s)']],
+        note: 'L STARTER est un message d\'alerte du PFD, pas une commande : s\'il reste affiché moteur démarré et clé relâchée → ENGINE MASTER OFF (OM-B p.57). Pression d\'huile sur la page moteur du MFD.' }),
+      C('Breakers', 'Circuit breakers', 'CHECK', ['cb_panel'], { om: '1.j' }),
+      C('Idle RPM', 'Idle RPM', 'CHECK 710 ± 30', ['mfd'], { om: '1.k' }),
+      C('→ R', 'Repeat with right engine', 'SAME SEQUENCE (Clear → Idle RPM)', null, { om: '« Repeat with opposite engine »' }),
+      C('« Start-up procedure complete »', 'Start-up procedure complete', 'ANNONCE, PUIS START-UP CHECK-LIST DONE', null, { om: '2', call: 'Start-up procedure complete' })
     ] },
     { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d)', ref: om('B02 §3 After Start-up', 58), chips: [
       C('Ceintures', 'Safety harnesses', 'ON AND FASTENED', null),
@@ -3295,7 +3370,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { doubt: true })
     ] }
   ];
-  TF.DATA.essFlow.forEach(function (b) { b.chips.forEach(function (c) { if (!c.say) c.say = c.a + '. ' + c.r + '.'; }); });
+  TF.DATA.essFlow.forEach(function (b) { b.chips.forEach(function (c) { if (!c.say) c.say = c.call ? c.call + '.' : c.lines ? c.lines.map(function (l) { return l[0] + ', ' + l[1]; }).join('. ') + '.' : c.a + '. ' + c.r + '.'; }); });
 
   /* ------------------------------ Tour avion (OM-B p.49-55) ------------------------------
    * x, y : position sur le schéma vu de dessus (nez en haut). Points essentiels : tout ce qui n'est
@@ -3354,6 +3429,183 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     { id: 'D9', topic: 'TOSA en VFR', a: { doc: 'NOTES', text: '« H ≥ TOSA (500 ft VFR / 1500 ft IFR) »' }, b: { doc: 'OMB', page: 60, text: 'TOSA : 400 ft AGL for VFR flight, 1500 ft AGL for IFR flight' },
       decision: 'L\'OM-B prévaut : 400 ft AGL en VFR. La note manuscrite est affichée telle quelle dans « L\'essentiel » avec ce renvoi.' }
   );
+})(this);
+
+</script>
+<script>/* js/data/classtest.js */
+/* Données — « MEP DA42 VI CLASS TEST », Issue 1.2 du 02 MAY 2020 (Airbus), questions 1 à 40 reproduites telles quelles.
+ * Chaque réponse a été vérifiée dans les documents fournis : OM-B DA42 VI Issue C (pages imprimées),
+ * Garmin G1000 NXi Pilot's Guide DA42NG 190-02237-00 Rev. A (pages imprimées), PDP V1.2 (page du PDF), notes Cours MEP.
+ * hand : réponse cochée à la main sur la copie fournie (null = non cochée) ; ans : réponse retenue après vérification ;
+ * flag : note (divergence entre documents, précision). */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  function Q(n, q, o, ans, hand, why, src, flag) { return { n: n, q: q, o: o, ans: ans, hand: hand, why: why, src: src, flag: flag || null }; }
+  TF.DATA.classTest = { title: 'MEP DA42 VI CLASS TEST', issue: 'Issue 1.2 — 02 MAY 2020', questions: [
+    Q(1, 'For windscreen defrosting, the air conditioning system supplies warm air coming from...:',
+      ['the left engine.', 'the right engine.', 'an independent system (burner).'], 'a', null,
+      'La chaleur du moteur gauche sert au désembuage de la verrière ; celle du moteur droit chauffe les sièges avant et le plancher.',
+      'OM-B p.323 — Heating and Ventilation'),
+    Q(2, 'The following conditions will cause the autopilot to automatically disconnect: 1. electrical power failure — 2. internal autopilot system failure — 3. AHRS malfunction — 4. moderate turbulences — 5. loss of Air Data Computer information. The correct choices are:',
+      ['1,2,3,4', '1,2,3,5', 'All answers are correct'], 'b', null,
+      'L\'AP se déconnecte sur panne système, perte d\'AHRS et perte d\'ADC (données invalides). La turbulence modérée ne provoque pas de déconnexion.',
+      'OM-B p.163 — Effects of G1000 losses upon autopilot (AHRS, ADC) ; Garmin p.415 — Automatic disengagement (system failure, invalid sensor data)'),
+    Q(3, 'During ILS approach, with AP engaged, if you press GA button...:',
+      ['command bars of the Flight Director set a pitch of +7°, release SUSP mode when missed approach loaded into the FMS.', 'the autopilot disengages.', 'the autopilot set the aircraft on the missed approach track.'], 'a', null,
+      'Bouton GA : les barres du directeur de vol commandent +7° à cabrer, ailes à plat, et la séquence de remise de gaz (SUSP) est libérée si une approche est chargée. C\'est ce que décrit le PDP et ce que fait le simulateur de l\'école.',
+      'PDP p.251 — GA button (+7°, release SUSP) ; confirmé par l\'équipage (simulateur)',
+      'Divergence documentaire : l\'OM-B p.78 indique 6° et une déconnexion de l\'AP (sans OÄM 42-209). Réponse retenue : celle du PDP et du simulateur, validée par l\'équipage.'),
+    Q(4, 'The AFCS Status Box ("FMA") is color coded. Armed modes are annunciated in...:',
+      ['green.', 'yellow.', 'white.'], 'c', null,
+      'Modes armés en blanc, modes actifs en vert.',
+      'Garmin p.389 — AFCS Status Box ; p.390 — Flight Director modes'),
+    Q(5, 'Pressing "COM ½" allows...:',
+      ['the pilot to transmit on COM1 and COM2 simultaneously.', 'the pilot to hear COM1 and COM2 simultaneously.', 'the pilot to transmit on COM1 and copilot on COM2'], 'c', 'c',
+      'COM 1/2 = Split COM : COM1 est utilisé par le pilote, COM2 par le copilote, chacun pouvant émettre simultanément.',
+      'Garmin p.103 — COM 1/2 Split COM key ; p.126 — Split COM'),
+    Q(6, 'Which sentence is true?',
+      ['the active COM frequency is always displayed in blue.', 'the COM1 and COM2 frequencies cannot been displayed simultaneously in green.', 'press and hold the "COM frequency transfer" key for two seconds to tune the emergency frequency.'], 'c', null,
+      'Un appui de 2 s sur la touche de transfert COM affiche 121,500 MHz en fréquence active. (a : la fréquence active n\'est pas en bleu ; b : en Split COM, COM1 et COM2 sont toutes deux en vert.)',
+      'Garmin p.101 — Emergency frequency ; p.126 — Split COM (fréquences en vert)'),
+    Q(7, 'Power generation is provided by two...:',
+      ['70 ampere alternator.', '80 ampere alternator.', '60 ampere alternator.'], 'a', 'a',
+      '« Power generation is provided by two 70 Ampère alternators » montés en bas à gauche de chaque moteur. (60 A = disjoncteur entre l\'alternateur et le MAIN BUS.)',
+      'OM-B p.311 — Power generation ; notes Cours MEP (2 × 28 V 70 A)'),
+    Q(8, 'Fuel quantity in each wing tank is...:',
+      ['25.4 US gal but 1 US gal unusable.', '25.4 US gal usable.', '26.4 US gal usable.'], 'b', 'b',
+      '« Only four liters (1 US gal) of fuel in each wing are unusable, so that a total quantity of 96 liters (25.4 US gal) in each wing is usable. »',
+      'OM-B p.332 — Fuel system'),
+    Q(9, 'The landing gear operation is provided by...:',
+      ['an electromecanic engine.', 'an hydraulic pump.', 'by gravity.'], 'b', 'b',
+      'Train entièrement escamotable à commande hydraulique ; la pression vient d\'une pompe hydraulique électrique.',
+      'OM-B p.403 — Landing gear'),
+    Q(10, 'With Autopilot engaged, while in NAV mode (VOR green and ALT 9000ft green on the Status box), if you change the NAV 1 active frequency pressing the NAV frequency transfer key, what will happen?',
+      ['Nothing; Autopilot will continue to follow VOR track.', 'The NAV mode will disconnect and the Flight Director will return to ROL mode. The Auto pilot is also disconnected.', 'The NAV mode will disconnect and the Flight Director will return to ROL mode. The Auto pilot is still connected.'], 'c', null,
+      'Accorder un autre VOR en mode VOR : le directeur de vol revient en ROL (ailes à plat) et le mode VOR repasse en armé. L\'AP reste engagé.',
+      'Garmin p.399 — Navigation modes (« Different VOR tuned while in VOR Navigation Mode »)'),
+    Q(11, 'The stormscope displays a yellow lightning symbol on the « navigation map ». This lighting symbol changes into a cross symbol when lightning is ... old:',
+      ['1 minute.', '2 minutes.', '3 minutes.'], 'a', null,
+      'Éclair : moins de 6 s, puis 6 à 60 s ; croix : de 1 à 2 min, puis petite croix de 2 à 3 min.',
+      'Garmin p.313 — Stormscope, Table 6-7 Lightning Age and Symbols'),
+    Q(12, 'A warning alert « AIRSPEED FAIL » appears when ...:',
+      ['the pitot tube is blocked.', 'the display system is not receiving airspeed input from the ADC.', 'there is more than 10kt discrepancy between GPS and PFD true airspeed.'], 'b', 'b',
+      '« The display system is not receiving airspeed input from the air data computer », avec une croix rouge sur l\'anémomètre.',
+      'OM-B p.33 et p.127 — AIRSPEED FAIL'),
+    Q(13, 'VLOR is...:',
+      ['133 KIAS.', '152 KIAS.', '188 KIAS.'], 'b', 'b',
+      'VLOR (vitesse max de manœuvre du train à la rentrée) = 152 KIAS. 188 = VLOE / VLE, 133 = VFE APP.',
+      'OM-B p.6 (définition) et p.23 (limitations de vitesse)'),
+    Q(14, 'The minimum operation temperature for the ice protection system is...:',
+      ['-10°C.', '-20°C.', '-30°C.'], 'c', 'a',
+      '« Minimum operation temperature for the ice protection system is -30°C (-22°F). » La réponse cochée sur la copie (a) est fausse.',
+      'OM-B p.340 — Supplément dégivrage, Temperature limitation'),
+    Q(15, 'The maximum tank capacity of De-icing fluid is...:',
+      ['21.5 liters.', '31.5 liters.', '41.5 liters.'], 'b', 'b',
+      'Capacité maximale 31,5 L (8,3 US gal), dont 30 L utilisables.',
+      'OM-B p.341 — Supplément dégivrage ; notes Cours MEP (31,5 L)'),
+    Q(16, 'Autopilot minimum airspeed is...:',
+      ['90 KIAS.', '85 KIAS.', '80 KIAS.'], 'a', 'a',
+      'Limitations GFC 700 : vitesse maximale 180 KIAS, minimale 90 KIAS.',
+      'OM-B p.39 — Autopilot limitations'),
+    Q(17, 'If the seal on the "Emergency" switch is broken...:',
+      ['any kind of flights are not permitted.', 'night flights are not permitted.', 'IFR flights are not permitted.'], 'c', null,
+      '« IFR flights are not permitted when the seal on the emergency switch is broken. »',
+      'OM-B p.40 — Other limitations, Emergency switch'),
+    Q(18, 'The intercom system provides Pilot and Copilot isolation from the passengers and aircraft radios. If Pilot key is depressed (not illuminated) and Copilot key is pressed (illuminated)...: 1. the pilot hears radio messages — 2. the copilot hears radio messages — 3. the pilot hears passengers — 4. the copilot hears passengers — 5. the pilot hears aural alerts — 6. the copilot hears aural alerts. The correct choices are:',
+      ['1,4,5.', '1,2,5.', '1,3,5.'], 'c', 'c',
+      'PILOT éteint / COPLT allumé : le pilote entend les radios, les alarmes et les passagers (1, 3, 5) ; le copilote est isolé des radios, des alarmes et de tout le monde.',
+      'Garmin p.124 — Intercom, Table 4-1 ICS Isolation Modes'),
+    Q(19, 'Consumers connected to the LH MAIN BUS are...: 1. COM 1 — 2. COM 2 — 3. NAV 1 — 4. NAV 2 — 5. XPDR — 6. Audio panel. The correct choices are:',
+      ['1,2,6.', '1,3,5.', '2,4,6.'], 'b', 'b',
+      'LH MAIN BUS : COM1, GPS/NAV1, XPDR, ENG INST, PITOT, XFER PUMP/DE-ICE, TAXI/MAP/ACL, FLOOD, PFD, ADC, AHRS.',
+      'OM-B p.9 — Designation of the circuit breakers, LH MAIN BUS'),
+    Q(20, 'The External power socket is located...:',
+      ['below RH engine nacelle.', 'below LH engine nacelle.', 'on the lower surface of the fuselage nose section.'], 'c', 'c',
+      '« External 28 Volt DC power socket located on the lower surface of the fuselage nose section. »',
+      'OM-B p.314 — External power socket ; tour avion p.51 (EPU connector, fuselage avant)'),
+    Q(21, 'In case of engine failure, it is possible to feed the other engine with the opposite tank. In case of engine #2 failure, to feed engine #1 with RH fuel tank, you should...:',
+      ['set fuel control lever #1 OFF and fuel control lever #2 ON.', 'set fuel control lever #1 CROSSFEED whatever is the fuel control lever #2.', 'set fuel control lever #1 ON and fuel control lever #2 CROSSFEED.'], 'b', null,
+      'Sélecteur gauche (#1) sur CROSSFEED : le réservoir droit alimente le moteur gauche, quelle que soit la position du sélecteur droit (ON : il alimente les deux, OFF : seulement le gauche).',
+      'OM-B p.329-330 — Fuel selector valve positions (Figures 4 et 5)'),
+    Q(22, 'De-icing system will provide...:',
+      ['30 min of use in MAX mode.', '1h30 of use in HIGH mode.', '3h of use in NORM mode'], 'a', 'a',
+      'Avec la quantité utilisable maximale : NORM 2 h 30, HIGH 1 h, MAX 30 min.',
+      'OM-B p.341 — Supplément dégivrage ; notes Cours MEP'),
+    Q(23, 'The aircraft is established in a 30° bank turn. If the pilot engages the AP in ROL mode...:',
+      ['the aircraft comes back to 0° bank angle.', 'the aircraft maintains 30° bank angle.', 'the aircraft keeps turning, limiting bank angle to 25°.'], 'c', null,
+      'Mode ROL : < 6° → ailes à plat ; 6 à 25° → maintien ; > 25° → inclinaison limitée à 25°.',
+      'Garmin p.397 — Roll Hold Mode, Table 7-4'),
+    Q(24, 'Maximum mass in the nose compartment is...:',
+      ['15 kg.', '30 kg.', '45 kg.'], 'b', 'b',
+      'Soute avant (nez) : 30 kg max. 45 kg = soute cabine + extension.',
+      'OM-B p.22 — Mass limitations ; notes Cours MEP'),
+    Q(25, 'Maximum permissible difference between LH and RH fuel tank is...:',
+      ['there is no limitation.', '5 USG.', '10 USG'], 'b', 'b',
+      '« Max. permissible difference LH/RH : 5.0 US gal (18.9 L). »',
+      'OM-B p.30 — Fuel limitations'),
+    Q(26, 'During Go-around sequence, minimum IAS for flaps retraction from APP to UP position is...:',
+      ['77 kts.', '86 kts.', '100 kts'], 'b', 'b',
+      'Profil PDP de remise de gaz : « IAS ≥ 86 kt → Flaps UP ». L\'OM-B (Go-around, p.78) demande seulement 90 KIAS mini avant de rentrer train puis volets.',
+      'PDP p.234 — Cruise to final approach and go-around ; OM-B p.78'),
+    Q(27, 'In case of landing with flaps in UP position, landing distance with flaps in LDG position should be increased by:',
+      ['30%.', '50%.', '60%.'], 'a', null,
+      'Le cours MEP retient +30 % sur les distances d\'atterrissage sans volets.',
+      'Notes Cours MEP (atterrissage sans volets +30 %), validé par l\'équipage ; OM-B p.209-213 : table « Abnormal flap position (APP or UP) »'),
+    Q(28, 'Maximum landing weight is...:',
+      ['1900 kg.', '1950 kg.', '1999 kg'], 'c', 'c',
+      'Masse maximale à l\'atterrissage 1 999 kg (MÄM 42-659c).',
+      'OM-B p.22 — Mass limitations'),
+    Q(29, 'Maximum engine load (100%)...:',
+      ['can be maintained with no limitation.', 'can be maintained with no limitation only in N-1 configuration.', 'can be maintained during 5 min maximum.'], 'c', 'c',
+      '« Max. take-off power : 100 % (123.5 kW 168 Hp) max. 5 min » ; puissance max continue 92 %.',
+      'OM-B p.26 — Engine limitations'),
+    Q(30, 'Minimum airspeed for continuous operation in icing condition...:',
+      ['75 KIAS.', '118 KIAS.', '156 KIAS'], 'b', 'b',
+      'Minimum 118 KIAS en vol continu en givrage ; 156 KIAS = maximum.',
+      'OM-B p.338 — Supplément dégivrage, airspeed limitations'),
+    Q(31, 'To activate an audio alert «Minimums», you should enter the MDA/DA value of the approach in the «Baro Min» field of the ... window:',
+      ['Fpl.', 'Tmr/Ref.', 'Adf/Dme'], 'b', 'b',
+      'Le minimum BARO MIN se règle dans la fenêtre References (softkey Tmr/Ref) ; à l\'altitude, l\'alarme « Minimums, minimums » retentit.',
+      'Garmin p.72 — Minimum descent altitude / decision height alerting'),
+    Q(32, 'The fire detection system activates a WARNING "L / R ENG FIRE" message when...:',
+      ['the temperature in the engine compartment is above 250°C.', 'the oil temperature of the gearbox is above 120°C.', 'smokes are detected within engine compartment'], 'a', null,
+      'Détecteur de surchauffe dans la zone chaude de chaque moteur : au-dessus de 250 °C (480 °F), alarme sur le PFD.',
+      'OM-B p.415 — Fire detection system ; notes Cours MEP (250 °C)'),
+    Q(33, 'A CAUTION alert message is color coded in YELLOW with...:',
+      ['single aural tone.', 'continuous aural tone which can\'t be stopped.', 'continuous aural tone which can be stopped if acknowledged'], 'a', 'a',
+      'Caution : texte ambre et une seule tonalité. La tonalité continue (arrêtée à l\'acquittement) est celle des WARNING.',
+      'OM-B p.142 — Caution alerts ; Garmin p.486 — Alert levels'),
+    Q(34, 'One engine inoperative best rate of climb speed (VYSE) is...:',
+      ['77 Kts.', '83 Kts.', '85 Kts'], 'c', 'c',
+      'VYSE = 85 KIAS (trait bleu).',
+      'OM-B p.24 — Airspeed indicator markings ; p.95'),
+    Q(35, 'The Blue Bar appearing on the moving tape of the airspeed indicator is...:',
+      ['Vy.', 'Vyse.', 'Vxse'], 'b', 'b',
+      '« Blue radial 85 KIAS : best rate of climb speed, single engine » = VYSE.',
+      'OM-B p.24 — Airspeed indicator markings'),
+    Q(36, 'The Austro Engine E4-C DA42 engine delivers... :',
+      ['165 HP of power.', '123 HP of power.', '116 KW of power.'], 'a', 'a',
+      'Puissance max 123,5 kW soit 165,6 ch DIN à 2 300 tr/min (b confond kW et ch ; c est faux).',
+      'OM-B p.413 — Engine description (E4-C) ; p.26'),
+    Q(37, 'VOR antenna is located...:',
+      ['in the upper part of the tail.', 'below the fuselage.', 'in the nose of the aircraft'], 'a', 'a',
+      'Réponse de la copie corrigée : antenne VOR/LOC dans la partie haute de la dérive.',
+      'Copie corrigée, validée par l\'équipage (emplacement non décrit dans l\'OM-B, le PDP ni le guide Garmin)'),
+    Q(38, 'ADC significate...:',
+      ['Air Data Computer.', 'Attitude Detection and Coordination.', 'Alternate Display Computer.'], 'a', 'a',
+      'ADC = Air Data Computer (données anémobarométriques).',
+      'OM-B p.9 — Abbreviations ; p.33'),
+    Q(39, 'The VMCA speed is',
+      ['71 Kts', '62 Kts', 'Doesn\'t exist on this plane'], 'a', 'a',
+      'VMCA = 71 KIAS volets UP (68 KIAS volets APP), trait rouge.',
+      'OM-B p.23 — Airspeed limitations ; p.24'),
+    Q(40, 'The VMCA recovery procedure is : 1. Power increase — 2. Power decrease — 3. Pitch down — 4. Pitch up',
+      ['2,3', '1,4', '1,3'], 'a', 'a',
+      'Sous VMCA, on réduit la dissymétrie de poussée (réduire la puissance du moteur vif) pour retrouver le contrôle en lacet, et on rend la main pour reprendre de la vitesse au-dessus de VMCA.',
+      'OM-B p.101 — « it is very important to reduce the asymmetry in thrust to regain directional control »',
+      'L\'OM-B donne le principe (réduire la dissymétrie) ; le « pitch down » relève du cours MEP.')
+  ] };
 })(this);
 
 </script>
@@ -6078,7 +6330,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var el = K.$('home'), L = TF.Profiles.level(p);
     var pct = L.next ? Math.round((p.xp - L.min) / (L.next - L.min) * 100) : 100;
     var h = '<div class="hm-in">';
-    h += '<div class="hm-top"><div><div class="hm-hello">Bonjour ' + esc(p.name) + ' 👋</div><div class="hm-sub">Choisis la phase du vol à répéter. Le cockpit garde ses états d\'une étape à l\'autre.</div></div>';
+    h += '<div class="hm-top"><div><div class="hm-hello">📚 Procédures complètes</div><div class="hm-sub">La référence exhaustive : chaque item OM-B, les check-lists, les annonces PDP. À consulter quand tu veux tout reprendre en détail.</div></div>';
     h += '<div class="hm-lvl"><div class="hm-lvlname">' + esc(L.name) + '</div><div class="xpbar"><i style="width:' + pct + '%"></i></div><div class="hm-xp">' + p.xp + ' XP' + (L.next ? ' · ' + (L.next - p.xp) + ' avant « ' + esc(L.nextName) + ' »' : '') + '</div></div></div>';
     var rec = H.recommend(p), sk = streak(p);
     h += '<button class="mission" data-act="mission"><span class="ms-ico">' + rec.phase.icon + '</span><span class="ms-txt"><small>' + (rec.review ? '🔁 Révision du jour' : '▶ Ta prochaine mission') + '</small><b>' + esc(rec.phase.title) + ' · ' + LVNAME[rec.level] + '</b><em>' + esc(rec.why) + '</em></span><span class="ms-go">GO</span></button>';
@@ -6095,7 +6347,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     h += '</div><div class="hm-row">';
     var lab = TF.DATA.phases.filter(function (x) { return x.lab; })[0], ls = (p.phases.g1000 || {}).stars || 0;
     h += '<button class="wide-card lab" data-act="phase" data-id="g1000"><span class="wc-ico">🖥</span><span><b>Atelier G1000</b><small>' + esc(lab.sub) + ' — Garmin Pilot\'s Guide</small></span>' + stars(ls) + '</button>';
-    h += '<button class="wide-card ess" data-act="ess"><span class="wc-ico">📘</span><span><b>L\'essentiel</b><small>Le flow en mots-clés balayé dans le cockpit · l\'avion en chiffres · le tour avion</small></span></button>';
+    h += '<button class="wide-card ess" data-act="ess"><span class="wc-ico">✈︎</span><span><b>Mon vol — l\'essentiel</b><small>Le flow et les procédures essentielles · l\'avion en chiffres · le tour avion</small></span></button>';
     h += '<button class="wide-card full" data-act="full"><span class="wc-ico">✈︎</span><span><b>Vol complet</b><small>Les 6 phases enchaînées, de la mise en route au parking</small></span></button>';
     h += '</div>';
     h += '<div class="hm-badges">' + Object.keys(TF.Profiles.BADGES).map(function (k) { var b = TF.Profiles.BADGES[k], has = p.badges.indexOf(k) >= 0; return '<span class="badge-i' + (has ? ' on' : '') + '" title="' + esc(b[1] + ' — ' + b[2]) + '">' + b[0] + '<small>' + esc(b[1]) + '</small></span>'; }).join('') + '</div>';
@@ -6167,7 +6419,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       '<div class="sc-note" style="margin-top:12px">Astuce : pince ou molette pour zoomer · ⌂ vue générale · 🔍 contrôle une position sans la modifier.</div></div>';
   };
   H.panelActs = function () {
-    return { home: function () { H.show(); }, reset: function () { TF.app.ck.reset(TF.app.scenario()); TF.app.view.renderAll(); K.toast('Cockpit réinitialisé (fin de Cabin preparation, OM-B p.55)', 'ok'); } };
+    return { home: function () { TF.Ess.show(); }, reset: function () { TF.app.ck.reset(TF.app.scenario()); TF.app.view.renderAll(); K.toast('Cockpit réinitialisé (fin de Cabin preparation, OM-B p.55)', 'ok'); } };
   };
 
   /* Confettis (célébration d'un sans-faute) */
@@ -6204,17 +6456,29 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (tab) E.tab = tab;
     TF.Home.hide();
     var el = K.$('ess'), h = '<div class="hm-in">';
-    h += '<div class="ess-top"><div><div class="hm-hello">📘 L\'essentiel</div><div class="hm-sub">L\'avion en chiffres, le flow en mots-clés, le tour avion en points clés.</div></div>' +
-      '<button class="btn" data-act="home">✈︎ Mon vol</button></div>';
-    h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion']].map(function (t) {
+    var pr = TF.Profiles.current();
+    h += '<div class="ess-top"><div><div class="hm-hello">' + (pr ? 'Bonjour ' + esc(pr.name) + ' 👋 · ' : '') + 'Mon vol</div><div class="hm-sub">L\'essentiel : le flow et les procédures essentielles, l\'avion en chiffres, le tour avion. Le détail exhaustif est dans 📚 Procédures complètes.</div></div>' +
+      '<button class="btn" data-act="home">📚 Procédures complètes</button></div>';
+    h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['test', '📝 Class test']].map(function (t) {
       return '<button data-act="tab" data-v="' + t[0] + '" class="' + (E.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>'; }).join('') + '</div>';
-    h += E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : flowHtml();
+    h += E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : flowHtml();
+    h += '<div class="hm-foot"><button data-act="voices">🗣 Voix</button><button data-act="free">🛠 Cockpit libre</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     var keep = E._shown === E.tab && E.visible() ? el.scrollTop : 0; E._shown = E.tab;
     el.innerHTML = K.plain(h); el.classList.remove('hidden'); el.scrollTop = keep;
     K.bindActs(el, {
       home: function () { E.close(); TF.Home.show(); },
       tab: function (b) { E.show(b.getAttribute('data-v')); },
+      voices: function () { TF.Screens.voices(); },
+      // class test
+      ctstart: function (b) { var only = b.getAttribute('data-v'); var CT = TF.DATA.classTest.questions;
+        E.ct = { list: only === 'wrong' && E.ct ? E.ct.wrong.slice() : CT.map(function (q) { return q.n; }), i: 0, ok: 0, wrong: [], picked: null }; E.show('test'); },
+      ctpick: function (b) { if (!E.ct || E.ct.picked) return; var q = ctQ(E.ct.list[E.ct.i]), v = b.getAttribute('data-v'); E.ct.picked = v;
+        if (v === q.ans) { E.ct.ok++; K.sound.ok(); TF.Profiles.addXp(1); } else { E.ct.wrong.push(q.n); K.sound.err(); } E.show('test'); },
+      ctnext: function () { E.ct.i++; E.ct.picked = null; E.show('test'); var el = K.$('ess'); el.scrollTop = 0; },
+      ctquit: function () { E.ct = null; E.show('test'); },
+      ctlist: function () { E.ctList = !E.ctList; E.show('test'); },
+      free: function () { E.close(); ses().idle(); },
       // flow
       sweep: function (b) { E.sweep(b.getAttribute('data-id'), 'demo'); },
       tryit: function (b) { E.sweep(b.getAttribute('data-id'), 'try'); },
@@ -6222,6 +6486,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       // fiche
       rev: function () { E.hide = !E.hide; E.show('avion'); },
       reveal: function (b) { b.classList.remove('hid'); },
+      info: function (b) { var d = b.parentNode.parentNode.querySelector('.ec-def'); if (d) { d.classList.toggle('hidden'); b.classList.toggle('on'); } },
       quiz: function () { quiz(); },
       // tour avion
       st: function (b) { E.station = +b.getAttribute('data-n'); E.show('tour'); var d = K.$('wkDetail'); if (d && d.scrollIntoView) d.scrollIntoView(); },
@@ -6245,8 +6510,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     TF.DATA.essFiche.forEach(function (c) {
       h += '<div class="ess-card"><div class="ec-h">' + c.icon + ' ' + esc(c.title) + '</div>';
       c.facts.forEach(function (f) {
-        h += '<div class="ec-f"><span class="ec-k">' + esc(f.k) + (f.doubt ? ' <span class="doubt" title="Lecture du manuscrit à confirmer">?</span>' : '') + '</span>' +
-          '<span class="ec-v' + (E.hide ? ' hid' : '') + '" data-act="reveal"><b>' + esc(f.v) + '</b>' + (f.note ? '<small>' + esc(f.note) + '</small>' : '') + '</span></div>';
+        h += '<div class="ec-f"><span class="ec-k">' + esc(f.k) + (f.doubt ? ' <span class="doubt" title="Lecture du manuscrit à confirmer">?</span>' : '') +
+          (f.def && !E.hide ? ' <button class="i-btn" data-act="info" title="Définition">i</button>' : '') + '</span>' +
+          '<span class="ec-v' + (E.hide ? ' hid' : '') + '" data-act="reveal"><b>' + esc(f.v) + '</b>' + (f.note ? '<small>' + esc(f.note) + '</small>' : '') + '</span>' +
+          (f.def && !E.hide ? '<div class="ec-def hidden">ℹ︎ ' + esc(f.def) + '</div>' : '') + '</div>';
       });
       h += '</div>';
     });
@@ -6277,6 +6544,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   /* -------------------------------------------------------------- Flow -------------------------------------------------------------- */
   function chipHtml(c, state) {
+    if (c.call) return '<span class="fchip call' + (state ? ' ' + state : '') + '" title="Annonce orale">🎙 ' + esc(c.call) + '</span>';
     return '<span class="fchip' + (c.ctls ? ' tgt' : ' say') + (c.add ? ' add' : '') + (state ? ' ' + state : '') + '" title="' + esc(c.a + ' … ' + c.r) + '">' + (c.ctls ? '' : '🗣 ') + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') + '</span>';
   }
   function flowHtml() {
@@ -6292,6 +6560,45 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       h += '<span class="tl-ref">' + esc(TF.refText(b.ref)) + '</span></div></div></div>';
     });
     return h + '</div>';
+  }
+
+  /* ------------------------------------------------- Class test (copie Airbus) ------------------------------------------------- */
+  var L3 = ['a', 'b', 'c'];
+  function ctQ(n) { return TF.DATA.classTest.questions.filter(function (q) { return q.n === n; })[0]; }
+  function ctExplain(q, picked) {
+    var h = '<div class="ct-exp">';
+    if (picked) h += '<div class="feedback ' + (picked === q.ans ? 'ok' : 'err') + '">' + (picked === q.ans ? '✓ Bonne réponse' : '✗ Mauvaise réponse — la bonne réponse est ' + q.ans) + '</div>';
+    h += '<div class="ct-why"><b>Pourquoi :</b> ' + esc(q.why) + '</div><div class="ct-src">📄 ' + esc(q.src) + '</div>';
+    if (q.hand && q.hand !== q.ans) h += '<div class="caution" style="font-size:12px">✍︎ La copie annotée cochait <b>' + q.hand + '</b> : c\'est une erreur, la vérification dans les documents donne <b>' + q.ans + '</b>.</div>';
+    if (q.flag) h += '<div class="caution" style="font-size:12px"><b>📌 Note</b> — ' + esc(q.flag) + '</div>';
+    return h + '</div>';
+  }
+  function testHtml() {
+    var T = TF.DATA.classTest, h = '<div class="ess-intro">📝 <b>' + esc(T.title) + '</b> · ' + esc(T.issue) + ' — les 40 questions de la copie, telles quelles. Chaque réponse a été vérifiée dans l\'OM-B, le guide Garmin, le PDP et le cours MEP ; la source est donnée après chaque question.</div>';
+    var ct = E.ct;
+    if (!ct) {
+      h += '<div class="ess-bar"><button class="btn primary big" data-act="ctstart">▶ Commencer le test (40 questions)</button>' + '<button class="btn" data-act="ctlist">' + (E.ctList ? '🙈 Masquer le corrigé' : '📋 Voir le corrigé complet') + '</button></div>';
+      if (E.ctList) h += T.questions.map(function (q) {
+        return '<div class="ct-card"><div class="ct-q"><span class="ct-n">' + q.n + '</span>' + esc(q.q) + '</div><div class="ct-opts">' + q.o.map(function (o, k) {
+          return '<div class="ct-o' + (L3[k] === q.ans ? ' good' : '') + '"><b>' + L3[k] + '.</b> ' + esc(o) + '</div>'; }).join('') + '</div>' + ctExplain(q, null) + '</div>';
+      }).join('');
+      return h;
+    }
+    if (ct.i >= ct.list.length) {
+      var n = ct.list.length, pct = Math.round(ct.ok / n * 100);
+      h += '<div class="ct-card ct-end"><div class="hm-hello">' + (pct >= 75 ? '🎉 ' : '') + ct.ok + ' / ' + n + ' (' + pct + ' %)</div><div class="hm-sub">' + (pct >= 75 ? 'Seuil de 75 % atteint.' : 'Sous le seuil de 75 % : revois les questions manquées.') + '</div>' +
+        '<div class="ess-bar">' + (ct.wrong.length ? '<button class="btn primary" data-act="ctstart" data-v="wrong">🔁 Refaire les ' + ct.wrong.length + ' questions manquées</button>' : '') +
+        '<button class="btn" data-act="ctstart">↺ Tout recommencer</button><button class="btn" data-act="ctquit">📋 Retour</button></div></div>';
+      return h;
+    }
+    var q = ctQ(ct.list[ct.i]);
+    h += '<div class="ct-prog"><i style="width:' + Math.round(ct.i / ct.list.length * 100) + '%"></i></div><div class="ct-meta">Question ' + (ct.i + 1) + ' / ' + ct.list.length + ' · score ' + ct.ok + '</div>';
+    h += '<div class="ct-card"><div class="ct-q"><span class="ct-n">' + q.n + '</span>' + esc(q.q) + '</div><div class="ct-opts">' + q.o.map(function (o, k) {
+      var c = ct.picked ? (L3[k] === q.ans ? ' good' : L3[k] === ct.picked ? ' bad' : '') : '';
+      return '<button class="ct-o btn' + c + '" data-act="ctpick" data-v="' + L3[k] + '"' + (ct.picked ? ' disabled' : '') + '><b>' + L3[k] + '.</b> ' + esc(o) + '</button>'; }).join('') + '</div>';
+    if (ct.picked) h += ctExplain(q, ct.picked) + '<button class="btn primary block" data-act="ctnext">' + (ct.i + 1 < ct.list.length ? 'Question suivante ▶' : 'Voir mon score ▶') + '</button>';
+    h += '</div><button class="btn link" data-act="ctquit">Arrêter le test</button>';
+    return h;
   }
 
   /* ----------------------------------------------- Balayage dans le cockpit (démo / à toi) ----------------------------------------------- */
@@ -6322,6 +6629,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         S.prev = c.ctls[c.ctls.length - 1];
       }, al);
     }
+    if (c.call) K.toast('🎙 Annonce : « ' + esc(c.call) + ' »', 'call', 2600);
     ses().dSay(c.say, 'en', function () {
       S.done.push(S.i); S.i++; ses().dWait(c.ctls ? 500 : 250, demoStep, al);
     }, null, al);
@@ -6355,7 +6663,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (!S || S.mode !== 'try' || S.finished) return false;
     var c = S.b.chips[S.i], v = app().view;
     if (!c) return true;
-    if (!c.ctls) { K.toast('🗣 Cette étape se dit : « ' + esc(c.t) + ' » — touche « ✓ Fait » dans le panneau.', '', 2200); return true; }
+    if (!c.ctls) { K.toast(c.call ? '🎙 Annonce à faire à voix haute : « ' + esc(c.call) + ' », puis « J\'ai fait l\'annonce ».' : '🗣 Cette étape se dit : « ' + esc(c.t) + ' » — touche « ✓ Fait » dans le panneau.', '', 2400); return true; }
     var hit = c.ctls.indexOf(id) >= 0;
     if (!hit && (kind === 'ctl' || kind === 'press')) { var d = app().ck.defs[id]; if (d && c.ctls.indexOf(d.region) >= 0) hit = true; }
     if (hit) {
@@ -6370,15 +6678,35 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     }
     return true;
   };
+  /* Bouton « 🎙 Annonce » de la barre d'outils pendant « À toi » : valide l'annonce attendue */
+  E.onCallout = function () {
+    if (!S || S.mode !== 'try' || S.finished) return false;
+    var c = S.b.chips[S.i];
+    if (!c || !c.call) { K.toast('Pas d\'annonce attendue à cette étape.', 'warn', 1600); return true; }
+    K.sound.ok(); advanceTry(); return true;
+  };
   E.renderPanel = function () {
     var bdy = K.$('instrBody'); if (!bdy || !S) return;
     var b = S.b, h = '<div class="ph-head"><span class="ph-icon">' + b.icon + '</span><div><div class="ph-title">' + esc(b.title) + '</div><div class="ph-lvl">L\'essentiel · ' + (S.mode === 'demo' ? 'balayage' : 'à toi') + '</div></div></div>';
     h += '<div class="sc-note" style="margin:-2px 0 8px">' + esc(b.sub) + '</div><div class="clc"><div class="clc-top"><span>FLOW — ' + esc(b.title).toUpperCase() + '</span></div><div class="clc-list">';
     b.chips.forEach(function (c, i) {
       var st = S.done.indexOf(i) >= 0 ? ' ok' : i === S.i && !S.finished ? ' cur' : '';
+      if (c.call) {
+        // annonce orale : bandeau distinct, phrase exacte à dire
+        h += '<div class="clc-row ess-call' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l"><span class="call-tag">🎙 ANNONCE</span><b class="call-txt">« ' + esc(c.call) + ' »</b>' +
+          (/CHECK-LIST/.test(c.r) ? '<small class="ess-act">puis <b>' + esc(c.call.replace(/ procedure complete$/i, '')) + ' check-list … DONE</b></small>' : '') + (c.om ? '<small class="ess-act"><i class="ess-om">OM-B ' + esc(c.om) + '</i></small>' : '') + '</span><span class="clc-r">' + (st === ' ok' ? '✓' : '🎙') + '</span>';
+        if (st === ' cur' && S.mode === 'try') h += '<div class="clc-acts"><button class="btn call-btn" data-act="said">🎙 J\'ai fait l\'annonce</button></div>';
+        h += '</div>'; return;
+      }
       var tgt = c.ctls ? (S.mode === 'try' && st !== ' ok' ? '👆 dans le cockpit' : '🎯') : '🗣 à dire';
+      if (c.lines) {
+        h += '<div class="clc-row' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + c.lines.map(function (l) { return '<small class="ess-act">' + esc(l[0]) + ' … <b>' + esc(l[1]) + '</b></small>'; }).join('') +
+          (c.om ? '<small class="ess-act"><i class="ess-om">OM-B ' + esc(c.om) + '</i></small>' : '') + '</span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
+        if (st === ' cur' && S.mode === 'try') h += '<div class="clc-acts"><button class="btn primary" data-act="said">✓ Fait</button></div>';
+        h += '</div>'; return;
+      }
       h += '<div class="clc-row' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') +
-        '<small class="ess-act">' + esc(c.a) + ' … <b>' + esc(c.r) + '</b></small></span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
+        '<small class="ess-act">' + esc(c.a) + ' … <b>' + esc(c.r) + '</b>' + (c.om ? ' <i class="ess-om' + (c.moved ? ' mv' : '') + '">OM-B ' + esc(c.om) + (c.moved ? ' · ordre déplacé' : '') + '</i>' : '') + '</small></span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
       if (st === ' cur' && c.note) h += '<div class="clc-acts"><div class="sc-note">' + esc(c.note) + '</div></div>';
       if (st === ' cur' && S.mode === 'try' && !c.ctls) h += '<div class="clc-acts"><button class="btn primary" data-act="said">✓ Fait</button></div>';
       if (st === ' cur' && S.mode === 'try' && c.ctls && S.chipErr >= 2) h += '<div class="clc-acts"><div class="sc-note">Indice : la commande clignote dans le cockpit.</div></div>';
@@ -6395,7 +6723,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         (nxt ? '<button class="btn" data-act="nextb" data-id="' + nxt.id + '">' + nxt.icon + ' Suivant ▶</button>' : '') + '</div>';
       if (S.mode === 'try') h += '<button class="btn block" data-act="demo">▶ Revoir le balayage</button>';
     }
-    h += '<button class="btn link" data-act="back">↩ Retour à L\'essentiel</button>';
+    h += '<button class="btn link" data-act="back">↩ Retour à Mon vol</button>';
     bdy.innerHTML = K.plain(h);
     K.centerCurrent(bdy.querySelector('.clc-list'), bdy.querySelector('.clc-row.cur'));
     var acts = ses().demoActs();
@@ -7064,15 +7392,15 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* Barre d'outils cockpit (réduite à l'essentiel) */
   K.$('tbHome').onclick = function () { app.view.home(true); };
   K.$('tbLook').onclick = function () { app.modes.armLook(); };
-  K.$('tbCallout').onclick = function () { TF.Interact.declareCallout(); };
+  K.$('tbCallout').onclick = function () { if (TF.Ess.onCallout && TF.Ess.onCallout()) return; TF.Interact.declareCallout(); };
   K.$('tbRate').onclick = function () { app.modes.cycleRate(); };
   K.$('tbVerif').onclick = function () { TF.Interact.openDeclaratives(); };
   K.$('tbHint').onclick = function () { app.modes.hint(); };
   K.$('tbStop').onclick = function () { if (app.modes.level === 'discover' && app.modes.phase) { if (!app.modes.paused) app.modes.togglePause(); } else TF.Voice.stop(); };
 
   /* Barre supérieure */
-  K.$('btnHome').onclick = function () { TF.Voice.stop(); K.closeSheet(); if (TF.Ess.active()) TF.Ess.stop(true); TF.Ess.close(); app.modes.idle(); TF.Home.show(); };
-  K.$('btnEss').onclick = function () { TF.Voice.stop(); K.closeSheet(); if (TF.Ess.active()) TF.Ess.stop(true); app.modes.idle(); TF.Ess.show(); };
+  K.$('btnHome').onclick = function () { TF.Voice.stop(); K.closeSheet(); if (TF.Ess.active()) TF.Ess.stop(true); app.modes.idle(); TF.Ess.show(); };
+  K.$('btnEss').onclick = function () { TF.Voice.stop(); K.closeSheet(); if (TF.Ess.active()) TF.Ess.stop(true); TF.Ess.close(); app.modes.idle(); TF.Home.show(); };
   K.$('btnProfile').onclick = function () { TF.Screens.profile(); };
   K.$('btnBrand').onclick = function () { TF.Screens.splash(function () { app.onProfile(); }); };
   K.$('btnLabels').onclick = function () { var on = !app.view.showLabels; app.view.setLabels(on); this.classList.toggle('on', on); var p = TF.Profiles.current(); if (p) TF.Profiles.setSetting('showLabels', on); };
@@ -7102,7 +7430,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     app.view.setLabels(!!p.settings.showLabels); K.$('btnLabels').classList.toggle('on', !!p.settings.showLabels);
     K.sound.setEnabled(p.settings.sound !== false); K.$('btnSound').classList.toggle('on', p.settings.sound !== false);
     TF.Voice.setEnabled(p.settings.voice !== false);
-    app.modes.idle(); TF.Home.show();
+    app.modes.idle(); TF.Ess.show();
   };
 
   /* Accueil */
