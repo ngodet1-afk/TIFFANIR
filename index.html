@@ -598,7 +598,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '4.6';
+  TF.VERSION = '4.6.3';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -820,7 +820,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   add({ id: 'av_master', label: 'AVIONIC MASTER', short: 'AV M', type: 'rocker', positions: ['OFF', 'ON'], region: 'botL', x: 598, y: 665, w: 17, h: 28, initial: 'OFF', ref: CABIN });
 
   /* ---------------- Train / pompes (rep. 13, 32) ---------------- */
-  add({ id: 'gear_fire_test', label: 'GEAR / FIRE TEST', short: 'TEST', type: 'push', region: 'botM', x: 625, y: 662, w: 13, h: 13,
+  add({ id: 'gear_fire_test', label: 'GEAR / FIRE TEST', short: 'TEST', type: 'push', region: 'botM', x: 625, y: 662, w: 20, h: 20,
     ref: { doc: 'OMB', sec: 'B12 §9 et §14 (test avertisseur train / détection feu)', page: 403 } });
   add({ id: 'gear_lever', label: 'LANDING GEAR (sélecteur)', short: 'GEAR', type: 'lever', positions: ['UP', 'DOWN'], region: 'botM', x: 701, y: 668, w: 26, h: 48, initial: 'DOWN', ref: CABIN,
     guardMsg: 'Sécurité PDP : confusion possible sélecteur de train / frein de parc — CHECK LEVER puis ACTION.' });
@@ -1117,6 +1117,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     function setVert(m) {
       g.vert = m; g.vertAt = null;
       g.vertArm = (m === 'PIT' || m === 'VS' || m === 'FLC') ? 'ALTS' : '';  // ALTS armé auto (Table 7-2)
+      if (m === 'PIT') g.refPitch = 0; // assiette de référence à l'engagement (au sol : ≈ 0°)
     }
     function latDefault() { g.lat = 'ROL'; g.latAt = null; }
     switch (key) {
@@ -1153,8 +1154,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         if (wasOn && g.vert === 'FLC') { setVert('PIT'); break; }
         fdOn('ROL', 'FLC'); setVert('FLC'); g.refIas = U.clamp(Math.round(f.ias), 90, 185);
         break;
-      case 'ap_nose_up': if (g.vert === 'VS') g.refVs = Math.min(1500, g.refVs + 100); else if (g.vert === 'FLC') g.refIas = Math.max(90, g.refIas - 1); break;
-      case 'ap_nose_dn': if (g.vert === 'VS') g.refVs = Math.max(-3000, g.refVs - 100); else if (g.vert === 'FLC') g.refIas = Math.min(185, g.refIas + 1); break;
+      case 'ap_nose_up': if (g.vert === 'PIT') g.refPitch = Math.min(20, (g.refPitch || 0) + 0.5); else if (g.vert === 'VS') g.refVs = Math.min(1500, g.refVs + 100); else if (g.vert === 'FLC') g.refIas = Math.max(90, g.refIas - 1); break;
+      case 'ap_nose_dn': if (g.vert === 'PIT') g.refPitch = Math.max(-15, (g.refPitch || 0) - 0.5); else if (g.vert === 'VS') g.refVs = Math.max(-3000, g.refVs - 100); else if (g.vert === 'FLC') g.refIas = Math.min(185, g.refIas + 1); break;
     }
   };
 
@@ -1498,6 +1499,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         }
       }
       if (id === 'trim_hat' && s.pressed.ap_disc) sys.history.trimInhibited = true;
+      // GEAR / FIRE TEST : un simple appui suffit dans l'appli (le test reste affiché 3 s, alarme comprise)
+      if (id === 'gear_fire_test' && sys.power) { sys.fireTestUntil = s.t + 3000; sys.history.fireTest = true; sys.history.gearTest = true; }
     } else {
       if (id === 'gear_fire_test' && sys.power && dur >= 800) { sys.history.fireTest = true; sys.history.gearTest = true; }
       if (id === 'xfer_com' && sys.power) { var c = s.g.com[s.g.comSel]; if (dur >= 2000) { s.g.com[0].a = 121500; s.g.comSel = 0; } else { var t0 = c.a; c.a = c.s; c.s = t0; } }
@@ -1515,6 +1518,15 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     sys.power = c.elec_master === 'ON';
     sys.avionics = sys.power && c.av_master === 'ON';
     if (sys.power && sys.mfdStage === 'boot' && s.t - sys.powerOnAt >= T.mfdBoot) sys.mfdStage = 'database';
+    // Manche entraîné par les servos du pilote automatique (test au sol : il suit le bug de cap et NOSE UP / NOSE DN)
+    var st = sys.stick || (sys.stick = { r: 0, p: 0 }), tr = 0, tp = 0;
+    if (sys.apEngaged && s.flight.onGround) {
+      var he = ((s.g.hdg - s.flight.hdg + 540) % 360) - 180;
+      if (s.g.lat === 'HDG') tr = U.clamp(he / 3, -1, 1);
+      if (s.g.vert === 'PIT') tp = U.clamp((s.g.refPitch || 0) / 2, -1, 1);
+    }
+    var kk = Math.min(1, dt / 450); st.r += (tr - st.r) * kk; st.p += (tp - st.p) * kk;
+    if (Math.abs(st.r) < 0.005) st.r = 0; if (Math.abs(st.p) < 0.005) st.p = 0;
     if (!sys.power) sys.mfdStage = 'off';
     // AFCS : auto-test (PFT) à la mise sous tension avionique
     if (sys.avionics) {
@@ -1579,7 +1591,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     // Annonciations PFD (fenêtre d'alertes)
     var W = [], Ca = [], A = [];
     if (sys.power) {
-      var fire = !!s.pressed.gear_fire_test;
+      var fire = !!s.pressed.gear_fire_test || s.t < (sys.fireTestUntil || 0);
       if (fire) { W.push('L ENG FIRE'); W.push('R ENG FIRE'); }
       if (sys.gearCollapsed) W.push('CHECK GEAR');
       ['L', 'R'].forEach(function (k) {
@@ -1596,7 +1608,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       }
     }
     I.alerts = { warnings: W, cautions: Ca, advisories: A };
-    I.aural = sys.power && !!s.pressed.gear_fire_test;
+    I.aural = sys.power && (!!s.pressed.gear_fire_test || s.t < (sys.fireTestUntil || 0));
 
     // AFCS
     I.ap = { state: sys.avionics ? sys.apState : 'off', engaged: sys.apEngaged, discFlash: sys.apDiscAlert && (s.t - sys.apDiscAlert) < 5000 };
@@ -1633,7 +1645,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     I.gearLights = sys.power ? (sys.gearCollapsed ? { unsafe: true, l: false, n: false, r: false } : { unsafe: c.gear_lever === 'UP', l: c.gear_lever === 'DOWN', n: c.gear_lever === 'DOWN', r: c.gear_lever === 'DOWN' }) : null;
     I.flapLights = sys.power ? { up: sys.flapPos === 'UP', app: sys.flapPos === 'APP', ldg: sys.flapPos === 'LDG' } : null;
     I.stby = { caged: c.stby_cage === 'CAGED', powered: sys.power || c.emergency_sw === 'ON' };
-    I.flight = s.flight; I.g = s.g;
+    I.flight = s.flight; I.g = s.g; I.stick = s.sys.stick || { r: 0, p: 0 };
     I.altitude = Math.round(TF.G1000.indicatedAlt(this)); I.qnh = s.g.baro; I.altStby = Math.round(s.flight.alt);
     I.t = s.t;
     return I;
@@ -1806,9 +1818,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         cond: 'fmsMatchesGauge', group: 7, after: ['5b'], region: 'mfd', ref: R(BS, 57),
         explain: 'Page EIS - Engine (softkey Engine) : lire la quantité jaugée (Main L + R) et recaler le Fuel Calculator (DEC Fuel / INC Fuel / RST Fuel).',
         ideal: [{ mfdPage: 'engine' }, { fms: 'gauge' }, { observe: 'mfd' }] },
-      { id: '5g', n: '5.g', label: 'Alarm panel', response: 'TESTED', kind: 'press', ctl: 'gear_fire_test', minDur: 800, needPower: true, group: 8, after: ['5b'], region: 'botM', ref: R(BS, 57), toConfirm: 'C4',
+      { id: '5g', n: '5.g', label: 'Alarm panel', response: 'TESTED', kind: 'press', ctl: 'gear_fire_test', needPower: true, group: 8, after: ['5b'], region: 'botM', ref: R(BS, 57), toConfirm: 'C4',
         caution: 'Si l\'alarme sonore ou l\'alerte sur le PFD n\'apparaît pas : arrêter le vol (maintenance).',
-        explain: 'Interprétation : bouton GEAR/FIRE TEST près du sélecteur de train (alarme sonore + L/R ENG FIRE sur le PFD).' },
+        explain: 'Bouton GEAR/FIRE TEST, juste à gauche du levier de train : un appui suffit dans l\'appli (dans l\'avion, le maintenir). L/R ENG FIRE s\'affichent sur le PFD avec l\'alarme sonore. Interprétation du bouton à confirmer (C4).' },
       { id: '5h', n: '5.h', label: 'Annun Test De-Ice', response: 'AS REQUIRED', kind: 'achieve', ctls: ['deice_annun'], cond: 'annunTestDone', group: 9, after: ['5b'], region: 'deice',
         required: 'icingExpected', ref: R(BS, 57),
         explain: 'Si requis (conditions givrantes prévues) : sélecteur ICE LIGHT / OFF / ANNUN-TEST sur ANNUN-TEST puis retour OFF.',
@@ -2212,7 +2224,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       { id: 'd', n: '1.d', label: 'Aux Power Switch', response: 'OFF', kind: 'confirm', item: 'aux_power_off', group: 1, ref: R(AP, 74) },
       { id: 'e', n: '1.e', label: 'Controls', response: 'NO INTERFERENCE BY FOREIGN OBJECTS', kind: 'confirm', item: 'no_interference', group: 1, ref: R(AP, 74) },
       { id: 'f', n: '1.f', label: 'Landing Light', response: 'AS REQUIRED', kind: 'set', ctl: 'landing_light', pos: 'ON', group: 1, required: 'never', region: 'lights', ref: R(AP, 74) },
-      { id: 'g', n: '1.g', label: 'Gear Warning Horn', response: 'CHECK FUNCTION', kind: 'press', ctl: 'gear_fire_test', minDur: 800, needPower: true, group: 1, region: 'botM', ref: R(AP, 74),
+      { id: 'g', n: '1.g', label: 'Gear Warning Horn', response: 'CHECK FUNCTION', kind: 'press', ctl: 'gear_fire_test', needPower: true, group: 1, region: 'botM', ref: R(AP, 74),
         note: 'Bouton de test près du sélecteur de train (OM-B B12 p.403).' },
       { id: 'h', n: '1.h', label: 'Flaps', response: 'AS REQUIRED (APP)', kind: 'set', ctl: 'flaps', pos: 'APP', group: 1, region: 'botR', ref: D('3D/2D approach — flaps APP', 226),
         note: 'PDP : en approche IFR la configuration normale est FLAPS APP. Vitesse ≤ 133 KIAS (VFE APP).' },
@@ -3395,12 +3407,12 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test'], { om: '5.g', sim: 'alarmTest', vals: ['L ENG FIRE + R ENG FIRE sur le PFD', 'Alarme sonore'],
         note: 'Si l\'alarme sonore ou l\'alerte sur le PFD n\'apparaît pas : arrêter le vol (OM-B p.57). Bouton GEAR/FIRE TEST : interprétation à confirmer (C4).' }),
       C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun'], { om: '5.h', note: 'Seulement si des conditions givrantes sont prévues : ANNUN-TEST puis OFF. Pas requis dans ce scénario.' }),
-      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j', sim: 'mapPage', vals: ['Fuel Temp °C : lire L et R'],
+      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j', sim: 'engPage', vals: ['Fuel Temp °C : lire L et R (page Engine, cadre Fuel System)'],
         ui: { mfdBox: { title: 'Température carburant', lines: [{ label: 'Fuel Temp gauche', eng: 'L', key: 'fuelTemp', unit: '°C', target: 'lire et comparer' }, { label: 'Fuel Temp droite', eng: 'R', key: 'fuelTemp', unit: '°C', target: 'lire et comparer' }] } } }),
       C('« Before start procedure complete »', 'Before start procedure complete', 'ANNONCE, PUIS BEFORE START CHECK-LIST DONE', null, { om: '6', call: 'Before start procedure complete' })
     ] },
-    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage ; PFD et MFD allumés, moteurs simulés', ref: om('B02 §3 Engine Start-up', 57),
-      state: 'after-before-start', chips: [
+    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage ; PFD allumé, MFD en page Engine, moteurs simulés', ref: om('B02 §3 Engine Start-up', 57),
+      state: 'after-before-start', mfdPage: 'engine', chips: [
       C('« Start-up procedure »', 'Start-up procedure', 'ANNONCE', null, { om: '1', call: 'Start-up procedure' }),
       C('Keys', 'Keys', 'IN PLACE', ['start_key'], { om: '1.a', sim: 'keysIn' }),
       C('Strobe', 'Strobe lights', 'ON', ['strobe'], { om: '1.b', sim: 'strobeOn' }),
@@ -3423,7 +3435,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('« Start-up procedure complete »', 'Start-up procedure complete', 'ANNONCE, PUIS START-UP CHECK-LIST DONE', null, { om: '2', call: 'Start-up procedure complete' })
     ] },
     { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d) — les deux moteurs tournent', ref: om('B02 §3 After Start-up', 58),
-      state: 'after-start-up', chips: [
+      state: 'after-start-up', mfdPage: 'engine', chips: [
       C('Ceintures', 'Safety harnesses', 'ON AND FASTENED', null, { om: '1.a' }),
       C('Avionic', 'Avionic Master', 'ON', ['av_master'], { om: '1.b', sim: 'avOn', vals: ['Auto-test AFCS : PFT blanc encadré + AFCS rouge sur le PFD', 'Fin du test : PFT et AFCS s\'effacent + tonalité de déconnexion'],
         ui: { mfdBox: { title: 'Ralenti : à surveiller', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'RPM droite', eng: 'R', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }] } } }),
@@ -3432,13 +3444,13 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Fuel selectors', 'Fuel selectors LH / RH', 'ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.r', add: true, sim: 'fuelOn', note: 'Retour sur ON après le test (OM-B 1.r).' })
     ] },
     { id: 'ap', icon: '🤖', title: 'Test pilote automatique', sub: 'OM-B After start-up m-p, puis departure briefing — barre AFCS du PFD en direct', ref: om('B02 §3 After Start-up — AP', 59),
-      state: 'ess-ap', chips: [
+      state: 'ess-ap', mfdPage: 'engine', chips: [
       C('FD', 'Flight director', 'ON', ['ap_fd'], { sim: 'fdOn', vals: ['Barre AFCS : ROL et PIT verts (modes par défaut)', 'Barres de tendance FD sur l\'horizon'] }),
       C('HDG', 'HDG mode', 'SELECT', ['ap_hdg'], { sim: 'hdgSel', vals: ['HDG vert à la place de ROL'] }),
       C('Bug', 'Heading bug', 'SET', ['mk_hdg'], { sim: 'bugSync', vals: ['Bug de cap (cyan) sur le cap actuel'] }),
       C('AP', 'Autopilot', 'ENGAGE BY PRESSING AP BUTTON', ['ap_ap'], { om: '1.n', sim: 'apOn', vals: ['AP et YD verts sur la barre AFCS'] }),
-      C('L + R', 'Heading bug left then right', 'CONTROLS FOLLOW', ['mk_hdg'], { doubt: true, sim: 'bugLR', vals: ['Le volant suit le bug à gauche puis à droite'] }),
-      C('↑↓', 'NOSE UP / NOSE DN', 'CONTROLS FOLLOW', ['ap_nose_up', 'ap_nose_dn'], { doubt: true, sim: 'noseUpDn', note: 'Interprétation : après le test latéral (L + R), test vertical avec NOSE UP / NOSE DN. À confirmer avec l\'instructeur.' }),
+      C('R + L', 'Heading bug three degrees right, then three degrees left', 'STICK FOLLOWS', ['mk_hdg'], { doubt: true, sim: 'bugLR', vals: ['Bug +3° : le manche part à droite', 'Bug −3° : le manche part à gauche'], note: 'Les servos du pilote automatique déplacent le manche vers le bug : le contrôler à la main sans forcer.' }),
+      C('↑↓', 'NOSE UP / NOSE DN', 'STICK FOLLOWS', ['ap_nose_up', 'ap_nose_dn'], { doubt: true, sim: 'noseUpDn', vals: ['NOSE UP : manche tiré (cabrer)', 'NOSE DN : manche poussé (piquer)', 'PIT : 0,5° par appui'], note: 'Interprétation : après le test latéral (L + R), test vertical avec NOSE UP / NOSE DN. À confirmer avec l\'instructeur.' }),
       C('GA', 'Go-around button', 'TEST', null, { doubt: true, note: 'Bouton GA non représenté dans le cockpit 2D.' }),
       C('CWS', 'CWS button', 'TEST', null, { doubt: true, note: 'Bouton CWS non représenté dans le cockpit 2D.' }),
       C('Kill', 'AP disc switch', 'TEST', ['ap_disc'], { om: '1.o', sim: 'apDisc', vals: ['AP jaune clignotant + tonalité de déconnexion', 'AP DISC coupe aussi le YD'] }),
@@ -4520,7 +4532,12 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (p[1] === 60) s += t(cx - p[1] / 2 - 18, y + 5, String(Math.abs(p[0])), 12, '#fff') + t(cx + p[1] / 2 + 6, y + 5, String(Math.abs(p[0])), 12, '#fff');
     });
     // Barres du directeur de vol
-    if (g.fd && I.avionics) s += '<path d="M' + (cx - 70) + ',' + (218 + 8) + ' L' + cx + ',' + 210 + ' L' + (cx + 70) + ',' + (218 + 8) + '" fill="none" stroke="#e04ad8" stroke-width="5" opacity=".9"/>';
+    if (g.fd && I.avionics) {
+      // commande FD au sol : décalée par l'assiette de référence (PIT) et inclinée vers le bug de cap (HDG)
+      var fdP = f.onGround && g.vert === 'PIT' ? (g.refPitch || 0) : 0, fdR = 0;
+      if (f.onGround && g.lat === 'HDG') fdR = Math.max(-20, Math.min(20, (((g.hdg - f.hdg + 540) % 360) - 180) * 3));
+      s += '<g transform="translate(0,' + (-fdP * 4.2).toFixed(1) + ') rotate(' + fdR.toFixed(1) + ' ' + cx + ' 218)"><path d="M' + (cx - 70) + ',' + (218 + 8) + ' L' + cx + ',' + 210 + ' L' + (cx + 70) + ',' + (218 + 8) + '" fill="none" stroke="#e04ad8" stroke-width="5" opacity=".9"/></g>';
+    }
     s += '<path d="M' + (cx - 82) + ',218 L' + (cx - 8) + ',216 L' + cx + ',206 L' + (cx + 8) + ',216 L' + (cx + 82) + ',218 L' + cx + ',214Z" fill="#f2c21b" stroke="#000" stroke-width="1"/>';
     // Anémomètre (bande)
     var ias = f.ias;
@@ -4739,13 +4756,15 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   };
   /* Encadré pédagogique sur le MFD : valeurs à vérifier, avec la valeur lue en direct (L'essentiel) */
   var EIS_ROW = { load: 0, rpm: 1, gph: 2, oilT: 3, oilP: 4, coolant: 5, fuelTemp: 6, fuelQty: 7 };
+  /* zones du MFD page Engine à encadrer (unités SVG du MFD) */
+  var ENG_HL = { load: [4, 50, 222, 100], rpm: [4, 150, 222, 100], oilT: [4, 250, 222, 100], oilP: [4, 350, 222, 100], coolant: [242, 94, 46, 180], gearbox: [304, 94, 46, 180],
+    gph: [280, 314, 120, 24], fuelTemp: [280, 344, 120, 24], fuelQty: [452, 310, 130, 98], fms: [238, 426, 196, 22], gauge: [452, 310, 130, 98] };
+  function hl(r) { return '<rect x="' + r[0] + '" y="' + r[1] + '" width="' + r[2] + '" height="' + r[3] + '" fill="none" stroke="#3fe0e8" stroke-width="2.5" rx="5"/>'; }
   function mfdBox(I, B) {
-    var lines = B.lines || [], h = 40 + lines.length * 34, x = 136, y = B.pos === 'bottom' ? 446 - h : 64, w = 488, s = '';
+    var lines = B.lines || [], eng = I.mfdPage === 'engine', s = '', done = {};
     var fc = I.fuelCalc || {}, calc = { gauge: fc.gauge, fms: fc.remain == null ? null : Math.round(fc.remain * 10) / 10 };
-    s += rect(x, y, w, h, '#06121c', ' opacity=".94" stroke="#3fe0e8" stroke-width="2" rx="8"');
-    s += t(x + 14, y + 25, '✔ ' + B.title, 16, '#3fe0e8', 'start', 700);
-    lines.forEach(function (l, k) {
-      var yy = y + 56 + k * 34, live = '', ok = null;
+    var rows = lines.map(function (l) {
+      var live = '', ok = null;
       if (l.eng && l.key) {
         var e = I.eng[l.eng], v = e ? e[l.key] : null;
         live = v == null ? '---' : String(v) + (l.unit ? ' ' + l.unit : '');
@@ -4753,10 +4772,35 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       }
       if (l.calc) { var cv = calc[l.calc]; live = cv == null ? '---' : cv + (l.unit ? ' ' + l.unit : ''); if (l.match && cv != null) ok = Math.abs(cv - calc[l.match]) < 0.6; }
       if (l.absent) { var on = I.eng[l.absent] && I.eng[l.absent].starter; live = on ? 'AFFICHÉ' : 'absent'; ok = !on; }
-      s += t(x + 14, yy, l.label, 15, '#fff', 'start', 700);
-      if (live) s += t(x + 300, yy, live, 16, ok === false ? '#ff6b6b' : ok ? '#2fe35a' : '#fff', 'end', 700);
-      s += rect(x + 318, yy - 17, 160, 24, '#123a48', ' rx="5"') + t(x + 398, yy, l.target, 14, '#c8fbff', 'middle', 700);
-      if (I.mfdPage !== 'engine' && l.eng && l.key && EIS_ROW[l.key] != null) s += '<rect x="2" y="' + (46 + 10 + EIS_ROW[l.key] * 48) + '" width="108" height="44" fill="none" stroke="#3fe0e8" stroke-width="2.5" rx="4"/>';
+      return { l: l, live: live, col: ok === false ? '#ff6b6b' : ok ? '#2fe35a' : '#fff' };
+    });
+    // encadrement des valeurs concernées sur l'écran
+    lines.forEach(function (l) {
+      var k = l.calc || l.key; if (!k || done[k]) return; done[k] = 1;
+      if (eng && ENG_HL[k]) s += hl(ENG_HL[k]);
+      else if (!eng && l.eng && EIS_ROW[k] != null) s += hl([2, 46 + 10 + EIS_ROW[k] * 48, 108, 44]);
+    });
+    if (eng) {
+      // page Engine : encadré compact à la place du cadre Electrical (moins utile au démarrage)
+      var x = 426, y = 58, w = 210, h = 34 + rows.length * 52;
+      s += rect(x, y, w, h, '#06121c', ' opacity=".95" stroke="#3fe0e8" stroke-width="2" rx="8"');
+      s += t(x + 10, y + 22, '✔ ' + B.title, 13, '#3fe0e8', 'start', 700);
+      rows.forEach(function (r, k) {
+        var yy = y + 50 + k * 52;
+        s += t(x + 10, yy, r.l.label, 13, '#fff', 'start', 700);
+        if (r.live) s += t(x + w - 10, yy, r.live, 14, r.col, 'end', 700);
+        s += rect(x + 10, yy + 8, w - 20, 20, '#123a48', ' rx="5"') + t(x + w / 2, yy + 23, r.l.target, 12, '#c8fbff', 'middle', 700);
+      });
+      return s;
+    }
+    var h2 = 40 + rows.length * 34, x2 = 136, y2 = B.pos === 'bottom' ? 446 - h2 : 64, w2 = 488;
+    s += rect(x2, y2, w2, h2, '#06121c', ' opacity=".94" stroke="#3fe0e8" stroke-width="2" rx="8"');
+    s += t(x2 + 14, y2 + 25, '✔ ' + B.title, 16, '#3fe0e8', 'start', 700);
+    rows.forEach(function (r, k) {
+      var yy = y2 + 56 + k * 34;
+      s += t(x2 + 14, yy, r.l.label, 15, '#fff', 'start', 700);
+      if (r.live) s += t(x2 + 300, yy, r.live, 16, r.col, 'end', 700);
+      s += rect(x2 + 318, yy - 17, 160, 24, '#123a48', ' rx="5"') + t(x2 + 398, yy, r.l.target, 14, '#c8fbff', 'middle', 700);
     });
     return s;
   }
@@ -4958,6 +5002,20 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     el('rect', { x: -2000, y: -2000, width: 6000, height: 6000, fill: '#0a0b0d' }, svg);
     el('image', { href: 'assets/cockpit@2x.jpg', x: 0, y: 0, width: PHOTO.w, height: PHOTO.h, preserveAspectRatio: 'none' }, svg);
     this.gHD = el('g', {}, svg); this.hdTiles = {};
+    // manche (photo) : copie détourée qui bouge par-dessus l'original masqué
+    var STK = [[326, 712], [345, 701], [420, 701], [437, 720], [431, 780], [415, 870], [416, 962], [424, 992], [336, 992], [342, 962], [342, 870], [325, 780]];
+    var PATCH = [[322, 706], [345, 696], [422, 696], [442, 718], [436, 780], [420, 870], [421, 960], [337, 960], [337, 870], [320, 780]];
+    function pts(a) { return a.map(function (q) { return q.join(','); }).join(' '); }
+    var dfs = el('defs', {}, svg), cp = el('clipPath', { id: 'tfStickClip' }, dfs);
+    el('polygon', { points: pts(STK) }, cp);
+    var lg = el('linearGradient', { id: 'tfStickBg', x1: 0, y1: 0, x2: 1, y2: 1 }, dfs);
+    el('stop', { offset: '0', 'stop-color': '#0f0d12' }, lg); el('stop', { offset: '.55', 'stop-color': '#121113' }, lg); el('stop', { offset: '1', 'stop-color': '#0b0b0b' }, lg);
+    var fb = el('filter', { id: 'tfStickBlur', x: '-20%', y: '-10%', width: '140%', height: '120%' }, dfs);
+    el('feGaussianBlur', { stdDeviation: 3 }, fb);
+    this.gStick = el('g', { style: 'display:none' }, svg);
+    el('polygon', { points: pts(PATCH), fill: 'url(#tfStickBg)', filter: 'url(#tfStickBlur)' }, this.gStick);
+    this.gStickMv = el('g', {}, this.gStick);
+    el('image', { href: 'assets/cockpit@2x.jpg', x: 0, y: 0, width: PHOTO.w, height: PHOTO.h, preserveAspectRatio: 'none', 'clip-path': 'url(#tfStickClip)' }, this.gStickMv);
     this.gReg = el('g', {}, svg);
     this.gStby = el('g', {}, svg);
     this.gScreens = el('g', {}, svg);
@@ -5023,6 +5081,17 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (force || ks !== this.lastDisp.s) { parseInto(this.gStby, TF.Displays.standby(I, this.c.get('stby_cage') === 'CAGED')); this.lastDisp.s = ks; }
     if (force || kl !== this.lastDisp.l) { parseInto(this.gGear, TF.Draw.gearLights(I.gearLights)); parseInto(this.gFlap, TF.Draw.flapLights(I.flapLights)); parseInto(this.gAfcs, TF.Draw.afcsLeds(I)); this.lastDisp.l = kl; }
     if (force) parseInto(this.gReg, TF.Draw.regPlate(sc.reg));
+    var stk = I.stick || { r: 0, p: 0 }, kk2 = Math.round(stk.r * 40) + ',' + Math.round(stk.p * 40);
+    if (force || kk2 !== this.lastDisp.k) {
+      this.lastDisp.k = kk2;
+      var moving = Math.abs(stk.r) > 0.01 || Math.abs(stk.p) > 0.01;
+      this.gStick.style.display = moving ? '' : 'none';
+      // roulis : inclinaison autour de la rotule (sous le soufflet) ; tangage : cabrer = manche tiré vers le pilote (descend, grossit), piquer = poussé (monte, rapetisse)
+      var tf = moving ? 'translate(0,' + (stk.p * 9).toFixed(1) + ') rotate(' + (stk.r * 7).toFixed(2) + ' 380 1060) translate(380 1060) scale(' + (1 + stk.p * 0.035).toFixed(3) + ') translate(-380 -1060)' : '';
+      this.gStickMv.setAttribute('transform', tf);
+      // les commandes dessinées sur le manche (AP DISC, trim) suivent le manche
+      var self2 = this; ['ap_disc', 'trim_hat'].forEach(function (id) { var g = self2.ctlG[id]; if (g) { if (tf) g.setAttribute('transform', tf); else g.removeAttribute('transform'); } });
+    }
   };
   CockpitView.prototype.setLabels = function (on) { this.showLabels = on; this.gLabels.style.display = on ? '' : 'none'; };
 
@@ -7038,7 +7107,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     for (var k = 0; k < from; k++) S.done.push(k);
     if (b.state) {
       var PE = TF.ProcEngine; ck.reset(sc); ck.restore(PE.buildInitial(b.state, sc)); app().view.renderAll();
-      ck.s.ui = {}; ck.s.sys.mfdPage = 'map'; // page carte : bandeau moteur (EIS) à gauche, place pour l'encadré
+      ck.s.ui = {}; if (ck.s.sys.mfdStage === 'normal') ck.s.sys.mfdPage = b.mfdPage || 'map'; // démarrage : page EIS - Engine (comme dans l'avion)
       for (var k2 = 0; k2 < from; k2++) runSim(b.chips[k2], true);
     }
     setUi(b.chips[from]);
@@ -7072,6 +7141,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     fmsSet: [{ mfdPage: 'engine' }, { wait: 800 }, { fms: 'gauge' }, { wait: 600 }],
     alarmTest: [{ press: 'gear_fire_test', ms: 2200 }],
     mapPage: [{ mfdPage: 'map' }],
+    engPage: [{ mfdPage: 'engine' }],
     avOn: [{ set: 'av_master', to: 'ON' }, { waitFor: 'apReady', timeout: 15000 }],
     crossfeed: [{ set: 'fuel_sel_l', to: 'CROSSFEED' }, { set: 'fuel_sel_r', to: 'CROSSFEED' }, { wait: 2500 }],
     fuelOn: [{ set: 'fuel_sel_l', to: 'ON' }, { set: 'fuel_sel_r', to: 'ON' }],
@@ -7079,8 +7149,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     hdgSel: [{ press: 'ap_hdg', ms: 200 }],
     bugSync: [{ knob: 'mk_hdg', act: 'push' }],
     apOn: [{ press: 'ap_ap', ms: 200 }],
-    bugLR: [{ knob: 'mk_hdg', act: 'L-', n: 3 }, { wait: 1500 }, { knob: 'mk_hdg', act: 'L+', n: 6 }, { wait: 1500 }, { knob: 'mk_hdg', act: 'push' }],
-    noseUpDn: [{ press: 'ap_nose_up', ms: 200 }, { wait: 800 }, { press: 'ap_nose_dn', ms: 200 }],
+    bugLR: [{ knob: 'mk_hdg', act: 'S+', n: 3 }, { wait: 2200 }, { knob: 'mk_hdg', act: 'S-', n: 6 }, { wait: 2600 }, { knob: 'mk_hdg', act: 'S+', n: 3 }, { wait: 1800 }],
+    noseUpDn: [{ press: 'ap_nose_up', ms: 150 }, { press: 'ap_nose_up', ms: 150 }, { press: 'ap_nose_up', ms: 150 }, { press: 'ap_nose_up', ms: 150 }, { wait: 2200 },
+      { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { press: 'ap_nose_dn', ms: 150 }, { wait: 2600 },
+      { press: 'ap_nose_up', ms: 150 }, { press: 'ap_nose_up', ms: 150 }, { press: 'ap_nose_up', ms: 150 }, { press: 'ap_nose_up', ms: 150 }, { wait: 1500 }],
     apDisc: [{ press: 'ap_disc', ms: 200 }],
     trimTO: [{ set: 'elev_trim', to: 'T/O' }],
     keysIn: function (ck) { ck.setControl('start_key', 'OFF'); },
