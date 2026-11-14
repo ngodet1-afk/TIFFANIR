@@ -10,7 +10,7 @@
  */
 (function (root) {
   root.TF.CONFIG = {
-    boardUrl: '',
+    boardUrl: 'https://script.google.com/macros/s/AKfycbxomByN4rn2kI9a05h5U6Uai98R8I9ghkMXBzLIRjV65RQgUv78lfZyDhTiekbcgc-V7A/exec',
     teamCode: '',
     refreshSeconds: 30
   };
