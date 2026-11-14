@@ -598,7 +598,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '4.10.1';
+  TF.VERSION = '4.11';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -2545,6 +2545,12 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     altHold2500: function (S) { return S.g.vert === 'ALT' && Math.abs(S.flight.alt - 2500) < 30; },
     altHold2000: function (S) { return S.g.vert === 'ALT' && Math.abs(S.flight.alt - 2000) < 30; },
     ias86: function (S) { return !S.flight.onGround && S.flight.ias >= 86; },
+    gIas20: function (S) { return S.flight.ias >= 20; },
+    gIas30: function (S) { return S.flight.ias >= 30; },
+    gIas60: function (S) { return S.flight.ias >= 60; },
+    gIas76: function (S) { return S.flight.ias >= 76; },
+    gPitch: function (S) { return !S.flight.onGround && (S.flight.pitch || 0) >= 11; },
+    gPosClimb: function (S) { return !S.flight.onGround && S.flight.vs > 100 && S.flight.alt >= 440; },
     airborne: function (S) { return !S.flight.onGround; },
     ias91: function (S) { return !S.flight.onGround && S.flight.ias >= 91; },
     aboveTosaIfr: function (S) { return !S.flight.onGround && S.flight.alt >= 1920; }, // TOSA IFR 1 500 ft sol (LFBU ≈ 420 ft)
@@ -3549,16 +3555,16 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('2 × 70 %', 'Power levers', '70 %', ['power_l', 'power_r'], { sim: 'pwr70', vals: ['Paramètres stabilisés, pas d\'alarme'] }),
       C('Release brakes', 'Brakes', 'RELEASE', ['parking_brake'], { sim: 'pbOff' }),
       C('Doucement 2 × 100 %', 'Power levers', 'MAX, smoothly', ['power_l', 'power_r'], { sim: 'toRoll', vals: ['2 250 – 2 300 RPM', 'Load 89 – 100 %'] }),
-      C('Speed alive', 'Speed alive, one time', 'PFD', ['pfd'], { sim: 'wSpeedPfd', vals: ['Le bandeau de vitesse s\'anime (≥ 20 kt)'] }),
-      C('Two times', 'Speed alive, two times', 'STAND-BY AIRSPEED', ['stby'], { sim: 'wSpeedStby' }),
-      C('« 60 »', 'Sixty', 'CALL', ['pfd'], { sim: 'w60', call: 'Sixty' }),
-      C('« Rotate »', 'Rotate', 'CALL', null, { sim: 'wVr', call: 'Rotate', vals: ['VR 76 kt'] }),
-      C('+12° ANU', 'Pitch attitude', '12 DEGREES NOSE UP', ['pfd'], { sim: 'wAir', vals: ['Assiette +12°'] }),
-      C('Positive RoC', 'Brakes', 'APPLY', null, { sim: 'wPos', vals: ['Vario positif, altitude croissante'] }),
-      C('Train', 'Landing gear', 'UP', ['gear_lever'], { sim: 'gearUp' }),
-      C('≥ 400 ft AAL', 'Power levers', '92 %', ['power_l', 'power_r'], { sim: 'pwr92', vals: ['À 400 ft sol mini'] }),
-      C('92 kt', 'Airspeed', '92 KNOTS', ['pfd'], { sim: 'w92', vals: ['Vy'] }),
-      C('≥ TOSA : Lights', 'Landing light', 'OFF', ['landing_light'], { div: 'D9', sim: 'tosaLand', vals: ['Au-dessus de la TOSA (1 500 ft sol en IFR)'] }),
+      C('Speed alive', 'Speed alive, one time', 'PFD', ['pfd'], { gate: 'gIas20', gateTxt: 'la vitesse s\'anime au PFD (20 kt)', vals: ['Le bandeau de vitesse s\'anime (≥ 20 kt)'] }),
+      C('Two times', 'Speed alive, two times', 'STAND-BY AIRSPEED', ['stby'], { gate: 'gIas30', gateTxt: 'l\'aiguille du secours décolle (≈ 30 kt)' }),
+      C('« 60 »', 'Sixty', 'CALL', ['pfd'], { gate: 'gIas60', gateTxt: '60 kt', call: 'Sixty' }),
+      C('« Rotate »', 'Rotate', 'CALL', null, { gate: 'gIas76', gateTxt: 'VR 76 kt', call: 'Rotate', vals: ['VR 76 kt'] }),
+      C('+12° ANU', 'Pitch attitude', '12 DEGREES NOSE UP', ['pfd', 'stby'], { multi: true, gate: 'gPitch', gateTxt: 'l\'assiette atteint +12°', vals: ['Assiette +12° (PFD et horizon de secours)'] }),
+      C('Positive RoC', 'Brakes', 'APPLY', null, { gate: 'gPosClimb', gateTxt: 'vario positif et altitude croissante', vals: ['Vario positif, altitude croissante'] }),
+      C('Train', 'Landing gear', 'UP', ['gear_lever'], { gate: 'gPosClimb', sim: 'gearUp' }),
+      C('≥ 400 ft AAL', 'Power levers', '92 %', ['power_l', 'power_r'], { gate: 'alt400', gateTxt: '400 ft sol (≈ 820 ft QNH)', sim: 'pwr92', vals: ['À 400 ft sol mini'] }),
+      C('92 kt', 'Airspeed', '92 KNOTS', ['pfd'], { gate: 'ias91', gateTxt: '92 kt', vals: ['Vy'] }),
+      C('≥ TOSA : Lights', 'Landing light', 'OFF', ['landing_light'], { div: 'D9', gate: 'aboveTosaIfr', gateTxt: 'la TOSA (1 500 ft sol en IFR, ≈ 1 920 ft QNH)', sim: 'tosaLand', vals: ['Au-dessus de la TOSA (1 500 ft sol en IFR)'] }),
       C('Pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { sim: 'pumpsOff' }),
       C('Flaps', 'Flaps', 'CHECK UP', ['flaps']),
       C('Gear', 'Landing gear', 'CHECK UP', ['gear_lights'], { vals: ['Voyants verts éteints'] }),
@@ -4600,12 +4606,14 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return s;
   }
 
+  /* Assiette commune PFD / horizon de secours : scénarisée (rotation, montée) si fournie, sinon déduite du vario */
+  X.pitchOf = function (f) { return f.pitch != null && f.script ? f.pitch : f.onGround ? 0 : (f.vs > 300 ? 7 : f.vs < -300 ? -3 : 2); };
   /* ================================ PFD ================================ */
   X.pfd = function (I, sc, rOver) {
     var r = rOver || X.rects.pfd;
     if (I.pfdStage === 'off') return off(r);
     var g = I.g, f = I.flight, s = '';
-    var pitch = f.pitch != null && f.script ? f.pitch : f.onGround ? 0 : (f.vs > 300 ? 7 : f.vs < -300 ? -3 : 2); // assiette scénarisée (rotation) si fournie
+    var pitch = X.pitchOf(f);
     var hz = 218 + pitch * 4.2;
     s += rect(0, 46, VW, Math.max(0, hz - 46), 'url(#gSky)') + rect(0, hz, VW, VH - hz, 'url(#gGnd)');
     s += '<line x1="0" y1="' + hz + '" x2="' + VW + '" y2="' + hz + '" stroke="#fff" stroke-width="2"/>';
@@ -5027,9 +5035,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   function att(cx, cy, r, I) {
     var s = bezel(cx, cy, r);
     s += '<clipPath id="attClip"><circle cx="' + cx + '" cy="' + cy + '" r="' + r + '"/></clipPath><g clip-path="url(#attClip)">';
-    s += '<rect x="' + (cx - r) + '" y="' + (cy - r) + '" width="' + (2 * r) + '" height="' + r + '" fill="url(#gStbySky)"/><rect x="' + (cx - r) + '" y="' + cy + '" width="' + (2 * r) + '" height="' + r + '" fill="url(#gStbyGnd)"/>';
-    s += '<line x1="' + (cx - r) + '" y1="' + cy + '" x2="' + (cx + r) + '" y2="' + cy + '" stroke="#fff" stroke-width="1.6"/>';
-    [-20, -10, 10, 20].forEach(function (p) { var y = cy - p * 1.1, w = Math.abs(p) === 20 ? 16 : 10; s += '<line x1="' + (cx - w) + '" y1="' + y + '" x2="' + (cx + w) + '" y2="' + y + '" stroke="#fff" stroke-width="1"/>'; });
+    // horizon de secours : même assiette que le PFD (sauf calé : horizon figé)
+    var pt = I.stby.caged ? 0 : X.pitchOf(I.flight), dyp = pt * 1.1, hy = cy + dyp;
+    s += '<rect x="' + (cx - r) + '" y="' + (cy - r - 30) + '" width="' + (2 * r) + '" height="' + (hy - (cy - r - 30)) + '" fill="url(#gStbySky)"/><rect x="' + (cx - r) + '" y="' + hy + '" width="' + (2 * r) + '" height="' + (cy + r + 30 - hy) + '" fill="url(#gStbyGnd)"/>';
+    s += '<line x1="' + (cx - r) + '" y1="' + hy + '" x2="' + (cx + r) + '" y2="' + hy + '" stroke="#fff" stroke-width="1.6"/>';
+    [-20, -10, 10, 20].forEach(function (p) { var y = hy - p * 1.1, w = Math.abs(p) === 20 ? 16 : 10; s += '<line x1="' + (cx - w) + '" y1="' + y + '" x2="' + (cx + w) + '" y2="' + y + '" stroke="#fff" stroke-width="1"/>'; });
     s += '</g>';
     [-60, -30, -20, -10, 0, 10, 20, 30, 60].forEach(function (a) { var ra = a * Math.PI / 180, l = a % 30 === 0 ? 6 : 4; s += '<line x1="' + (cx + (r - 1) * Math.sin(ra)) + '" y1="' + (cy - (r - 1) * Math.cos(ra)) + '" x2="' + (cx + (r - 1 - l) * Math.sin(ra)) + '" y2="' + (cy - (r - 1 - l) * Math.cos(ra)) + '" stroke="#fff" stroke-width="' + (a === 0 ? 2 : 1.2) + '"/>'; });
     s += '<path d="M' + (cx - 24) + ',' + (cy + 1) + ' L' + (cx - 8) + ',' + (cy + 1) + ' L' + cx + ',' + (cy + 7) + ' L' + (cx + 8) + ',' + (cy + 1) + ' L' + (cx + 24) + ',' + (cy + 1) + '" fill="none" stroke="#ff8a1a" stroke-width="2.6"/><circle cx="' + cx + '" cy="' + (cy + 1) + '" r="1.6" fill="#ff8a1a"/>';
@@ -5172,9 +5182,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   CockpitView.prototype.renderDynamic = function (force) {
     var I = this.c.indications(), sc = this.c.s.scenario;
     var blink = Math.floor(I.t / 400) % 2;
-    var fl = I.flight, kp = JSON.stringify([Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
+    var fl = I.flight, kp = JSON.stringify([Math.round(TF.Displays.pitchOf(fl) * 2), Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
     var km = JSON.stringify([Math.round((I.flight.mx || 0) / 8), Math.round((I.flight.my || 0) / 8), Math.round(I.flight.hdg), I.g.hdg, I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
-    var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias)]);
+    var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias), Math.round(TF.Displays.pitchOf(I.flight) * 2)]);
     var kl = JSON.stringify([I.gearLights, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
     if (force || kp !== this.lastDisp.p) { parseInto(this.gPfd, TF.Displays.pfd(I, sc)); this.lastDisp.p = kp; }
     if (force || km !== this.lastDisp.m) { parseInto(this.gMfd, TF.Displays.mfd(I, sc)); this.lastDisp.m = km; }
@@ -7284,9 +7294,14 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     altCapture: [{ waitFor: 'altHold2500', timeout: 90000 }],
     pwr70: [{ set: 'power_l', to: 70 }, { set: 'power_r', to: 70 }],
     pbOff: [{ set: 'parking_brake', to: 'OFF' }],
-    toRoll: [{ set: 'power_l', to: 100 }, { set: 'power_r', to: 100 }, { script: [{ t: 0, ias: 0, alt: 420, vs: 0, pitch: 0, label: 'Course au décollage' }, { t: 2500, ias: 22, alt: 420, vs: 0, pitch: 0 }, { t: 7000, ias: 60, alt: 420, vs: 0, pitch: 0 },
-      { t: 9500, ias: 76, alt: 420, vs: 0, pitch: 0, label: 'Rotation' }, { t: 11000, ias: 80, alt: 430, vs: 500, pitch: 12, ground: false, label: 'Montée initiale' }, { t: 14000, ias: 84, alt: 520, vs: 900, pitch: 12, ground: false },
-      { t: 22000, ias: 90, alt: 830, vs: 900, pitch: 11, ground: false }, { t: 34000, ias: 92, alt: 1250, vs: 800, pitch: 10, ground: false }, { t: 60000, ias: 92, alt: 2000, vs: 800, pitch: 10, ground: false, label: 'Montée' }] }, { wait: 400 }],
+    // course au décollage réaliste (≈ 24 s jusqu'à VR) ; rotation progressive ; montée 850-900 ft/min
+    toRoll: [{ set: 'power_l', to: 100 }, { set: 'power_r', to: 100 }, { script: [
+      { t: 0, ias: 0, alt: 420, vs: 0, pitch: 0, label: 'Course au décollage' }, { t: 6000, ias: 20, alt: 420, vs: 0, pitch: 0 }, { t: 9000, ias: 30, alt: 420, vs: 0, pitch: 0 },
+      { t: 19000, ias: 60, alt: 420, vs: 0, pitch: 0 }, { t: 24000, ias: 76, alt: 420, vs: 0, pitch: 0, label: 'Rotation' }, { t: 25500, ias: 78, alt: 420, vs: 0, pitch: 7 },
+      { t: 27000, ias: 80, alt: 424, vs: 300, pitch: 12, ground: false, label: 'Envol' }, { t: 31000, ias: 83, alt: 460, vs: 700, pitch: 12, ground: false },
+      { t: 40000, ias: 88, alt: 600, vs: 900, pitch: 11, ground: false, label: 'Montée initiale' }, { t: 54000, ias: 90, alt: 820, vs: 900, pitch: 10, ground: false },
+      { t: 62000, ias: 92, alt: 935, vs: 850, pitch: 9, ground: false, label: 'Montée à Vy' }, { t: 130000, ias: 92, alt: 1920, vs: 850, pitch: 8, ground: false, label: 'TOSA' },
+      { t: 150000, ias: 92, alt: 2200, vs: 850, pitch: 7, ground: false, label: 'Montée' }] }, { wait: 400 }],
     wSpeedPfd: [{ waitFor: 'speedAlivePfd', timeout: 20000 }],
     wSpeedStby: [{ waitFor: 'speedAliveStby', timeout: 20000 }],
     w60: [{ waitFor: 'ias60', timeout: 20000 }],
@@ -7294,9 +7309,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     wAir: [{ waitFor: 'airborne', timeout: 20000 }],
     wPos: [{ waitFor: 'posClimb', timeout: 20000 }],
     gearUp: [{ set: 'gear_lever', to: 'UP' }],
-    pwr92: [{ waitFor: 'alt400', timeout: 40000 }, { set: 'power_l', to: 92 }, { set: 'power_r', to: 92 }],
+    pwr92: [{ set: 'power_l', to: 92 }, { set: 'power_r', to: 92 }],
     w92: [{ waitFor: 'ias91', timeout: 40000 }],
-    tosaLand: [{ waitFor: 'aboveTosaIfr', timeout: 60000 }, { set: 'landing_light', to: 'OFF' }],
+    tosaLand: [{ set: 'landing_light', to: 'OFF' }],
     pumpsOff: [{ set: 'fuel_pump_l', to: 'OFF' }, { set: 'fuel_pump_r', to: 'OFF' }],
     pwrIdle: [{ set: 'power_l', to: 0 }, { set: 'power_r', to: 0 }],
     ecuTest: [{ holdUntil: 'ecu_test_l', cond: 'ecuTestL' }, { wait: 800 }, { holdUntil: 'ecu_test_r', cond: 'ecuTestR' }],
@@ -7342,7 +7357,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   }
   function runSim(c, fast, cb) {
     cb = cb || function () { };
-    var f = c && c.sim && SIMS[c.sim], ck = app().ck;
+    var ck = app().ck;
+    if (c && c.gate && !TF.evalCond(c.gate, ck.s)) { // étape « au bon moment » : on attend la vitesse / l'altitude
+      return waitFor(function () { return TF.evalCond(c.gate, ck.s); }, function () { runSim(c, fast, cb); }, fast, 200000);
+    }
+    var f = c && c.sim && SIMS[c.sim];
     if (!f) return cb();
     if (f.ops) f = f.ops();
     if (f.length != null && typeof f !== 'function') {
@@ -7362,6 +7381,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     setUi(c);
     E.renderPanel();
     v.clearHighlight();
+    if (c.gate && !TF.evalCond(c.gate, app().ck.s)) { // étape « au bon moment » : on attend la vitesse / l'altitude, puis on annonce
+      waitFor(function () { return TF.evalCond(c.gate, app().ck.s); }, function () { if (al()) demoStep(); }, false, 200000); return;
+    }
     if (c.ctls) {
       v.focusOn(c.ctls[0]);
       ses().dWait(450, function () {
@@ -7389,6 +7411,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   }
   function advanceTry() {
     var cur = S.b.chips[S.i];
+    if (cur && cur.gate && !TF.evalCond(cur.gate, app().ck.s)) { K.toast('⏳ Pas encore : attends ' + (cur.gateTxt || 'le bon moment'), 'info', 1800); return; }
     S.done.push(S.i); S.i++; S.chipErr = 0;
     runSim(cur, false, function () { if (S) { setUi(S.b.chips[S.i]); E.renderPanel(); } });
     setUi(S.b.chips[S.i]);
