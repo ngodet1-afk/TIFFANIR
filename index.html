@@ -425,6 +425,57 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .clc .ess-act b { color: #10161c; }
 .clc-row.ok .ess-act b { color: #1d6b2e; }
 
+/* =====================================================================================
+   Téléphone et tablette (v3.2)
+   - Portrait (téléphone, iPad portrait) : cockpit en haut, instructeur en bas (tiroir repliable)
+   - Paysage bas (téléphone couché) : barre compacte, instructeur étroit
+   ===================================================================================== */
+#app { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+#topbar { padding-top: env(safe-area-inset-top); height: calc(46px + env(safe-area-inset-top)); -webkit-flex-basis: calc(46px + env(safe-area-inset-top)); flex-basis: calc(46px + env(safe-area-inset-top)); }
+#toolbar { margin-bottom: env(safe-area-inset-bottom); }
+#popover { max-width: 92vw; max-height: 80%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 820px) and (orientation: portrait), (max-width: 599px) {
+  #main { -webkit-flex-direction: column; flex-direction: column; }
+  #instructor { width: auto; max-width: none; min-width: 0; height: 44%; height: calc(var(--vh) * 44); -webkit-flex: 0 0 auto; flex: 0 0 auto;
+    border-left: 0; border-top: 1px solid #1b2a40; transition: height .25s; padding-bottom: env(safe-area-inset-bottom); }
+  #instructor.collapsed { width: auto; height: 0; padding-bottom: 0; }
+  #instrToggle { left: 50%; top: -24px; margin: 0 0 0 -36px; width: 72px; height: 24px; border: 1px solid #1f3352; border-bottom: 0; border-radius: 12px 12px 0 0;
+    -webkit-transform: rotate(0); transform: rotate(0); font-size: 0; }
+  #instrToggle:after { content: '⌄'; font-size: 20px; line-height: 14px; display: block; }
+  #instructor.collapsed #instrToggle { -webkit-transform: none; transform: none; border: 1px solid #1f3352; border-bottom: 0; border-radius: 12px 12px 0 0; }
+  #instructor.collapsed #instrToggle:after { content: '⌃'; line-height: 30px; }
+  #instrBody { padding: 10px 12px 24px; }
+  /* Accueil, L'essentiel : plein écran sous la barre du haut */
+  #home, #ess { position: fixed; top: 46px; top: calc(46px + env(safe-area-inset-top)); z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
+  #toolbar { left: 6px; bottom: 30px; padding: 4px; max-width: calc(100% - 12px); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #toolbar button { min-width: 38px; height: 38px; padding: 0 8px; font-size: 13px; margin-right: 4px; }
+  #toolbar .sep { margin: 0 5px 0 2px; }
+  #toast { max-width: 94%; }
+  #sheet { width: 96%; max-height: 94%; padding: 14px 12px 20px; border-radius: 16px; }
+  .mode-chip { display: none; }
+  .brand-txt { display: none; }
+}
+@media (max-width: 430px) {
+  #toolbar .tl { display: none; }
+  #topbar { padding-left: 4px; padding-right: 4px; }
+  .tb { padding: 0 8px; margin-left: 4px; }
+  #btnLabels { display: none; }
+}
+/* Téléphone en paysage */
+@media (max-height: 500px) and (orientation: landscape) {
+  #topbar { height: 38px; -webkit-flex: 0 0 38px; flex: 0 0 38px; padding-top: 0; }
+  .tb { height: 30px; }
+  .brand img { width: 28px; height: 28px; }
+  .brand-txt small, .tb .lbl, .mode-chip { display: none; }
+  #instructor { width: 38%; min-width: 230px; max-width: 320px; }
+  #instrBody { padding: 8px 10px; }
+  #toolbar { bottom: 6px; left: 6px; padding: 3px; }
+  #toolbar button { min-width: 34px; height: 34px; padding: 0 7px; font-size: 12px; }
+  #toolbar .tl { display: none; }
+  #sheet { max-height: 96%; padding: 10px 12px 14px; }
+}
+
 </style>
 </head>
 <body>
@@ -451,9 +502,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       <div id="toolbar">
         <button id="tbHome" title="Vue générale">⌂</button>
         <span class="sep"></span>
-        <button id="tbLook" class="act" title="Contrôler la position d'une commande sans la modifier">🔍 Contrôler</button>
-        <button id="tbVerif" class="act" title="Vérifications non simulables">☑︎ Vérifs</button>
-        <button id="tbCallout" class="act call" title="Annonce / callout">🎙 Annonce</button>
+        <button id="tbLook" class="act" title="Contrôler la position d'une commande sans la modifier">🔍<span class="tl"> Contrôler</span></button>
+        <button id="tbVerif" class="act" title="Vérifications non simulables">☑︎<span class="tl"> Vérifs</span></button>
+        <button id="tbCallout" class="act call" title="Annonce / callout">🎙<span class="tl"> Annonce</span></button>
         <button id="tbHint" class="act hint hidden" title="Indice">💡</button>
         <button id="tbRate" class="act hidden" title="Vitesse du scénario : normale, ralentie, pause">⏱ ×1</button>
         <button id="tbStop" title="Arrêter la voix">■</button>
@@ -481,7 +532,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '3.1';
+  TF.VERSION = '3.2';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -4518,9 +4569,16 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (k < 1) self._anim = requestAnimationFrame(step);
     })();
   };
-  CockpitView.prototype.home = function (anim) { this.setView(HOME, anim !== false); };
+  CockpitView.prototype.home = function (anim) { this.regionShown = null; this.setView(HOME, anim !== false); };
+  /* Zoom serré autour d'une commande : sa plus petite dimension fait au moins ~24 px à l'écran */
+  CockpitView.prototype.zoomAround = function (d) {
+    var k = Math.min(d.w, d.h) / 24, w = Math.max(this.W * k, d.w * 3), h = w * this.H / this.W;
+    this.regionShown = '@' + d.id;
+    this.setView({ x: d.x - w / 2, y: d.y - h / 2, w: w, h: h }, true);
+  };
   CockpitView.prototype.focusRegion = function (id, anim) {
     var r = TF.DATA.regions.filter(function (q) { return q.id === id; })[0]; if (!r) return;
+    this.regionShown = id;
     this.setView({ x: r.x - 10, y: r.y - 10, w: r.w + 20, h: r.h + 20 }, anim !== false);
   };
   CockpitView.prototype.focusOn = function (id, anim) {
@@ -4595,7 +4653,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       var info = s.info;
       if (info && info.ctl) {
         var d = self.defs[info.ctl];
-        if (!self.preciseEnough(d)) { self.focusRegion(d.region); self.emit('precisionZoom', d.region); return; }
+        if (!self.preciseEnough(d)) {
+          // petit écran : si la zone est déjà affichée, on zoome autour de la commande elle-même
+          if (self.regionShown === d.region) { self.zoomAround(d); self.emit('precisionZoom', d.region); return; }
+          self.focusRegion(d.region); self.emit('precisionZoom', d.region); return;
+        }
         var part = s.p.y < d.y ? 'upper' : 'lower';
         self.emit('ctlTap', d.id, { part: part, screen: { x: s.x0, y: s.y0 }, svg: s.p });
         return;
