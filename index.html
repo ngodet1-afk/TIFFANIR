@@ -542,6 +542,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .bv.hid { color: transparent; background: #c9d8de; cursor: pointer; min-width: 30px; display: inline-block; }
 .bv.hid.shown { color: #fff; background: #0b4a5c; }
 
+/* v4.12 — score des flows */
+.ess-stars{font-size:22px;color:#f2c21b;letter-spacing:2px;line-height:1.1}
+.ess-best{margin-left:6px;font-size:12px;color:#f2c21b;white-space:nowrap}
+.ess-best.none{color:#7d8ea6}
+
 </style>
 </head>
 <body>
@@ -598,7 +603,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '4.11';
+  TF.VERSION = '4.12';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -1176,8 +1181,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         if (wasOn && g.vert === 'FLC') { setVert('PIT'); break; }
         fdOn('ROL', 'FLC'); setVert('FLC'); g.refIas = U.clamp(Math.round(f.ias), 90, 185);
         break;
-      case 'ap_nose_up': if (g.vert === 'PIT') g.refPitch = Math.min(20, (g.refPitch || 0) + 0.5); else if (g.vert === 'VS') g.refVs = Math.min(1500, g.refVs + 100); else if (g.vert === 'FLC') g.refIas = Math.max(90, g.refIas - 1); break;
-      case 'ap_nose_dn': if (g.vert === 'PIT') g.refPitch = Math.max(-15, (g.refPitch || 0) - 0.5); else if (g.vert === 'VS') g.refVs = Math.max(-3000, g.refVs - 100); else if (g.vert === 'FLC') g.refIas = Math.min(185, g.refIas + 1); break;
+      case 'ap_nose_up': sys.history.noseUp = true; if (g.vert === 'PIT') g.refPitch = Math.min(20, (g.refPitch || 0) + 0.5); else if (g.vert === 'VS') g.refVs = Math.min(1500, g.refVs + 100); else if (g.vert === 'FLC') g.refIas = Math.max(90, g.refIas - 1); break;
+      case 'ap_nose_dn': sys.history.noseDn = true; if (g.vert === 'PIT') g.refPitch = Math.max(-15, (g.refPitch || 0) - 0.5); else if (g.vert === 'VS') g.refVs = Math.max(-3000, g.refVs - 100); else if (g.vert === 'FLC') g.refIas = Math.min(185, g.refIas + 1); break;
     }
   };
 
@@ -1521,6 +1526,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (id === 'mfd_ent') {
         if (sys.mfdStage === 'database') { sys.mfdStage = 'normal'; sys.dbAcked = true; }
       }
+      if (/^mfd_sk/.test(id)) sys.lastSk = { k: +id.slice(6), t: s.t };
       if (sys.mfdStage === 'normal') {
         if (id === 'mfd_sk1') sys.mfdPage = (sys.mfdPage === 'engine') ? 'map' : 'engine';
         if (sys.mfdPage === 'engine') {
@@ -1647,6 +1653,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
     // AFCS
     I.ap = { state: sys.avionics ? sys.apState : 'off', engaged: sys.apEngaged, cws: sys.apEngaged && !!s.pressed.cws_btn, discFlash: sys.apDiscAlert && (s.t - sys.apDiscAlert) < 5000 };
+    I.lastSk = sys.lastSk && s.t - sys.lastSk.t < 450 ? sys.lastSk.k : 0; // softkey MFD qui vient d'être pressée (retour visuel)
     I.ui = s.ui || null; // aides visuelles pédagogiques (L'essentiel) : encadrés PFD / MFD
 
     // Moteurs (EIS)
@@ -2439,6 +2446,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   IS['ess-lined-28'] = { label: 'Aligné piste 28 à l\'intersection E', build: [{ initial: 'lined-up' }, { flight: { hdg: 276, mx: 1300, my: -160, trail: [] } }, { g: { hdg: 276 } }] };
   IS['ess-climb'] = { label: 'Montée initiale piste 28, au-dessus de la TOSA', build: [{ initial: 'ess-lined-28' }, { proc: 'takeoff' }, { ops: [{ set: 'landing_light', to: 'OFF' }, { set: 'fuel_pump_l', to: 'OFF' }, { set: 'fuel_pump_r', to: 'OFF' }] }, { flight: { onGround: false, ias: 92, alt: 2000, vs: 300, hdg: 276, script: null, pitch: null } }, { g: { fd: false, lat: '', vert: '', latArm: '', vertArm: '', hdg: 276, altSel: 1400 } }] };
   IS['ess-cruise'] = { label: 'Croisière, AP engagé, avant la descente', build: [{ initial: 'cruise-done' }, { flight: { alt: 2600, vs: 0 } }, { g: { refAlt: 2600 } }, { ops: [{ waitFor: 'apReady', timeout: 15000 }, { press: 'ap_ap' }] }] };
+  IS['ess-final'] = { label: 'En finale piste 28, ≈ 2,4 NM', build: [{ initial: 'approach-done' }, { flight: { hdg: 276, mx: 5915, my: -726, trail: [], alt: 1500, ias: 100, vs: -500 } }, { g: { hdg: 276 } }] };
+  IS['ess-park'] = { label: 'De retour au Pkg Airbus', build: [{ initial: 'after-landing-done' }, { flight: { onGround: true, ias: 0, alt: 420, vs: 0, hdg: 7, mx: 680, my: -366, trail: [], script: null } }, { ops: [{ set: 'taxi_light', to: 'OFF' }] }] };
   IS['ess-taxi'] = { label: 'Prêt à rouler (After start C/L faite)', build: [{ initial: 'after-start-cl' }] };
   IS['ess-ap'] = { label: 'Moteurs tournants, avionique ON, auto-test AFCS terminé', build: [{ initial: 'after-start-up' }, { ops: [{ set: 'av_master', to: 'ON' }, { waitFor: 'apReady', timeout: 15000 }] }] };
   IS['after-taxi'] = { label: 'Au point d\'arrêt', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }, { flight: { ias: 0, pos: 1, mx: 1292, my: -224, hdg: 7, script: null } }] };
@@ -2551,6 +2560,19 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     gIas76: function (S) { return S.flight.ias >= 76; },
     gPitch: function (S) { return !S.flight.onGround && (S.flight.pitch || 0) >= 11; },
     gPosClimb: function (S) { return !S.flight.onGround && S.flight.vs > 100 && S.flight.alt >= 440; },
+    gIas83: function (S) { return !S.flight.onGround && S.flight.ias >= 83; },
+    gIas89: function (S) { return !S.flight.onGround && S.flight.ias >= 89; },
+    touchdown: function (S) { return S.flight.onGround; },
+    vacated: function (S) { return S.flight.onGround && S.flight.ias < 20; },
+    fdOnC: function (S) { return !!S.g.fd; },
+    latHdg: function (S) { return S.g.lat === 'HDG'; },
+    bugSynced: function (S) { var d = Math.abs(((S.g.hdg - S.flight.hdg + 540) % 360) - 180); return d <= 1; },
+    dbAcked: function (S) { return !!S.sys.dbAcked; },
+    altSel2500c: function (S) { return S.g.altSel === 2500; },
+    gaMode: function (S) { return S.g.lat === 'TO' || S.g.lat === 'GA'; },
+    cwsTested: function (S) { return !!S.sys.history.cws; },
+    noseUpDnTested: function (S) { return !!(S.sys.history.noseUp && S.sys.history.noseDn); },
+    aprArmed: function (S) { return /GPS|LOC|VOR/.test(S.g.lat || '') || !!S.g.latArm; },
     airborne: function (S) { return !S.flight.onGround; },
     ias91: function (S) { return !S.flight.onGround && S.flight.ias >= 91; },
     aboveTosaIfr: function (S) { return !S.flight.onGround && S.flight.alt >= 1920; }, // TOSA IFR 1 500 ft sol (LFBU ≈ 420 ft)
@@ -3400,13 +3422,19 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
    * ctls = où toucher · add = ajouté depuis l'OM-B (absent des notes) · doubt = interprétation à confirmer · say = texte dit (anglais). */
   function C(t, a, r, ctls, o) { var c = { t: t, a: a, r: r, ctls: ctls || null }; for (var k in (o || {})) c[k] = o[k]; return c; }
   TF.DATA.essFlow = [
-    { id: 'arr', icon: '🚪', title: 'Arrivée avion', sub: 'Cabin inspection (OM-B B02 §2.1 e-k)', ref: om('B02 §2 Pre-flight — Cabin Inspection', 49), chips: [
-      C('PWR', 'Elect. Master', 'ON', ['elec_master']),
-      C('LIGHTS', 'Position, strobe, landing and taxi lights', 'CHECK', ['position_lights', 'strobe', 'landing_light', 'taxi_light']),
-      C('HEAT', 'Stall warning, stall heat, pitot heat', 'CHECK', ['pitot_heat']),
-      C('FLAPS', 'Flaps', 'CHECK', ['flaps'], { doubt: true, note: 'Mot des notes : absent de la Cabin inspection OM-B (les volets sont mis UP en Cabin preparation z).' }),
-      C('BACKSTOP', 'Variable elevator backstop', 'CHECK', null),
-      C('PWR', 'Elect. Master', 'OFF', ['elec_master'])
+    { id: 'arr', icon: '🚪', title: 'Arrivée avion', sub: 'Cabin inspection (OM-B B02 §2.1 a-j, p.49)', ref: om('B02 §2 Pre-flight — Cabin Inspection', 49),
+      state: 'cabin-prep', chips: [
+      C('Documents', 'Flight and aircraft documents', 'CHECKED', null, { om: '1.a' }),
+      C('Verrière / porte', 'Front canopy and rear door', 'CHECKED', null, { om: '1.b' }),
+      C('Bagages', 'Baggage', 'STOWED AND SECURE', null, { om: '1.c' }),
+      C('Objets étrangers', 'Foreign objects', 'CHECK', null, { om: '1.d' }),
+      C('Aux power', 'Aux power switch', 'OFF', null, { om: '1.e', note: 'Interrupteur de la climatisation (si installée), paroi latérale gauche : non représenté.' }),
+      C('PWR', 'Elect. Master', 'ON', ['elec_master'], { om: '1.f', sim: 'elecOnArr', vals: ['Pompe hydraulique du train : 5 à 20 s maxi'], note: 'Si la pompe tourne en continu ou par intermittence : arrêter (panne du train, OM-B p.49).' }),
+      C('Feux', 'Position lights, strobe lights', 'CHECK', ['position_lights', 'strobe'], { om: '1.g', sim: 'lightsPosStrobe', vals: ['Allumer, vérifier dehors, éteindre', 'Ne pas regarder les ACL en face'] }),
+      C('Phares', 'Landing and taxi light', 'CHECK', ['landing_light', 'taxi_light'], { om: '1.h', sim: 'lightsLdgTaxi' }),
+      C('Réchauffages', 'Stall warning, stall heat, pitot heat', 'CHECK', ['pitot_heat'], { om: '1.i', sim: 'pitotCheck', vals: ['STAL HT FAIL possible au sol (normal)'] }),
+      C('Backstop', 'Variable elevator backstop', 'CHECK', null, { om: '1.j', note: 'Indispensable : sinon, arrêter la préparation (OM-B p.49).' }),
+      C('PWR', 'Elect. Master', 'OFF', ['elec_master'], { add: true, sim: 'elecOff', note: 'Avant le tour avion (C/L PRE-FLIGHT INSPECTION : ELECT MASTER OFF).' })
     ] },
     { id: 'tour', icon: '🚶', title: 'Tour avion', sub: 'Check Pitot — voir l\'onglet Tour avion', ref: om('B02 §2 Pre-flight — Walk-Around', 49), walk: true, chips: [
       C('check Pitot', 'Walk-around, pitot probe', 'CHECK', null)
@@ -3440,27 +3468,29 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Fuel pump LH/RH', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '12.a (2e)', note: 'Liste reçue : « UP » — l\'OM-B dit OFF (interrupteurs de pompes, pas de position UP). Corrigé en OFF.' }),
       C('Pre-flight inspection', 'Pre-flight inspection', 'COMPLETE', null, { om: 'Before starting engine 1' })
     ] },
-    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before starting engine (OM-B B02 §3, p.56) — ordre de l\'équipage ; PFD et MFD s\'allument au Master', ref: om('B02 §3 Before Starting Engine', 56),
+    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before starting engine (OM-B B02 §3, p.56-57) — PFD et MFD s\'allument au Master', ref: om('B02 §3 Before Starting Engine', 56),
       state: 'cabin-prep', chips: [
+      C('Pre-flight', 'Pre-flight inspection', 'COMPLETE', null, { om: '1' }),
       C('Porte, passagers, verrière', 'Rear door, closed and locked. Passengers, briefed. Front canopy', 'POSITION 1 OR 2', null, { om: '2-4', lines: [['Rear door', 'CLOSED AND LOCKED'], ['Passengers', 'BRIEFED'], ['Front canopy', 'POSITION 1 OR 2']] }),
       C('« Before start procedure »', 'Before start procedure', 'ANNONCE', null, { om: '5', call: 'Before start procedure' }),
-      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage'], { om: '5.a', sim: 'stbyCage', vals: ['Avant la mise sous tension'] }),
-      C('Horizon décagé', 'Spare horizon', 'UNCAGED', ['stby_cage'], { om: '5.a', sim: 'stbyUncage', vals: ['Juste avant ELECT. MASTER ON'], note: 'Ordre de l\'équipage : on décage l\'horizon de secours juste avant de mettre l\'Elect. Master sur ON. L\'OM-B (5.a) dit seulement « Spare horizon … CAGED ».' }),
+      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage'], { om: '5.a', sim: 'stbyCage', vals: ['Calé pendant la mise sous tension'] }),
       C('Power', 'Elect. Master', 'ON', ['elec_master'], { om: '5.b', sim: 'elecOn', vals: ['Pompe hydraulique du train : 5 à 20 s maxi', 'PFD et MFD s\'allument (MFD : page de mise sous tension)'],
-        note: 'Écoute la pompe hydraulique du train : si elle tourne en continu ou par intermittence → arrêter la préparation (OM-B p.56).' }),
+        note: 'Si la pompe hydraulique tourne en continu ou par intermittence → arrêter la préparation (OM-B p.56).' }),
+      C('Horizon décagé', 'Spare horizon', 'UNCAGED', ['stby_cage'], { add: true, doubt: true, sim: 'stbyUncage', vals: ['Après la mise sous tension'], note: 'L\'OM-B (5.a) demande l\'horizon calé pendant la mise sous tension mais ne dit pas quand le décager : moment à confirmer avec l\'instructeur.' }),
       C('Lights', 'Nav lights', 'ON', ['position_lights'], { om: '5.c', sim: 'navOn' }),
-      C('ESP', 'ESP', 'VERIFY', null, { om: '5.d', doubt: true, note: 'Item OM-B conservé ; vérification non simulée (C5 à confirmer).' }),
-      C('G1000', 'G1000', 'DATA BASE CHECKED', ['mfd'], { om: '5.e', sim: 'dbAck', vals: ['Dates de validité des bases : à contrôler', 'Puis ENT pour continuer'],
-        note: 'Page de mise sous tension du MFD : vérifie les cycles et dates de validité, puis touche ENT. Dans l\'appli, les dates affichées sont calculées (cycles AIRAC) : seules celles de l\'avion font foi.' }),
-      C('Fuel / FMS', 'Fuel quantity and FMS', 'SET', ['mfd'], { om: '5.f', sim: 'fmsSet', vals: ['Fuel Qty jaugée (Main L + R) = Fuel Calculator'],
+      C('ESP', 'ESP', 'VERIFY', ['pfd'], { om: '5.d', note: 'Electronic Stability and Protection (G1000 NXi) : vérifier son état.' }),
+      C('G1000', 'G1000', 'DATA BASE CHECKED', ['mfd_ent'], { om: '5.e', sim: 'dbAck', vals: ['Dates de validité des bases : à contrôler', 'Puis ENT pour continuer'],
+        note: 'Page de mise sous tension du MFD : vérifie les cycles et les dates, puis touche ENT (en bas à droite du MFD).' }),
+      C('Fuel / FMS', 'Fuel quantity and FMS', 'SET', ['mfd'], { om: '5.f', sim: 'fmsSet', vals: ['Jaugé Main L + R = Fuel Calculator'],
         ui: { mfdBox: { title: 'Carburant : jauges = calculateur', lines: [{ label: 'Jaugé L + R', calc: 'gauge', unit: 'GAL', target: 'lecture des jauges' }, { label: 'Fuel Calculator', calc: 'fms', unit: 'GAL', match: 'gauge', target: '= jaugé (DEC / INC / RST)' }] } },
-        note: 'Page EIS - Engine (softkey Engine) : lire Main L + R, puis recaler le calculateur avec DEC Fuel / INC Fuel / RST Fuel (OM-B p.57).' }),
-      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test'], { om: '5.g', sim: 'alarmTest', vals: ['L ENG FIRE + R ENG FIRE sur le PFD', 'Alarme sonore'],
-        note: 'Si l\'alarme sonore ou l\'alerte sur le PFD n\'apparaît pas : arrêter le vol (OM-B p.57). Bouton GEAR/FIRE TEST : interprétation à confirmer (C4).' }),
-      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun'], { om: '5.h', note: 'Seulement si des conditions givrantes sont prévues : ANNUN-TEST puis OFF. Pas requis dans ce scénario.' }),
+        note: 'Softkey ENGINE (1re touche sous le MFD) → page EIS. Puis DEC FUEL / INC FUEL (± 1 gal par appui) et RST FUEL (remise au plein) jusqu\'à ce que le calculateur = Main L + R.' }),
+      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test'], { om: '5.g', sim: 'alarmTest', vals: ['L ENG FIRE + R ENG FIRE sur le PFD', 'Alarme sonore'], note: 'Si l\'alarme sonore ou l\'alerte PFD n\'apparaît pas : arrêter (OM-B p.57).' }),
+      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun'], { om: '5.h', note: 'Seulement si givrage prévu : ANNUN-TEST puis OFF. Pas requis dans ce scénario.' }),
+      C('Météo', 'Weather parameters', 'NOTED (ONLY IN IFR)', null, { om: '5.i', vals: ['Vol IFR : ATIS Angoulême 130.090 (VAC)'] }),
       C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j', sim: 'engPage', vals: ['Fuel Temp °C : lire L et R (page Engine, cadre Fuel System)'],
         ui: { mfdBox: { title: 'Température carburant', lines: [{ label: 'Fuel Temp gauche', eng: 'L', key: 'fuelTemp', unit: '°C', target: 'lire et comparer' }, { label: 'Fuel Temp droite', eng: 'R', key: 'fuelTemp', unit: '°C', target: 'lire et comparer' }] } } }),
-      C('« Before start procedure complete »', 'Before start procedure complete', 'ANNONCE, PUIS BEFORE START CHECK-LIST DONE', null, { om: '6', call: 'Before start procedure complete' })
+      C('« Before start procedure complete »', 'Before start procedure complete', 'ANNONCE, PUIS BEFORE START CHECK-LIST DONE', null, { om: '6', call: 'Before start procedure complete',
+        lines: [['Passengers', 'BRIEFED'], ['Elect master', 'ON'], ['Position lights', 'ON'], ['Fuel quantity and FMS', 'CHECKED'], ['Alarm panel', 'CHECKED'], ['Annun-test deice', 'AS REQUIRED']] })
     ] },
     { id: 'start', stbyFree: true, icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage ; PFD allumé, MFD en page Engine, moteurs simulés', ref: om('B02 §3 Engine Start-up', 57),
       state: 'after-before-start', mfdPage: 'engine', chips: [
@@ -3485,103 +3515,152 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         ui: { starterSlot: 'R', mfdBox: { title: 'Moteur droit : à vérifier', lines: [{ label: 'RPM (droit)', eng: 'R', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'Oil Press (droit)', eng: 'R', key: 'oilP', unit: 'bar', min: 0.9, target: '≥ 0,9 bar en < 3 s' }, { label: 'R STARTER (PFD)', absent: 'R', target: 'doit être absent' }] } } }),
       C('« Start-up procedure complete »', 'Start-up procedure complete', 'ANNONCE, PUIS START-UP CHECK-LIST DONE', null, { om: '2', call: 'Start-up procedure complete' })
     ] },
-    { id: 'post', stbyFree: true, icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d) — les deux moteurs tournent ; version simplifiée validée par l\'équipage', ref: om('B02 §3 After Start-up', 58),
+    { id: 'post', stbyFree: true, icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-l, p.58-59) — les deux moteurs tournent', ref: om('B02 §3 After Start-up', 58),
       state: 'after-start-up', mfdPage: 'engine', chips: [
+      C('« After start-up procedure »', 'After start-up procedure', 'ANNONCE', null, { om: '1', call: 'After start-up procedure' }),
       C('Ceintures', 'Safety harnesses', 'ON AND FASTENED', null, { om: '1.a' }),
-      C('Avionic', 'Avionic Master', 'ON', ['av_master'], { om: '1.b', sim: 'avOn', vals: ['Auto-test AFCS : PFT blanc encadré + AFCS rouge sur le PFD', 'Fin du test : PFT et AFCS s\'effacent + tonalité de déconnexion'],
-        ui: { mfdBox: { title: 'Ralenti : à surveiller', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'RPM droite', eng: 'R', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }] } } }),
-      C('Crossfeed', 'Fuel selectors (first flight of the day)', 'CROSSFEED', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.d', sim: 'crossfeed', vals: ['Environ 30 s en CROSSFEED (test)', 'Interdit hors de ce test avec les deux moteurs'],
-        note: 'OM-B p.58 : test d\'environ 30 s, les deux moteurs peuvent être testés ensemble. Raccourci dans l\'animation.' }),
-      C('Fuel selectors', 'Fuel selectors LH / RH', 'ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.r', add: true, sim: 'fuelOn', note: 'Retour sur ON après le test (OM-B 1.r).' })
+      C('Avionic', 'Avionic Master', 'ON', ['av_master'], { om: '1.b', sim: 'avOn', vals: ['Auto-test AFCS : PFT blanc encadré + AFCS rouge sur le PFD', 'Fin du test : PFT et AFCS s\'effacent + tonalité de déconnexion'] }),
+      C('Manettes', 'Power levers', 'AS REQUIRED, MAX 50 %', ['power_l', 'power_r'], { om: '1.c', vals: ['Jamais plus de 50 % au sol ici'] }),
+      C('Crossfeed', 'Fuel selectors (first flight of the day)', 'CROSSFEED', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.d', sim: 'crossfeed', vals: ['Environ 30 s en CROSSFEED (test, les deux moteurs ensemble possible)', 'Interdit hors de ce test'],
+        note: 'Les sélecteurs reviennent sur ON à l\'item 1.r (bloc suivant).' }),
+      C('Équipements', 'Electrical equipment', 'ON', null, { om: '1.e' }),
+      C('Instruments', 'Flight instruments and avionics', 'AS REQUIRED', null, { om: '1.f' }),
+      C('Flood', 'Flood light', 'ON, TEST FUNCTION', ['flood_light'], { om: '1.g', sim: 'floodTest' }),
+      C('Pitot ON', 'Pitot and stall warn heating', 'ON, CHECK ANNUNCIATION', ['pitot_heat'], { om: '1.h', sim: 'pitotOn', vals: ['PITOT HT OFF s\'efface', 'STAL HT FAIL possible au sol (normal)'] }),
+      C('Pitot OFF', 'Pitot and stall warn heating', 'OFF', ['pitot_heat'], { om: '1.i', sim: 'pitotOff' }),
+      C('Radios', 'Radio frequencies', 'SET', ['k_com'], { om: '1.j.1', vals: ['ATIS 130.090 · AFIS 123.155 · Limoges APP 118.080 (VAC)'] }),
+      C('HDG bug', 'Heading bug', 'SET', ['mk_hdg'], { om: '1.j.2', sim: 'bugSync', vals: ['Piste 28 : 276°'] }),
+      C('ALT bug', 'Alti bug', 'SET', ['mk_alt'], { om: '1.j.3', sim: 'altBug', vals: ['Première altitude de la clairance (exemple 2 500 ft)'] }),
+      C('Speed bug, TOSA', 'Speed bug and TOSA', 'SET', ['pfd'], { om: '1.j.4', vals: ['TOSA : 400 ft sol VFR / 1 500 ft sol IFR'] }),
+      C('Flight ID, FPL, navaids', 'Flight ID, flight plan, nav aids', 'SET, LOADED, SET', ['mfd'], { om: '1.j.5-7', vals: ['ILS/DME 28 : 109.35 (VAC)'] }),
+      C('PFD', 'Primary flight display', 'NO AUTOPILOT ANNUNCIATIONS', ['pfd'], { om: '1.k' }),
+      C('Tonalité', 'Autopilot disconnect tone', 'NOTE', null, { om: '1.l' })
     ] },
-    { id: 'ap', stbyFree: true, icon: '🤖', title: 'Test pilote automatique', sub: 'OM-B After start-up m-p, puis departure briefing — barre AFCS du PFD en direct ; validé par l\'équipage', ref: om('B02 §3 After Start-up — AP', 59),
+    { id: 'ap', stbyFree: true, icon: '🤖', title: 'Test pilote automatique, trim, départ', sub: 'After start-up 1.m-s, departure briefing, « complete » + C/L AFTER START (OM-B p.60) ; tests école (R/L, NOSE, GA, CWS) intercalés', ref: om('B02 §3 After Start-up — AP', 60),
       state: 'ess-ap', mfdPage: 'engine', chips: [
-      C('FD', 'Flight director', 'ON', ['ap_fd'], { sim: 'fdOn', vals: ['Barre AFCS : ROL et PIT verts (modes par défaut)', 'Barres de tendance FD sur l\'horizon'] }),
-      C('HDG', 'HDG mode', 'SELECT', ['ap_hdg'], { sim: 'hdgSel', vals: ['HDG vert à la place de ROL'] }),
-      C('Bug', 'Heading bug', 'SET', ['mk_hdg'], { sim: 'bugSync', vals: ['Bug de cap (cyan) sur le cap actuel'] }),
-      C('AP', 'Autopilot', 'ENGAGE BY PRESSING AP BUTTON', ['ap_ap'], { om: '1.n', sim: 'apOn', vals: ['AP et YD verts sur la barre AFCS'] }),
-      C('R + L', 'Heading bug three degrees right, then three degrees left', 'STICK FOLLOWS', ['mk_hdg'], { doubt: true, sim: 'bugLR', vals: ['Bug +3° : le manche part à droite', 'Bug −3° : le manche part à gauche'], note: 'Les servos du pilote automatique déplacent le manche vers le bug : le contrôler à la main sans forcer.' }),
-      C('↑↓', 'NOSE UP / NOSE DN', 'STICK FOLLOWS', ['ap_nose_up', 'ap_nose_dn'], { doubt: true, sim: 'noseUpDn', vals: ['NOSE UP : manche tiré (cabrer)', 'NOSE DN : manche poussé (piquer)', 'PIT : 0,5° par appui'], note: 'Interprétation : après le test latéral (L + R), test vertical avec NOSE UP / NOSE DN. À confirmer avec l\'instructeur.' }),
-      C('GA', 'Go-around button', 'TEST', ['ga_btn'], { doubt: true, sim: 'gaTest', vals: ['AP reste engagé', 'Barre AFCS : TO / TO', 'FD à cabrer (≈ 7°) : le manche est tiré'],
-        note: 'Bouton GA sur le flanc gauche de la manette de puissance gauche (repère « GO AROUND »). Il ne déconnecte pas l\'AP. Au sol : mode Takeoff TO / TO (assiette ≈ 7°, à confirmer).' }),
-      C('CWS', 'CWS button', 'TEST', ['cws_btn'], { doubt: true, sim: 'cwsTest', vals: ['CWS maintenu : CWS blanc à la place de AP', 'Servos débrayés : le manche revient au neutre', 'CWS relâché : l\'AP reprend, manche de nouveau tiré'],
-        note: 'Gâchette derrière la poignée du manche (côté pilote, sous l\'index) : invisible de face, repérée en pointillés près de l\'étiquette « CWS ». Annonce CWS : à confirmer.' }),
-      C('Kill', 'AP disc switch', 'TEST', ['ap_disc'], { om: '1.o', sim: 'apDisc', vals: ['AP jaune clignotant + tonalité de déconnexion', 'AP DISC coupe aussi le YD'] }),
-      C('Trim', 'Trim', 'SET TO TAKE-OFF POSITION MANUALLY', ['elev_trim'], { om: '1.p', add: true, sim: 'trimTO', vals: ['Repère T/O sur l\'index'] }),
-      C('Dep BFG', 'Departure briefing', 'DONE', null, { om: '2', brief: true, vals: ['Trame OM-B a → e : roulage, décollage, panne moteur, départ, panne radio, TEM'], note: 'Briefing validé : à répéter dans l\'onglet 🗣 Briefings (champs XX à compléter avec les cartes du jour).' })
+      C('Trim élec.', 'Manual electric trim', 'TEST', ['ap_disc', 'trim_hat'], { om: '1.m', sim: 'trimTest', vals: ['AP DISC maintenu + trim : le trim ne doit bouger ni à cabrer ni à piquer'] }),
+      C('FD', 'Flight director', 'ON', ['ap_fd'], { add: true, sim: 'fdOn', vals: ['ROL / PIT verts (modes par défaut)'], note: 'Pratique école avant l\'engagement de l\'AP.' }),
+      C('HDG', 'HDG mode', 'SELECT', ['ap_hdg'], { add: true, sim: 'hdgSel', vals: ['HDG vert à la place de ROL'] }),
+      C('AP', 'Autopilot', 'ENGAGE BY PRESSING AP BUTTON', ['ap_ap'], { om: '1.n', sim: 'apOn', vals: ['AP et YD verts'] }),
+      C('R + L', 'Heading bug three degrees right, then three degrees left', 'STICK FOLLOWS', ['mk_hdg'], { add: true, doubt: true, sim: 'bugLR', vals: ['Bug +3° : manche à droite', 'Bug −3° : manche à gauche'] }),
+      C('↑↓', 'NOSE UP / NOSE DN', 'STICK FOLLOWS', ['ap_nose_up', 'ap_nose_dn'], { add: true, doubt: true, sim: 'noseUpDn', vals: ['NOSE UP : manche tiré (cabrer)', 'NOSE DN : manche poussé (piquer)'] }),
+      C('GA', 'Go-around button', 'TEST', ['ga_btn'], { add: true, sim: 'gaTest', vals: ['AP reste engagé, TO / TO, FD ≈ +7°'], note: 'Bouton sur le flanc gauche de la manette gauche (repère « GO AROUND »).' }),
+      C('CWS', 'CWS button', 'TEST', ['cws_btn'], { add: true, sim: 'cwsTest', vals: ['CWS blanc, manche libre, puis l\'AP reprend'], note: 'Gâchette derrière la poignée du manche.' }),
+      C('AP DISC', 'AP disc switch', 'TEST', ['ap_disc'], { om: '1.o', sim: 'apDisc', vals: ['AP jaune clignotant + tonalité', 'YD coupé aussi'] }),
+      C('Trim', 'Trim', 'SET TO TAKE-OFF POSITION MANUALLY', ['elev_trim'], { om: '1.p', sim: 'trimTO', vals: ['Repère T/O sur l\'index'] }),
+      C('ESP / USP', 'ESP and USP status', 'CHECK', ['pfd'], { om: '1.q' }),
+      C('Sélecteurs', 'Fuel selectors', 'ON (LH / RH)', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.r', sim: 'fuelOn' }),
+      C('Paramètres', 'Engine parameters', 'MONITOR', ['mfd'], { om: '1.s' }),
+      C('Dep BFG', 'Departure briefing', 'DONE', null, { om: '2', brief: true, vals: ['Taxi, take-off, departure, radio failure, TEM'] }),
+      C('« After start-up procedure complete »', 'After start-up procedure complete', 'ANNONCE, PUIS AFTER START CHECK-LIST DONE', null, { om: '3', call: 'After start-up procedure complete',
+        lines: [['Starter', 'CHECK OFF'], ['Oil pressure', 'CHECKED'], ['Electric load', 'CHECKED'], ['Circuit breaker', 'CHECK'], ['RPM', '710 ± 30'], ['Fuel selector (first flight)', 'CROSS FEED'], ['Avionic master', 'ON'], ['G1000 data base', 'CHECKED'], ['Cockpit prep', 'COMPLETED'], ['Autopilot', 'TEST AND CHECK'], ['Engines parameters', 'CHECK'], ['Departure briefing', 'COMPLETED']] })
     ] },
-    { id: 'taxi', stbyFree: true, icon: '🛞', title: 'Roulage', sub: 'Taxiing (OM-B p.60) + PDP p.129-130 — Pkg Airbus → point d\'arrêt E (AIP GMC 01), le PFD suit les virages', ref: om('B02 §3 Taxiing', 60),
+    { id: 'taxi', stbyFree: true, icon: '🛞', title: 'Roulage', sub: 'Taxiing (OM-B p.60 a-i) + PDP p.129-130 — Pkg Airbus → F → W → G → E1 → point d\'arrêt E (AIP GMC 01)', ref: om('B02 §3 Taxiing', 60),
       state: 'ess-taxi', chips: [
-      C('Clairance', 'Taxi clearance', 'RECEIVED, READ BACK', null, { add: true, vals: ['Pkg Airbus → F → W → G → E1 → E, point d\'arrêt E piste 28'], note: 'Itinéraire d\'après l\'AIP (GMC 01) : pour quitter les aires ALPHA et DELTA, F et W obligatoires dans le sens unique ; G à sens unique vers l\'est. Collationner la clairance.' }),
-      C('XPDR', 'Transponder', 'AS REQUIRED', ['pfd'], { add: true, doubt: true, note: 'Code et mode au sol selon la clairance et les consignes de l\'école : à confirmer.' }),
-      C('Block OFF', 'Block off time', 'NOTED', null, { om: 'a' }),
+      C('Block OFF', 'Block off time', 'NOTED', null, { om: 'a', vals: ['Clairance de roulage reçue et collationnée'] }),
       C('Taxi light', 'Taxi light', 'ON', ['taxi_light'], { om: 'b', sim: 'taxiLightOn' }),
       C('Outside', 'Outside safety', 'CLEAR', null, { om: 'c' }),
-      C('Parking brake', 'Parking brake', 'RELEASE', ['parking_brake'], { om: 'd', sim: 'taxiGo', vals: ['L\'avion sort du parking'] }),
-      C('Freins', 'Brakes', 'TESTED', null, { om: 'e', sim: 'brakeTest', vals: ['Freinage : la vitesse sol tombe à 0', 'Puis on repart'] }),
+      C('Parking brake', 'Parking brake', 'RELEASE', ['parking_brake'], { om: 'd', sim: 'taxiGo', vals: ['Sortie du Pkg Airbus par F (sens unique) puis W'] }),
+      C('Freins', 'Brakes', 'TESTED', null, { om: 'e', sim: 'brakeTest', vals: ['Freinage : la vitesse sol tombe à 0, puis on repart'] }),
       C('Train avant', 'Nose wheel steering', 'CHECKED', null, { om: 'f' }),
-      C('Virage droite : caps', 'Turning right: headings', 'INCREASE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, sim: 'turnR', vals: ['PFD : les caps augmentent', 'Compas de secours : idem'] }),
-      C('Virage droite : bille', 'Turning right: ball', 'LEFT, TWICE', ['pfd'], { om: 'g', vals: ['Bille vers l\'extérieur : à gauche'] }),
+      C('Virage droite : caps', 'Turning right: headings', 'INCREASE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, sim: 'turnR', vals: ['W → G : les caps augmentent (PFD et compas)'] }),
+      C('Virage droite : bille', 'Turning right: ball', 'LEFT, TWICE', ['pfd'], { om: 'g', vals: ['Bille à l\'extérieur : à gauche'] }),
       C('Virage droite : indicateur', 'Turn coordinator', 'RIGHT', ['pfd'], { om: 'g' }),
-      C('Virage droite : horizons', 'Horizon', 'STABLE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, vals: ['PFD et horizon de secours stables'] }),
-      C('Virage gauche : caps', 'Turning left: headings', 'DECREASE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, sim: 'turnL', vals: ['PFD : les caps diminuent', 'Compas de secours : idem'] }),
-      C('Virage gauche : bille', 'Turning left: ball', 'RIGHT, TWICE', ['pfd'], { om: 'g', vals: ['Bille vers l\'extérieur : à droite'] }),
+      C('Virage droite : horizons', 'Horizon', 'STABLE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true }),
+      C('Virage gauche : caps', 'Turning left: headings', 'DECREASE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, sim: 'turnL', vals: ['E1 → E : les caps diminuent'] }),
+      C('Virage gauche : bille', 'Turning left: ball', 'RIGHT, TWICE', ['pfd'], { om: 'g', vals: ['Bille à l\'extérieur : à droite'] }),
       C('Virage gauche : indicateur', 'Turn coordinator', 'LEFT', ['pfd'], { om: 'g' }),
-      C('Virage gauche : horizons', 'Horizon', 'STABLE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, sim: 'toHP', vals: ['Puis roulage jusqu\'au point d\'arrêt'] }),
-      C('Point d\'arrêt', 'Parking brake', 'ON', ['parking_brake'], { om: 'h', sim: 'pbOn' }),
+      C('Virage gauche : horizons', 'Horizon', 'STABLE, TWICE', ['pfd', 'stby'], { om: 'g', multi: true, sim: 'toHP', vals: ['Puis jusqu\'au point d\'arrêt E'] }),
+      C('Point d\'arrêt', 'Parking brakes', 'ON', ['parking_brake'], { om: 'h', sim: 'pbOn' }),
       C('Point d\'arrêt', 'Taxi light', 'OFF', ['taxi_light'], { om: 'i', sim: 'taxiLightOff' })
     ] },
-    { id: 'run', stbyFree: true, icon: '🧪', title: 'Essais moteur', sub: 'Before take-off (OM-B B02 §4, p.61-63) — au point d\'arrêt, MFD page Engine ; validé par l\'équipage', ref: om('B02 §4 Before Take-Off', 61),
+    { id: 'run', stbyFree: true, icon: '🧪', title: 'Avant décollage', sub: 'Before take-off (OM-B B02 §4, p.61-63) : cockpit check, test ECU / pompes, préparation, C/L BEFORE TAKEOFF — au point d\'arrêt E', ref: om('B02 §4 Before Take-Off', 61),
       state: 'after-taxi', mfdPage: 'engine', chips: [
-      C('T° gearbox', 'Gearbox oil temperature', 'ABOVE 40 °C', ['mfd'], { om: '3.k', vals: ['Gearbox > 40 °C avant le test ECU'],
-        ui: { mfdBox: { title: 'Avant le test ECU', lines: [{ label: 'Gearbox gauche', eng: 'L', key: 'gearbox', unit: '°C', min: 40, target: '> 40 °C' }, { label: 'Gearbox droite', eng: 'R', key: 'gearbox', unit: '°C', min: 40, target: '> 40 °C' }] } } }),
+      C('« Before take-off procedure »', 'Before take-off procedure', 'ANNONCE', null, { om: '1', call: 'Before take-off procedure' }),
+      C('Cockpit check', 'Backrests, harnesses, rear door, front canopy, baggage doors, door warning', 'CHECK', null, { om: '2.a-f', lines: [['Adjustable backrests', 'UPRIGHT POSITION'], ['Safety harnesses', 'ON AND FASTENED'], ['Rear door', 'CHECK CLOSED AND LOCKED'], ['Front canopy', 'CLOSED AND LOCKED'], ['Front baggage doors', 'CLOSED'], ['Door warning', 'CHECK OFF']],
+        vals: ['La verrière passe de la position 1/2 à FERMÉE ET VERROUILLÉE'] }),
       C('IDLE', 'Power levers', 'IDLE', ['power_l', 'power_r'], { om: '3.g', sim: 'pwrIdle' }),
-      C('Parking brake', 'Parking brake', 'ON', ['parking_brake'], { om: '3.l', add: true, sim: 'pbOn' }),
-      C('ECU test', 'ECU test button', 'PRESS AND HOLD', ['ecu_test_l', 'ecu_test_r'], { om: '3.m', add: true, sim: 'ecuTest', vals: ['ECU A / B FAIL s\'allument', 'RPM > 1 800 puis ralenti, deux fois par canal', 'ECU A / B FAIL s\'éteignent à la fin'],
-        note: 'Maintenir jusqu\'à la fin de la séquence ; relâcher avant ou toucher la manette annule le test. Si les alarmes ECU ne s\'allument pas ou restent allumées : arrêter la préparation (OM-B p.62).',
-        ui: { mfdBox: { title: 'Test ECU : à surveiller', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', target: '> 1 800 puis ralenti' }, { label: 'RPM droite', eng: 'R', key: 'rpm', target: '> 1 800 puis ralenti' }] } } }),
-      C('Voter', 'Voter switch: ECU A, AUTO, ECU B, AUTO', 'CHECK', ['voter_l', 'voter_r'], { om: '3.o-r', add: true, sim: 'voters', vals: ['Moteur stable sur chaque ECU', 'Retour sur AUTO'] }),
-      C('Trim', 'Trim', 'SET T/O', ['elev_trim'], { om: '4.c', add: true, sim: 'trimTO' }),
-      C('Pumps', 'Fuel pumps LH / RH', 'ON', ['fuel_pump_l', 'fuel_pump_r'], { add: true, sim: 'pumpsOn' }),
-      C('Landing light', 'Landing light', 'ON', ['landing_light'], { add: true, sim: 'landOn' }),
-      C('Clearance', 'Clearance, then departure briefing', 'CONFIRMED', null, { brief: true })
+      C('RPM', 'Propeller RPM', 'CHECK BELOW 1000 RPM', ['mfd'], { om: '3.h', ui: { mfdBox: { title: 'Avant le test ECU', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', max: 999, min: 0, target: '< 1 000' }, { label: 'RPM droite', eng: 'R', key: 'rpm', max: 999, min: 0, target: '< 1 000' }] } } }),
+      C('Pompes', 'Fuel pumps', 'CHECK OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '3.i' }),
+      C('Voters', 'Voter switches', 'CHECK AUTO', ['voter_l', 'voter_r'], { om: '3.j' }),
+      C('Températures', 'Engine / gearbox oil temperature', 'GREEN RANGE, GEARBOX ABOVE 40 °C', ['mfd'], { om: '3.k', ui: { mfdBox: { title: 'Avant le test ECU', lines: [{ label: 'Gearbox gauche', eng: 'L', key: 'gearbox', unit: '°C', min: 40, target: '> 40 °C' }, { label: 'Gearbox droite', eng: 'R', key: 'gearbox', unit: '°C', min: 40, target: '> 40 °C' }] } } }),
+      C('Parking brake', 'Parking brake', 'ON', ['parking_brake'], { om: '3.l', sim: 'pbOn' }),
+      C('ECU test gauche', 'ECU test button left', 'PRESS AND HOLD, THEN RELEASE', ['ecu_test_l'], { om: '3.m-n', sim: 'ecuL', vals: ['ECU A / B FAIL allumés', 'RPM > 1 800 puis ralenti, 2 fois par canal', 'ECU A / B FAIL éteints = test terminé'],
+        note: 'AFAe recommande un moteur après l\'autre. Relâcher avant la fin ou toucher la manette annule le test.',
+        ui: { mfdBox: { title: 'Test ECU gauche', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', target: '> 1 800 puis ralenti' }] } } }),
+      C('Voter gauche', 'Voter switch left: ECU A, AUTO, ECU B, AUTO', 'ENGINE RUNNING WITHOUT CHANGE', ['voter_l'], { om: '3.o-r', sim: 'votersL' }),
+      C('ECU test droit', 'ECU test button right', 'PRESS AND HOLD, THEN RELEASE', ['ecu_test_r'], { om: '3.m-n', sim: 'ecuR', ui: { mfdBox: { title: 'Test ECU droit', lines: [{ label: 'RPM droite', eng: 'R', key: 'rpm', target: '> 1 800 puis ralenti' }] } } }),
+      C('Voter droit', 'Voter switch right: ECU A, AUTO, ECU B, AUTO', 'ENGINE RUNNING WITHOUT CHANGE', ['voter_r'], { om: '3.o-r', sim: 'votersR', vals: ['ECU A ou B hors test : interdit'] }),
+      C('Pages', 'Annunciations, engine, system page', 'CHECKED', ['mfd'], { om: '4.a' }),
+      C('Breakers', 'Circuit breakers', 'CHECKED', ['cb_panel', 'cb_bottom'], { om: '4.b', multi: true }),
+      C('Trim', 'Trim', 'SET T/O', ['elev_trim'], { om: '4.c', sim: 'trimTO' }),
+      C('Sélecteurs', 'Fuel selectors', 'ON (LH / RH)', ['fuel_sel_l', 'fuel_sel_r'], { om: '4.d', vals: ['Décollage en CROSSFEED interdit'] }),
+      C('Chauffage', 'Cabin heat, defrost, clim', 'AS REQUIRED', null, { om: '4.e' }),
+      C('Trim direction', 'Directional trim', 'NEUTRAL', null, { om: '4.a\'' }),
+      C('Volets', 'Flaps', 'CHECK FUNCTION AND INDICATOR, SET UP', ['flaps'], { om: '4.b\'', sim: 'flapsCheck', vals: ['APP puis UP : voyants et position'] }),
+      C('Pompes', 'Fuel pumps LH / RH', 'ON', ['fuel_pump_l', 'fuel_pump_r'], { om: '4.c\'', sim: 'pumpsOn' }),
+      C('Pitot', 'Pitot heating', 'AS REQUIRED (ON IN IFR)', ['pitot_heat'], { om: '4.d\'', sim: 'pitotOn' }),
+      C('Radios', 'Navigation radios, GPS', 'SET FOR TAKE-OFF', ['mfd'], { om: '4.e\'' }),
+      C('Instruments', 'Flight instruments, HSI, altimeter', 'CHECK AND SET', ['pfd', 'stby'], { om: '4.f\'', multi: true, vals: ['QNH affiché, comparé au secours'] }),
+      C('Commandes', 'Flight controls', 'CHECKED', null, { om: '4.g\'', vals: ['Libres et dans le bon sens'] }),
+      C('T/O briefing', 'Take-off briefing confirmation', 'DONE', null, { om: '4.h\'', brief: true, vals: ['QFU, état de piste, masse, type de décollage, VR, actions en cas de panne, TEM'] }),
+      C('Landing light', 'Landing light', 'ON', ['landing_light'], { om: '4.i\'', sim: 'landOn' }),
+      C('Aux power', 'Aux power switch', 'OFF', null, { om: '4.j\'' }),
+      C('« Before take-off procedure complete »', 'Before take-off procedure complete', 'ANNONCE, PUIS BEFORE TAKEOFF CHECK-LIST DONE', null, { om: '5', call: 'Before take-off procedure complete',
+        lines: [['Doors', 'LATCHED'], ['Adjustable backrest', 'UPRIGHT'], ['Seat belts', 'FASTENED'], ['Engines parameters', 'CHECK'], ['ECU test', 'TESTED'], ['Voter switchs', 'TESTED AND AUTO'], ['Circuit breakers', 'CHECKED'], ['Flaps', 'SET'], ['Fuel pumps', 'ON'], ['Trims', 'SET T/O'], ['Fuel selector', 'ON'], ['Radios, nav aids', 'SET AND COHERENT'], ['Flight controls', 'FREE'], ['Autopilot', 'OFF'], ['Landing light', 'ON'], ['Briefing', 'COMPLETED']] })
     ] },
-    { id: 'to', stbyFree: true, icon: '🛫', title: 'Décollage', sub: 'Take-off (OM-B B02 §5, p.64-65) + PDP — aligné piste 28 à l\'intersection E, l\'avion décolle sur la mini-carte ; validé par l\'équipage', ref: om('B02 §5 Take-off', 64),
+    { id: 'to', stbyFree: true, icon: '🛫', title: 'Décollage', sub: 'Normal take-off flaps UP (OM-B B02 §5, p.64-65) + annonces PDP — piste 28 depuis l\'intersection E', ref: om('B02 §5 Take-off', 64),
       state: 'ess-lined-28', chips: [
-      C('Heading', 'Heading', 'CHECK', ['pfd'], { vals: ['Cap piste 28 : 276°', 'Intersection E : ≈ 1 300 m de piste devant (lu sur la carte, à vérifier avec les performances)'] }),
-      C('HDG BUG', 'Heading bug', 'SET', ['mk_hdg'], { sim: 'bugSync' }),
-      C('TOSA', 'TOSA', 'CHECK', ['pfd'], { vals: ['1 500 ft sol en IFR (400 ft en VFR)'] }),
-      C('ALT set', 'Selected altitude', 'SET', ['mk_alt']),
-      C('2 × 70 %', 'Power levers', '70 %', ['power_l', 'power_r'], { sim: 'pwr70', vals: ['Paramètres stabilisés, pas d\'alarme'] }),
-      C('Release brakes', 'Brakes', 'RELEASE', ['parking_brake'], { sim: 'pbOff' }),
-      C('Doucement 2 × 100 %', 'Power levers', 'MAX, smoothly', ['power_l', 'power_r'], { sim: 'toRoll', vals: ['2 250 – 2 300 RPM', 'Load 89 – 100 %'] }),
-      C('Speed alive', 'Speed alive, one time', 'PFD', ['pfd'], { gate: 'gIas20', gateTxt: 'la vitesse s\'anime au PFD (20 kt)', vals: ['Le bandeau de vitesse s\'anime (≥ 20 kt)'] }),
-      C('Two times', 'Speed alive, two times', 'STAND-BY AIRSPEED', ['stby'], { gate: 'gIas30', gateTxt: 'l\'aiguille du secours décolle (≈ 30 kt)' }),
-      C('« 60 »', 'Sixty', 'CALL', ['pfd'], { gate: 'gIas60', gateTxt: '60 kt', call: 'Sixty' }),
-      C('« Rotate »', 'Rotate', 'CALL', null, { gate: 'gIas76', gateTxt: 'VR 76 kt', call: 'Rotate', vals: ['VR 76 kt'] }),
-      C('+12° ANU', 'Pitch attitude', '12 DEGREES NOSE UP', ['pfd', 'stby'], { multi: true, gate: 'gPitch', gateTxt: 'l\'assiette atteint +12°', vals: ['Assiette +12° (PFD et horizon de secours)'] }),
-      C('Positive RoC', 'Brakes', 'APPLY', null, { gate: 'gPosClimb', gateTxt: 'vario positif et altitude croissante', vals: ['Vario positif, altitude croissante'] }),
-      C('Train', 'Landing gear', 'UP', ['gear_lever'], { gate: 'gPosClimb', sim: 'gearUp' }),
-      C('≥ 400 ft AAL', 'Power levers', '92 %', ['power_l', 'power_r'], { gate: 'alt400', gateTxt: '400 ft sol (≈ 820 ft QNH)', sim: 'pwr92', vals: ['À 400 ft sol mini'] }),
-      C('92 kt', 'Airspeed', '92 KNOTS', ['pfd'], { gate: 'ias91', gateTxt: '92 kt', vals: ['Vy'] }),
-      C('≥ TOSA : Lights', 'Landing light', 'OFF', ['landing_light'], { div: 'D9', gate: 'aboveTosaIfr', gateTxt: 'la TOSA (1 500 ft sol en IFR, ≈ 1 920 ft QNH)', sim: 'tosaLand', vals: ['Au-dessus de la TOSA (1 500 ft sol en IFR)'] }),
-      C('Pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { sim: 'pumpsOff' }),
-      C('Flaps', 'Flaps', 'CHECK UP', ['flaps']),
-      C('Gear', 'Landing gear', 'CHECK UP', ['gear_lights'], { vals: ['Voyants verts éteints'] }),
-      C('Alti × 2 (PFD)', 'Altimeter', 'SET AND COMPARED', ['pfd']),
-      C('Alti × 2 (secours)', 'Stand-by altimeter', 'SET AND COMPARED', ['stby'])
+      C('Alignement', 'Aircraft lining-up, heading', 'CHECK', ['pfd'], { om: '1', vals: ['Cap piste 28 : 276°', 'Intersection E : ≈ 1 300 m devant (lu sur la carte)'] }),
+      C('2 × 70 %', 'Power levers', '70 %', ['power_l', 'power_r'], { om: '1.a', sim: 'pwr70' }),
+      C('Freins', 'Brakes', 'RELEASE', ['parking_brake'], { om: '1.b', sim: 'pbOff' }),
+      C('MAX', 'Power levers', 'MAX', ['power_l', 'power_r'], { om: '1.c', sim: 'toRoll', vals: ['Doucement'] }),
+      C('Alarmes', 'Annunciations', 'CHECK (NORMAL RANGE)', ['pfd'], { om: '1.d', vals: ['Pas d\'alarme'] }),
+      C('Instruments', 'Instruments', 'CHECK (NORMAL RANGE)', ['mfd'], { om: '1.e' }),
+      C('RPM', 'RPM', 'STABILIZES AT 2250 TO 2300', ['mfd'], { om: '1.f', ui: { mfdBox: { title: 'Puissance décollage', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', min: 2250, max: 2300, target: '2 250 – 2 300' }, { label: 'RPM droite', eng: 'R', key: 'rpm', min: 2250, max: 2300, target: '2 250 – 2 300' }] } } }),
+      C('Load', 'Load indication', 'STABILIZES AT 89 TO 100 %', ['mfd'], { om: '1.g', ui: { mfdBox: { title: 'Puissance décollage', lines: [{ label: 'Load gauche', eng: 'L', key: 'load', unit: '%', min: 89, max: 100, target: '89 – 100 %' }, { label: 'Load droite', eng: 'R', key: 'load', unit: '%', min: 89, max: 100, target: '89 – 100 %' }] } } }),
+      C('Speed alive', 'Speed alive, one time', 'PFD', ['pfd'], { add: true, gate: 'gIas20', gateTxt: 'la vitesse s\'anime au PFD (20 kt)', vals: ['Annonce PDP'] }),
+      C('Two times', 'Speed alive, two times', 'STAND-BY AIRSPEED', ['stby'], { add: true, gate: 'gIas30', gateTxt: 'l\'aiguille du secours décolle (≈ 30 kt)' }),
+      C('« 60 »', 'Sixty', 'CALL', ['pfd'], { add: true, gate: 'gIas60', gateTxt: '60 kt', call: 'Sixty' }),
+      C('Profondeur', 'Elevator', 'NEUTRAL', null, { om: '1.h' }),
+      C('Direction', 'Rudder', 'MAINTAIN DIRECTION', null, { om: '1.i' }),
+      C('« Rotate »', 'Nose wheel lift-off', 'VR MIN 76 KIAS', ['pfd'], { om: '1.j', gate: 'gIas76', gateTxt: 'VR 76 kt', call: 'Rotate', vals: ['Assiette ≈ +12° (PDP)'] }),
+      C('83 kt', 'Airspeed for initial climb', '83 KIAS', ['pfd', 'stby'], { om: '1.k', multi: true, gate: 'gIas83', gateTxt: '83 kt en montée initiale', vals: ['Horizon PFD et secours à cabrer'] }),
+      C('Vy', 'When clear of obstacles', '90 KIAS (VY), 92 ABOVE 1900 KG', ['pfd'], { om: '1.l', gate: 'gIas89', gateTxt: 'Vy 90 kt (≤ 1 900 kg)' }),
+      C('Train', 'Landing gear, when safe climb is established', 'APPLY BRAKES, UP', ['gear_lever'], { om: '1.m', gate: 'gPosClimb', sim: 'gearUp', vals: ['Freiner fermement avant de rentrer le train'] }),
+      C('Pompes', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '1.n', sim: 'pumpsOff' }),
+      C('Alternate air', 'Alternate air (rain, snow or visible moisture)', 'AS REQUIRED', ['alt_air'], { om: '1.o' }),
+      C('Landing light', 'Landing light', 'OFF', ['landing_light'], { om: '1.p', gate: 'alt400', gateTxt: 'une montée sûre (400 ft sol)', sim: 'tosaLand', div: 'D9', note: 'OM-B : sans altitude. Tes notes : au-dessus de la TOSA (D9).' })
     ] },
-    { id: 'pa', stbyFree: true, icon: '🧭', title: 'Pilote automatique', sub: 'Engagement en montée, 400 ft mini (GFC 700, OM-B p.67) — barre AFCS, capture d\'altitude et manche en direct ; validé par l\'équipage', ref: NF,
+    { id: 'pa', stbyFree: true, icon: '🧭', title: 'Montée et pilote automatique', sub: 'After take-off / climb (OM-B §6 p.67) + C/L AFTER TAKEOFF / CLIMB + GFC 700 FLC (OM-B p.67)', ref: om('B02 §6 Climb', 67),
       state: 'ess-climb', chips: [
-      C('Mini 400 ft', 'Autopilot', 'NOT BELOW 400 FEET', ['pfd'], { vals: ['Ici : ≈ 2 000 ft QNH, au-dessus de la TOSA'] }),
-      C('FD', 'Flight director', 'ON', ['ap_fd'], { sim: 'fdOn', vals: ['ROL / PIT verts, ALTS armé en blanc'] }),
-      C('2D : HDG / NAV', 'Lateral mode', 'HDG OR NAV', ['ap_hdg', 'ap_nav'], { sim: 'hdgSync', vals: ['Ici : HDG, bug sur l\'axe 276°'] }),
-      C('3D : ALT / VS / FLC', 'Vertical mode', 'ALT, VS OR FLC', ['ap_alt', 'ap_vs', 'ap_flc'], { vals: ['En montée : FLC (vitesse tenue, puissance de montée)'] }),
-      C('↗ ALT', 'Climb: altitude preselect', 'SET', ['mk_alt'], { sim: 'altSel2500', vals: ['Exemple : 2 500 ft (selon clairance)'] }),
-      C('↗ FLC', 'Climb: mode controller', 'FLC', ['ap_flc'], { sim: 'flcOn', vals: ['FLC vert + vitesse de référence', 'ALTS armé en blanc'] }),
-      C('AP', 'Autopilot', 'ENGAGE', ['ap_ap'], { add: true, sim: 'apOnClimb', vals: ['AP + YD verts'], note: 'Ajouté : l\'engagement de l\'AP n\'était pas dans la liste.' }),
-      C('↗ BARO', 'Climb: baro', 'SET', ['k_crs'], { vals: ['QNH (STD au-dessus de l\'altitude de transition)'] }),
-      C('Capture', 'Altitude capture', 'ALTS, THEN ALT', ['pfd'], { add: true, sim: 'altCapture', vals: ['ALTS vert clignotant, puis ALT vert à l\'altitude affichée'] })
+      C('« After take-off / climb procedure »', 'After take-off climb procedure', 'ANNONCE', null, { om: '1', call: 'After takeoff climb procedure' }),
+      C('Train', 'Landing gear', 'UP', ['gear_lights'], { om: '1.a', vals: ['Voyants éteints'] }),
+      C('Volets', 'Flaps', 'CHECK UP', ['flaps'], { om: '1.b' }),
+      C('Landing light', 'Landing light', 'OFF / AS REQUIRED', ['landing_light'], { om: '1.c' }),
+      C('Vitesse', 'Airspeed', '90 KIAS MIN (92 ABOVE 1900 KG)', ['pfd'], { om: '1.d' }),
+      C('92 %', 'Power levers', '92 %', ['power_l', 'power_r'], { om: '1.e', sim: 'pwr92' }),
+      C('Trim', 'Trim', 'AS REQUIRED', ['elev_trim'], { om: '1.f' }),
+      C('Pages', 'Annunciations, engine, system page', 'MONITOR', ['mfd'], { om: '1.g' }),
+      C('Altimètres', 'Altimeters', 'SET AND COMPARED', ['pfd', 'stby'], { om: '1.h', multi: true }),
+      C('« … complete »', 'After take-off climb procedure complete', 'ANNONCE, PUIS AFTER TAKEOFF / CLIMB C/L', null, { om: '2', call: 'After takeoff climb procedure complete',
+        lines: [['Gear and flaps', 'UP'], ['Fuel pumps', 'OFF'], ['Power', 'SET'], ['Pitot', 'AS REQUIRED'], ['Engines parameters', 'CHECK'], ['Altimeters', 'SET AND COMPARED']] }),
+      C('↗ ALT', 'Altitude preselect', 'SET TO DESIRED ALTITUDE', ['mk_alt'], { om: 'GFC 1.a', sim: 'altSel2500', vals: ['Exemple : 2 500 ft (clairance)', 'À régler AVANT de sélectionner FLC'] }),
+      C('↗ FLC', 'Mode controller', 'SELECT FLC', ['ap_flc'], { om: 'GFC 1.b', sim: 'flcOn', vals: ['FLC vert + vitesse de référence'] }),
+      C('Vitesse réf.', 'Airspeed reference', 'ADJUST WITH NOSE UP / NOSE DN', ['ap_nose_up', 'ap_nose_dn'], { om: 'GFC 1.c', vals: ['NOSE UP = vitesse de référence diminue'] }),
+      C('AP', 'Autopilot', 'ENGAGE', ['ap_ap'], { add: true, sim: 'apOnClimb', vals: ['AP + YD verts (400 ft sol mini)'] }),
+      C('ALT blanc', 'White ALT, altitude preselect armed', 'NOTE ON PFD', ['pfd'], { om: 'GFC 1.d' }),
+      C('ALT vert', 'Green ALT', 'VERIFY UPON ALTITUDE CAPTURE', ['pfd'], { om: 'GFC 1.e', sim: 'altCapture', vals: ['ALTS vert clignotant, puis ALT vert à 2 500 ft'] })
+    ] },
+    { id: 'cruise', stbyFree: true, icon: '✈️', title: 'Croisière', sub: 'Cruise procedure (OM-B §7 p.69) + C/L CRUISE', ref: om('B02 §7 Cruise', 69),
+      state: 'cruise', chips: [
+      C('« Cruise procedure »', 'Cruise procedure', 'ANNONCE', null, { om: '1', call: 'Cruise procedure' }),
+      C('Puissance', 'Power levers', 'UP TO 92 % (70 % TRAINING)', ['power_l', 'power_r'], { om: '1.a', sim: 'pwr70', vals: ['AFAe recommande 70 % en instruction', 'Motoriste : 75 %'] }),
+      C('Trim', 'Trim', 'AS REQUIRED', ['elev_trim'], { om: '1.b' }),
+      C('Pages', 'Annunciations, engine, system page', 'MONITOR', ['mfd'], { om: '1.c', sim: 'engPage' }),
+      C('« Cruise procedure completed »', 'Cruise procedure completed', 'ANNONCE, PUIS CRUISE C/L', null, { om: '2', call: 'Cruise procedure completed',
+        lines: [['Power', 'SET'], ['Engines parameters', 'CHECK'], ['Autopilot', 'AS REQUIRED'], ['Fuel used / remain', 'CHECK']] }),
+      C('Carburant', 'Fuel used and remaining, LH / RH balance', 'CHECK (≤ 5 USG IMBALANCE)', ['mfd'], { om: 'C/L', vals: ['Écart LH / RH ≤ 5 US gal (OM-B p.30)', 'Aux tanks : transfert dès que main ≤ 17 gal (si équipé)'] })
     ] },
     { id: 'ifr', stbyFree: true, icon: '🌫', title: 'Descente et approche IFR', sub: 'Arrivée (PDP p.188-190), Before descent + GFC 700 VS (OM-B p.72-73), Approach procedure (OM-B p.74), C/L APPROACH, profil 3D (PDP) — exemple vers la piste 28', ref: om('B02 §7-9 Descent / Approach', 72),
       state: 'ess-cruise', chips: [
@@ -3589,15 +3668,27 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Briefing', 'Arrival briefing', 'COMPLETED, NOT LATER THAN 10 MINUTES BEFORE DESCENT', null, { vals: ['Avant le POD'] }),
       C('« Before descent procedure »', 'Before descent procedure', 'ANNONCE', null, { om: '1', call: 'Before descent procedure' }),
       C('Altimètres', 'Altimeters', 'SET AND COMPARED', ['k_crs'], { om: '1.a', sim: 'qnhDest', vals: ['QNH destination (exercice 1018)', 'Écart avec le secours < 80 ft (PDP)'] }),
-      C('« Before descent procedure completed »', 'Before descent procedure completed', 'ANNONCE', null, { om: '2', call: 'Before descent procedure completed' }),
+      C('Puissance, vitesse, trim', 'Power lever, airspeed, trim', 'AS REQUIRED', ['power_l', 'power_r'], { om: '1.b-d' }),
+      C('Pages', 'Annunciations, engine, system page', 'MONITOR', ['mfd'], { om: '1.e' }),
+      C('« Before descent procedure completed »', 'Before descent procedure completed', 'ANNONCE, PUIS DESCENT C/L', null, { om: '2', call: 'Before descent procedure completed' }),
       C('↘ ALT', 'Altitude preselect', 'SET', ['mk_alt'], { om: 'GFC 1.f', sim: 'altSel2000', vals: ['Altitude autorisée (exercice 2 000 ft)'] }),
       C('↘ VS', 'Mode controller', 'VS', ['ap_vs'], { om: 'GFC 1.g', sim: 'vsOn', vals: ['VS vert, ALTS armé en blanc'] }),
       C('↘ −500', 'Vertical speed reference', 'NOSE DN, MINUS 500 FEET PER MINUTE', ['ap_nose_dn'], { om: 'GFC 1.a', sim: 'vsM500', vals: ['Pente standard 3° (PDP)', 'IAS ≤ VNO'] }),
       C('Capture', 'Altitude capture', 'ALTS, THEN ALT', ['pfd'], { add: true, sim: 'cap2000', vals: ['ALTS vert, puis ALT à 2 000 ft', 'Annonce : « Leaving … for … » au départ (PDP)'] }),
       C('« Approach procedure »', 'Approach procedure', 'ANNONCE', null, { om: '1', call: 'Approach procedure' }),
+      C('Dossiers', 'Adjustable backrests', 'ADJUST TO THE UPRIGHT POSITION', null, { om: '1.a' }),
+      C('Ceintures', 'Safety harnesses', 'CHECK FASTENED AND TIGHTENED', null, { om: '1.b' }),
       C('Yaw damper', 'Yaw damper', 'CHECK OFF', ['ap_yd'], { om: '1.c', sim: 'ydOff' }),
+      C('Aux power', 'Aux power switch', 'OFF', null, { om: '1.d' }),
+      C('Commandes', 'Controls', 'NO INTERFERENCE BY FOREIGN OBJECTS', null, { om: '1.e' }),
+      C('Landing light', 'Landing light', 'AS REQUIRED', ['landing_light'], { om: '1.f' }),
+      C('Avertisseur train', 'Gear warning horn', 'CHECK FUNCTION', ['gear_fire_test'], { om: '1.g', sim: 'alarmTest' }),
+      C('Volets', 'Flaps', 'AS REQUIRED', ['flaps'], { om: '1.h', vals: ['IFR : APP à ½ point de glide (plus bas)'] }),
       C('Pompes', 'Fuel pumps LH / RH', 'ON', ['fuel_pump_l', 'fuel_pump_r'], { om: '1.i', sim: 'pumpsOn' }),
-      C('Sélecteurs', 'Fuel selectors', 'CHECK ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.j' }),
+      C('Sélecteurs', 'Fuel', 'CHECK ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.j' }),
+      C('Train', 'Landing gear', 'DOWN, CHECK 3 GREEN', ['gear_lever'], { om: '1.k', vals: ['OM-B : ici ; profil PDP IFR : sur le glide (3D) ou au FAF (2D) — voir plus bas'], note: 'Le profil PDP (approche 3D) sort le train sur le glide : il est appliqué plus bas dans ce flow.' }),
+      C('Frein de parc', 'Parking brake', 'CHECK RELEASED', ['parking_brake'], { om: '1.l' }),
+      C('Trims', 'Trim', 'AS REQUIRED, DIRECTIONAL TRIM NEUTRAL', ['elev_trim'], { om: '1.m' }),
       C('« Approach procedure completed »', 'Approach procedure completed, approach checklist', 'ANNONCE, PUIS C/L APPROACH', null, { om: '2', call: 'Approach procedure completed', lines: [['Briefing', 'COMPLETED'], ['Altimeters', 'SET AND COMPARED'], ['Baro min', 'SET'], ['Fuel tanks', 'BALANCE (≤ 5 USG)'], ['Fuel selectors', 'ON'], ['Adjustable backrest', 'UPRIGHT'], ['Seat belts', 'FASTENED']] }),
       C('Attente', 'Holding', 'ENTER AND FOLLOW THE RACETRACK', null, { doubt: true, vals: ['Vitesse max de l\'attente'], note: 'PDP : entrée et attente publiées, vitesse réduite sous le maximum. Tes notes : softkey SUSP pour sortir de l\'attente (« cancel suspend ») — à confirmer.' }),
       C('Mode approche', 'Approach loaded and activated, then APR', 'GPS / GP ARMED', ['ap_apr'], { om: 'GFC GPS b-e', sim: 'aprOn', vals: ['Approche chargée et activée dans le FMS', 'GPS vert, GP armé en blanc', 'Réduire vers 105 kt (PDP)'], note: 'Exemple GPS (LPV). Sur ILS/DME 28 (109.35, VAC LFBU) : CDI sur LOC, APR → LOC / GS (OM-B p.75).' }),
@@ -3607,7 +3698,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Sur le glide', 'Landing gear', 'DOWN, THREE GREEN', ['gear_lever'], { sim: 'gearDown', vals: ['3D : sur le glide (2D : passage du FAF)', 'Ajuster la puissance', 'VLO 188 kt'] })
     ] },
     { id: 'ga', stbyFree: true, icon: '🛬', title: 'Finale et remise de gaz', sub: 'C/L FINAL par cœur, stabilisation, minima (PDP), Go-around OM-B p.78 + AP couplé (OÄM 42-209) — exemple piste 28', ref: om('B02 §10-11 Landing / Go-around', 77),
-      state: 'approach-done', chips: [
+      state: 'ess-final', chips: [
       C('« Final check-list »', 'Final checklist', 'ANNONCE (PAR CŒUR)', null, { call: 'Final checklist', sim: 'finScript', lines: [['Gear', 'DOWN'], ['Fuel pumps', 'ON'], ['Flaps', 'APP (IFR) / LDG (VFR)'], ['Rudder trim', 'NEUTRAL'], ['Missed app altitude', 'SET']], div: 'D7' }),
       C('Alt. remise de gaz', 'Missed approach altitude', 'SET', ['mk_alt'], { sim: 'missedAlt', vals: ['Exercice : 3 000 ft'] }),
       C('« Final check-list complete »', 'Final checklist complete', 'ANNONCE', null, { call: 'Final checklist complete' }),
@@ -3622,6 +3713,47 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('SUSP / NAV', 'Missed approach: release SUSP, NAV (published) or HDG (ATC)', 'SELECT', ['ap_nav', 'ap_hdg'], { om: 'OÄM 42-209 e', vals: ['Libérer SUSP pour suivre la procédure de remise de gaz (PDP)', 'NAV : procédure publiée — HDG : cap ATC'] }),
       C('Montée sûre', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '11.f', sim: 'pumpsOff' }),
       C('« After takeoff climb C/L »', 'After takeoff / climb checklist', 'COMPLETE', null, { call: 'After takeoff climb checklist', lines: [['Gear and flaps', 'UP'], ['Fuel pumps', 'OFF'], ['Power', 'SET'], ['Pitot', 'AS REQUIRED'], ['Engines parameters', 'CHECK'], ['Altimeters', 'SET AND COMPARED']] })
+    ] },
+    { id: 'ldg', stbyFree: true, icon: '🛬', title: 'Atterrissage et après atterrissage', sub: 'C/L FINAL, Before landing (OM-B §10 p.77), toucher, After landing (OM-B §12 p.81) + C/L — piste 28', ref: om('B02 §10-12 Landing / After landing', 77),
+      state: 'ess-final', chips: [
+      C('« Final check-list »', 'Final checklist', 'ANNONCE (PAR CŒUR)', null, { call: 'Final checklist', sim: 'ldgScript', lines: [['Gear', 'DOWN'], ['Fuel pumps', 'ON'], ['Flaps', 'LDG (C/L) — APP en IFR (PDP)'], ['Rudder trim', 'NEUTRAL'], ['Missed app altitude', 'SET']], div: 'D7' }),
+      C('Vitesse', 'Airspeed before landing', 'MIN 86 KIAS FLAPS UP, 84 FLAPS APP (≤ 1900 KG)', ['pfd'], { om: '10.a', vals: ['> 1 900 kg : 92 / 88 KIAS'] }),
+      C('Volets', 'Flaps', 'LANDING', ['flaps'], { om: '10.b', sim: 'flapsLdg', vals: ['IFR : LDG seulement sur piste limitative (PDP) — sinon APP'] }),
+      C('Puissance', 'Power lever', 'AS REQUIRED', ['power_l', 'power_r'], { om: '10.c' }),
+      C('Trims', 'Trim', 'AS REQUIRED, DIRECTIONAL TRIM NEUTRAL', ['elev_trim'], { om: '10.d' }),
+      C('Vapp', 'Final approach speed', 'MIN 84 KIAS (86 ABOVE 1900 KG)', ['pfd'], { om: '10.e' }),
+      C('« Hundred above »', 'Hundred above', 'CALL', ['pfd'], { call: 'Hundred above', gate: 'hundredAbove', gateTxt: '100 ft au-dessus des minima' }),
+      C('« Continue »', 'Continue', 'CALL', ['pfd'], { call: 'Continue', gate: 'atMinima', gateTxt: 'les minima', vals: ['Références visuelles acquises'] }),
+      C('Toucher', 'Touchdown, power idle', 'IDLE', ['power_l', 'power_r'], { om: '12.1.a', gate: 'touchdown', gateTxt: 'le toucher des roues', sim: 'pwrIdle' }),
+      C('Freins', 'Brakes', 'AS REQUIRED', null, { om: '12.1.b', gate: 'vacated', gateTxt: 'piste dégagée (< 20 kt)' }),
+      C('« After landing procedure »', 'After landing procedure', 'ANNONCE', null, { om: '12.1', call: 'After landing procedure' }),
+      C('Alternate air', 'Alternate air', 'CLOSED', ['alt_air'], { om: '12.1.c' }),
+      C('Pitot', 'Pitot heating', 'OFF', ['pitot_heat'], { om: '12.1.d', sim: 'pitotOff' }),
+      C('Avionique', 'Avionics', 'AS REQUIRED', null, { om: '12.1.e', vals: ['Transpondeur GND (C/L)'] }),
+      C('Feux', 'Lights', 'AS REQUIRED', ['landing_light', 'taxi_light'], { om: '12.1.f', sim: 'ldgLights', vals: ['Landing OFF, taxi ON'] }),
+      C('Volets', 'Flaps', 'UP', ['flaps'], { om: '12.1.g', sim: 'flapsUp' }),
+      C('Pompes', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '12.1.h', sim: 'pumpsOff' }),
+      C('Radar', 'Weather radar (if equipped)', 'CHECK STANDBY', null, { om: '12.1.i' }),
+      C('« After landing procedure completed »', 'After landing procedure completed', 'ANNONCE, PUIS AFTER LANDING C/L', null, { om: '12.2', call: 'After landing procedure completed',
+        lines: [['Pitot heat', 'OFF'], ['Transponder', 'GND'], ['Flaps', 'UP'], ['Pump', 'OFF'], ['Weather radar (if equipped)', 'CHECK STBY']] })
+    ] },
+    { id: 'park', stbyFree: true, icon: '🅿️', title: 'Parking et arrêt', sub: 'Parking procedure / shut down (OM-B §13 p.81), C/L PARKING, sortie, parking (§14-16)', ref: om('B02 §13 Shut Down', 81),
+      state: 'ess-park', mfdPage: 'engine', chips: [
+      C('« Parking procedure »', 'Parking procedure', 'ANNONCE', null, { om: '13.1', call: 'Parking procedure' }),
+      C('Frein de parc', 'Parking brake', 'SET', ['parking_brake'], { om: '13.1.a', sim: 'pbOn' }),
+      C('10 % 1 min', 'Power levers', 'UP TO 10 % LOAD FOR 1 MINUTE', ['power_l', 'power_r'], { om: '13.1.b', sim: 'cooldown', vals: ['Refroidissement du turbo : 1 min mini (raccourci ici)'] }),
+      C('Pages', 'Engine and system page', 'CHECK', ['mfd'], { om: '13.1.c' }),
+      C('ELT', 'ELT', 'CHECK NOT TRANSMITTING ON 121.5', ['elt'], { om: '13.1.d' }),
+      C('Avionic', 'Avionic Master', 'OFF', ['av_master'], { om: '13.1.e', sim: 'avOff' }),
+      C('Consommateurs', 'Electrical consumers', 'OFF', ['position_lights', 'taxi_light', 'landing_light', 'flood_light', 'instr_light'], { om: '13.1.f', sim: 'consumersOff' }),
+      C('Aux power', 'Aux power switch', 'OFF', null, { om: '13.1.g' }),
+      C('Engine masters', 'Engine Masters', 'OFF', ['eng_master_l', 'eng_master_r'], { om: '13.1.h', sim: 'mastersOff', vals: ['Pas d\'arrêt avec le sélecteur carburant'] }),
+      C('ACL', 'Anti-collision lights', 'OFF', ['strobe'], { om: '13.1.i', sim: 'strobeOff' }),
+      C('Attendre', 'Wait for engine indications red or yellow X', 'WAIT 15 SECONDS (AFAe)', ['mfd'], { om: '13 caution', sim: 'wait15', vals: ['Écriture des données moteur avant coupure'] }),
+      C('PWR', 'Elect. Master', 'OFF', ['elec_master'], { om: '13.1.j', sim: 'elecOff' }),
+      C('« Parking procedure completed »', 'Parking procedure completed', 'ANNONCE, PUIS PARKING C/L', null, { om: '13.2', call: 'Parking procedure completed',
+        lines: [['Brakes', 'ON'], ['Engine / system page', 'CHECK'], ['Cabin heat / defrost', 'OFF'], ['Avionic master', 'OFF'], ['Engines master', 'OFF'], ['ACL', 'OFF'], ['Elect master', 'OFF'], ['ELT', 'CHECK']] }),
+      C('Sortie', 'Exit airplane, post flight inspection, parking', 'DONE', null, { om: '14-16', lines: [['Exit', 'AFT, ON THE INNER WING (LH OR RH)'], ['Log book', 'PROBLEMS RECORDED'], ['Parking brake', 'RELEASE, USE CHOCKS'], ['Airplane', 'MOOR IF UNSUPERVISED'], ['Pitot probe', 'COVER']] })
     ] }
   ];
   TF.DATA.essFlow.forEach(function (b) { b.chips.forEach(function (c) { if (!c.say) c.say = c.call ? c.call + '.' : c.lines ? c.lines.map(function (l) { return l[0] + ', ' + l[1]; }).join('. ') + '.' : c.a + '. ' + c.r + '.'; }); });
@@ -4919,7 +5051,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     s += topBar(I, 'Map - Navigation Map');
     s += rect(0, 452, VW, 36, '#0b0f14');
     var sk = ['Engine', 'Map Opt', '', '', '', '', '', '', '', 'Detail', 'Charts', ''];
-    sk.forEach(function (k, i) { s += t(4 + i * 53 + 26, 480, k, 11, '#fff', 'middle', 700); });
+    sk.forEach(function (k, i) { var on = I.lastSk === i + 1; if (on && k) s += rect(4 + i * 53 + 1, 466, 50, 18, '#3fe0e8'); s += t(4 + i * 53 + 26, 480, k, 11, on ? '#00151a' : '#fff', 'middle', 700); });
     return s;
   }
 
@@ -4992,7 +5124,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     s += topBar(I, 'EIS - Engine');
     s += rect(0, 452, VW, 36, '#0b0f14');
     var sk = ['Engine', '', '', 'DEC Fuel', 'INC Fuel', 'RST Fuel', '', '', '', '', '', ''];
-    sk.forEach(function (k, i) { var x = 4 + i * 53; if (k) s += rect(x + 1, 468, 50, 18, '#1d2833'); s += t(x + 26, 482, k, 11, '#fff', 'middle', 700); });
+    sk.forEach(function (k, i) { var x = 4 + i * 53, on = I.lastSk === i + 1; if (k) s += rect(x + 1, 468, 50, 18, on ? '#3fe0e8' : '#1d2833'); s += t(x + 26, 482, k, 11, on ? '#00151a' : '#fff', 'middle', 700); });
+    if (I.lastSk >= 4 && I.lastSk <= 6) s += '<rect x="362" y="428" width="50" height="18" fill="none" stroke="#3fe0e8" stroke-width="2" rx="3"/>'; // calculateur modifié
     s += '<line x1="12" y1="486" x2="44" y2="486" stroke="#2fe35a" stroke-width="2.4"/>';
     return s;
   }
@@ -5183,7 +5316,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var I = this.c.indications(), sc = this.c.s.scenario;
     var blink = Math.floor(I.t / 400) % 2;
     var fl = I.flight, kp = JSON.stringify([Math.round(TF.Displays.pitchOf(fl) * 2), Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
-    var km = JSON.stringify([Math.round((I.flight.mx || 0) / 8), Math.round((I.flight.my || 0) / 8), Math.round(I.flight.hdg), I.g.hdg, I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
+    var km = JSON.stringify([I.lastSk, Math.round((I.flight.mx || 0) / 8), Math.round((I.flight.my || 0) / 8), Math.round(I.flight.hdg), I.g.hdg, I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
     var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias), Math.round(TF.Displays.pitchOf(I.flight) * 2)]);
     var kl = JSON.stringify([I.gearLights, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
     if (force || kp !== this.lastDisp.p) { parseInto(this.gPfd, TF.Displays.pfd(I, sc)); this.lastDisp.p = kp; }
@@ -7109,7 +7242,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return '<span class="fchip' + (c.ctls ? ' tgt' : ' say') + (c.add ? ' add' : '') + (state ? ' ' + state : '') + '" title="' + esc(c.a + ' … ' + c.r) + '">' + (c.ctls ? '' : '🗣 ') + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') + '</span>';
   }
   function flowHtml() {
-    var h = srcBanner() + '<div class="ess-intro">Chaque étape tient en quelques mots-clés, relus contre l\'OM-B : <b>une puce = une commande à un endroit</b>. <b>▶ Balayer</b> : l\'instructeur parcourt le cockpit et annonce l\'item en anglais. <b>✋ À toi</b> : touche les commandes dans le même ordre. <span class="addb">OM-B</span> = ajouté depuis l\'OM-B (absent des notes) · <span class="doubt">?</span> = lecture à confirmer.</div><div class="tl">';
+    var h = srcBanner() + '<div class="ess-intro">Le flow suit les <b>procédures officielles (OM-B Issue C + check-list DA42 VI)</b>, sauf la préparation cabine (ordre de l\'équipage). <b>▶ Balayer</b> : l\'instructeur parcourt le cockpit et annonce chaque item en anglais. <b>✋ À toi</b> : <b>🕹 fais-le vraiment</b> — interrupteurs, touches du G1000 (ENT, DEC / INC / RST FUEL…), boutons, manettes : l\'étape est validée quand le cockpit est dans le bon état ; <b>👆</b> = étape à toucher ou à lire. Score ★★★ et record par bloc. <span class="addb">OM-B</span> = ajouté · <span class="doubt">?</span> = à confirmer.</div><div class="tl">';
     TF.DATA.essFlow.forEach(function (b, i) {
       var div = b.chips.filter(function (c) { return c.div; })[0];
       h += '<div class="tl-it"><div class="tl-dot">' + b.icon + '</div><div class="tl-card"><div class="tl-h"><b>' + esc(b.title) + '</b><small>' + esc(b.sub) + '</small></div>' +
@@ -7117,7 +7250,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (div) { var dv = TF.DATA.divergences.filter(function (x) { return x.id === div.div; })[0]; h += '<div class="caution" style="font-size:12px"><b>' + dv.id + '</b> — ' + esc(dv.decision) + '</div>'; }
       h += '<div class="tl-acts">';
       if (b.walk) h += '<button class="btn" data-act="walktab">🚶 Ouvrir le tour avion</button>';
-      else { h += '<button class="btn primary" data-act="sweep" data-id="' + b.id + '">▶ Balayer</button><button class="btn" data-act="tryit" data-id="' + b.id + '">✋ À toi</button>'; }
+      else { var bb = bestAll()[b.id]; h += '<button class="btn primary" data-act="sweep" data-id="' + b.id + '">▶ Balayer</button><button class="btn" data-act="tryit" data-id="' + b.id + '">✋ À toi</button>' + (bb ? '<span class="ess-best">' + '★★★'.slice(0, bb.stars) + '☆☆☆'.slice(0, 3 - bb.stars) + ' · ' + fmtMs(bb.ms) + '</span>' : '<span class="ess-best none">pas encore joué</span>'); }
       h += '<span class="tl-ref">' + esc(TF.refText(b.ref)) + '</span></div></div></div>';
     });
     return h + '</div>';
@@ -7228,7 +7361,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     setUi(b.chips[from]);
     app().view.clearHighlight(); app().view.home(true);
     E.renderPanel();
-    if (mode === 'demo') demoStep(); else tryFocus();
+    S.t0 = Date.now(); S.hints = 0;
+    if (mode === 'demo') demoStep(); else { realWatch(); tryFocus(); }
   };
   E.stop = function (silent) { S = null; gen++; if (app().ck.s.ui) { app().ck.s.ui = null; app().view.renderDynamic(true); } app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
 
@@ -7276,8 +7410,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     vsOn: [{ press: 'ap_vs', ms: 200 }],
     vsM500: [{ press: 'ap_nose_dn', ms: 120 }, { press: 'ap_nose_dn', ms: 120 }, { press: 'ap_nose_dn', ms: 120 }, { press: 'ap_nose_dn', ms: 120 }, { press: 'ap_nose_dn', ms: 120 }],
     ydOff: { ops: function () { return app().ck.s.g.yd ? [{ press: 'ap_yd', ms: 200 }] : []; } },
-    aprOn: [{ press: 'ap_apr', ms: 200 }, { script: [{ t: 0, ias: 150, label: 'Réduction vers 105 kt' }, { t: 7000, ias: 105, label: 'Approche' }] }, { wait: 7200 }],
-    flapsApp: [{ set: 'flaps', to: 'APP' }, { script: [{ t: 0, ias: 105 }, { t: 4000, ias: 100, label: 'Approche — 100 kt' }] }, { wait: 4200 }],
+    aprOn: [{ press: 'ap_apr', ms: 200 }, { script: [{ t: 0, ias: 150, ground: false, label: 'Réduction vers 105 kt' }, { t: 7000, ias: 105, ground: false, label: 'Approche' }] }, { wait: 7200 }],
+    flapsApp: [{ set: 'flaps', to: 'APP' }, { script: [{ t: 0, ias: 105, ground: false }, { t: 4000, ias: 100, ground: false, label: 'Approche — 100 kt' }] }, { wait: 4200 }],
     gearDown: [{ set: 'gear_lever', to: 'DOWN' }],
     finScript: { ops: function () { return [{ script: procScr('final', 'c0') }, { wait: 400 }]; } },
     missedAlt: [{ knobTo: 'alt', value: 3000 }],
@@ -7292,6 +7426,34 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     flcOn: [{ press: 'ap_flc', ms: 200 }],
     apOnClimb: [{ press: 'ap_ap', ms: 200 }],
     altCapture: [{ waitFor: 'altHold2500', timeout: 90000 }],
+    elecOnArr: [{ set: 'elec_master', to: 'ON' }],
+    elecOff: [{ set: 'elec_master', to: 'OFF' }],
+    lightsPosStrobe: [{ set: 'position_lights', to: 'ON' }, { set: 'strobe', to: 'ON' }, { wait: 1800 }, { set: 'position_lights', to: 'OFF' }, { set: 'strobe', to: 'OFF' }],
+    lightsLdgTaxi: [{ set: 'landing_light', to: 'ON' }, { set: 'taxi_light', to: 'ON' }, { wait: 1800 }, { set: 'landing_light', to: 'OFF' }, { set: 'taxi_light', to: 'OFF' }],
+    pitotCheck: [{ set: 'pitot_heat', to: 'ON' }, { wait: 1800 }, { set: 'pitot_heat', to: 'OFF' }],
+    floodTest: [{ set: 'flood_light', to: 0.7 }],
+    pitotOn: [{ set: 'pitot_heat', to: 'ON' }],
+    pitotOff: [{ set: 'pitot_heat', to: 'OFF' }],
+    altBug: [{ knobTo: 'alt', value: 2500 }],
+    trimTest: [{ hold: 'ap_disc', with: 'trim_hat', ms: 1500 }],
+    ecuL: [{ holdUntil: 'ecu_test_l', cond: 'ecuTestL' }],
+    ecuR: [{ holdUntil: 'ecu_test_r', cond: 'ecuTestR' }],
+    votersL: [{ set: 'voter_l', to: 'ECU A' }, { wait: 800 }, { set: 'voter_l', to: 'AUTO' }, { wait: 500 }, { set: 'voter_l', to: 'ECU B' }, { wait: 800 }, { set: 'voter_l', to: 'AUTO' }],
+    votersR: [{ set: 'voter_r', to: 'ECU A' }, { wait: 800 }, { set: 'voter_r', to: 'AUTO' }, { wait: 500 }, { set: 'voter_r', to: 'ECU B' }, { wait: 800 }, { set: 'voter_r', to: 'AUTO' }],
+    flapsCheck: [{ set: 'flaps', to: 'APP' }, { wait: 2800 }, { set: 'flaps', to: 'UP' }, { wait: 2800 }],
+    flapsLdg: [{ set: 'flaps', to: 'LDG' }],
+    flapsUp: [{ set: 'flaps', to: 'UP' }],
+    ldgLights: [{ set: 'landing_light', to: 'OFF' }, { set: 'taxi_light', to: 'ON' }],
+    avOff: [{ set: 'av_master', to: 'OFF' }],
+    consumersOff: [{ set: 'position_lights', to: 'OFF' }, { set: 'taxi_light', to: 'OFF' }, { set: 'landing_light', to: 'OFF' }, { set: 'flood_light', to: 0 }, { set: 'instr_light', to: 0 }],
+    mastersOff: [{ set: 'eng_master_l', to: 'OFF' }, { set: 'eng_master_r', to: 'OFF' }],
+    strobeOff: [{ set: 'strobe', to: 'OFF' }],
+    wait15: [{ wait: 3000 }],
+    cooldown: [{ set: 'power_l', to: 10 }, { set: 'power_r', to: 10 }, { wait: 4000 }, { set: 'power_l', to: 0 }, { set: 'power_r', to: 0 }],
+    ldgScript: [{ script: [{ t: 0, ias: 100, alt: 1500, vs: -500, hdg: 276, pitch: 0, ground: false, label: 'Finale 28' }, { t: 12000, ias: 90, alt: 1400, vs: -550, hdg: 276, pitch: 0, ground: false },
+      { t: 60000, ias: 85, alt: 800, vs: -600, hdg: 276, pitch: 0, ground: false, label: 'Stabilisé' }, { t: 70000, ias: 84, alt: 720, vs: -500, hdg: 276, pitch: 0, ground: false }, { t: 78000, ias: 84, alt: 650, vs: -500, hdg: 276, pitch: 0, ground: false, label: 'Minima' },
+      { t: 88000, ias: 84, alt: 530, vs: -600, hdg: 276, pitch: 1, ground: false }, { t: 96000, ias: 82, alt: 450, vs: -500, hdg: 276, pitch: 3, ground: false, label: 'Arrondi' }, { t: 99000, ias: 76, alt: 422, vs: -150, hdg: 276, pitch: 4, ground: false },
+      { t: 100500, ias: 72, alt: 420, vs: 0, hdg: 276, pitch: 2, ground: true, label: 'Toucher des roues' }, { t: 110000, ias: 30, alt: 420, vs: 0, hdg: 276, pitch: 0, ground: true }, { t: 118000, ias: 12, alt: 420, vs: 0, hdg: 276, pitch: 0, ground: true, label: 'Piste dégagée' }] }, { wait: 300 }],
     pwr70: [{ set: 'power_l', to: 70 }, { set: 'power_r', to: 70 }],
     pbOff: [{ set: 'parking_brake', to: 'OFF' }],
     // course au décollage réaliste (≈ 24 s jusqu'à VR) ; rotation progressive ; montée 850-900 ft/min
@@ -7351,6 +7513,46 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return [{ script: r }, { wait: r[r.length - 1].t + 200 }];
   }
   function taxiScr(id) { var st = TF.ProcEngine.procById('taxi').steps.filter(function (x) { return x.id === id; })[0]; return st && st.script ? st.script : []; }
+  /* ---------- « À toi » en commandes réelles : on manipule vraiment le cockpit, l'étape est validée par l'état obtenu ---------- */
+  var SIMDONE = { fdOn: 'fdOnC', hdgSel: 'latHdg', hdgSync: 'latHdg', bugSync: 'bugSynced', apOn: 'apEngaged', apOnClimb: 'apEngaged', apDisc: 'apDiscTested', dbAck: 'dbAcked',
+    fmsSet: 'fmsMatchesGauge', alarmTest: 'fireTested', gaTest: 'gaMode', cwsTest: 'cwsTested', altSel2500: 'altSel2500c', altBug: 'altSel2500c', flcOn: 'flcActive', vsOn: 'vsActive',
+    vsM500: 'vsMinus500', qnhDest: 'altimeterDest', missedAlt: 'missedAltSet', aprOn: 'aprArmed', ecuL: 'ecuTestL', ecuR: 'ecuTestR', votersL: 'voterTestL', votersR: 'voterTestR',
+    flapsCheck: 'flapsCycled', trimTest: 'trimInhibitTested', noseUpDn: 'noseUpDnTested', floodTest: 'floodTested', crossfeed: null };
+  var NOREAL = { lightsPosStrobe: 1, lightsLdgTaxi: 1, pitotCheck: 1, cooldown: 1, wait15: 1, bugLR: 1, crossfeed: 0 };
+  var ACT_OPS = { set: 1, press: 1, knob: 1, knobTo: 1, hold: 1, holdUntil: 1, mfdPage: 1, fms: 1, guard: 1 };
+  function simOps(c) { var f = c && c.sim && SIMS[c.sim]; if (!f) return null; if (f.ops) f = f.ops(); return (f.length != null && typeof f !== 'function') ? f : null; }
+  /* condition de réussite « réelle » d'une étape, ou null (étape validée par un simple toucher) */
+  function realDone(c) {
+    if (!c || !c.ctls || NOREAL[c.sim]) return null;
+    if (c.done) return function (S2) { return TF.evalCond(c.done, S2); };
+    if (SIMDONE[c.sim]) { var cn = SIMDONE[c.sim]; return function (S2) { return TF.evalCond(cn, S2); }; }
+    var ops = simOps(c); if (!ops) return null;
+    var sets = ops.filter(function (o) { return o.set; });
+    if (!sets.length || ops.some(function (o) { return ACT_OPS[Object.keys(o).filter(function (k) { return ACT_OPS[k]; })[0]] && !o.set; })) return null;
+    var last = {}; sets.forEach(function (o) { last[o.set] = o.to; });
+    return function (S2) { for (var k in last) { var cv = S2.controls[k], tv = last[k]; if (typeof tv === 'number' ? Math.abs(cv - tv) > 3 : cv !== tv) return false; } return true; };
+  }
+  function residual(c) { var ops = simOps(c) || []; return ops.filter(function (o) { return !Object.keys(o).some(function (k) { return ACT_OPS[k]; }) && !o.wait; }); }
+  var realTimer = null;
+  function realWatch() {
+    if (realTimer) return;
+    realTimer = setInterval(function () {
+      if (!S || S.mode !== 'try' || S.finished) { clearInterval(realTimer); realTimer = null; return; }
+      var c = S.b.chips[S.i], fn = realDone(c); if (!fn) return;
+      if (c.gate && !TF.evalCond(c.gate, app().ck.s)) return;
+      if (fn(app().ck.s)) completeReal(c);
+    }, 250);
+  }
+  function completeReal(c) {
+    var v = app().view; K.sound.ok(); v.clearHighlight(); c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
+    S.done.push(S.i); S.i++; S.chipErr = 0; S.real = (S.real || 0) + 1;
+    var rest = residual(c), g = S.g;
+    if (rest.length) { var PE = TF.ProcEngine, ck = app().ck; new PE.Runner(ck, null, { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) k(); }, ms); } }).run(rest, function () { app().view.renderDynamic(true); }); }
+    setUi(S.b.chips[S.i]); E.renderPanel();
+    setTimeout(function () { if (S && S.g === g) v.clearHighlight(); }, 700);
+    if (S.i >= S.b.chips.length) finishTry();
+  }
+  E.realDone = realDone;
   function crank(ck, k, fast, cb) {
     ck.setControl('start_key', 'START ' + k);
     waitFor(function () { return eng(k).state === 'run'; }, function () { ck.setControl('start_key', 'OFF'); waitFor(function () { return (eng(k).oilP || 0) >= 0.9 * 0.9; }, cb, fast, 4000); }, fast, 12000);
@@ -7403,12 +7605,17 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     E.renderPanel();
     if (!c) { S.finished = true; finishTry(); return; }
   }
+  function bestAll() { try { return JSON.parse(localStorage.getItem('tiffanir.ess.best') || '{}'); } catch (e) { return {}; } }
   function finishTry() {
-    var n = S.b.chips.filter(function (c) { return c.ctls; }).length, err = S.errors;
+    var n = S.b.chips.filter(function (c) { return c.ctls; }).length, err = S.errors, ms = Date.now() - (S.t0 || Date.now());
+    var stars = err === 0 ? 3 : err <= 2 ? 2 : 1, all = bestAll(), prev = all[S.b.id], rec = !prev || stars > prev.stars || (stars === prev.stars && ms < prev.ms);
+    if (rec) { all[S.b.id] = { stars: stars, ms: ms }; try { localStorage.setItem('tiffanir.ess.best', JSON.stringify(all)); } catch (e) { } }
     if (!err) { K.sound.ok(); TF.Profiles.addXp(5); K.toast('🎯 Flow « ' + esc(S.b.title) + ' » sans erreur : +5 XP', 'ok', 2200); }
     else TF.Profiles.addXp(2);
-    S.finished = true; S.result = { n: n, err: err }; E.renderPanel();
+    S.finished = true; S.result = { n: n, err: err, ms: ms, stars: stars, rec: rec, real: S.real || 0 }; E.renderPanel();
   }
+  E.best = bestAll;
+  function fmtMs(ms) { var t = Math.round(ms / 1000); return (t >= 60 ? Math.floor(t / 60) + ' min ' : '') + (t % 60) + ' s'; }
   function advanceTry() {
     var cur = S.b.chips[S.i];
     if (cur && cur.gate && !TF.evalCond(cur.gate, app().ck.s)) { K.toast('⏳ Pas encore : attends ' + (cur.gateTxt || 'le bon moment'), 'info', 1800); return; }
@@ -7433,6 +7640,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (!c.ctls) { K.toast(c.call ? '🎙 Annonce à faire à voix haute : « ' + esc(c.call) + ' », puis « J\'ai fait l\'annonce ».' : '🗣 Cette étape se dit : « ' + esc(c.t) + ' » — touche « ✓ Fait » dans le panneau.', '', 2400); return true; }
     var hit = c.ctls.indexOf(id) >= 0;
     if (!hit && (kind === 'ctl' || kind === 'press')) { var d = app().ck.defs[id]; if (d && c.ctls.indexOf(d.region) >= 0) hit = true; }
+    if (hit && c.gate && !TF.evalCond(c.gate, app().ck.s)) { K.toast('⏳ Pas encore : attends ' + esc(c.gateTxt || 'le bon moment'), 'info', 1800); return true; }
+    if (hit && realDone(c)) { realWatch(); return false; }   // commande réelle : on la manipule vraiment, l'état valide l'étape
+    if (!hit && kind === 'ind' && realDone(c)) return false;  // lecture d'un écran pendant une étape réelle : libre
     if (hit) {
       K.sound.ok(); v.clearHighlight(); c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
       S.lastRegion = regionOf(id);
@@ -7465,7 +7675,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         if (st === ' cur' && S.mode === 'try') h += '<div class="clc-acts"><button class="btn call-btn" data-act="said">🎙 J\'ai fait l\'annonce</button></div>';
         h += '</div>'; return;
       }
-      var tgt = c.ctls ? (S.mode === 'try' && st !== ' ok' ? '👆 dans le cockpit' : '🎯') : '🗣 à dire';
+      var tgt = c.ctls ? (S.mode === 'try' && st !== ' ok' ? (realDone(c) ? '🕹 fais-le' : '👆 touche') : '🎯') : '🗣 à dire';
       if (c.lines) {
         h += '<div class="clc-row' + st + '" data-act="goto" data-i="' + i + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + c.lines.map(function (l) { return '<small class="ess-act">' + esc(l[0]) + ' … <b>' + esc(l[1]) + '</b></small>'; }).join('') +
           (c.om ? '<small class="ess-act"><i class="ess-om">OM-B ' + esc(c.om) + '</i></small>' : '') + '</span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
@@ -7485,7 +7695,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     });
     h += '</div></div>';
     if (S.mode === 'try' && !S.finished) h += '<div class="counter">Erreurs : <b>' + S.errors + '</b> · touche une zone pour zoomer, puis la commande</div>';
-    if (S.finished && S.mode === 'try') h += '<div class="feedback ' + (S.result.err ? 'info' : 'ok') + '">' + (S.result.err ? 'Terminé avec ' + S.result.err + ' erreur' + (S.result.err > 1 ? 's' : '') + '.' : '🎯 Sans erreur !') + '</div>';
+    if (S.finished && S.mode === 'try') { var R = S.result, st = '★★★'.slice(0, R.stars) + '☆☆☆'.slice(0, 3 - R.stars);
+      h += '<div class="feedback ' + (R.err ? 'info' : 'ok') + '"><div class="ess-stars">' + st + '</div>' + (R.err ? 'Terminé avec ' + R.err + ' erreur' + (R.err > 1 ? 's' : '') + '.' : '🎯 Sans erreur !') +
+        '<br>⏱ ' + fmtMs(R.ms) + (R.real ? ' · ' + R.real + ' commande' + (R.real > 1 ? 's' : '') + ' manipulée' + (R.real > 1 ? 's' : '') + ' pour de vrai' : '') + (R.rec ? '<br><b>🏆 Nouveau record pour ce bloc !</b>' : '') + '</div>'; }
     if (S.mode === 'demo' && !S.finished) h += ses().demoControls().replace(/<button class="btn block" data-act="toPractice">[\s\S]*?<\/button>/, '');
     var idx = TF.DATA.essFlow.indexOf(b), nxt = TF.DATA.essFlow[idx + 1];
     while (nxt && nxt.walk) nxt = TF.DATA.essFlow[TF.DATA.essFlow.indexOf(nxt) + 1];
