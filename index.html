@@ -372,10 +372,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .ess-tabs { display: -webkit-flex; display: flex; margin-bottom: 12px; border-radius: 14px; overflow: hidden; border: 1px solid #2a4a78; }
 .ess-tabs button { -webkit-flex: 1; flex: 1; padding: 12px 6px; font-weight: 900; font-size: 15px; background: #0f1a2c; color: #9fb3cc; border-right: 1px solid #2a4a78; }
 .ess-tabs button:last-child { border-right: 0; } .ess-tabs button.on { background: linear-gradient(180deg, #17a6b3, #0f7c88); color: #fff; }
-.ess-src { font-size: 12px; color: #c8b98a; background: #231d0c; border: 1px solid #5a4a18; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; line-height: 1.4; }
+.ess-src { font-size: 12px; color: #b9cde3; background: #0f2034; border: 1px solid #2a4b70; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; line-height: 1.4; }
 .ess-intro { color: #c8d4e4; font-size: 13.5px; margin: 0 0 12px; line-height: 1.4; }
 .ess-bar { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin-bottom: 10px; } .ess-bar .btn { margin: 0 8px 8px 0; }
-.doubt { display: inline-block; min-width: 16px; height: 16px; line-height: 16px; text-align: center; border-radius: 8px; background: #8a6a1a; color: #fff; font-size: 11px; font-weight: 900; vertical-align: middle; }
+.doubt { display: inline-block; min-width: 16px; height: 16px; line-height: 16px; text-align: center; border-radius: 8px; background: #4a5e78; color: #fff; font-size: 11px; font-weight: 900; vertical-align: middle; }
 .ess-grid { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px; }
 .ess-card { width: calc(50% - 10px); margin: 0 5px 10px; padding: 12px; border-radius: 16px; background: linear-gradient(160deg, #13284a, #0c1628); border: 1px solid #2a4a78; box-sizing: border-box; }
 @media (max-width: 800px) { .ess-card { width: calc(100% - 10px); } }
@@ -505,6 +505,42 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .ct-meta { font-size: 12px; color: #8fa1b8; margin: 6px 0; }
 .ct-end { text-align: center; }
 .ct-o[disabled] { opacity: 1; cursor: default; }
+/* Fiche avion : valeurs en couleur neutre ; seules les vitesses portent le repère de couleur de l'anémomètre */
+.ess-card .ec-v b { color: #eaf3ff; font-weight: 800; }
+.ess-card .ec-v small { color: #93a7bd; }
+.ess-card .ec-h { color: #9fe6f0; }
+.asi { display: inline-block; width: 4px; height: 14px; border-radius: 2px; margin-right: 7px; vertical-align: -2px; }
+.asi-leg .asi { width: 10px; height: 4px; margin: 0 4px 0 8px; vertical-align: middle; }
+.asi-white { background: #f4f6f8; } .asi-green { background: #2fc25a; } .asi-yellow { background: #e9c21c; } .asi-red { background: #e3343c; } .asi-blue { background: #3a8fff; }
+.asi-leg { font-size: 11px; color: #8fa1b8; margin: -2px 0 6px; line-height: 1.8; }
+.asi-leg .asi:first-child { margin-left: 0; }
+.ess-card .ec-v.hid b, .ess-card .ec-v.hid small { color: transparent; }
+.clc-row[data-act="goto"] { cursor: pointer; }
+.chipgo { cursor: pointer; display: inline-block; }
+.chipgo:hover .fchip { filter: brightness(1.25); }
+/* Mini-carte (cartouche) */
+#miniMap { position: absolute; top: 10px; right: 10px; z-index: 7; border-radius: 10px; overflow: hidden; border: 1px solid #2a4b70; box-shadow: 0 6px 18px rgba(0,0,0,.45); opacity: .93; cursor: pointer; line-height: 0; }
+#miniMap.hidden { display: none; }
+#miniMap svg { display: block; }
+@media (max-width: 600px) { #miniMap { top: 6px; right: 6px; transform: scale(.85); transform-origin: top right; } }
+/* Valeurs importantes à connaître : toujours visibles, sur toutes les lignes du flow */
+.kv-row { padding: 2px 0 2px 26px; }
+.kv { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 7px; border-radius: 6px; background: #0b4a5c; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; font-size: 11.5px; font-weight: 800; letter-spacing: .1px; }
+.kv:before { content: '◆ '; color: #7fe8ff; }
+.clc-row.ok .kv { background: #2f6b46; }
+/* Briefings */
+.bf-grid { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 8px -4px; }
+.bf { -webkit-flex: 1 1 150px; flex: 1 1 150px; margin: 4px; font-size: 11px; color: #8fa1b8; }
+.bf span { display: block; margin-bottom: 3px; }
+.bf input { width: 100%; box-sizing: border-box; padding: 7px 9px; border-radius: 8px; border: 1px solid #2a4b70; background: #0b1626; color: #fff; font-size: 14px; font-weight: 700; }
+.bf-card { background: #f7f3e8; color: #1a1a1a; border-radius: 12px; padding: 12px 16px; margin: 10px 0; font-family: Georgia, 'Times New Roman', serif; }
+.bf-sec { border-bottom: 1px solid #e3dccb; padding: 6px 0 8px; } .bf-sec:last-child { border-bottom: 0; }
+.bf-h { font-family: system-ui, -apple-system, sans-serif; font-weight: 800; font-size: 13px; letter-spacing: .4px; text-transform: uppercase; color: #0b4a5c; margin-bottom: 4px; }
+.bf-h small { font-weight: 600; color: #8a8a8a; text-transform: none; letter-spacing: 0; }
+.bf-card p { margin: 4px 0; font-size: 15px; line-height: 1.45; }
+.bv { background: #0b4a5c; color: #fff; border-radius: 5px; padding: 0 5px; font-family: system-ui, -apple-system, sans-serif; font-weight: 800; font-size: 13.5px; }
+.bv.hid { color: transparent; background: #c9d8de; cursor: pointer; min-width: 30px; display: inline-block; }
+.bv.hid.shown { color: #fff; background: #0b4a5c; }
 
 </style>
 </head>
@@ -562,7 +598,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '4.0';
+  TF.VERSION = '4.5';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -746,7 +782,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     { id: 'botR', label: 'Volets / disjoncteurs moteurs', x: 900, y: 636, w: 450, h: 70 },
     { id: 'yoke', label: 'Manche gauche (AP DISC / TRIM)', x: 315, y: 700, w: 130, h: 90 },
     { id: 'console', label: 'Console centrale (+ roue de trim)', x: 650, y: 700, w: 230, h: 424 },
-    { id: 'fuelsel', label: 'Sélecteurs carburant', x: 700, y: 1010, w: 160, h: 114 }
+    { id: 'fuelsel', label: 'Sélecteurs carburant', x: 700, y: 1010, w: 160, h: 114 },
+    { id: 'underL', label: 'Sous le tableau à gauche (alternate static)', x: 215, y: 690, w: 170, h: 120 }
   ];
 
   var C = [];
@@ -861,6 +898,16 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   add({ id: 'aux_pump_l', label: 'AUX PUMP LH (carburant auxiliaire)', short: 'AUX L', type: 'rocker', positions: ['OFF', 'ON'], region: 'console', x: 674, y: 1071, w: 10, h: 17, initial: 'OFF', ref: AXP });
   add({ id: 'aux_pump_r', label: 'AUX PUMP RH (carburant auxiliaire)', short: 'AUX R', type: 'rocker', positions: ['OFF', 'ON'], region: 'console', x: 689, y: 1071, w: 10, h: 17, initial: 'OFF', ref: AXP });
 
+  /* Commandes sous le tableau (OM-B fig. « Major instruments and controls » p.370-371 : 14 alternate static valve,
+     28 alt air lever à droite de la console, 29 landing gear emergency extension lever à gauche de la console). */
+  var FIG = { doc: 'OMB', sec: 'B12 §8 Major instruments and controls (fig. rep. 14, 28, 29)', page: 370 };
+  add({ id: 'alt_air', label: 'ALTERNATE AIR (levier, sous le tableau à droite de la console)', short: 'ALT AIR', type: 'photolever', positions: ['CLOSED', 'OPEN'], region: 'console', x: 851, y: 763, w: 36, h: 18, initial: 'CLOSED', ref: FIG,
+    note: 'Levier vers l\'avant = fermé (CLOSED) ; tiré vers l\'arrière = ALTERNATE AIR ON (OM-B p.417). Commun aux deux moteurs.' });
+  add({ id: 'gear_emerg', label: 'MANUAL GEAR EXTENSION (levier rouge, sous le tableau à gauche de la console)', short: 'GEAR EMERG', type: 'photolever', positions: ['PUSHED IN', 'PULLED'], region: 'console', x: 701, y: 737, w: 22, h: 60, initial: 'PUSHED IN', ref: FIG,
+    note: 'Tirer libère la pression hydraulique : le train sort par gravité (OM-B p.403-404). Normalement enfoncé (PUSHED IN).' });
+  add({ id: 'alt_static', label: 'ALTERNATE STATIC VALVE (sous le tableau, à gauche)', short: 'ALT STATIC', type: 'photolever', positions: ['CLOSED', 'OPEN'], region: 'underL', x: 310, y: 767, w: 28, h: 30, initial: 'CLOSED', ref: FIG, toConfirm: 'C13',
+    note: 'Prise statique de secours (pression cabine) en cas de panne du circuit Pitot-statique (OM-B p.410). Emplacement d\'après la figure OM-B ; bouton identifié sur la photo à confirmer.' });
+
   TF.DATA.controls = C;
 
   /* ---------------- Indications observables ---------------- */
@@ -871,7 +918,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     { id: 'stby', label: 'Instruments de secours', x: 616, y: 300, w: 318, h: 84 },
     { id: 'gear_lights', label: 'Voyants train', x: 616, y: 664, w: 66, h: 26 },
     { id: 'flap_lights', label: 'Voyants volets', x: 972, y: 645, w: 30, h: 52 },
-    { id: 'cb_panel', label: 'Disjoncteurs (circuit breakers)', x: 1190, y: 425, w: 160, h: 210, declarative: true },
+    { id: 'cb_panel', label: 'Disjoncteurs (circuit breakers)', x: 1112, y: 412, w: 238, h: 224, declarative: true,
+      poly: [[1186, 412], [1350, 412], [1350, 636], [1112, 636], [1112, 522], [1186, 522]] },
     { id: 'cb_bottom', label: 'Disjoncteurs moteurs (ECU / ALT / BATT)', x: 1110, y: 645, w: 235, h: 50, declarative: true },
     { id: 'deice_lights', label: 'Voyants dégivrage', x: 1138, y: 430, w: 16, h: 54 }
   ];
@@ -918,7 +966,29 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       latAt: null, vertAt: null, latArmAt: null, ydDiscAt: null
     };
   };
-  G.flightInitial = function () { return { onGround: true, ias: 0, alt: 420, vs: 0, hdg: 8, turn: 0, slip: 0, pos: 0, script: null, scriptT: 0, label: '' }; };
+  /* Position de l'avion pour la mini-carte (mètres, repère local : origine seuil 10 de LFBU, x vers l'est, y vers le nord).
+     Piste 10/28 : 1 860 m, QFU 097° vrai (AIP France AD 2 LFBU). Parking et taxiways : SCHÉMATIQUES (non à l'échelle). */
+  var RAD = Math.PI / 180;
+  G.LFBU = { rwyLen: 1860, rwyTrue: 97, thr28: [1860 * Math.sin(97 * RAD), 1860 * Math.cos(97 * RAD)],
+    taxi: [[0, -238], [0, -178], [150, -178], [150, -98]], taxiPos: [0, 0.3, 0.6, 1], lineUp: [30, -4] };
+  G.taxiPoint = function (pos) {
+    var L = G.LFBU, P = L.taxi, T = L.taxiPos, k = 0; pos = U.clamp(pos, 0, 1);
+    while (k < T.length - 2 && pos > T[k + 1]) k++;
+    var r = (pos - T[k]) / (T[k + 1] - T[k]);
+    return [P[k][0] + (P[k + 1][0] - P[k][0]) * r, P[k][1] + (P[k + 1][1] - P[k][1]) * r];
+  };
+  G.flightInitial = function () { return { onGround: true, ias: 0, alt: 420, vs: 0, hdg: 8, turn: 0, slip: 0, pos: 0, script: null, scriptT: 0, label: '', mx: 0, my: -238, trail: [] }; };
+  function moveMap(f, dt) {
+    if (f.mx == null) { f.mx = 0; f.my = -238; }
+    var d = f.ias * 0.5144 * dt / 1000;
+    f.mx += Math.sin(f.hdg * RAD) * d; f.my += Math.cos(f.hdg * RAD) * d;
+    pushTrail(f);
+  }
+  function pushTrail(f) {
+    if (!f.trail) f.trail = [];
+    var l = f.trail[f.trail.length - 1];
+    if (!l || Math.abs(l[0] - f.mx) + Math.abs(l[1] - f.my) > (f.onGround ? 15 : 250)) { f.trail.push([Math.round(f.mx), Math.round(f.my)]); if (f.trail.length > 160) f.trail.shift(); }
+  }
 
   function fmtFreq(k, dec) { var s = (k / 1000).toFixed(3); return dec === 2 ? s.slice(0, -1) : s; }
   G.fmtCom = function (k) { return fmtFreq(k, 3); };
@@ -1121,6 +1191,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       var a = sc[k], b = sc[Math.min(k + 1, sc.length - 1)];
       var r = b.t > a.t ? U.clamp((f.scriptT - a.t) / (b.t - a.t), 0, 1) : 1;
       ['ias', 'alt', 'vs', 'hdg', 'turn', 'slip', 'pos'].forEach(function (p) { if (a[p] != null && b[p] != null) f[p] = a[p] + (b[p] - a[p]) * r; });
+      if (a.pos != null && b.pos != null) { var tp = G.taxiPoint(f.pos); f.mx = tp[0]; f.my = tp[1]; pushTrail(f); } // roulage : chemin du parking au point d'arrêt
+      else moveMap(f, dt);                                                                                         // course au décollage, montée : intégration
       if (f.hdg >= 360) f.hdg -= 360; if (f.hdg < 0) f.hdg += 360;
       f.onGround = (r < 1 ? a.ground : b.ground) !== false;
       var lb = r >= 1 ? b.label : a.label; if (lb != null) f.label = lb;
@@ -1128,6 +1200,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       return;
     }
     if (f.onGround) return;
+    moveMap(f, dt);
     // En vol hors script : seul l'AFCS (s'il est engagé) fait évoluer l'altitude
     var vs = f.vs;
     var t = ck.s.t;
@@ -1527,6 +1600,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
     // AFCS
     I.ap = { state: sys.avionics ? sys.apState : 'off', engaged: sys.apEngaged, discFlash: sys.apDiscAlert && (s.t - sys.apDiscAlert) < 5000 };
+    I.ui = s.ui || null; // aides visuelles pédagogiques (L'essentiel) : encadrés PFD / MFD
 
     // Moteurs (EIS)
     var off = V.off, idle = V.idle;
@@ -2316,14 +2390,14 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* ======================= ÉTATS INITIAUX supplémentaires ======================= */
   var IS = TF.DATA.initialStates;
   IS['after-start-cl'] = { label: 'Moteurs démarrés, After start check-list faite', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }] };
-  IS['after-taxi'] = { label: 'Au point d\'arrêt', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }] };
-  IS['lined-up'] = { label: 'Aligné', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }, { proc: 'before-takeoff' }, { ops: [{ set: 'parking_brake', to: 'OFF' }] }] };
+  IS['after-taxi'] = { label: 'Au point d\'arrêt', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }, { flight: { ias: 0, pos: 1, mx: 150, my: -98, hdg: 8, script: null } }] };
+  IS['lined-up'] = { label: 'Aligné', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }, { proc: 'before-takeoff' }, { ops: [{ set: 'parking_brake', to: 'OFF' }] }, { flight: { hdg: 96, mx: 30, my: -4, pos: 1 } }] };
   IS['airborne'] = { label: 'En montée initiale', build: [{ initial: 'lined-up' }, { proc: 'takeoff' }] };
   IS['cruise'] = { label: 'En croisière', build: [{ initial: 'airborne' }, { proc: 'after-takeoff' }, { flight: { onGround: false, ias: 150, alt: 3000, vs: 0, hdg: 95, script: null } }, { g: { vert: 'ALT', vertArm: '', refAlt: 3000 } }] };
   IS['cruise-done'] = { label: 'Croisière', build: [{ initial: 'cruise' }, { proc: 'cruise' }] };
   IS['descent-done'] = { label: 'Descente terminée', build: [{ initial: 'cruise-done' }, { proc: 'descent' }, { flight: { onGround: false, ias: 120, alt: 2000, vs: 0, hdg: 95, script: null } }, { g: { vert: 'ALT', vertArm: '', refAlt: 2000 } }] };
   IS['approach-done'] = { label: 'Approche', build: [{ initial: 'descent-done' }, { proc: 'approach' }, { flight: { onGround: false, ias: 100, alt: 1500, vs: -500, hdg: 280, script: null } }] };
-  IS['landed'] = { label: 'Piste dégagée', build: [{ initial: 'approach-done' }, { proc: 'final' }, { flight: { onGround: true, ias: 12, alt: 420, vs: 0, hdg: 100, script: null } }, { g: { fd: false, lat: '', vert: '', latArm: '', vertArm: '' } }, { ops: [{ set: 'power_l', to: 5 }, { set: 'power_r', to: 5 }] }] };
+  IS['landed'] = { label: 'Piste dégagée', build: [{ initial: 'approach-done' }, { proc: 'final' }, { flight: { onGround: true, ias: 12, alt: 420, vs: 0, hdg: 276, script: null, mx: 900, my: -110 } }, { g: { fd: false, lat: '', vert: '', latArm: '', vertArm: '' } }, { ops: [{ set: 'power_l', to: 5 }, { set: 'power_r', to: 5 }] }] };
   IS['after-landing-done'] = { label: 'Au parking', build: [{ initial: 'landed' }, { proc: 'after-landing' }, { flight: { ias: 0 } }] };
 
   /* ======================= PHASES DU VOL (parcours principal) ======================= */
@@ -2345,6 +2419,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   TF.DATA.toConfirm.push(
     { id: 'C10', what: 'Position exacte des softkeys de 2e niveau (PFD Opt, XPDR) sur le PFD', why: 'Le guide Garmin liste les fonctions sans position : ordre de la liste appliqué de gauche à droite.' },
     { id: 'C12', what: 'Seuil d\'animation de l\'anémomètre de secours (« two times »)', why: 'Fenêtre pédagogique retenue : à partir de 30 kt (graduation basse de l\'instrument à 40 kt). À confirmer en vol.' },
+    { id: 'C13', what: 'Bouton de l\'alternate static valve sur la photo F-HKDA', why: 'Emplacement déduit de la figure OM-B p.370 (rep. 14, sous le tableau à gauche, à droite du rep. 31) ; inscription illisible sur la photo. À confirmer dans l\'avion.' },
     { id: 'C11', what: 'Valeurs d\'exercice (QNH destination 1018, minima 650 ft, altitudes 2000/3000 ft)', why: 'Données d\'entraînement fictives, modifiables : jamais des données réelles.' }
   );
 })(this);
@@ -3202,7 +3277,57 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     'VREF un moteur': 'Vitesse d\'approche finale avec un moteur en panne (notes de cours).',
     'Décrochage à la masse max': 'Vitesse de décrochage lisse à la masse maximale (notes de cours, partie performances).'
   };
-  TF.DATA.essFiche.forEach(function (c) { c.facts.forEach(function (f) { if (VDEF[f.k]) f.def = VDEF[f.k]; }); });
+  /* Repères de l'anémomètre (OM-B p.24 « Airspeed indicator markings ») : la couleur affichée est celle du cadran, pas une alerte */
+  var ASI = { 'VNE': ['red', 'Trait rouge (VNE)'], 'VNO': ['yellow', 'Début de l\'arc jaune (air calme seulement)'], 'VS0': ['white', 'Début de l\'arc blanc'],
+    'VFE LDG': ['white', 'Fin de l\'arc blanc'], 'VS1': ['green', 'Début de l\'arc vert'], 'VMCA': ['red', 'Trait rouge (VMCA)'], 'VYSE': ['blue', 'Trait bleu (VYSE)'] };
+  TF.DATA.essFiche.forEach(function (c) { c.facts.forEach(function (f) { if (VDEF[f.k]) f.def = VDEF[f.k]; if (ASI[f.k]) f.asi = ASI[f.k]; }); });
+
+  /* Quiz flash : questions explicites sur les valeurs de la fiche ; les mauvaises réponses ont toujours la même unité.
+   * q : question · a : bonne réponse · w : trois mauvaises réponses · s : source */
+  function QZ(cat, q, a, w, s) { return { cat: cat, q: q, a: a, w: w, s: s }; }
+  var OMV = 'OM-B p.23 (limitations de vitesse)';
+  TF.DATA.essQuiz = [
+    QZ('Vitesses', 'Quelle est la VNE (vitesse à ne jamais dépasser) ?', '188 kt', ['151 kt', '170 kt', '200 kt'], OMV),
+    QZ('Vitesses', 'À quelle vitesse commence l\'arc jaune (VNO) ?', '151 kt', ['133 kt', '165 kt', '188 kt'], OMV + ' et p.24'),
+    QZ('Vitesses', 'Quelle est la vitesse de décrochage volets pleins (VS0) ?', '64 kt', ['58 kt', '72 kt', '76 kt'], 'OM-B p.24 (début de l\'arc blanc)'),
+    QZ('Vitesses', 'Quelle est la vitesse de décrochage en lisse (VS1) ?', '72 kt', ['64 kt', '68 kt', '76 kt'], 'OM-B p.24 (début de l\'arc vert)'),
+    QZ('Vitesses', 'Vitesse maximale volets APP (VFE APP) ?', '133 kt', ['113 kt', '125 kt', '152 kt'], OMV),
+    QZ('Vitesses', 'Vitesse maximale volets LDG (VFE LDG) ?', '113 kt', ['100 kt', '120 kt', '133 kt'], OMV),
+    QZ('Vitesses', 'Vitesse maximale pour rentrer le train (VLOR) ?', '152 kt', ['133 kt', '170 kt', '188 kt'], OMV),
+    QZ('Vitesses', 'Vitesse maximale train sorti (VLE) ?', '188 kt', ['152 kt', '133 kt', '170 kt'], OMV),
+    QZ('Vitesses', 'VMCA volets UP (trait rouge) ?', '71 kt', ['68 kt', '76 kt', '85 kt'], OMV),
+    QZ('Vitesses', 'VMCA volets APP ?', '68 kt', ['64 kt', '71 kt', '74 kt'], OMV),
+    QZ('Vitesses', 'VYSE, meilleur taux de montée sur un moteur (trait bleu) ?', '85 kt', ['77 kt', '82 kt', '92 kt'], 'OM-B p.24'),
+    QZ('Vitesses', 'Vitesse de rotation VR, volets UP ?', '76 kt', ['71 kt', '80 kt', '85 kt'], 'OM-B p.65'),
+    QZ('Vitesses', 'Vitesse minimale en vol continu en conditions givrantes ?', '118 kt', ['100 kt', '110 kt', '125 kt'], 'OM-B p.338'),
+    QZ('Vitesses', 'Vitesse maximale en vol continu en conditions givrantes ?', '156 kt', ['140 kt', '151 kt', '170 kt'], 'OM-B p.338'),
+    QZ('Vitesses', 'Vitesse minimale avec le pilote automatique engagé ?', '90 kt', ['80 kt', '85 kt', '100 kt'], 'OM-B p.39'),
+    QZ('Masses', 'Masse maximale au décollage ?', '1 999 kg', ['1 785 kg', '1 900 kg', '2 100 kg'], 'OM-B p.22'),
+    QZ('Masses', 'Charge maximale dans la soute avant (nez) ?', '30 kg', ['15 kg', '45 kg', '60 kg'], 'OM-B p.22'),
+    QZ('Masses', 'Charge maximale soute cabine + extension bagages ?', '45 kg', ['30 kg', '60 kg', '80 kg'], 'OM-B p.22'),
+    QZ('Dimensions', 'Envergure du DA42 ?', '13,5 m', ['11,9 m', '12,5 m', '14,5 m'], 'Notes Cours MEP'),
+    QZ('Dimensions', 'Longueur du DA42 ?', '8,5 m', ['7,5 m', '9,5 m', '10,2 m'], 'Notes Cours MEP'),
+    QZ('Carburant', 'Différence maximale de carburant entre réservoirs gauche et droit ?', '5 USG', ['2 USG', '8 USG', '10 USG'], 'OM-B p.30'),
+    QZ('Carburant', 'Carburant utilisable dans chaque aile (réservoir principal) ?', '25,4 USG', ['20 USG', '26,4 USG', '28 USG'], 'OM-B p.332'),
+    QZ('Carburant', 'Capacité de chaque réservoir auxiliaire ?', '13,7 USG', ['8,3 USG', '10 USG', '17 USG'], 'OM-B p.332'),
+    QZ('Carburant', 'Consommation d\'un moteur à 70 % de puissance ?', '6 USG/h', ['4 USG/h', '8 USG/h', '10 USG/h'], 'Notes Cours MEP'),
+    QZ('Moteurs', 'Combien de temps peut-on rester à 100 % de puissance ?', '5 min', ['2 min', '10 min', 'sans limite'], 'OM-B p.26'),
+    QZ('Moteurs', 'Puissance maximale continue ?', '92 %', ['85 %', '95 %', '100 %'], 'OM-B p.26'),
+    QZ('Moteurs', 'Température à laquelle se déclenche l\'alarme ENG FIRE ?', '250 °C', ['120 °C', '180 °C', '350 °C'], 'OM-B p.415'),
+    QZ('Moteurs', 'Température minimale de l\'huile de boîte (gearbox) pour le test ECU ?', '40 °C', ['20 °C', '50 °C', '60 °C'], 'OM-B p.61'),
+    QZ('Moteurs', 'Ralenti normal au démarrage ?', '710 ± 30 tr/min', ['600 ± 30 tr/min', '800 ± 30 tr/min', '1 000 ± 30 tr/min'], 'OM-B p.58'),
+    QZ('Moteurs', 'Durée maximale d\'action du démarreur au sol ?', '10 s', ['5 s', '20 s', '30 s'], 'OM-B p.58'),
+    QZ('Électricité', 'Intensité de chaque alternateur ?', '70 A', ['60 A', '80 A', '100 A'], 'OM-B p.311'),
+    QZ('Électricité', 'Autonomie des batteries de secours des ECU ?', '30 min', ['10 min', '1 h', '1 h 30'], 'OM-B p.311'),
+    QZ('Dégivrage', 'Capacité maximale du réservoir de liquide de dégivrage ?', '31,5 L', ['21,5 L', '30 L', '41,5 L'], 'OM-B p.341'),
+    QZ('Dégivrage', 'Autonomie du dégivrage en mode NORM ?', '2 h 30', ['1 h', '1 h 30', '3 h'], 'OM-B p.341'),
+    QZ('Dégivrage', 'Autonomie du dégivrage en mode HIGH ?', '1 h', ['30 min', '1 h 30', '2 h 30'], 'OM-B p.341'),
+    QZ('Dégivrage', 'Autonomie du dégivrage en mode MAX ?', '30 min', ['15 min', '1 h', '1 h 30'], 'OM-B p.341'),
+    QZ('Dégivrage', 'Température minimale d\'utilisation du dégivrage ?', '−30 °C', ['−10 °C', '−20 °C', '−40 °C'], 'OM-B p.340'),
+    QZ('Train', 'Durée maximale de fonctionnement de la pompe hydraulique à la mise sous tension ?', '20 s', ['5 s', '10 s', '60 s'], 'OM-B p.49'),
+    QZ('Performances', 'Majoration des distances d\'atterrissage sans volets (cours) ?', '+30 %', ['+10 %', '+50 %', '+60 %'], 'Notes Cours MEP'),
+    QZ('Performances', 'Vent traversier démontré, volets UP (cours) ?', '25 kt', ['15 kt', '20 kt', '30 kt'], 'Notes Cours MEP')
+  ];
 
   /* ------------------------------ Flow (time line) ------------------------------
    * chips : { t: mot-clé tel qu'écrit, say: phrase dite, ctls: commandes ou zones à balayer, doubt }
@@ -3231,9 +3356,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Trim', 'Trims', 'CHECK', ['elev_trim'], { om: '12.f' }),
       C('Fuel selector', 'Fuel selectors', 'ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '12.g' }),
       C('Power lever', 'Power levers', 'CHECK, SET IDLE', ['power_l', 'power_r'], { om: '12.h' }),
-      C('Alternate air', 'Alternate air', 'CLOSED', null, { om: '12.i', note: 'Réponse OM-B « CLOSED » (absente de la liste). Commande non représentée sur la photo.' }),
-      C('Manual gear extension', 'Manual gear extension', 'PUSHED IN', null, { om: '12.j', note: 'Réponse OM-B « PUSHED IN » (absente de la liste). Commande non représentée sur la photo.' }),
-      C('Alternate static', 'Alternate static source', 'CLOSED', null, { om: '12.k', note: 'Commande non représentée sur la photo.' }),
+      C('Alternate air', 'Alternate air', 'CLOSED', ['alt_air'], { om: '12.i', note: 'Levier ALTERNATE AIR sous le tableau, à droite de la console (OM-B p.370, rep. 28 ; p.417) : vers l\'avant = fermé.' }),
+      C('Manual gear extension', 'Manual gear extension', 'PUSHED IN', ['gear_emerg'], { om: '12.j', note: 'Levier rouge sous le tableau, à gauche de la console (OM-B p.370, rep. 29 ; p.403) : doit être enfoncé.' }),
+      C('Alternate static', 'Alternate static source', 'CLOSED', ['alt_static'], { om: '12.k', note: 'Valve sous le tableau, à gauche, côté pilote (OM-B p.370, rep. 14 ; p.410).' }),
       C('Gear', 'Gear selector', 'DOWN', ['gear_lever'], { om: '12.l' }),
       C('Avionic master', 'Avionic Master', 'OFF', ['av_master'], { om: '12.m' }),
       C('Elec master', 'Elect. Master', 'OFF', ['elec_master'], { om: '12.n' }),
@@ -3243,11 +3368,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Alternator', 'Alternators', 'ON', ['alt_l', 'alt_r'], { om: '12.s' }),
       C('Aux power switch', 'Aux power switch (if air conditioning installed)', 'OFF', null, { om: '12.r', moved: true, note: 'Seulement si l\'avion est équipé de la climatisation « Recirculating Air - Cabin Cooling » (OÄM 42-193). Interrupteur sur la paroi latérale gauche (OM-B p.301), non représenté sur la photo. Il alimente la climatisation par un alternateur supplémentaire sur le moteur gauche.' }),
       C('Voters', 'Voter switches', 'AUTO', ['voter_l', 'voter_r'], { om: '12.t' }),
-      C('All electric equipment', 'All electrical equipment', 'OFF', null, { om: '12.u' }),
+      C('All electric equipment', 'All electrical equipment', 'OFF', ['position_lights', 'strobe', 'landing_light', 'taxi_light', 'instr_light', 'flood_light'], { om: '12.u', note: 'Ici : tout ce qui est éclairage et feux (position, strobe, landing, taxi, éclairage instruments, flood) sur OFF.' }),
       C('Emergency switch', 'Emergency switch', 'OFF AND GUARDED', ['emergency_sw'], { om: '12.v' }),
       C('Stby instruments', 'Stand-by instruments', 'CHECKED', ['stby'], { om: '12.w' }),
       C('ELT', 'ELT', 'ARMED', ['elt'], { om: '12.x' }),
-      C('Circuit breakers', 'Circuit breakers', 'CHECKED', ['cb_panel'], { om: '12.y' }),
+      C('Circuit breakers', 'Circuit breakers', 'CHECKED', ['cb_panel', 'cb_bottom'], { om: '12.y', multi: true, note: 'Deux zones : le panneau de disjoncteurs à droite du MFD et la rangée de disjoncteurs moteurs en bas à droite.' }),
       C('Flaps', 'Flap selector', 'UP', ['flaps'], { om: '12.z' }),
       C('Fuel pump LH/RH', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '12.a (2e)', note: 'Liste reçue : « UP » — l\'OM-B dit OFF (interrupteurs de pompes, pas de position UP). Corrigé en OFF.' }),
       C('Pre-flight inspection', 'Pre-flight inspection', 'COMPLETE', null, { om: 'Before starting engine 1' })
@@ -3266,20 +3391,27 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j' }),
       C('« Before start procedure complete »', 'Before start procedure complete', 'ANNONCE, PUIS BEFORE START CHECK-LIST DONE', null, { om: '6', call: 'Before start procedure complete' })
     ] },
-    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage', ref: om('B02 §3 Engine Start-up', 57), chips: [
+    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage ; PFD et MFD allumés, moteurs simulés', ref: om('B02 §3 Engine Start-up', 57),
+      state: 'after-before-start', chips: [
       C('« Start-up procedure »', 'Start-up procedure', 'ANNONCE', null, { om: '1', call: 'Start-up procedure' }),
-      C('Keys', 'Keys', 'IN PLACE', ['start_key'], { om: '1.a' }),
-      C('Strobe', 'Strobe lights', 'ON', ['strobe'], { om: '1.b' }),
+      C('Keys', 'Keys', 'IN PLACE', ['start_key'], { om: '1.a', sim: 'keysIn' }),
+      C('Strobe', 'Strobe lights', 'ON', ['strobe'], { om: '1.b', sim: 'strobeOn' }),
       C('Clear', 'Propeller area', 'CLEAR', null, { om: 'avertissement p.57' }),
-      C('Master', 'Engine Master, left first', 'ON', ['eng_master_l'], { om: '1.c' }),
-      C('Glow', 'L ENGINE GLOW annunciation', 'CHECK ON', ['pfd'], { om: '1.d' }),
-      C('Pages', 'Annunciations, engine and system page', 'CHECK', ['mfd'], { om: '1.e' }),
-      C('Key', 'Start key, when L ENGINE GLOW is off', 'START (10 s max)', ['start_key'], { om: '1.f' }),
-      C('Param', 'Annunciations, starter, oil pressure', 'CHECK', null, { om: '1.g-i', lines: [['Annunciations / Engine / System page', 'CHECK'], ['L STARTER annunciation (PFD)', 'CHECK OFF'], ['Oil pressure', 'CHECKED (out of red within 3 s)']],
-        note: 'L STARTER est un message d\'alerte du PFD, pas une commande : s\'il reste affiché moteur démarré et clé relâchée → ENGINE MASTER OFF (OM-B p.57). Pression d\'huile sur la page moteur du MFD.' }),
-      C('Breakers', 'Circuit breakers', 'CHECK', ['cb_panel'], { om: '1.j' }),
-      C('Idle RPM', 'Idle RPM', 'CHECK 710 ± 30', ['mfd'], { om: '1.k' }),
-      C('→ R', 'Repeat with right engine', 'SAME SEQUENCE (Clear → Idle RPM)', null, { om: '« Repeat with opposite engine »' }),
+      C('Master', 'Engine Master, left first', 'ON', ['eng_master_l'], { om: '1.c', sim: 'masterL', vals: ['L GLOW ON s\'allume (moteur froid)'] }),
+      C('Glow', 'L GLOW ON annunciation', 'CHECK ON, wait until off', ['pfd'], { om: '1.d', ui: { glowSlot: 'L' }, sim: 'glowOffL', vals: ['START seulement quand L GLOW ON est éteint'],
+        note: 'Sur le PFD, dans la fenêtre d\'alertes : « L GLOW ON » (OM-B p.33 ; la procédure p.57 l\'appelle « L ENGINE GLOW »). Il s\'éteint quand le préchauffage est terminé.' }),
+      C('Pages', 'Annunciations, engine and system page', 'CHECK', ['mfd'], { om: '1.e', ui: { mfdBox: { title: 'Avant démarrage : moteur gauche', lines: [{ label: 'RPM', eng: 'L', key: 'rpm', target: '--- (arrêté)' }, { label: 'Oil Press', eng: 'L', key: 'oilP', unit: 'bar', target: '--- (arrêté)' }] } } }),
+      C('Key', 'Start key, when L GLOW ON is off', 'START (10 s max)', ['start_key'], { om: '1.f', sim: 'crankL', ui: { starterSlot: 'L' }, vals: ['Démarreur : 10 s maximum', 'L STARTER affiché pendant le démarrage'] }),
+      C('Param', 'Annunciations, starter, oil pressure', 'CHECK', ['pfd', 'mfd'], { om: '1.g-i', multi: true, sim: 'starterCheckedL',
+        lines: [['Annunciations / Engine / System page', 'CHECK'], ['L STARTER annunciation (PFD)', 'CHECK OFF'], ['Oil pressure', 'CHECKED (out of red within 3 s)']],
+        vals: ['Oil pressure hors du rouge < 3 s (min 0,9 bar sous 1 500 RPM, OM-B p.27)', 'L STARTER : absent'],
+        ui: { starterSlot: 'L', mfdBox: { title: 'Après démarrage : à vérifier', lines: [{ label: 'Oil Press (gauche)', eng: 'L', key: 'oilP', unit: 'bar', min: 0.9, target: '≥ 0,9 bar en < 3 s' }, { label: 'L STARTER (PFD)', absent: 'L', target: 'doit être absent' }] } },
+        note: 'Touche le PFD ou le MFD pour valider : la case pointillée du PFD montre où L STARTER apparaîtrait ; une fois vérifié, elle affiche « absent ». S\'il reste affiché moteur démarré et clé relâchée → ENGINE MASTER OFF (OM-B p.57).' }),
+      C('Breakers', 'Circuit breakers', 'CHECK', ['cb_panel', 'cb_bottom'], { om: '1.j', multi: true }),
+      C('Idle RPM', 'Idle RPM', 'CHECK 710 ± 30', ['mfd'], { om: '1.k', vals: ['710 ± 30 RPM'],
+        ui: { starterSlot: 'L', mfdBox: { title: 'Ralenti : à vérifier', lines: [{ label: 'RPM (gauche)', eng: 'L', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'Oil Press (gauche)', eng: 'L', key: 'oilP', unit: 'bar', min: 0.9, max: 6.5, target: '≥ 0,9 bar (< 1 500 RPM)' }] } } }),
+      C('→ R', 'Repeat with right engine', 'SAME SEQUENCE (Clear → Idle RPM)', null, { om: '« Repeat with opposite engine »', sim: 'startR', vals: ['R GLOW ON éteint avant START', '710 ± 30 RPM', 'R STARTER absent'],
+        ui: { starterSlot: 'R', mfdBox: { title: 'Moteur droit : à vérifier', lines: [{ label: 'RPM (droit)', eng: 'R', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'Oil Press (droit)', eng: 'R', key: 'oilP', unit: 'bar', min: 0.9, target: '≥ 0,9 bar en < 3 s' }, { label: 'R STARTER (PFD)', absent: 'R', target: 'doit être absent' }] } } }),
       C('« Start-up procedure complete »', 'Start-up procedure complete', 'ANNONCE, PUIS START-UP CHECK-LIST DONE', null, { om: '2', call: 'Start-up procedure complete' })
     ] },
     { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d)', ref: om('B02 §3 After Start-up', 58), chips: [
@@ -3606,6 +3738,54 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       'OM-B p.101 — « it is very important to reduce the asymmetry in thrust to regain directional control »',
       'L\'OM-B donne le principe (réduire la dissymétrie) ; le « pitch down » relève du cours MEP.')
   ] };
+})(this);
+
+</script>
+<script>/* js/data/briefings.js */
+/* Données — briefings à répéter (Mon vol › Briefings).
+ * Trame OM-B B02 §3 « 2. Departure briefing » (p.60) : a Taxi, b Take-off, c Departure, d Radio failure, e TEM ; PDP p.121.
+ * Les {champs} se remplissent dans l'appli ; les valeurs de l'avion viennent de l'OM-B (pages indiquées). */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  TF.DATA.briefModels = {
+    departure: {
+      title: 'Departure briefing', sub: 'Exemple LFBU (Angoulême) — piste 28', ref: 'OM-B p.60 (trame a-e) ; PDP p.121',
+      fields: [
+        { k: 'RWY', l: 'Piste', v: '28' },
+        { k: 'TWY', l: 'Taxiway(s)', v: 'XX' },
+        { k: 'HP', l: 'Point d\'arrêt', v: 'XX' },
+        { k: 'MASS', l: 'Masse (kg)', v: 'XX' },
+        { k: 'SID', l: 'SID attendue', v: 'XX' },
+        { k: 'ALT', l: 'Première altitude (ft)', v: 'XX' },
+        { k: 'TOSA', l: 'TOSA', v: '1 500 ft sol (IFR)' }
+      ],
+      sections: [
+        { h: 'Roulage', om: 'a', lines: [
+          'Nous roulerons du parking par le taxiway {TWY} jusqu\'au point d\'arrêt {HP} de la piste {RWY}.',
+          'Au roulage : check instruments en virage, freins testés ; au point d\'arrêt : frein de parc ON, phare de roulage OFF.' ] },
+        { h: 'Décollage', om: 'b', lines: [
+          'Décollage piste {RWY}, masse {MASS} kg, volets UP, puissance MAX.',
+          'À la mise en puissance : 2 250 à 2 300 RPM, load 89 à 100 %, sinon on interrompt.',
+          'Rotation à 76 kt, montée initiale 83 kt, puis Vy 90 kt (92 kt au-dessus de 1 900 kg).',
+          'Vario positif : freins, train rentré. Au-dessus de la TOSA ({TOSA}) : 92 %, feux, pompes OFF, volets et train vérifiés.' ] },
+        { h: 'Panne moteur', om: 'b', lines: [
+          'Panne au roulage : manettes IDLE, tenue d\'axe, freins.',
+          'Panne après décollage, train sorti et piste suffisante : on se repose droit devant.',
+          'Sinon, si on continue : MAX, palonnier, VYSE 85 kt, train UP, volets UP, mise en drapeau du moteur en panne.' ] },
+        { h: 'Départ', om: 'c', lines: [
+          'On s\'attend à la SID {SID}, première altitude {ALT} ft.',
+          'Organisation nav : plan de vol chargé et vérifié, cap piste, altitude et TOSA affichés ; moyens radio nommés par leur nom.' ] },
+        { h: 'Panne radio', om: 'd', lines: [
+          'Panne radio : transpondeur 7600 et procédure publiée.' ] },
+        { h: 'TEM', om: 'e', lines: [
+          'Menaces : panne moteur au décollage, vent traversier, trafic VFR en AFIS, relief et pente de montée de la SID.',
+          'Erreurs possibles : altitude ou SID mal affichée, confusion levier de train / frein de parc.',
+          'Parades : actions briefées, cross-check des affichages avant l\'alignement, check lever avant action.' ] }
+      ],
+      close: 'Des questions ?'
+    }
+  };
 })(this);
 
 </script>
@@ -4206,6 +4386,14 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return s;
   };
 
+  /* Commande visible sur la photo : rien à redessiner en position normale ; sinon une étiquette d'état */
+  D.photolever = function (def, v) {
+    if (v === def.initial) return '';
+    var w = Math.max(30, v.length * 5.2 + 8);
+    return '<rect x="' + (def.x - w / 2) + '" y="' + (def.y - 7) + '" width="' + w + '" height="14" rx="4" fill="#d9822b" stroke="#fff" stroke-width=".6"/>' +
+      '<text x="' + def.x + '" y="' + (def.y + 3.2) + '" font-size="8" fill="#fff" font-family="Arial" font-weight="700" text-anchor="middle">' + TF.util.esc(v) + '</text>';
+  };
+
   D.draw = function (def, value, ex) {
     var f = D[def.type === 'toggle' ? 'toggle' : def.type];
     return f ? f(def, value, ex || {}) : '';
@@ -4380,6 +4568,15 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       s += rect(540, y0, 98, h, '#000', ' stroke="#555" stroke-width="1"');
       lines.forEach(function (l, k) { s += t(544, y0 + 15 + k * 14, l.s, 12, l.c, 'start', 700); });
     }
+    // Aides pédagogiques : où apparaissent les annonces GLOW / STARTER dans la fenêtre d'alertes
+    if (I.ui && (I.ui.glowSlot || I.ui.starterSlot)) {
+      var gs = I.ui.glowSlot || I.ui.starterSlot, isG = !!I.ui.glowSlot, nm = gs + (isG ? ' GLOW ON' : ' STARTER');
+      var present = isG ? I.eng[gs] && I.eng[gs].glow : I.eng[gs] && I.eng[gs].starter;
+      s += '<rect x="537" y="286" width="104" height="60" rx="5" fill="none" stroke="#3fe0e8" stroke-width="2" stroke-dasharray="6 4"/>';
+      s += rect(452, 262, 188, 20, '#06121c', ' opacity=".92" rx="4"') + t(546, 276, (isG ? '↓ ' + nm + ' : ici' : '↓ ' + nm + ' apparaîtrait ici'), 11.5, '#3fe0e8', 'middle', 700);
+      if (!isG && !present && I.ui.starterChecked) s += rect(540, 316, 98, 26, '#0d2b16', ' rx="4"') + t(589, 333, '✓ absent (vérifié)', 11, '#2fe35a', 'middle', 700);
+      if (isG && I.ui.glowOffSeen && !present) s += rect(540, 316, 98, 26, '#0d2b16', ' rx="4"') + t(589, 333, '✓ ' + gs + ' GLOW éteint', 11, '#2fe35a', 'middle', 700);
+    }
     // Bandeau AFCS — Garmin Figure 7-2 p.389 : armé latéral (blanc) | actif latéral (vert) | AP · YD | actif vertical (vert) + référence | armé vertical (blanc)
     if (I.ap.state !== 'off') {
       var GRN = '#2fe35a', YEL = '#f2e23a', RED = '#e8262b';
@@ -4474,10 +4671,32 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (I.reversion) return X.pfd(I, sc, r);
     if (I.mfdPage === 'engine') s = engPage(I, sc);
     else s = mapPage(I, sc);
+    if (I.ui && I.ui.mfdBox) s += mfdBox(I, I.ui.mfdBox);
     s += rect(0, 0, VW, VH, 'url(#gGlass)');
     return wrap(r, s);
   };
 
+  /* Encadré pédagogique sur le MFD : valeurs à vérifier, avec la valeur lue en direct (L'essentiel) */
+  var EIS_ROW = { load: 0, rpm: 1, gph: 2, oilT: 3, oilP: 4, coolant: 5 };
+  function mfdBox(I, B) {
+    var lines = B.lines || [], h = 40 + lines.length * 34, x = 136, y = 64, w = 488, s = '';
+    s += rect(x, y, w, h, '#06121c', ' opacity=".94" stroke="#3fe0e8" stroke-width="2" rx="8"');
+    s += t(x + 14, y + 25, '✔ ' + B.title, 16, '#3fe0e8', 'start', 700);
+    lines.forEach(function (l, k) {
+      var yy = y + 56 + k * 34, live = '', ok = null;
+      if (l.eng && l.key) {
+        var e = I.eng[l.eng], v = e ? e[l.key] : null;
+        live = v == null ? '---' : String(v) + (l.unit ? ' ' + l.unit : '');
+        if (l.min != null && v != null) ok = v >= l.min && (l.max == null || v <= l.max);
+      }
+      if (l.absent) { var on = I.eng[l.absent] && I.eng[l.absent].starter; live = on ? 'AFFICHÉ' : 'absent'; ok = !on; }
+      s += t(x + 14, yy, l.label, 15, '#fff', 'start', 700);
+      if (live) s += t(x + 300, yy, live, 16, ok === false ? '#ff6b6b' : ok ? '#2fe35a' : '#fff', 'end', 700);
+      s += rect(x + 318, yy - 17, 160, 24, '#123a48', ' rx="5"') + t(x + 398, yy, l.target, 14, '#c8fbff', 'middle', 700);
+      if (I.mfdPage !== 'engine' && l.eng && l.key && EIS_ROW[l.key] != null) s += '<rect x="2" y="' + (46 + 10 + EIS_ROW[l.key] * 48) + '" width="108" height="44" fill="none" stroke="#3fe0e8" stroke-width="2.5" rx="4"/>';
+    });
+    return s;
+  }
   function mapPage(I, sc) {
     var s = rect(0, 0, VW, VH, '#0a0d10');
     s += rect(112, 46, 528, 406, '#4c6b3a');
@@ -4698,7 +4917,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     });
     // Zones d'observation (sous les commandes)
     TF.DATA.indicators.forEach(function (z) {
-      el('rect', { x: z.x, y: z.y, width: z.w, height: z.h, fill: 'transparent', 'data-ind': z.id, 'class': 'hit-ind' }, self.gHit);
+      if (z.poly) el('path', { d: 'M' + z.poly.map(function (p) { return p.join(','); }).join(' L') + 'Z', fill: 'transparent', 'data-ind': z.id, 'class': 'hit-ind' }, self.gHit);
+      else el('rect', { x: z.x, y: z.y, width: z.w, height: z.h, fill: 'transparent', 'data-ind': z.id, 'class': 'hit-ind' }, self.gHit);
     });
     // Zones des commandes (au-dessus), taille tactile minimale
     TF.DATA.controls.forEach(function (d) {
@@ -4736,8 +4956,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   CockpitView.prototype.renderDynamic = function (force) {
     var I = this.c.indications(), sc = this.c.s.scenario;
     var blink = Math.floor(I.t / 400) % 2;
-    var fl = I.flight, kp = JSON.stringify([I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
-    var km = JSON.stringify([I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel]);
+    var fl = I.flight, kp = JSON.stringify([I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
+    var km = JSON.stringify([I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
     var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias)]);
     var kl = JSON.stringify([I.gearLights, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
     if (force || kp !== this.lastDisp.p) { parseInto(this.gPfd, TF.Displays.pfd(I, sc)); this.lastDisp.p = kp; }
@@ -4760,6 +4980,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var r = this.rectOf(id); if (!r) return;
     var pad = style === 'zone' ? 4 : 3.5;
     var cls = 'hl hl-' + (style || 'pulse');
+    var z = TF.DATA.indicators.filter(function (q) { return q.id === id; })[0];
+    if (z && z.poly) { el('path', { d: 'M' + z.poly.map(function (p) { return p.join(','); }).join(' L') + 'Z', 'class': cls, 'stroke-linejoin': 'round' }, this.gHl); return; }
     el('rect', { x: r.x - pad, y: r.y - pad, width: r.w + 2 * pad, height: r.h + 2 * pad, rx: 4, 'class': cls }, this.gHl);
   };
   CockpitView.prototype.path = function (fromId, toId) {
@@ -4979,6 +5201,98 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   TF.CockpitView = CockpitView;
   TF.CockpitView.HOME = HOME;
+})(this);
+
+</script>
+<script>/* js/render/minimap.js */
+/* Mini-carte (cartouche) : DA42 vu de dessus à LFBU, du parking à la piste puis en vol.
+ * Piste 10/28 réelle (1 860 m, QFU 097° vrai, AIP AD 2 LFBU) ; parking et taxiways SCHÉMATIQUES.
+ * Aucune SID / route réelle : on affiche la trace de l'avion et le cap affiché (bug HDG) pour la conscience de situation.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  var M = TF.MiniMap = {};
+  var el = null, big = false, last = '', RAD = Math.PI / 180;
+
+  function phaseOf(I, f) {
+    var pr = TF.app && TF.app.modes && TF.app.modes.proc;
+    if (pr && !f.onGround) return pr.title.charAt(0) + pr.title.slice(1).toLowerCase();
+    var eng = I.eng && (I.eng.L.state === 'run' || I.eng.R.state === 'run');
+    if (!f.onGround) return f.alt < 1500 && f.vs > 200 ? 'Montée initiale' : f.vs > 200 ? 'Montée' : f.vs < -200 ? 'Descente' : 'En vol';
+    if (f.ias > 30) return 'Décollage / course';
+    if (f.label && /point d'arrêt/i.test(f.label)) return 'Point d\'arrêt';
+    if (f.ias > 0.5) return 'Roulage';
+    if (f.pos >= 0.99 && Math.hypot(f.mx - 30, f.my + 4) < 40) return 'Aligné piste 10';
+    if (f.pos >= 0.99) return 'Point d\'arrêt';
+    return eng ? 'Parking (moteurs en route)' : 'Parking';
+  }
+  M.init = function () {
+    el = document.createElement('div'); el.id = 'miniMap'; el.className = 'hidden';
+    el.title = 'Toucher pour agrandir / réduire';
+    el.onclick = function () { big = !big; el.classList.toggle('big', big); last = ''; M.update(true); };
+    var st = document.getElementById('stage'); if (st) st.appendChild(el);
+  };
+  M.update = function (force) {
+    if (!el) return;
+    var ck = TF.app && TF.app.ck; if (!ck) return;
+    var I = ck.indications(), f = ck.s.flight, g = ck.s.g;
+    if (f.mx == null) { f.mx = 0; f.my = -238; }
+    var eng = I.eng && (I.eng.L.state !== 'off' || I.eng.R.state !== 'off');
+    var show = (eng || !f.onGround || f.pos > 0) && !document.getElementById('home').offsetParent && !document.getElementById('ess').offsetParent;
+    el.classList.toggle('hidden', !show);
+    if (!show) return;
+    var key = [Math.round(f.mx / 3), Math.round(f.my / 3), Math.round(f.hdg), Math.round(f.alt / 20), f.onGround, big, g.hdg].join('|');
+    if (!force && key === last) return; last = key;
+    var L = TF.G1000.LFBU, W = big ? 300 : 190, H = big ? 220 : 140;
+    // Échelle : au sol, la plateforme ; en vol, l'aérodrome + l'avion (zoom automatique)
+    var cx, cy, span;
+    if (f.onGround && Math.hypot(f.mx - 900, f.my + 110) < 1600) { cx = 880; cy = -120; span = 2500; }
+    else { var ax = 930, ay = -113, dx = f.mx - ax, dy = f.my - ay; cx = (f.mx + ax) / 2; cy = (f.my + ay) / 2; span = Math.max(3500, Math.abs(dx) * 1.35 + 900, Math.abs(dy) * 1.35 * W / H + 900); }
+    var sc = W / span;
+    function P(x, y) { return [(W / 2 + (x - cx) * sc).toFixed(1), (H / 2 - (y - cy) * sc).toFixed(1)]; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '">';
+    s += '<rect width="' + W + '" height="' + H + '" fill="#13281a"/>';
+    // piste 10/28
+    var a = P(0, 0), b = P(L.thr28[0], L.thr28[1]), rw = Math.max(2.2, 45 * sc);
+    s += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#5b6168" stroke-width="' + rw + '"/>';
+    s += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#e8e8e8" stroke-width=".6" stroke-dasharray="4 4"/>';
+    if (sc > 0.05) {
+      s += '<text x="' + (+a[0] - 4) + '" y="' + (+a[1] + 3) + '" font-size="8" fill="#fff" text-anchor="end" font-weight="700">10</text>';
+      s += '<text x="' + (+b[0] + 4) + '" y="' + (+b[1] + 3) + '" font-size="8" fill="#fff" font-weight="700">28</text>';
+      // taxiway + parking schématiques
+      var tw = L.taxi.map(function (p) { return P(p[0], p[1]).join(','); }).join(' ');
+      s += '<polyline points="' + tw + '" fill="none" stroke="#c9b13a" stroke-width="' + Math.max(1, 15 * sc) + '" opacity=".75"/>';
+      var pk = P(-40, -225), hp = P(150, -98);
+      s += '<rect x="' + pk[0] + '" y="' + pk[1] + '" width="' + (80 * sc) + '" height="' + (40 * sc) + '" fill="#44505c"/>';
+      s += '<text x="' + (+pk[0] + 40 * sc) + '" y="' + (+pk[1] + 40 * sc + 9) + '" font-size="7" fill="#c8d4e4" text-anchor="middle">parking</text>';
+      s += '<line x1="' + (+hp[0] - 6) + '" y1="' + hp[1] + '" x2="' + (+hp[0] + 6) + '" y2="' + hp[1] + '" stroke="#f2d23a" stroke-width="1.6"/>';
+    } else {
+      var mid = P(930, -113);
+      s += '<text x="' + mid[0] + '" y="' + (+mid[1] - 6) + '" font-size="8" fill="#cfe" text-anchor="middle">LFBU</text>';
+    }
+    // trace
+    if (f.trail && f.trail.length > 1) s += '<polyline points="' + f.trail.map(function (p) { return P(p[0], p[1]).join(','); }).join(' ') + ' ' + P(f.mx, f.my).join(',') + '" fill="none" stroke="#e44ad8" stroke-width="1.3" opacity=".85"/>';
+    // cap affiché (bug HDG) en vol
+    var me = P(f.mx, f.my);
+    if (!f.onGround) {
+      var r = 40;
+      s += '<line x1="' + me[0] + '" y1="' + me[1] + '" x2="' + (+me[0] + Math.sin(g.hdg * RAD) * r).toFixed(1) + '" y2="' + (+me[1] - Math.cos(g.hdg * RAD) * r).toFixed(1) + '" stroke="#3fe0e8" stroke-width="1" stroke-dasharray="3 2"/>';
+    }
+    // DA42 vu de dessus (silhouette simplifiée)
+    var k = big ? 1.25 : 1;
+    s += '<g transform="translate(' + me[0] + ',' + me[1] + ') rotate(' + f.hdg.toFixed(0) + ') scale(' + k + ')">' +
+      '<path d="M0,-8 L1.3,-5 L1.3,-1.5 L9,0 L9,1.6 L1.3,1.2 L1,5.5 L3.6,6.6 L3.6,7.8 L0,7.2 L-3.6,7.8 L-3.6,6.6 L-1,5.5 L-1.3,1.2 L-9,1.6 L-9,0 L-1.3,-1.5 L-1.3,-5Z" fill="#fff" stroke="#000" stroke-width=".5"/>' +
+      '<rect x="-5.2" y="-3.2" width="1.6" height="3.4" fill="#fff" stroke="#000" stroke-width=".4"/><rect x="3.6" y="-3.2" width="1.6" height="3.4" fill="#fff" stroke="#000" stroke-width=".4"/></g>';
+    // bandeau d'infos
+    var ph = phaseOf(I, f);
+    s += '<rect x="0" y="0" width="' + W + '" height="13" fill="rgba(0,0,0,.55)"/>';
+    s += '<text x="4" y="9.5" font-size="8" fill="#fff" font-weight="700">' + TF.util.esc(ph) + '</text>';
+    s += '<text x="' + (W - 4) + '" y="9.5" font-size="8" fill="#9fe6f0" text-anchor="end">' + (f.onGround ? Math.round(f.ias) + ' kt' : Math.round(f.alt / 10) * 10 + ' ft · ' + Math.round(f.ias) + ' kt · ' + ('00' + Math.round(f.hdg)).slice(-3) + '°') + '</text>';
+    s += '<text x="' + (W - 3) + '" y="' + (H - 3) + '" font-size="6" fill="#8fa1b8" text-anchor="end">LFBU · schéma (parking/taxi non à l\'échelle)</text>';
+    s += '</svg>';
+    el.innerHTML = s;
+  };
 })(this);
 
 </script>
@@ -5292,6 +5606,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     switch (d.type) {
       case 'rocker': case 'pushlatch':
         res = ck.setControl(id, d.positions[1 - d.positions.indexOf(v)]); break;
+      case 'photolever':
+        res = ck.setControl(id, d.positions[1 - d.positions.indexOf(v)]);
+        K.toast(esc(d.short) + ' → <b>' + esc(ck.get(id)) + '</b>', ck.get(id) === d.initial ? '' : 'warn', 1400); break;
       case 'trimwheel':
         var ti = d.positions.indexOf(v), tj = info.part === 'upper' ? ti - 1 : ti + 1;
         if (tj < 0 || tj >= d.positions.length) { K.toast('Trim en butée (' + esc(v) + ')', '', 1200); return; }
@@ -6459,9 +6776,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var pr = TF.Profiles.current();
     h += '<div class="ess-top"><div><div class="hm-hello">' + (pr ? 'Bonjour ' + esc(pr.name) + ' 👋 · ' : '') + 'Mon vol</div><div class="hm-sub">L\'essentiel : le flow et les procédures essentielles, l\'avion en chiffres, le tour avion. Le détail exhaustif est dans 📚 Procédures complètes.</div></div>' +
       '<button class="btn" data-act="home">📚 Procédures complètes</button></div>';
-    h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['test', '📝 Class test']].map(function (t) {
+    h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['brief', '🗣 Briefings'], ['test', '📝 Class test']].map(function (t) {
       return '<button data-act="tab" data-v="' + t[0] + '" class="' + (E.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>'; }).join('') + '</div>';
-    h += E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : flowHtml();
+    h += E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
     h += '<div class="hm-foot"><button data-act="voices">🗣 Voix</button><button data-act="free">🛠 Cockpit libre</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     var keep = E._shown === E.tab && E.visible() ? el.scrollTop : 0; E._shown = E.tab;
@@ -6470,6 +6787,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       home: function () { E.close(); TF.Home.show(); },
       tab: function (b) { E.show(b.getAttribute('data-v')); },
       voices: function () { TF.Screens.voices(); },
+      // briefings
+      bfield: function () { }, bplay: function () { briefPlay(); }, bstop: function () { V.stop(); },
+      blevel: function (b) { E.bLevel = +b.getAttribute('data-v'); E.show('brief'); },
+      breveal: function (b) { b.classList.add('shown'); },
       // class test
       ctstart: function (b) { var only = b.getAttribute('data-v'); var CT = TF.DATA.classTest.questions;
         E.ct = { list: only === 'wrong' && E.ct ? E.ct.wrong.slice() : CT.map(function (q) { return q.n; }), i: 0, ok: 0, wrong: [], picked: null }; E.show('test'); },
@@ -6482,6 +6803,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       // flow
       sweep: function (b) { E.sweep(b.getAttribute('data-id'), 'demo'); },
       tryit: function (b) { E.sweep(b.getAttribute('data-id'), 'try'); },
+      chipgo: function (b) { E.sweep(b.getAttribute('data-id'), 'try', +b.getAttribute('data-i')); },
       walktab: function () { E.show('tour'); },
       // fiche
       rev: function () { E.hide = !E.hide; E.show('avion'); },
@@ -6506,11 +6828,12 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* ---------------------------------------------------------- Fiche avion ---------------------------------------------------------- */
   function ficheHtml() {
     var h = srcBanner() + '<div class="ess-bar"><button class="btn ' + (E.hide ? 'primary' : '') + '" data-act="rev">' + (E.hide ? '👁 Montrer les valeurs' : '🙈 Mode révision (cacher les valeurs)') + '</button>' +
-      '<button class="btn gold" data-act="quiz">🎲 Quiz flash</button></div><div class="ess-grid">';
+      '<button class="btn" data-act="quiz">🎲 Quiz flash</button></div><div class="ess-grid">';
     TF.DATA.essFiche.forEach(function (c) {
-      h += '<div class="ess-card"><div class="ec-h">' + c.icon + ' ' + esc(c.title) + '</div>';
+      h += '<div class="ess-card ec-' + c.id + '"><div class="ec-h">' + c.icon + ' ' + esc(c.title) + '</div>';
+      if (c.id === 'vit') h += '<div class="asi-leg"><i class="asi asi-white"></i>arc blanc <i class="asi asi-green"></i>arc vert <i class="asi asi-yellow"></i>arc jaune <i class="asi asi-red"></i>trait rouge <i class="asi asi-blue"></i>trait bleu — repères du cadran (OM-B p.24)</div>';
       c.facts.forEach(function (f) {
-        h += '<div class="ec-f"><span class="ec-k">' + esc(f.k) + (f.doubt ? ' <span class="doubt" title="Lecture du manuscrit à confirmer">?</span>' : '') +
+        h += '<div class="ec-f"><span class="ec-k">' + (f.asi ? '<i class="asi asi-' + f.asi[0] + '" title="' + esc(f.asi[1]) + '"></i>' : '') + esc(f.k) + (f.doubt ? ' <span class="doubt" title="Lecture du manuscrit à confirmer">?</span>' : '') +
           (f.def && !E.hide ? ' <button class="i-btn" data-act="info" title="Définition">i</button>' : '') + '</span>' +
           '<span class="ec-v' + (E.hide ? ' hid' : '') + '" data-act="reveal"><b>' + esc(f.v) + '</b>' + (f.note ? '<small>' + esc(f.note) + '</small>' : '') + '</span>' +
           (f.def && !E.hide ? '<div class="ec-def hidden">ℹ︎ ' + esc(f.def) + '</div>' : '') + '</div>';
@@ -6519,23 +6842,20 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     });
     return h + '</div>';
   }
+  /* Quiz flash : une question claire, 4 réponses de même unité, explication + source */
   function quiz() {
-    var all = [];
-    TF.DATA.essFiche.forEach(function (c) { c.facts.forEach(function (f) { if (/\d/.test(f.v)) all.push({ c: c, f: f }); }); });
-    var q = all[Math.floor(Math.random() * all.length)], pool = q.c.facts.filter(function (f) { return f !== q.f && f.v !== q.f.v && /\d/.test(f.v); });
-    if (pool.length < 3) all.forEach(function (x) { if (x.f !== q.f && x.f.v !== q.f.v && pool.indexOf(x.f) < 0) pool.push(x.f); });
-    var opts = [q.f.v], tries = 0;
-    while (opts.length < 4 && tries++ < 50) { var o = pool[Math.floor(Math.random() * pool.length)].v; if (opts.indexOf(o) < 0) opts.push(o); }
-    opts.sort(function () { return Math.random() - 0.5; });
-    var h = K.head('🎲 Quiz flash — ' + esc(q.c.title)) + '<div class="qz-q">' + esc(q.f.k) + ' ?</div><div class="qz-opts">' +
+    var Z = TF.DATA.essQuiz, q = Z[Math.floor(Math.random() * Z.length)];
+    if (E._lastQz === q && Z.length > 1) return quiz(); E._lastQz = q;
+    var opts = [q.a].concat(q.w).sort(function () { return Math.random() - 0.5; });
+    var h = K.head('🎲 Quiz flash — ' + esc(q.cat)) + '<div class="qz-q">' + esc(q.q) + '</div><div class="qz-opts">' +
       opts.map(function (o) { return '<button class="btn big block" data-act="ans" data-v="' + esc(o) + '">' + esc(o) + '</button>'; }).join('') + '</div><div id="qzFb"></div>';
     K.sheet(h, function (s) {
       K.bindActs(s, {
         ans: function (b) {
-          var ok = b.getAttribute('data-v') === q.f.v, fb = s.querySelector('#qzFb');
-          Array.prototype.forEach.call(s.querySelectorAll('[data-act="ans"]'), function (x) { x.disabled = true; if (x.getAttribute('data-v') === q.f.v) x.classList.add('primary'); });
+          var ok = b.getAttribute('data-v') === q.a, fb = s.querySelector('#qzFb');
+          Array.prototype.forEach.call(s.querySelectorAll('[data-act="ans"]'), function (x) { x.disabled = true; if (x.getAttribute('data-v') === q.a) x.classList.add('primary'); });
           if (ok) { K.sound.ok(); TF.Profiles.addXp(1); } else { K.sound.err(); b.classList.add('danger'); }
-          fb.innerHTML = '<div class="feedback ' + (ok ? 'ok' : 'err') + '">' + (ok ? '✓ Exact' : '✗ C\'était ' + esc(q.f.v)) + (q.f.note ? ' — ' + esc(q.f.note) : '') + '</div><button class="btn primary block" data-act="next">Question suivante ▶</button>';
+          fb.innerHTML = '<div class="feedback ' + (ok ? 'ok' : 'err') + '">' + (ok ? '✓ Exact : ' : '✗ La bonne réponse : ') + esc(q.a) + '</div><div class="ct-src">📄 ' + esc(q.s) + '</div><button class="btn primary block" data-act="next">Question suivante ▶</button>';
         },
         next: function () { quiz(); }
       });
@@ -6552,7 +6872,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     TF.DATA.essFlow.forEach(function (b, i) {
       var div = b.chips.filter(function (c) { return c.div; })[0];
       h += '<div class="tl-it"><div class="tl-dot">' + b.icon + '</div><div class="tl-card"><div class="tl-h"><b>' + esc(b.title) + '</b><small>' + esc(b.sub) + '</small></div>' +
-        '<div class="tl-chips">' + b.chips.map(function (c) { return chipHtml(c); }).join('<i class="sep">/</i>') + '</div>';
+        '<div class="tl-chips">' + b.chips.map(function (c, k) { return b.walk ? chipHtml(c) : '<span class="chipgo" data-act="chipgo" data-id="' + b.id + '" data-i="' + k + '" title="Reprendre le flow ici (à toi)">' + chipHtml(c) + '</span>'; }).join('<i class="sep">/</i>') + '</div>';
       if (div) { var dv = TF.DATA.divergences.filter(function (x) { return x.id === div.div; })[0]; h += '<div class="caution" style="font-size:12px"><b>' + dv.id + '</b> — ' + esc(dv.decision) + '</div>'; }
       h += '<div class="tl-acts">';
       if (b.walk) h += '<button class="btn" data-act="walktab">🚶 Ouvrir le tour avion</button>';
@@ -6560,6 +6880,53 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       h += '<span class="tl-ref">' + esc(TF.refText(b.ref)) + '</span></div></div></div>';
     });
     return h + '</div>';
+  }
+
+  /* ------------------------------------------------- Briefings à répéter ------------------------------------------------- */
+  function bVals() {
+    var M = TF.DATA.briefModels.departure, v = {}, saved = {};
+    try { saved = JSON.parse(localStorage.getItem('tiffanir.brief.dep') || '{}'); } catch (e) { }
+    M.fields.forEach(function (f) { v[f.k] = saved[f.k] != null && saved[f.k] !== '' ? saved[f.k] : f.v; });
+    return v;
+  }
+  function bLine(line, vals, level) {
+    // level 0 : tout ; 1 : valeurs masquées (touche pour révéler)
+    function chip(x) { return level >= 1 ? '<span class="bv hid" data-act="breveal">' + x + '</span>' : '<span class="bv">' + x + '</span>'; }
+    return line.split(/(\{\w+\})/).map(function (part) {
+      var m = /^\{(\w+)\}$/.exec(part);
+      if (m) return chip(esc(vals[m[1]] || '?'));
+      if (level < 1) return esc(part);
+      return part.split(/(\d[\d ,.]*(?:\s?(?:kt|kg|ft|RPM|%))?)/).map(function (q, k) { return k % 2 ? chip(esc(q.trim())) + (/\s$/.test(q) ? ' ' : '') : esc(q); }).join('');
+    }).join('');
+  }
+  function briefHtml() {
+    var M = TF.DATA.briefModels.departure, vals = bVals(), lv = E.bLevel || 0;
+    var h = '<div class="ess-intro">🗣 <b>' + esc(M.title) + '</b> — ' + esc(M.sub) + '. Trame ' + esc(M.ref) + '. Remplis les champs (carte du jour, clairance), écoute-le, puis répète-le en masquant les valeurs.</div>';
+    h += '<div class="bf-grid">' + M.fields.map(function (f) { return '<label class="bf"><span>' + esc(f.l) + '</span><input data-k="' + f.k + '" value="' + esc(vals[f.k]) + '"></label>'; }).join('') + '</div>';
+    h += '<div class="ess-bar"><button class="btn primary" data-act="bplay">▶ Écouter</button><button class="btn" data-act="bstop">■</button>' +
+      [['0', '📖 Texte complet'], ['1', '🙈 Valeurs masquées'], ['2', '🧠 Titres seuls']].map(function (x) { return '<button class="btn' + (String(lv) === x[0] ? ' primary' : '') + '" data-act="blevel" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+    h += '<div class="bf-card">';
+    M.sections.forEach(function (sct) {
+      h += '<div class="bf-sec"><div class="bf-h">' + esc(sct.h) + ' <small>OM-B ' + sct.om + '</small></div>';
+      if (lv < 2) h += sct.lines.map(function (l) { return '<p>' + bLine(l, vals, lv) + '</p>'; }).join('');
+      h += '</div>';
+    });
+    h += '<div class="bf-sec"><p><i>' + esc(M.close) + '</i></p></div></div>';
+    h += '<div class="sc-note">Taxiway, point d\'arrêt, SID et première altitude : à lire sur les cartes en vigueur et la clairance du jour (non inventés ici).</div>';
+    setTimeout(function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#ess .bf input'), function (inp) {
+        inp.onchange = function () { var v = bVals(); v[inp.getAttribute('data-k')] = inp.value; try { localStorage.setItem('tiffanir.brief.dep', JSON.stringify(v)); } catch (e) { } setTimeout(function () { E.show('brief'); }, 0); };
+      });
+    }, 0);
+    return h;
+  }
+  function briefPlay() {
+    var M = TF.DATA.briefModels.departure, vals = bVals(); V.stop();
+    M.sections.forEach(function (sct) {
+      V.say(sct.h + '.', 'fr');
+      sct.lines.forEach(function (l) { V.say(l.replace(/\{(\w+)\}/g, function (m, k) { return vals[k] === 'XX' ? '…' : vals[k]; }), 'fr'); });
+    });
+    V.say(M.close, 'fr');
   }
 
   /* ------------------------------------------------- Class test (copie Airbus) ------------------------------------------------- */
@@ -6603,22 +6970,70 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   /* ----------------------------------------------- Balayage dans le cockpit (démo / à toi) ----------------------------------------------- */
   E.active = function () { return !!S; };
-  E.sweep = function (id, mode) {
+  E.sweep = function (id, mode, from) {
     var b = TF.DATA.essFlow.filter(function (x) { return x.id === id; })[0]; if (!b) return;
     E.close(); ses().idle(); TF.Home.hide();
     var ck = app().ck, sc = app().scenario();
     if (!ses().phase) { /* cockpit au repos, écrans allumés pour lire les zones */ }
-    S = { b: b, mode: mode, i: 0, errors: 0, chipErr: 0, prev: null, g: ++gen, done: [] };
+    from = Math.max(0, Math.min(+from || 0, b.chips.length - 1));
+    S = { b: b, mode: mode, i: from, errors: 0, chipErr: 0, prev: null, g: ++gen, done: [] };
+    for (var k = 0; k < from; k++) S.done.push(k);
+    if (b.state) {
+      var PE = TF.ProcEngine; ck.reset(sc); ck.restore(PE.buildInitial(b.state, sc)); app().view.renderAll();
+      ck.s.ui = {}; ck.s.sys.mfdPage = 'map'; // page carte : bandeau moteur (EIS) à gauche, place pour l'encadré
+      for (var k2 = 0; k2 < from; k2++) runSim(b.chips[k2], true);
+    }
+    setUi(b.chips[from]);
     app().view.clearHighlight(); app().view.home(true);
     E.renderPanel();
     if (mode === 'demo') demoStep(); else tryFocus();
   };
-  E.stop = function (silent) { S = null; gen++; app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
+  E.stop = function (silent) { S = null; gen++; if (app().ck.s.ui) { app().ck.s.ui = null; app().view.renderDynamic(true); } app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
+
+  /* -------- Cockpit piloté par le flow : l'état suit les étapes (écrans allumés, moteurs qui démarrent) -------- */
+  function setUi(c) {
+    var ck = app().ck; if (!S || !S.b.state) return;
+    var keep = ck.s.ui || {}, u = { starterChecked: keep.starterChecked, glowOffSeen: keep.glowOffSeen, starterCheckedR: keep.starterCheckedR };
+    if (c && c.ui) for (var k in c.ui) u[k] = c.ui[k];
+    if (u.starterSlot === 'R') u.starterChecked = u.starterCheckedR;
+    ck.s.ui = u; app().view.renderDynamic(true);
+  }
+  /* attend une condition sur le cockpit : en temps réel (démo / à toi) ou instantanément (reprise à une étape) */
+  function waitFor(cond, done, fast, maxMs) {
+    var ck = app().ck, t = 0; maxMs = maxMs || 15000;
+    if (fast) { while (!cond() && t < maxMs) { ck.update(100); t += 100; } done(); return; }
+    var g = S && S.g, iv = setInterval(function () { t += 100; if (!S || S.g !== g) return clearInterval(iv); if (cond() || t > maxMs) { clearInterval(iv); done(); } }, 100);
+  }
+  function eng(k) { return app().ck.indications().eng[k]; }
+  var SIMS = {
+    keysIn: function (ck) { ck.setControl('start_key', 'OFF'); },
+    strobeOn: function (ck) { ck.setControl('strobe', 'ON'); },
+    masterL: function (ck) { ck.s.scenario.coldEngine = true; ck.setControl('eng_master_l', 'ON'); },
+    glowOffL: function (ck, fast, cb) { waitFor(function () { return !eng('L').glow; }, function () { if (ck.s.ui) ck.s.ui.glowOffSeen = true; cb(); }, fast); },
+    crankL: function (ck, fast, cb) { crank(ck, 'L', fast, cb); },
+    starterCheckedL: function (ck) { if (ck.s.ui) ck.s.ui.starterChecked = true; },
+    startR: function (ck, fast, cb) {
+      ck.setControl('eng_master_r', 'ON');
+      waitFor(function () { return !eng('R').glow; }, function () { crank(ck, 'R', fast, function () { if (ck.s.ui) ck.s.ui.starterCheckedR = true; cb(); }); }, fast);
+    }
+  };
+  function crank(ck, k, fast, cb) {
+    ck.setControl('start_key', 'START ' + k);
+    waitFor(function () { return eng(k).state === 'run'; }, function () { ck.setControl('start_key', 'OFF'); waitFor(function () { return (eng(k).oilP || 0) >= 0.9 * 0.9; }, cb, fast, 4000); }, fast, 12000);
+  }
+  function runSim(c, fast, cb) {
+    cb = cb || function () { };
+    var f = c && c.sim && SIMS[c.sim], ck = app().ck;
+    if (!f) return cb();
+    var r = f(ck, fast, function () { app().view.renderDynamic(true); cb(); });
+    if (f.length < 3) { app().view.renderDynamic(true); cb(); }
+  }
   function alive(g) { return function () { return S && S.g === g; }; }
   function demoStep() {
     var g = S.g, al = alive(g), b = S.b, v = app().view;
     if (S.i >= b.chips.length) { S.finished = true; E.renderPanel(); return; }
     var c = b.chips[S.i];
+    setUi(c);
     E.renderPanel();
     v.clearHighlight();
     if (c.ctls) {
@@ -6631,7 +7046,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     }
     if (c.call) K.toast('🎙 Annonce : « ' + esc(c.call) + ' »', 'call', 2600);
     ses().dSay(c.say, 'en', function () {
-      S.done.push(S.i); S.i++; ses().dWait(c.ctls ? 500 : 250, demoStep, al);
+      runSim(c, false, function () { if (!al()) return; S.done.push(S.i); S.i++; ses().dWait(c.ctls ? 500 : 250, demoStep, al); });
     }, null, al);
   }
   function tryFocus() {
@@ -6647,7 +7062,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     S.finished = true; S.result = { n: n, err: err }; E.renderPanel();
   }
   function advanceTry() {
+    var cur = S.b.chips[S.i];
     S.done.push(S.i); S.i++; S.chipErr = 0;
+    runSim(cur, false, function () { if (S) { setUi(S.b.chips[S.i]); E.renderPanel(); } });
+    setUi(S.b.chips[S.i]);
     var next = S.b.chips[S.i], v = app().view;
     setTimeout(function () {
       if (!S) return;
@@ -6693,20 +7111,23 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       var st = S.done.indexOf(i) >= 0 ? ' ok' : i === S.i && !S.finished ? ' cur' : '';
       if (c.call) {
         // annonce orale : bandeau distinct, phrase exacte à dire
-        h += '<div class="clc-row ess-call' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l"><span class="call-tag">🎙 ANNONCE</span><b class="call-txt">« ' + esc(c.call) + ' »</b>' +
+        h += '<div class="clc-row ess-call' + st + '" data-act="goto" data-i="' + i + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l"><span class="call-tag">🎙 ANNONCE</span><b class="call-txt">« ' + esc(c.call) + ' »</b>' +
           (/CHECK-LIST/.test(c.r) ? '<small class="ess-act">puis <b>' + esc(c.call.replace(/ procedure complete$/i, '')) + ' check-list … DONE</b></small>' : '') + (c.om ? '<small class="ess-act"><i class="ess-om">OM-B ' + esc(c.om) + '</i></small>' : '') + '</span><span class="clc-r">' + (st === ' ok' ? '✓' : '🎙') + '</span>';
         if (st === ' cur' && S.mode === 'try') h += '<div class="clc-acts"><button class="btn call-btn" data-act="said">🎙 J\'ai fait l\'annonce</button></div>';
         h += '</div>'; return;
       }
       var tgt = c.ctls ? (S.mode === 'try' && st !== ' ok' ? '👆 dans le cockpit' : '🎯') : '🗣 à dire';
       if (c.lines) {
-        h += '<div class="clc-row' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + c.lines.map(function (l) { return '<small class="ess-act">' + esc(l[0]) + ' … <b>' + esc(l[1]) + '</b></small>'; }).join('') +
+        h += '<div class="clc-row' + st + '" data-act="goto" data-i="' + i + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + c.lines.map(function (l) { return '<small class="ess-act">' + esc(l[0]) + ' … <b>' + esc(l[1]) + '</b></small>'; }).join('') +
           (c.om ? '<small class="ess-act"><i class="ess-om">OM-B ' + esc(c.om) + '</i></small>' : '') + '</span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
-        if (st === ' cur' && S.mode === 'try') h += '<div class="clc-acts"><button class="btn primary" data-act="said">✓ Fait</button></div>';
+        if (c.vals) h += '<div class="kv-row">' + c.vals.map(function (v) { return '<span class="kv">' + esc(v) + '</span>'; }).join('') + '</div>';
+        if (st === ' cur' && c.note) h += '<div class="clc-acts"><div class="sc-note">' + esc(c.note) + '</div></div>';
+        if (st === ' cur' && S.mode === 'try' && !c.ctls) h += '<div class="clc-acts"><button class="btn primary" data-act="said">✓ Fait</button></div>';
         h += '</div>'; return;
       }
-      h += '<div class="clc-row' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') +
+      h += '<div class="clc-row' + st + '" data-act="goto" data-i="' + i + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') +
         '<small class="ess-act">' + esc(c.a) + ' … <b>' + esc(c.r) + '</b>' + (c.om ? ' <i class="ess-om' + (c.moved ? ' mv' : '') + '">OM-B ' + esc(c.om) + (c.moved ? ' · ordre déplacé' : '') + '</i>' : '') + '</small></span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
+      if (c.vals) h += '<div class="kv-row">' + c.vals.map(function (v) { return '<span class="kv">' + esc(v) + '</span>'; }).join('') + '</div>';
       if (st === ' cur' && c.note) h += '<div class="clc-acts"><div class="sc-note">' + esc(c.note) + '</div></div>';
       if (st === ' cur' && S.mode === 'try' && !c.ctls) h += '<div class="clc-acts"><button class="btn primary" data-act="said">✓ Fait</button></div>';
       if (st === ' cur' && S.mode === 'try' && c.ctls && S.chipErr >= 2) h += '<div class="clc-acts"><div class="sc-note">Indice : la commande clignote dans le cockpit.</div></div>';
@@ -6729,6 +7150,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var acts = ses().demoActs();
     K.bindActs(bdy, {
       said: function () { if (S) { K.sound.ok(); advanceTry(); } },
+      goto: function (el) { if (!S) return; var k = +el.getAttribute('data-i'); if (k === S.i && !S.finished) return; V.stop(); E.sweep(b.id, S.mode, k); },
       try: function () { E.sweep(b.id, 'try'); }, redo: function () { E.sweep(b.id, 'try'); }, demo: function () { E.sweep(b.id, 'demo'); },
       nextb: function (el) { E.sweep(el.getAttribute('data-id'), S.mode); },
       back: function () { E.stop(true); ses().render(); E.show('flow'); },
@@ -7435,6 +7857,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   /* Accueil */
   TF.Board.init();
+  TF.MiniMap.init(); setInterval(function () { TF.MiniMap.update(); }, 250);
   TF.Screens.splash(function () { app.onProfile(); app.view.resize(); app.view.home(false); });
   app.modes.render();
   app.modes.setChip();
