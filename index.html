@@ -410,6 +410,13 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .clc-row.key { background: #fff6d6; border-color: #e0c060; } .clc-row.key .clc-r { color: #7a4a00; }
 .wk-r .row2 .btn { margin: 4px 4px 0 0; }
 .hm-ver { margin-left: auto; -webkit-align-self: center; align-self: center; font-size: 11px; color: #5c6f8a; }
+.vc-list { max-height: 240px; overflow-y: auto; -webkit-overflow-scrolling: touch; border: 1px solid #22385a; border-radius: 12px; }
+.vc-row { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 6px 8px; border-bottom: 1px solid #1a2a44; }
+.vc-row:last-child { border-bottom: 0; } .vc-row.on { background: #0f3a44; }
+.vc-pick { -webkit-flex: 1; flex: 1; text-align: left; background: none; border: 0; color: #e8eef7; font-weight: 700; font-size: 14px; padding: 6px 4px; }
+.vc-pick small { color: #8fa1b8; font-weight: 500; } .vc-row .btn { margin: 0; padding: 6px 10px; }
+.vc-tips { margin-top: 12px; font-size: 13px; color: #c8d4e4; background: #101c30; border: 1px solid #22385a; border-radius: 12px; padding: 10px 12px; line-height: 1.45; }
+.vc-tips ul { margin: 6px 0; padding-left: 18px; } .vc-tips li { margin-bottom: 4px; }
 
 </style>
 </head>
@@ -467,7 +474,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '2.8';
+  TF.VERSION = '2.9';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -4564,11 +4571,35 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   var synth = root.speechSynthesis || null, voices = [], queue = [], speaking = false, enabled = true, gen = 0, scale = 1;
   function loadVoices() { try { voices = synth ? synth.getVoices() : []; } catch (e) { voices = []; } }
   if (synth) { loadVoices(); try { synth.onvoiceschanged = loadVoices; } catch (e) { } }
-  function pick(lang) {
-    var pref = lang === 'fr' ? ['fr-FR', 'fr'] : ['en-GB', 'en-US', 'en'];
-    for (var i = 0; i < pref.length; i++) for (var j = 0; j < voices.length; j++) if (voices[j].lang && voices[j].lang.replace('_', '-').indexOf(pref[i]) === 0) return voices[j];
-    return null;
+  /* Choix de la voix : celle choisie par l'élève, sinon la meilleure disponible sur l'appareil
+   * (voix « Premium / Amélioré / Enhanced / Neural / Google / Natural » d'abord, voix compactes en dernier). */
+  function langOf(v) { return (v.lang || '').replace('_', '-').toLowerCase(); }
+  function matches(v, lang) { return langOf(v).indexOf(lang) === 0; }
+  function score(v, lang) {
+    var n = (v.name || '').toLowerCase(), l = langOf(v), sc = 0;
+    if (/premium/.test(n)) sc += 60;
+    if (/enhanced|amélior|ameliore|neural|natural|naturel/.test(n)) sc += 50;
+    if (/google/.test(n)) sc += 40;
+    if (/siri/.test(n)) sc += 35;
+    if (/compact|eloquence|espeak|grandma|grandpa|rocko|shelley|flo|reed|sandy/.test(n)) sc -= 40;
+    if (lang === 'fr') { if (l === 'fr-fr') sc += 15; if (/thomas|audrey|aurélie|aurelie|amélie|amelie|marie|daniel/.test(n)) sc += 8; }
+    else { if (l === 'en-gb') sc += 15; else if (l === 'en-us') sc += 10; if (/daniel|serena|kate|arthur|martha|samantha/.test(n)) sc += 8; }
+    if (v.localService) sc += 3;
+    return sc;
   }
+  function prefKey(lang) { return 'tiffanir.voice.' + lang; }
+  V.voices = function (lang) {
+    loadVoices();
+    return voices.filter(function (v) { return matches(v, lang); }).sort(function (a, b) { return score(b, lang) - score(a, lang); });
+  };
+  V.setPreferred = function (lang, uri) { try { if (uri) localStorage.setItem(prefKey(lang), uri); else localStorage.removeItem(prefKey(lang)); } catch (e) { } };
+  V.preferred = function (lang) { try { return localStorage.getItem(prefKey(lang)) || ''; } catch (e) { return ''; } };
+  function pick(lang) {
+    var list = V.voices(lang), want = V.preferred(lang);
+    if (want) for (var i = 0; i < list.length; i++) if (list[i].voiceURI === want || list[i].name === want) return list[i];
+    return list[0] || null;
+  }
+  V.current = function (lang) { var v = pick(lang); return v ? v.name : ''; };
   V.available = function () { return !!(synth && root.SpeechSynthesisUtterance); };
   /* multiplicateur de débit (vitesse de la démo : 0,75 / 1 / 1,5) */
   V.setScale = function (v) { scale = v || 1; };
@@ -5720,7 +5751,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     h += '<button class="wide-card full" data-act="full"><span class="wc-ico">✈︎</span><span><b>Vol complet</b><small>Les 6 phases enchaînées, de la mise en route au parking</small></span></button>';
     h += '</div>';
     h += '<div class="hm-badges">' + Object.keys(TF.Profiles.BADGES).map(function (k) { var b = TF.Profiles.BADGES[k], has = p.badges.indexOf(k) >= 0; return '<span class="badge-i' + (has ? ' on' : '') + '" title="' + esc(b[1] + ' — ' + b[2]) + '">' + b[0] + '<small>' + esc(b[1]) + '</small></span>'; }).join('') + '</div>';
-    h += '<div class="hm-foot"><button data-act="profile">📈 Ma progression</button><button data-act="next">📅 Prêt pour mon prochain vol</button><button data-act="docs">§ Sources & points à confirmer</button><button data-act="scenario">⚙︎ Scénario</button><button data-act="free">🛠 Cockpit libre</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
+    h += '<div class="hm-foot"><button data-act="profile">📈 Ma progression</button><button data-act="next">📅 Prêt pour mon prochain vol</button><button data-act="docs">§ Sources & points à confirmer</button><button data-act="voices">🗣 Voix</button><button data-act="scenario">⚙︎ Scénario</button><button data-act="free">🛠 Cockpit libre</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     el.innerHTML = K.plain(h); el.classList.remove('hidden'); TF.Board.render();
     K.bindActs(el, {
@@ -5730,6 +5761,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       ess: function () { TF.Ess.show(); },
       profile: function () { TF.Screens.profile(); }, next: function () { TF.Screens.nextFlight(); }, docs: function () { TF.Screens.docs(); },
       scenario: function () { TF.Screens.scenario(); },
+      voices: function () { TF.Screens.voices(); },
       free: function () { H.hide(); TF.app.modes.idle(); }
     });
   };
@@ -6473,13 +6505,46 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       h += '<label class="chk"><input type="checkbox" data-sc="' + x[0] + '"' + (sc[x[0]] ? ' checked' : '') + '>' + x[1] + '</label>';
     });
     h += '<div class="lbl" style="margin-top:8px">Avion</div><span class="seg">' + TF.DATA.aircraft.fleet.map(function (f) { return '<button data-act="reg" data-v="' + f.reg + '" class="' + (sc.reg === f.reg ? 'on' : '') + '">' + f.reg + '</button>'; }).join('') + '</span>';
-    h += '<div class="lbl" style="margin-top:8px">Voix</div><label class="chk"><input type="checkbox" data-set="voice"' + (p.settings.voice !== false ? ' checked' : '') + '>Lire les annonces et check-lists à voix haute</label><label class="chk"><input type="checkbox" data-set="voiceSteps"' + (p.settings.voiceSteps ? ' checked' : '') + '>En « S\'entraîner », relire aussi chaque action réussie (flow audio complet)</label>';
+    h += '<div class="lbl" style="margin-top:8px">Voix <button class="btn" data-act="voices" style="margin-left:8px">🗣 Choisir les voix</button></div><label class="chk"><input type="checkbox" data-set="voice"' + (p.settings.voice !== false ? ' checked' : '') + '>Lire les annonces et check-lists à voix haute</label><label class="chk"><input type="checkbox" data-set="voiceSteps"' + (p.settings.voiceSteps ? ' checked' : '') + '>En « S\'entraîner », relire aussi chaque action réussie (flow audio complet)</label>';
     h += '<div class="explain" style="font-size:12px">Exercice : QNH destination ' + sc.qnhDest + ' hPa · 1re altitude ' + sc.firstAlt + ' ft · minima ' + sc.minima + ' ft · altitude d\'API ' + sc.missedAlt + ' ft · carburant jaugé ' + sc.fuelMain[0] + '/' + sc.fuelMain[1] + ' USG.</div></div>';
     K.sheet(h, function (s) {
       Array.prototype.forEach.call(s.querySelectorAll('[data-sc]'), function (c) { c.onchange = function () { var x = app.scenario(); x[c.getAttribute('data-sc')] = c.checked; app.setScenario(x); }; });
       Array.prototype.forEach.call(s.querySelectorAll('[data-set]'), function (c) { c.onchange = function () { TF.Profiles.setSetting(c.getAttribute('data-set'), c.checked); if (c.getAttribute('data-set') === 'voice') TF.Voice.setEnabled(c.checked); }; });
-      K.bindActs(s, { reg: function (b) { var x = app.scenario(); x.reg = b.getAttribute('data-v'); app.setScenario(x); Array.prototype.forEach.call(b.parentNode.children, function (y) { y.classList.toggle('on', y === b); }); } });
+      K.bindActs(s, { voices: function () { S.voices(); }, reg: function (b) { var x = app.scenario(); x.reg = b.getAttribute('data-v'); app.setScenario(x); Array.prototype.forEach.call(b.parentNode.children, function (y) { y.classList.toggle('on', y === b); }); } });
     }, { width: '640px' });
+  };
+
+  /* ---------------- Choix des voix ---------------- */
+  S.voices = function () {
+    var V = TF.Voice;
+    function block(lang, title, sample) {
+      var list = V.voices(lang), cur = V.current(lang), h = '<div class="lbl" style="margin-top:10px">' + title + '</div>';
+      if (!list.length) return h + '<div class="feedback info">Aucune voix ' + (lang === 'fr' ? 'française' : 'anglaise') + ' trouvée sur cet appareil.</div>';
+      h += '<div class="vc-list">';
+      list.forEach(function (v, i) {
+        var on = v.name === cur;
+        h += '<div class="vc-row' + (on ? ' on' : '') + '"><button class="vc-pick" data-act="pick" data-lang="' + lang + '" data-uri="' + esc(v.voiceURI || v.name) + '">' + (on ? '● ' : '○ ') + esc(v.name) + ' <small>' + esc(v.lang) + (i === 0 ? ' · meilleure détectée' : '') + '</small></button>' +
+          '<button class="btn" data-act="test" data-lang="' + lang + '" data-uri="' + esc(v.voiceURI || v.name) + '" data-s="' + esc(sample) + '">▶ Tester</button></div>';
+      });
+      return h + '</div>';
+    }
+    var h = K.head('🗣 Choisir les voix') + '<p class="explain">L\'appli utilise les voix installées sur ton appareil. La qualité dépend donc de l\'appareil : choisis la plus naturelle, ton choix est gardé.</p>';
+    if (!V.available()) h += '<div class="feedback err">La synthèse vocale n\'est pas disponible dans ce navigateur.</div>';
+    h += block('fr', '🇫🇷 Voix française (explications, briefings)', 'Avant mise en route. Visite prévol terminée, passagers à bord.');
+    h += block('en', '🇬🇧 Voix anglaise (items OM-B, check-lists, annonces)', 'Before start check-list. Passengers, briefed. Elect master, on.');
+    h += '<div class="vc-tips"><b>Pour une voix française de meilleure qualité, télécharge une voix « Améliorée » ou « Premium » (gratuit) :</b><ul>' +
+      '<li><b>iPad / iPhone</b> : Réglages › Accessibilité › Contenu énoncé › Voix › Français › choisis « Thomas » ou « Audrey » et télécharge la version <i>Améliorée</i> / <i>Premium</i>. (iOS 12 : Réglages › Général › Accessibilité › Parole › Voix.)</li>' +
+      '<li><b>Mac</b> : Réglages Système › Accessibilité › Contenu énoncé › Voix du système › Gérer les voix › Français.</li>' +
+      '<li><b>PC / Chrome</b> : les voix « Google français » ou « Microsoft … Online (Natural) » (Edge) sont les plus naturelles.</li></ul>Ensuite, recharge l\'appli : la nouvelle voix apparaît dans la liste ; touche-la pour la choisir.</div>';
+    K.sheet(h, function (s) {
+      K.bindActs(s, {
+        pick: function (b) { V.setPreferred(b.getAttribute('data-lang'), b.getAttribute('data-uri')); S.voices(); },
+        test: function (b) {
+          var lang = b.getAttribute('data-lang'), old = V.preferred(lang);
+          V.setPreferred(lang, b.getAttribute('data-uri')); V.stop(); V.say(b.getAttribute('data-s'), lang, function () { }); V.setPreferred(lang, old);
+        }
+      });
+    }, { width: '720px' });
   };
 
   /* ---------------- Profil et progression ---------------- */
