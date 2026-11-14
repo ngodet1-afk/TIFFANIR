@@ -598,7 +598,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '4.5';
+  TF.VERSION = '4.6';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -1615,10 +1615,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         load: run ? idle.load[i] + Math.round(pl * 0.95) : null,
         rpm: run ? (ecuRpm(e, s.t) || Math.round(idle.rpm[i] + pl * 15.9)) : (e.state === 'crank' ? 240 : null),
         oilP: run ? U.round(idle.oilP[i] * rise, 1) : (e.state === 'crank' ? 0.3 : null),
-        oilT: run ? idle.oilT[i] : null,
-        coolant: run ? idle.coolant[i] : null,
+        oilT: run ? Math.round(idle.oilT[i] + pl * 0.25 * U.clamp(tRun / 300000, 0, 1)) : null,
+        coolant: run ? Math.round(idle.coolant[i] + pl * 0.2 * U.clamp(tRun / 300000, 0, 1)) : null,
         gearbox: run ? idle.gearbox[i] : null,
-        gph: run ? idle.gph[i] : null,
+        gph: run ? U.round(idle.gph[i] + pl * 0.09, 1) : null, // ≈ indicatif (pas de valeur OM-B) — croît avec la charge
         fuelTemp: sc.fuelTemp[i],
         fuelQty: sc.fuelMain[i],
         glow: e.state !== 'off' && s.t < e.glowUntil,
@@ -2390,6 +2390,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* ======================= ÉTATS INITIAUX supplémentaires ======================= */
   var IS = TF.DATA.initialStates;
   IS['after-start-cl'] = { label: 'Moteurs démarrés, After start check-list faite', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }] };
+  IS['ess-ap'] = { label: 'Moteurs tournants, avionique ON, auto-test AFCS terminé', build: [{ initial: 'after-start-up' }, { ops: [{ set: 'av_master', to: 'ON' }, { waitFor: 'apReady', timeout: 15000 }] }] };
   IS['after-taxi'] = { label: 'Au point d\'arrêt', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }, { flight: { ias: 0, pos: 1, mx: 150, my: -98, hdg: 8, script: null } }] };
   IS['lined-up'] = { label: 'Aligné', build: [{ proc: 'before-start' }, { proc: 'start-up' }, { proc: 'after-start' }, { proc: 'taxi' }, { proc: 'before-takeoff' }, { ops: [{ set: 'parking_brake', to: 'OFF' }] }, { flight: { hdg: 96, mx: 30, my: -4, pos: 1 } }] };
   IS['airborne'] = { label: 'En montée initiale', build: [{ initial: 'lined-up' }, { proc: 'takeoff' }] };
@@ -3377,18 +3378,25 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       C('Fuel pump LH/RH', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '12.a (2e)', note: 'Liste reçue : « UP » — l\'OM-B dit OFF (interrupteurs de pompes, pas de position UP). Corrigé en OFF.' }),
       C('Pre-flight inspection', 'Pre-flight inspection', 'COMPLETE', null, { om: 'Before starting engine 1' })
     ] },
-    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before starting engine (OM-B B02 §3, p.56) — ordre de l\'équipage', ref: om('B02 §3 Before Starting Engine', 56), chips: [
+    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before starting engine (OM-B B02 §3, p.56) — ordre de l\'équipage ; PFD et MFD s\'allument au Master', ref: om('B02 §3 Before Starting Engine', 56),
+      state: 'cabin-prep', chips: [
       C('Porte, passagers, verrière', 'Rear door, closed and locked. Passengers, briefed. Front canopy', 'POSITION 1 OR 2', null, { om: '2-4', lines: [['Rear door', 'CLOSED AND LOCKED'], ['Passengers', 'BRIEFED'], ['Front canopy', 'POSITION 1 OR 2']] }),
       C('« Before start procedure »', 'Before start procedure', 'ANNONCE', null, { om: '5', call: 'Before start procedure' }),
-      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage'], { om: '5.a' }),
-      C('Power', 'Elect. Master', 'ON', ['elec_master'], { om: '5.b' }),
-      C('Lights', 'Nav lights', 'ON', ['position_lights'], { om: '5.c' }),
-      C('ESP', 'ESP', 'VERIFY', null, { om: '5.d' }),
-      C('G1000', 'G1000', 'DATA BASE CHECKED', ['mfd'], { om: '5.e' }),
-      C('Fuel / FMS', 'Fuel quantity and FMS', 'SET', ['mfd'], { om: '5.f' }),
-      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test'], { om: '5.g' }),
-      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun'], { om: '5.h' }),
-      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j' }),
+      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage'], { om: '5.a', sim: 'stbyCage', vals: ['Avant la mise sous tension'] }),
+      C('Power', 'Elect. Master', 'ON', ['elec_master'], { om: '5.b', sim: 'elecOn', vals: ['Pompe hydraulique du train : 5 à 20 s maxi', 'PFD et MFD s\'allument (MFD : page de mise sous tension)'],
+        note: 'Écoute la pompe hydraulique du train : si elle tourne en continu ou par intermittence → arrêter la préparation (OM-B p.56).' }),
+      C('Lights', 'Nav lights', 'ON', ['position_lights'], { om: '5.c', sim: 'navOn' }),
+      C('ESP', 'ESP', 'VERIFY', null, { om: '5.d', doubt: true, note: 'Item OM-B conservé ; vérification non simulée (C5 à confirmer).' }),
+      C('G1000', 'G1000', 'DATA BASE CHECKED', ['mfd'], { om: '5.e', sim: 'dbAck', vals: ['Dates de validité des bases : à contrôler', 'Puis ENT pour continuer'],
+        note: 'Page de mise sous tension du MFD : vérifie les cycles et dates de validité, puis touche ENT. Dans l\'appli, les dates affichées sont calculées (cycles AIRAC) : seules celles de l\'avion font foi.' }),
+      C('Fuel / FMS', 'Fuel quantity and FMS', 'SET', ['mfd'], { om: '5.f', sim: 'fmsSet', vals: ['Fuel Qty jaugée (Main L + R) = Fuel Calculator'],
+        ui: { mfdBox: { title: 'Carburant : jauges = calculateur', lines: [{ label: 'Jaugé L + R', calc: 'gauge', unit: 'GAL', target: 'lecture des jauges' }, { label: 'Fuel Calculator', calc: 'fms', unit: 'GAL', match: 'gauge', target: '= jaugé (DEC / INC / RST)' }] } },
+        note: 'Page EIS - Engine (softkey Engine) : lire Main L + R, puis recaler le calculateur avec DEC Fuel / INC Fuel / RST Fuel (OM-B p.57).' }),
+      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test'], { om: '5.g', sim: 'alarmTest', vals: ['L ENG FIRE + R ENG FIRE sur le PFD', 'Alarme sonore'],
+        note: 'Si l\'alarme sonore ou l\'alerte sur le PFD n\'apparaît pas : arrêter le vol (OM-B p.57). Bouton GEAR/FIRE TEST : interprétation à confirmer (C4).' }),
+      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun'], { om: '5.h', note: 'Seulement si des conditions givrantes sont prévues : ANNUN-TEST puis OFF. Pas requis dans ce scénario.' }),
+      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'], { om: '5.j', sim: 'mapPage', vals: ['Fuel Temp °C : lire L et R'],
+        ui: { mfdBox: { title: 'Température carburant', lines: [{ label: 'Fuel Temp gauche', eng: 'L', key: 'fuelTemp', unit: '°C', target: 'lire et comparer' }, { label: 'Fuel Temp droite', eng: 'R', key: 'fuelTemp', unit: '°C', target: 'lire et comparer' }] } } }),
       C('« Before start procedure complete »', 'Before start procedure complete', 'ANNONCE, PUIS BEFORE START CHECK-LIST DONE', null, { om: '6', call: 'Before start procedure complete' })
     ] },
     { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Starting engine (OM-B B02 §3, p.57-58) — ordre de l\'équipage ; PFD et MFD allumés, moteurs simulés', ref: om('B02 §3 Engine Start-up', 57),
@@ -3414,23 +3422,28 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         ui: { starterSlot: 'R', mfdBox: { title: 'Moteur droit : à vérifier', lines: [{ label: 'RPM (droit)', eng: 'R', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'Oil Press (droit)', eng: 'R', key: 'oilP', unit: 'bar', min: 0.9, target: '≥ 0,9 bar en < 3 s' }, { label: 'R STARTER (PFD)', absent: 'R', target: 'doit être absent' }] } } }),
       C('« Start-up procedure complete »', 'Start-up procedure complete', 'ANNONCE, PUIS START-UP CHECK-LIST DONE', null, { om: '2', call: 'Start-up procedure complete' })
     ] },
-    { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d)', ref: om('B02 §3 After Start-up', 58), chips: [
-      C('Ceintures', 'Safety harnesses', 'ON AND FASTENED', null),
-      C('Avionic', 'Avionic Master', 'ON', ['av_master']),
-      C('Crossfeed', 'Fuel selectors (first flight of the day)', 'CROSSFEED', ['fuel_sel_l', 'fuel_sel_r'])
+    { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d) — les deux moteurs tournent', ref: om('B02 §3 After Start-up', 58),
+      state: 'after-start-up', chips: [
+      C('Ceintures', 'Safety harnesses', 'ON AND FASTENED', null, { om: '1.a' }),
+      C('Avionic', 'Avionic Master', 'ON', ['av_master'], { om: '1.b', sim: 'avOn', vals: ['Auto-test AFCS : PFT blanc encadré + AFCS rouge sur le PFD', 'Fin du test : PFT et AFCS s\'effacent + tonalité de déconnexion'],
+        ui: { mfdBox: { title: 'Ralenti : à surveiller', lines: [{ label: 'RPM gauche', eng: 'L', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }, { label: 'RPM droite', eng: 'R', key: 'rpm', min: 680, max: 740, target: '710 ± 30' }] } } }),
+      C('Crossfeed', 'Fuel selectors (first flight of the day)', 'CROSSFEED', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.d', sim: 'crossfeed', vals: ['Environ 30 s en CROSSFEED (test)', 'Interdit hors de ce test avec les deux moteurs'],
+        note: 'OM-B p.58 : test d\'environ 30 s, les deux moteurs peuvent être testés ensemble. Raccourci dans l\'animation.' }),
+      C('Fuel selectors', 'Fuel selectors LH / RH', 'ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '1.r', add: true, sim: 'fuelOn', note: 'Retour sur ON après le test (OM-B 1.r).' })
     ] },
-    { id: 'ap', icon: '🤖', title: 'Test pilote automatique', sub: 'OM-B After start-up m-p, puis departure briefing', ref: om('B02 §3 After Start-up — AP', 59), chips: [
-      C('FD', 'Flight director', 'ON', ['ap_fd']),
-      C('HDG', 'HDG mode', 'SELECT', ['ap_hdg']),
-      C('Bug', 'Heading bug', 'SET', ['mk_hdg']),
-      C('AP', 'Autopilot', 'ENGAGE BY PRESSING AP BUTTON', ['ap_ap']),
-      C('L + R', 'Heading bug left then right', 'CONTROLS FOLLOW', ['mk_hdg'], { doubt: true }),
-      C('↑↓', 'NOSE UP / NOSE DN', 'CONTROLS FOLLOW', ['ap_nose_up', 'ap_nose_dn'], { doubt: true, note: 'Interprétation : après le test latéral (L + R), test vertical avec NOSE UP / NOSE DN. À confirmer avec l\'instructeur.' }),
+    { id: 'ap', icon: '🤖', title: 'Test pilote automatique', sub: 'OM-B After start-up m-p, puis departure briefing — barre AFCS du PFD en direct', ref: om('B02 §3 After Start-up — AP', 59),
+      state: 'ess-ap', chips: [
+      C('FD', 'Flight director', 'ON', ['ap_fd'], { sim: 'fdOn', vals: ['Barre AFCS : ROL et PIT verts (modes par défaut)', 'Barres de tendance FD sur l\'horizon'] }),
+      C('HDG', 'HDG mode', 'SELECT', ['ap_hdg'], { sim: 'hdgSel', vals: ['HDG vert à la place de ROL'] }),
+      C('Bug', 'Heading bug', 'SET', ['mk_hdg'], { sim: 'bugSync', vals: ['Bug de cap (cyan) sur le cap actuel'] }),
+      C('AP', 'Autopilot', 'ENGAGE BY PRESSING AP BUTTON', ['ap_ap'], { om: '1.n', sim: 'apOn', vals: ['AP et YD verts sur la barre AFCS'] }),
+      C('L + R', 'Heading bug left then right', 'CONTROLS FOLLOW', ['mk_hdg'], { doubt: true, sim: 'bugLR', vals: ['Le volant suit le bug à gauche puis à droite'] }),
+      C('↑↓', 'NOSE UP / NOSE DN', 'CONTROLS FOLLOW', ['ap_nose_up', 'ap_nose_dn'], { doubt: true, sim: 'noseUpDn', note: 'Interprétation : après le test latéral (L + R), test vertical avec NOSE UP / NOSE DN. À confirmer avec l\'instructeur.' }),
       C('GA', 'Go-around button', 'TEST', null, { doubt: true, note: 'Bouton GA non représenté dans le cockpit 2D.' }),
       C('CWS', 'CWS button', 'TEST', null, { doubt: true, note: 'Bouton CWS non représenté dans le cockpit 2D.' }),
-      C('Kill', 'AP disc switch', 'TEST', ['ap_disc']),
-      C('Trim', 'Trim', 'SET TO TAKE-OFF POSITION MANUALLY', ['elev_trim'], { add: true }),
-      C('Dep BFG', 'Departure briefing', 'DONE', null)
+      C('Kill', 'AP disc switch', 'TEST', ['ap_disc'], { om: '1.o', sim: 'apDisc', vals: ['AP jaune clignotant + tonalité de déconnexion', 'AP DISC coupe aussi le YD'] }),
+      C('Trim', 'Trim', 'SET TO TAKE-OFF POSITION MANUALLY', ['elev_trim'], { om: '1.p', add: true, sim: 'trimTO', vals: ['Repère T/O sur l\'index'] }),
+      C('Dep BFG', 'Departure briefing', 'DONE', null, { om: '2' })
     ] },
     { id: 'taxi', icon: '🛞', title: 'Roulage', sub: 'Taxiing (OM-B p.60) + PDP p.129-130', ref: om('B02 §3 Taxiing', 60), chips: [
       C('Taxi light', 'Taxi light', 'ON', ['taxi_light'], { add: true }),
@@ -4552,7 +4565,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     s += rect(176, 352, 64, 18, '#000') + t(208, 366, 'HDG ' + ('00' + g.hdg).slice(-3) + '°', 11, '#3fe0e8', 'middle', 700);
     s += rect(360, 352, 64, 18, '#000') + t(392, 366, 'CRS ' + ('00' + g.crs).slice(-3) + '°', 11, ccol, 'middle', 700);
     // Carte en incrustation (non simulée) + références
-    if (g.inset !== false) s += rect(20, 375, 146, 72, '#3c5a2c', ' stroke="#9aa" stroke-width="1"') + t(93, 408, 'Carte', 12, '#d8e8d0', 'middle') + t(93, 422, 'non simulée', 11, '#d8e8d0', 'middle');
+    if (g.inset !== false) s += navMap(I, 20, 375, 146, 72, true) + '<rect x="20" y="375" width="146" height="72" fill="none" stroke="#9aa" stroke-width="1"/>';
     if (g.tmrRef) {
       s += rect(456, 352, 180, 96, '#0a0d12', ' stroke="#9aa" stroke-width="1" rx="4"') + t(546, 366, 'References', 12, '#3fe0e8', 'middle', 700);
       [['GLIDE', '0KT'], ['Vr', '76KT'], ['Vx', '77KT'], ['Vy', '92KT']].forEach(function (p, k) { s += t(464, 384 + k * 15, p[0], 12, '#fff') + t(590, 384 + k * 15, p[1], 12, '#3fe0e8', 'end', 700) + t(626, 384 + k * 15, 'On', 11, '#3fe0e8', 'end'); });
@@ -4613,7 +4626,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var x = g.xpdr, code = g.pfdLevel === 'code' ? (x.entry + '____').slice(0, 4) : x.code, idnt = x.identAt != null && I.t - x.identAt < 18000;
     s += t(6, 468, 'OAT ' + sc.oat + '°C', 12, '#fff') + t(90, 468, 'GS ' + Math.round(f.ias) + 'KT', 12, '#fff');
     s += t(404, 468, 'XPDR', 12, '#fff') + t(444, 468, code, 13, g.pfdLevel === 'code' ? '#3fe0e8' : (x.mode === 'ALT' || x.mode === 'ON' ? '#2fe35a' : '#fff'), 'start', 700) + t(482, 468, idnt ? 'IDNT' : x.mode, 12, idnt ? '#2fe35a' : '#fff', 'start', 700);
-    s += t(632, 468, 'UTC --:--:--', 12, '#fff', 'end');
+    var now = new Date(); s += t(632, 468, 'UTC ' + ('0' + now.getUTCHours()).slice(-2) + ':' + ('0' + now.getUTCMinutes()).slice(-2), 12, '#fff', 'end');
     var sk = TF.G1000.pfdSoftkeys(g);
     var skOn = TF.G1000.pfdSoftkeysOn(g);
     sk[11] = al.warnings.length ? 'Warning' : (al.cautions.length ? 'Caution' : '');
@@ -4647,6 +4660,45 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return s + '</g>';
   }
 
+  /* ============ Carte de navigation (MFD et incrustation PFD) : nord en haut, centrée sur l'avion ============
+     Piste 10/28 LFBU réelle (AIP) ; parking/taxi schématiques ; trace de l'avion ; cap affiché. Pas de base de données nav. */
+  var NM = 1852, RANGES = [0.5, 1, 2, 5, 10, 20, 50];
+  function navMap(I, x, y, w, h, small) {
+    var f = I.flight, g = I.g, L = TF.G1000 && TF.G1000.LFBU; if (!L) return '';
+    var mx = f.mx != null ? f.mx : 0, my = f.my != null ? f.my : -238;
+    var dist = Math.hypot(mx - 930, my + 113) / NM, k = 0;
+    var need = Math.max(f.onGround ? 0.5 : 2, dist * 1.3);
+    while (k < RANGES.length - 1 && RANGES[k] < need) k++;
+    var rng = RANGES[k], sc = (Math.min(w, h) / 2 - 6) / (rng * NM), cx = w / 2, cy = h / 2;
+    function P(px, py) { return [(cx + (px - mx) * sc).toFixed(1), (cy - (py - my) * sc).toFixed(1)]; }
+    var o = '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">';
+    o += '<rect width="' + w + '" height="' + h + '" fill="#3f5f31"/>';
+    for (var i = 0; i < 6; i++) o += '<path d="M' + (i * w / 5 - (mx * sc) % (w / 5)) + ',0 q' + (w / 12) + ',' + (h / 2) + ' ' + (-w / 20) + ',' + h + '" stroke="#5b7b45" stroke-width="' + (w / 30) + '" fill="none" opacity=".35"/>';
+    // anneau de distance
+    o += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (rng / 2 * NM * sc).toFixed(1) + '" fill="none" stroke="#fff" stroke-width=".8" opacity=".45"/>';
+    o += '<text x="' + (cx + rng / 2 * NM * sc * 0.72) + '" y="' + (cy - rng / 2 * NM * sc * 0.72) + '" font-size="' + (small ? 8 : 11) + '" fill="#fff" opacity=".8">' + (rng / 2) + 'NM</text>';
+    // piste
+    var a = P(0, 0), b = P(L.thr28[0], L.thr28[1]);
+    o += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#d8d8d8" stroke-width="' + Math.max(2.4, 45 * sc) + '"/>';
+    if (rng <= 1) {
+      o += '<polyline points="' + L.taxi.map(function (p) { return P(p[0], p[1]).join(','); }).join(' ') + '" fill="none" stroke="#9a9aa0" stroke-width="' + Math.max(1.5, 15 * sc) + '"/>';
+      o += '<text x="' + a[0] + '" y="' + (+a[1] - 6) + '" font-size="' + (small ? 8 : 11) + '" fill="#fff" font-weight="700" text-anchor="end">10</text><text x="' + b[0] + '" y="' + (+b[1] - 6) + '" font-size="' + (small ? 8 : 11) + '" fill="#fff" font-weight="700">28</text>';
+    } else {
+      var m = P(930, -113);
+      o += '<circle cx="' + m[0] + '" cy="' + m[1] + '" r="5" fill="none" stroke="#3fe0e8" stroke-width="2"/><text x="' + (+m[0] + 8) + '" y="' + (+m[1] - 6) + '" font-size="' + (small ? 9 : 12) + '" fill="#fff" font-weight="700">LFBU</text>';
+    }
+    // trace
+    if (f.trail && f.trail.length > 1) o += '<polyline points="' + f.trail.map(function (p) { return P(p[0], p[1]).join(','); }).join(' ') + ' ' + P(mx, my).join(',') + '" fill="none" stroke="#e44ad8" stroke-width="' + (small ? 1.4 : 2) + '"/>';
+    // cap affiché (bug HDG) en vol
+    if (!f.onGround) { var r = Math.min(w, h) * 0.32; o += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.sin(g.hdg * Math.PI / 180) * r).toFixed(1) + '" y2="' + (cy - Math.cos(g.hdg * Math.PI / 180) * r).toFixed(1) + '" stroke="#3fe0e8" stroke-width="1.2" stroke-dasharray="4 3"/>'; }
+    // avion
+    var z = small ? 0.9 : 1.4;
+    o += '<g transform="translate(' + cx + ',' + cy + ') rotate(' + Math.round(f.hdg) + ') scale(' + z + ')"><path d="M0,-9 L1.5,-3 L10,1 L10,3 L1.5,1.5 L1,7 L4,9 L4,10.5 L0,9.5 L-4,10.5 L-4,9 L-1,7 L-1.5,1.5 L-10,3 L-10,1 L-1.5,-3Z" fill="#fff" stroke="#000" stroke-width=".8"/></g>';
+    o += '<text x="4" y="' + (small ? 10 : 16) + '" font-size="' + (small ? 8 : 12) + '" fill="#fff" font-weight="700">NORTH UP</text>';
+    return o + '</svg>';
+  }
+  X.navMap = navMap;
+
   /* ================================ MFD ================================ */
   X.mfd = function (I, sc) {
     var r = X.rects.mfd, s = '';
@@ -4658,13 +4710,16 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (I.mfdStage === 'database') {
       s = rect(0, 0, VW, VH, '#05070a');
       s += t(320, 40, 'G1000 NXi — Power-up', 20, '#fff', 'middle', 700);
-      var rows = ['System', 'Navigation database', 'Land database', 'SafeTaxi database', 'Terrain database', 'Obstacle database', 'Airport Directory', 'Charts (IFR/VFR)', 'Crew Profile', 'Checklist File'];
+      var A = X.airac(new Date()), MO = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      function dt(d) { return ('0' + d.getUTCDate()).slice(-2) + '-' + MO[d.getUTCMonth()] + '-' + String(d.getUTCFullYear()).slice(2); }
+      s += t(40, 74, 'Database', 13, '#9fb3c8', 'start', 700) + t(250, 74, 'Region / cycle', 13, '#9fb3c8', 'start', 700) + t(420, 74, 'Effective', 13, '#9fb3c8', 'start', 700) + t(530, 74, 'Expires', 13, '#9fb3c8', 'start', 700);
+      var rows = [['Navigation', 'Europe · ' + A.id, dt(A.eff), dt(A.exp)], ['Obstacle', 'Europe · ' + A.id, dt(A.eff), dt(A.exp)], ['Terrain', 'Worldwide', '—', '—'], ['SafeTaxi', 'Europe', '—', '—'], ['Airport Directory', 'Europe', '—', '—'], ['Charts (IFR / VFR)', 'Europe', '—', '—'], ['Crew Profile', 'Default', '', ''], ['System', 'GDU / GIA OK', '', '']];
       rows.forEach(function (x, k) {
-        var y = 82 + k * 30;
-        s += t(40, y, x, 15, '#fff', 'start', 700) + t(300, y, 'cycle / dates de validité', 14, '#3fe0e8') ;
-        s += '<line x1="40" y1="' + (y + 9) + '" x2="600" y2="' + (y + 9) + '" stroke="#223" stroke-width="1"/>';
+        var y = 102 + k * 32;
+        s += t(40, y, x[0], 15, '#fff', 'start', 700) + t(250, y, x[1], 14, '#3fe0e8', 'start', 700) + t(420, y, x[2], 14, '#2fe35a', 'start', 700) + t(530, y, x[3], 14, '#2fe35a', 'start', 700);
+        s += '<line x1="40" y1="' + (y + 10) + '" x2="610" y2="' + (y + 10) + '" stroke="#223" stroke-width="1"/>';
       });
-      s += rect(70, 392, 500, 34, '#151b22', ' stroke="#3fe0e8" stroke-width="1"') + t(320, 414, 'Dates réelles non simulées : contrôler leur validité dans l\'avion', 13, '#f2e23a', 'middle', 700);
+      s += rect(60, 372, 520, 46, '#151b22', ' stroke="#3fe0e8" stroke-width="1"') + t(320, 391, 'Cycle AIRAC calculé pour aujourd\'hui (affichage pédagogique)', 13, '#f2e23a', 'middle', 700) + t(320, 409, 'Seules les dates affichées dans l\'avion font foi : à contrôler', 13, '#f2e23a', 'middle', 700);
       s += t(320, 456, 'Press the ENT key to continue', 16, '#fff', 'middle', 700);
       return wrap(r, s + rect(0, 0, VW, VH, 'url(#gGlass)'));
     }
@@ -4676,10 +4731,17 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return wrap(r, s);
   };
 
+  /* Cycle AIRAC (28 jours) en vigueur à une date : référence 2401 = 25-JAN-2024 */
+  X.airac = function (now) {
+    var D = 86400000, P = 28 * D, e0 = Date.UTC(2024, 0, 25), n = Math.floor((now.getTime() - e0) / P), eff = e0 + n * P;
+    var y = new Date(eff).getUTCFullYear(), first = e0 + Math.ceil((Date.UTC(y, 0, 1) - e0) / P) * P, num = Math.round((eff - first) / P) + 1;
+    return { id: String(y).slice(2) + ('0' + num).slice(-2), eff: new Date(eff), exp: new Date(eff + P - D) };
+  };
   /* Encadré pédagogique sur le MFD : valeurs à vérifier, avec la valeur lue en direct (L'essentiel) */
-  var EIS_ROW = { load: 0, rpm: 1, gph: 2, oilT: 3, oilP: 4, coolant: 5 };
+  var EIS_ROW = { load: 0, rpm: 1, gph: 2, oilT: 3, oilP: 4, coolant: 5, fuelTemp: 6, fuelQty: 7 };
   function mfdBox(I, B) {
-    var lines = B.lines || [], h = 40 + lines.length * 34, x = 136, y = 64, w = 488, s = '';
+    var lines = B.lines || [], h = 40 + lines.length * 34, x = 136, y = B.pos === 'bottom' ? 446 - h : 64, w = 488, s = '';
+    var fc = I.fuelCalc || {}, calc = { gauge: fc.gauge, fms: fc.remain == null ? null : Math.round(fc.remain * 10) / 10 };
     s += rect(x, y, w, h, '#06121c', ' opacity=".94" stroke="#3fe0e8" stroke-width="2" rx="8"');
     s += t(x + 14, y + 25, '✔ ' + B.title, 16, '#3fe0e8', 'start', 700);
     lines.forEach(function (l, k) {
@@ -4689,6 +4751,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         live = v == null ? '---' : String(v) + (l.unit ? ' ' + l.unit : '');
         if (l.min != null && v != null) ok = v >= l.min && (l.max == null || v <= l.max);
       }
+      if (l.calc) { var cv = calc[l.calc]; live = cv == null ? '---' : cv + (l.unit ? ' ' + l.unit : ''); if (l.match && cv != null) ok = Math.abs(cv - calc[l.match]) < 0.6; }
       if (l.absent) { var on = I.eng[l.absent] && I.eng[l.absent].starter; live = on ? 'AFFICHÉ' : 'absent'; ok = !on; }
       s += t(x + 14, yy, l.label, 15, '#fff', 'start', 700);
       if (live) s += t(x + 300, yy, live, 16, ok === false ? '#ff6b6b' : ok ? '#2fe35a' : '#fff', 'end', 700);
@@ -4699,12 +4762,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   }
   function mapPage(I, sc) {
     var s = rect(0, 0, VW, VH, '#0a0d10');
-    s += rect(112, 46, 528, 406, '#4c6b3a');
-    for (var k = 0; k < 9; k++) s += '<path d="M' + (112 + k * 64) + ',46 q30,200 -20,406" stroke="#6f8f52" stroke-width="10" fill="none" opacity=".35"/>';
-    s += '<circle cx="380" cy="250" r="120" fill="none" stroke="#fff" stroke-width="1.2" opacity=".6"/>';
-    s += '<path d="M380,236 l0,28 M368,248 l24,0 M374,260 l12,0" stroke="#fff" stroke-width="3"/>';
-    s += '<circle cx="410" cy="215" r="7" fill="none" stroke="#3fe0e8" stroke-width="2.4"/>' + t(420, 210, 'LFBU', 13, '#fff', 'start', 700);
-    s += rect(380, 418, 252, 26, '#000', ' opacity=".7"') + t(506, 436, 'Navigation Map — non simulée', 13, '#f2e23a', 'middle', 700);
+    s += navMap(I, 112, 46, 528, 406, false);
     s += eisStrip(I, 0, 46, 1);
     s += topBar(I, 'Map - Navigation Map');
     s += rect(0, 452, VW, 36, '#0b0f14');
@@ -4956,8 +5014,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   CockpitView.prototype.renderDynamic = function (force) {
     var I = this.c.indications(), sc = this.c.s.scenario;
     var blink = Math.floor(I.t / 400) % 2;
-    var fl = I.flight, kp = JSON.stringify([I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
-    var km = JSON.stringify([I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
+    var fl = I.flight, kp = JSON.stringify([Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
+    var km = JSON.stringify([Math.round((I.flight.mx || 0) / 8), Math.round((I.flight.my || 0) / 8), Math.round(I.flight.hdg), I.g.hdg, I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
     var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias)]);
     var kl = JSON.stringify([I.gearLights, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
     if (force || kp !== this.lastDisp.p) { parseInto(this.gPfd, TF.Displays.pfd(I, sc)); this.lastDisp.p = kp; }
@@ -7006,6 +7064,25 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   }
   function eng(k) { return app().ck.indications().eng[k]; }
   var SIMS = {
+    /* séquences d'opérations du moteur de procédures (mêmes gestes que l'état idéal) */
+    stbyCage: [{ set: 'stby_cage', to: 'CAGED' }],
+    elecOn: [{ set: 'elec_master', to: 'ON' }, { waitFor: '__mfdDatabase', timeout: 15000 }],
+    navOn: [{ set: 'position_lights', to: 'ON' }],
+    dbAck: [{ wait: 600 }, { press: 'mfd_ent', ms: 200 }],
+    fmsSet: [{ mfdPage: 'engine' }, { wait: 800 }, { fms: 'gauge' }, { wait: 600 }],
+    alarmTest: [{ press: 'gear_fire_test', ms: 2200 }],
+    mapPage: [{ mfdPage: 'map' }],
+    avOn: [{ set: 'av_master', to: 'ON' }, { waitFor: 'apReady', timeout: 15000 }],
+    crossfeed: [{ set: 'fuel_sel_l', to: 'CROSSFEED' }, { set: 'fuel_sel_r', to: 'CROSSFEED' }, { wait: 2500 }],
+    fuelOn: [{ set: 'fuel_sel_l', to: 'ON' }, { set: 'fuel_sel_r', to: 'ON' }],
+    fdOn: [{ press: 'ap_fd', ms: 200 }],
+    hdgSel: [{ press: 'ap_hdg', ms: 200 }],
+    bugSync: [{ knob: 'mk_hdg', act: 'push' }],
+    apOn: [{ press: 'ap_ap', ms: 200 }],
+    bugLR: [{ knob: 'mk_hdg', act: 'L-', n: 3 }, { wait: 1500 }, { knob: 'mk_hdg', act: 'L+', n: 6 }, { wait: 1500 }, { knob: 'mk_hdg', act: 'push' }],
+    noseUpDn: [{ press: 'ap_nose_up', ms: 200 }, { wait: 800 }, { press: 'ap_nose_dn', ms: 200 }],
+    apDisc: [{ press: 'ap_disc', ms: 200 }],
+    trimTO: [{ set: 'elev_trim', to: 'T/O' }],
     keysIn: function (ck) { ck.setControl('start_key', 'OFF'); },
     strobeOn: function (ck) { ck.setControl('strobe', 'ON'); },
     masterL: function (ck) { ck.s.scenario.coldEngine = true; ck.setControl('eng_master_l', 'ON'); },
@@ -7025,6 +7102,12 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     cb = cb || function () { };
     var f = c && c.sim && SIMS[c.sim], ck = app().ck;
     if (!f) return cb();
+    if (f.length != null && typeof f !== 'function') {
+      var PE = TF.ProcEngine, g = S && S.g;
+      var clock = fast ? PE.Runner.instantClock(ck) : { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) { app().view.renderDynamic(true); k(); } }, ms); } };
+      new PE.Runner(ck, null, clock).run(f, function () { app().view.renderDynamic(true); cb(); });
+      return;
+    }
     var r = f(ck, fast, function () { app().view.renderDynamic(true); cb(); });
     if (f.length < 3) { app().view.renderDynamic(true); cb(); }
   }
