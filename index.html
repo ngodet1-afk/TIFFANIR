@@ -417,6 +417,13 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .vc-pick small { color: #8fa1b8; font-weight: 500; } .vc-row .btn { margin: 0; padding: 6px 10px; }
 .vc-tips { margin-top: 12px; font-size: 13px; color: #c8d4e4; background: #101c30; border: 1px solid #22385a; border-radius: 12px; padding: 10px 12px; line-height: 1.45; }
 .vc-tips ul { margin: 6px 0; padding-left: 18px; } .vc-tips li { margin-bottom: 4px; }
+.fchip.add { border-style: dashed; }
+.addb { display: inline-block; font-size: 9px; font-weight: 800; padding: 0 4px; border-radius: 4px; background: #24406b; color: #cfe3ff; vertical-align: middle; letter-spacing: .3px; }
+.ess-act { display: block; font-weight: 600; font-size: 11.5px; color: #9fb4c8; margin-top: 1px; }
+.ess-act b { color: #e8f6ff; }
+.clc .ess-act { color: #4a5560; font-family: inherit; }
+.clc .ess-act b { color: #10161c; }
+.clc-row.ok .ess-act b { color: #1d6b2e; }
 
 </style>
 </head>
@@ -474,7 +481,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '2.9';
+  TF.VERSION = '3.1';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -657,7 +664,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     { id: 'botM', label: 'Train / Pompes carburant', x: 600, y: 636, w: 290, h: 70 },
     { id: 'botR', label: 'Volets / disjoncteurs moteurs', x: 900, y: 636, w: 450, h: 70 },
     { id: 'yoke', label: 'Manche gauche (AP DISC / TRIM)', x: 315, y: 700, w: 130, h: 90 },
-    { id: 'console', label: 'Console centrale', x: 690, y: 700, w: 190, h: 424 },
+    { id: 'console', label: 'Console centrale (+ roue de trim)', x: 650, y: 700, w: 230, h: 424 },
     { id: 'fuelsel', label: 'Sélecteurs carburant', x: 700, y: 1010, w: 160, h: 114 }
   ];
 
@@ -761,6 +768,18 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   add({ id: 'fuel_sel_l', label: 'FUEL SELECTOR LEFT ENGINE', short: 'FUEL SEL L', type: 'lever', positions: ['ON', 'CROSSFEED', 'OFF'], region: 'fuelsel', x: 748, y: 1074, w: 34, h: 96, initial: 'ON', ref: FS, toConfirm: 'C3' });
   add({ id: 'fuel_sel_r', label: 'FUEL SELECTOR RIGHT ENGINE', short: 'FUEL SEL R', type: 'lever', positions: ['ON', 'CROSSFEED', 'OFF'], region: 'fuelsel', x: 808, y: 1074, w: 34, h: 96, initial: 'ON', ref: FS, toConfirm: 'C3' });
 
+  /* Roue de trim de profondeur (OM-B B12 « Elevator Trim » p.326) : roue noire dans la console centrale, en arrière des
+     manettes de puissance ; un repère indique la position décollage (T/O). Roue vers l'avant = piqueur, vers l'arrière = cabreur.
+     La roue n'est pas visible sur la photo : emplacement schématique (côté gauche de la console). */
+  var ET = { doc: 'OMB', sec: 'B12 Elevator trim — wheel in center console, T/O mark', page: 326 };
+  add({ id: 'elev_trim', label: 'ELEVATOR TRIM (roue, repère T/O)', short: 'TRIM', type: 'trimwheel',
+    positions: ['ND 4', 'ND 3', 'ND 2', 'ND 1', 'T/O', 'NU 1', 'NU 2', 'NU 3', 'NU 4', 'NU 5'], region: 'console', x: 680, y: 1004, w: 20, h: 60, initial: 'NU 3', ref: ET,
+    note: 'Haut de la roue vers l\'avant = NOSE DOWN, vers l\'arrière = NOSE UP. Emplacement schématique (non visible sur la photo).' });
+  /* Pompes auxiliaires (OM-B B12 « Auxiliary fuel system » p.333) : deux interrupteurs derrière la roue de trim. Emplacement schématique. */
+  var AXP = { doc: 'OMB', sec: 'B12 Auxiliary pumps — switches behind the elevator trim wheel', page: 333 };
+  add({ id: 'aux_pump_l', label: 'AUX PUMP LH (carburant auxiliaire)', short: 'AUX L', type: 'rocker', positions: ['OFF', 'ON'], region: 'console', x: 674, y: 1071, w: 10, h: 17, initial: 'OFF', ref: AXP });
+  add({ id: 'aux_pump_r', label: 'AUX PUMP RH (carburant auxiliaire)', short: 'AUX R', type: 'rocker', positions: ['OFF', 'ON'], region: 'console', x: 689, y: 1071, w: 10, h: 17, initial: 'OFF', ref: AXP });
+
   TF.DATA.controls = C;
 
   /* ---------------- Indications observables ---------------- */
@@ -814,7 +833,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       hdg: 8, altSel: 1400, baro: 1013, std: false, crs: 44, cdi: 'GPS',
       xpdr: { code: '7000', mode: 'STBY', level: 0, entry: '' }, pfdLevel: 'top', inset: true, tmrRef: true, meters: false, baroUnit: 'HPA',
       fd: false, yd: false, lat: '', vert: '', latArm: '', vertArm: '', refVs: 0, refIas: 0, refAlt: null,
-      altsFlash: 0
+      // Clignotements AFCS (Garmin p.390, 393, 415) : instant de la dernière transition automatique
+      latAt: null, vertAt: null, latArmAt: null, ydDiscAt: null
     };
   };
   G.flightInitial = function () { return { onGround: true, ias: 0, alt: 420, vs: 0, hdg: 8, turn: 0, slip: 0, pos: 0, script: null, scriptT: 0, label: '' }; };
@@ -897,7 +917,12 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         if (lab === 'PFD Opt') g.pfdLevel = 'opt';
         else if (lab === 'XPDR') g.pfdLevel = 'xpdr';
         else if (lab === 'Map/HSI') g.pfdLevel = 'map';
-        else if (lab === 'CDI') g.cdi = g.cdi === 'GPS' ? 'VOR1' : g.cdi === 'VOR1' ? 'VOR2' : 'GPS';
+        else if (lab === 'CDI') {
+          g.cdi = g.cdi === 'GPS' ? 'VOR1' : g.cdi === 'VOR1' ? 'VOR2' : 'GPS';
+          // Changement manuel de source NAV : retour en ROL, ailes à plat (Garmin p.399)
+          if (g.fd && /^(GPS|VOR|LOC)$/.test(g.lat)) { g.lat = 'ROL'; g.latAt = null; }
+          if (g.latArm) g.latArm = '';
+        }
         else if (lab === 'Ident') ident();
         else if (lab === 'Tmr/Ref') g.tmrRef = !g.tmrRef;
         break;
@@ -929,24 +954,77 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (ck.s.t - g.skAt > 45000) { g.pfdLevel = PARENT[g.pfdLevel] || 'top'; g.xpdr.entry = ''; g.skAt = ck.s.t; }
   };
 
-  /* Touches AFCS (contrôleur de modes sur le MFD) — Table 7-1 p.388 */
+  /* Touches AFCS (contrôleur de modes sur le MFD) — Table 7-1 p.388, p.390-399
+     Touches à action alternée : appuyer sur la touche du mode actif → retour au mode par défaut de l'axe (p.390). */
   G.apKey = function (ck, key) {
     var g = ck.s.g, sys = ck.s.sys, f = ck.s.flight;
     if (!sys.avionics || sys.apState !== 'ready') return;
-    function fdOn() { if (!g.fd) { g.fd = true; if (!g.lat) g.lat = 'ROL'; if (!g.vert) { g.vert = 'PIT'; g.vertArm = 'ALTS'; } } }
-    switch (key) {
-      case 'ap_fd': if (sys.apEngaged) return; if (g.fd) { g.fd = false; g.lat = g.vert = g.latArm = g.vertArm = ''; } else fdOn(); break;
-      case 'ap_ap': fdOn(); break; // l'engagement AP est géré par le modèle cockpit
-      case 'ap_yd': g.yd = !g.yd; break;
-      case 'ap_hdg': fdOn(); g.lat = g.lat === 'HDG' ? 'ROL' : 'HDG'; break;
-      case 'ap_nav': fdOn(); if (g.cdi === 'GPS') { g.lat = 'GPS'; g.latArm = ''; } else { g.latArm = 'VOR'; if (g.lat !== 'HDG') g.lat = 'ROL'; } break;
-      case 'ap_apr': fdOn(); if (g.cdi === 'GPS') { g.lat = 'GPS'; g.vertArm = 'GP'; } else { g.latArm = 'LOC'; g.vertArm = 'GS'; } break;
-      case 'ap_alt': fdOn(); g.vert = 'ALT'; g.refAlt = Math.round(f.alt / 10) * 10; g.vertArm = ''; break;
-      case 'ap_vs': fdOn(); g.vert = 'VS'; g.refVs = Math.round(f.vs / 100) * 100; g.vertArm = 'ALTS'; break;
-      case 'ap_flc': fdOn(); g.vert = 'FLC'; g.refIas = Math.max(90, Math.round(f.ias)); g.vertArm = 'ALTS'; break;
-      case 'ap_nose_up': if (g.vert === 'VS') g.refVs += 100; else if (g.vert === 'FLC') g.refIas = Math.max(90, g.refIas - 1); break;
-      case 'ap_nose_dn': if (g.vert === 'VS') g.refVs -= 100; else if (g.vert === 'FLC') g.refIas = Math.min(180, g.refIas + 1); break;
+    var wasOn = g.fd;
+    function fdOn(lat, vert) {
+      if (!g.fd) { g.fd = true; g.lat = lat || 'ROL'; g.latArm = ''; setVert(vert || 'PIT'); }
     }
+    function setVert(m) {
+      g.vert = m; g.vertAt = null;
+      g.vertArm = (m === 'PIT' || m === 'VS' || m === 'FLC') ? 'ALTS' : '';  // ALTS armé auto (Table 7-2)
+    }
+    function latDefault() { g.lat = 'ROL'; g.latAt = null; }
+    switch (key) {
+      case 'ap_fd':
+        if (sys.apEngaged) return; // touche FD inopérante AP engagé (p.388)
+        if (g.fd) { g.fd = false; g.lat = g.vert = g.latArm = g.vertArm = ''; g.latAt = g.vertAt = null; } else fdOn();
+        break;
+      case 'ap_ap': fdOn(); break; // engagement AP + YD géré par le modèle cockpit (p.414)
+      case 'ap_yd': if (g.yd) { g.yd = false; g.ydDiscAt = ck.s.t; } else { g.yd = true; g.ydDiscAt = null; } break;
+      case 'ap_hdg':
+        if (!wasOn) { fdOn('HDG'); break; }
+        if (g.lat === 'HDG') latDefault(); else { g.lat = 'HDG'; g.latAt = null; }
+        break;
+      case 'ap_nav':
+        if (wasOn && (/^(GPS|VOR|LOC)$/.test(g.lat) || g.latArm)) { if (g.latArm) g.latArm = ''; else latDefault(); break; }
+        fdOn();
+        if (g.cdi === 'GPS') { g.lat = 'GPS'; g.latAt = null; g.latArm = ''; }
+        else { g.latArm = 'VOR'; g.latArmAt = ck.s.t; } // CDI > 1 point : NAV armé (blanc) à gauche du mode actif (p.399)
+        break;
+      case 'ap_apr':
+        fdOn();
+        if (g.cdi === 'GPS') { g.lat = 'GPS'; g.latAt = null; g.vertArm = 'GP'; }
+        else { g.latArm = 'LOC'; g.latArmAt = ck.s.t; g.vertArm = 'GS'; }
+        break;
+      case 'ap_alt':
+        if (wasOn && g.vert === 'ALT') { setVert('PIT'); break; }
+        fdOn('ROL', 'ALT'); setVert('ALT'); g.refAlt = Math.round(f.alt / 10) * 10;
+        break;
+      case 'ap_vs':
+        if (wasOn && g.vert === 'VS') { setVert('PIT'); break; }
+        fdOn('ROL', 'VS'); setVert('VS'); g.refVs = U.clamp(Math.round(f.vs / 100) * 100, -3000, 1500);
+        break;
+      case 'ap_flc':
+        if (wasOn && g.vert === 'FLC') { setVert('PIT'); break; }
+        fdOn('ROL', 'FLC'); setVert('FLC'); g.refIas = U.clamp(Math.round(f.ias), 90, 185);
+        break;
+      case 'ap_nose_up': if (g.vert === 'VS') g.refVs = Math.min(1500, g.refVs + 100); else if (g.vert === 'FLC') g.refIas = Math.max(90, g.refIas - 1); break;
+      case 'ap_nose_dn': if (g.vert === 'VS') g.refVs = Math.max(-3000, g.refVs - 100); else if (g.vert === 'FLC') g.refIas = Math.min(185, g.refIas + 1); break;
+    }
+  };
+
+  /* Annonces AFCS à afficher (bandeau du PFD, Figure 7-2 p.389) :
+     latArm (blanc) | lat (vert) | AP | YD | vert (vert) + référence | vertArm (blanc)
+     flash = transition automatique armé → actif : clignote 10 s (p.390, 393). */
+  G.FLASH_MS = 10000;
+  /* Phase de clignotement (≈1 Hz) si une annonce AFCS clignote, sinon 0 — sert à rafraîchir le PFD */
+  G.afcsBlink = function (I) {
+    var v = G.afcsView(I.g, I.t);
+    return (v.latFlash || v.vertFlash || v.ydFlash || (I.ap && I.ap.discFlash)) ? 1 + Math.floor(I.t / 500) % 2 : 0;
+  };
+  G.afcsView = function (g, t) {
+    function fl(at) { return at != null && t - at < G.FLASH_MS; }
+    var ref = '';
+    if (g.vert === 'VS') ref = (g.refVs > 0 ? '↑' : g.refVs < 0 ? '↓' : '') + Math.abs(g.refVs) + 'FPM';
+    else if (g.vert === 'FLC') ref = g.refIas + 'KT';
+    else if (g.vert === 'ALT') ref = (g.refAlt != null ? g.refAlt : g.altSel) + 'FT';
+    else if (g.vert === 'ALTS') ref = g.altSel + 'FT';
+    return { latArm: g.latArm, lat: g.lat, latFlash: fl(g.latAt), vert: g.vert, vertFlash: fl(g.vertAt), ref: ref, vertArm: g.vertArm,
+      ydFlash: g.ydDiscAt != null && t - g.ydDiscAt < 5000 };
   };
 
   /* Évolution de la situation scénarisée (altitude, vitesse) */
@@ -971,15 +1049,33 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (f.onGround) return;
     // En vol hors script : seul l'AFCS (s'il est engagé) fait évoluer l'altitude
     var vs = f.vs;
+    var t = ck.s.t;
+    // NAV/APR armés (VOR/LOC) : capture simulée après quelques secondes de vol (pas de modèle d'écart CDI)
+    if (g.fd && g.latArm && g.latArmAt != null && t - g.latArmAt > 8000) { g.lat = g.latArm; g.latArm = ''; g.latAt = t; }
     if (sys.apEngaged || g.fd) {
       if (g.vert === 'VS') vs = g.refVs;
       else if (g.vert === 'FLC') vs = g.altSel > f.alt ? 700 : -700;
-      else if (g.vert === 'ALT' || g.vert === 'ALTS') vs = 0;
+      else if (g.vert === 'ALTS') {
+        // Capture : le vario diminue en approchant de l'altitude sélectée
+        var d = g.altSel - f.alt, cap = Math.max(150, Math.abs(d) * 5);
+        vs = U.clamp(d * 5, -cap, cap); if (Math.abs(vs) < 150) vs = d > 0 ? 150 : -150;
+      }
+      else if (g.vert === 'ALT') {
+        var dA = (g.refAlt != null ? g.refAlt : f.alt) - f.alt;
+        if (Math.abs(dA) < 1) { f.alt += dA; vs = 0; } else vs = U.clamp(dA * 10, -300, 300);
+      }
       else if (g.vert === 'PIT') vs = f.vs;
     }
     var nalt = f.alt + vs * dt / 60000;
-    if (g.vertArm === 'ALTS' && ((f.alt < g.altSel && nalt >= g.altSel) || (f.alt > g.altSel && nalt <= g.altSel))) {
-      nalt = g.altSel; vs = 0; g.vert = 'ALT'; g.vertArm = ''; g.refAlt = g.altSel; g.altsFlash = ck.s.t;
+    if (g.vertArm === 'ALTS' && g.vert !== 'ALTS') {
+      // Approche de l'altitude sélectée : ALTS passe actif (vert, clignote ≤ 10 s) et ALT s'arme en blanc (p.393)
+      var lead = Math.max(100, Math.abs(vs) / 6);
+      var toward = (g.altSel - f.alt) * vs > 0 || Math.abs(g.altSel - f.alt) < 1;
+      if (toward && Math.abs(g.altSel - nalt) <= lead) { g.vert = 'ALTS'; g.vertArm = 'ALT'; g.vertAt = t; }
+    }
+    if (g.vert === 'ALTS' && Math.abs(g.altSel - nalt) < 50) {
+      // À 50 ft : ALT blanc passe dans le champ actif et clignote vert 10 s (p.393)
+      g.vert = 'ALT'; g.vertArm = ''; g.refAlt = g.altSel; g.vertAt = t;
     }
     f.alt = nalt; f.vs = vs;
   };
@@ -1226,9 +1322,16 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (/^ecu_test_/.test(id)) { var ee = s.eng[id === 'ecu_test_l' ? 'L' : 'R']; if (ee.state === 'run' && s.controls[id === 'ecu_test_l' ? 'power_l' : 'power_r'] < 3) ee.ecu = { start: s.t, done: false }; }
       if (id === 'ap_ap' && sys.apState === 'ready') {
         sys.apEngaged = !sys.apEngaged;
-        if (sys.apEngaged) sys.history.apEngaged = true; else sys.apDiscAlert = s.t;
+        // Touche AP : engage AP + YD + FD (p.414) ; ré-appui = déconnexion manuelle (AP jaune clignotant 5 s + tonalité, p.415)
+        if (sys.apEngaged) { sys.history.apEngaged = true; sys.apDiscAlert = 0; s.g.yd = true; s.g.ydDiscAt = null; }
+        else { sys.apDiscAlert = s.t; this.emit('aural', 'apdisc'); }
       }
-      if (id === 'ap_disc' && sys.apEngaged) { s.g.fd = true; sys.apEngaged = false; sys.apDiscAlert = s.t; sys.history.apDisc = true; this.emit('aural', 'apdisc'); }
+      if (id === 'ap_disc') {
+        // OM-B (limitations) : « autopilot and yaw damper must be disconnected (using the DISC button) » → AP DISC coupe AP + YD
+        if (sys.apEngaged) { s.g.fd = true; sys.apEngaged = false; sys.apDiscAlert = s.t; sys.history.apDisc = true; this.emit('aural', 'apdisc'); }
+        else if (sys.apDiscAlert && s.t - sys.apDiscAlert < 5000) sys.apDiscAlert = 0; // 2e appui : annule le clignotement AP (Garmin p.415)
+        if (s.g.yd && sys.apState === 'ready') { s.g.yd = false; s.g.ydDiscAt = s.t; } // YD jaune clignotant 5 s (Garmin p.415)
+      }
       if (id === 'mfd_ent') {
         if (sys.mfdStage === 'database') { sys.mfdStage = 'normal'; sys.dbAcked = true; }
       }
@@ -1264,6 +1367,16 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (sys.apState === 'off') { sys.apState = 'pft'; sys.apPftUntil = s.t + T.apPft; }
       if (sys.apState === 'pft' && s.t >= sys.apPftUntil) { sys.apState = 'ready'; this.emit('aural', 'apdisc'); }
     } else { sys.apState = 'off'; sys.apEngaged = false; }
+
+    // Trim électrique (manche) : fait tourner la roue de trim, sauf AP DISC maintenu (OM-B After start-up m)
+    if (s.pressed.trim_hat && sys.power && !s.pressed.ap_disc && c.trim_hat !== 'NEUTRE') {
+      s.trimAcc = (s.trimAcc || 0) + dt;
+      if (s.trimAcc >= 700) {
+        s.trimAcc = 0;
+        var tw = this.defs.elev_trim, ti = tw.positions.indexOf(c.elev_trim), tj = ti + (c.trim_hat === 'NOSE UP' ? 1 : -1);
+        if (tj >= 0 && tj < tw.positions.length) { var tf = c.elev_trim; c.elev_trim = tw.positions[tj]; this.emit('change', 'elev_trim', tf, c.elev_trim); }
+      }
+    } else s.trimAcc = 0;
 
     // Moteurs
     var self = this;
@@ -1395,8 +1508,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       item('pfd.attitude', 'Horizon (PFD)', I.flight.onGround ? 'stable — assiette et inclinaison nulles' : 'en vol');
       item('pfd.speed', 'Vitesse indiquée', Math.round(I.flight.ias) + ' kt' + (I.flight.onGround ? ' (au sol)' : ' · V/S ' + Math.round(I.flight.vs) + ' ft/min'));
       item('pfd.baro', 'Altimètre / calage', I.altitude + ' ft · ' + (I.g.std ? 'STD' : I.g.baro + ' hPa') + ' — secours ' + I.altStby + ' ft');
-      var gm = I.g; if (I.ap.state === 'ready') item('pfd.ap', 'Bandeau AFCS', [gm.lat ? gm.lat + ' (vert)' : '', gm.latArm ? gm.latArm + ' (blanc, armé)' : '', I.ap.engaged ? 'AP' : '', gm.yd ? 'YD' : '', gm.vert ? gm.vert + ' (vert)' : '', gm.vertArm ? gm.vertArm + ' (blanc, armé)' : ''].filter(function (x) { return x; }).join(' · ') || 'aucune annonce AP');
-      else item('pfd.ap', 'Bandeau pilote automatique', I.ap.state === 'off' ? 'aucune annonce AP (AFCS non alimenté)' : I.ap.state === 'pft' ? 'PFT (auto-test) en cours' : (I.ap.engaged ? 'AP engagé' : 'aucune annonce AP'));
+      var gm = I.g, av = TF.G1000.afcsView(gm, I.t);
+      if (I.ap.state === 'ready') item('pfd.ap', 'Bandeau AFCS', [av.latArm ? av.latArm + ' (blanc, armé)' : '', av.lat ? av.lat + (av.latFlash ? ' (vert, clignote)' : ' (vert)') : '',
+        I.ap.engaged ? 'AP (vert)' : I.ap.discFlash ? 'AP (jaune, clignote)' : '', gm.yd ? 'YD (vert)' : av.ydFlash ? 'YD (jaune, clignote)' : '',
+        av.vert ? av.vert + (av.ref ? ' ' + av.ref : '') + (av.vertFlash ? ' (vert, clignote)' : ' (vert)') : '', av.vertArm ? av.vertArm + ' (blanc, armé)' : ''].filter(function (x) { return x; }).join(' · ') || 'aucune annonce AP');
+      else item('pfd.ap', 'Bandeau pilote automatique', I.ap.state === 'off' ? 'aucune annonce AP (AFCS non alimenté)' : I.ap.state === 'pft' ? 'PFT blanc encadré + AFCS rouge (auto-test en cours)' : (I.ap.engaged ? 'AP engagé' : 'aucune annonce AP'));
       return out;
     }
     if (zone === 'mfd') {
@@ -1618,7 +1734,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       { id: 'j6', n: '1.j.6', label: 'Flight Plan', response: 'LOADED', kind: 'confirm', item: 'flight_plan', group: 9, ref: R(AS, 59), simulated: false },
       { id: 'j7', n: '1.j.7', label: 'Nav Aids', response: 'SET', kind: 'confirm', item: 'nav_aids', group: 9, ref: R(AS, 59), simulated: false },
       { id: 'k', n: '1.k', label: 'Primary Flight Display (PFD)', response: 'NO AUTOPILOT ANNUNCIATIONS', kind: 'observe', obs: ['pfd.ap'], expect: 'noApAnnun', group: 10, after: ['b'], region: 'pfd', ref: R(AS, 59),
-        note: 'Auto-test AFCS (PFT) à la mise sous tension ; à la fin, l\'annonce AFCS disparaît et la tonalité de déconnexion retentit.' },
+        note: 'Auto-test AFCS à la mise sous tension : PFT blanc encadré + AFCS rouge sur le PFD ; à la fin, PFT et AFCS disparaissent et la tonalité de déconnexion retentit (note OM-B).' },
       { id: 'l', n: '1.l', label: 'Autopilot Disconnect Tone', response: 'NOTE', kind: 'confirm', item: 'ap_tone_noted', group: 10, after: ['b'], ref: R(AS, 59) },
       { id: 'm', n: '1.m', label: 'Manual Electric Trim', response: 'TEST', kind: 'achieve', ctls: ['ap_disc', 'trim_hat'], cond: 'trimInhibitTested', group: 11, after: ['b'], region: 'yoke', ref: R(AS, 60),
         explain: 'Maintenir AP DISC enfoncé en commandant le trim : le trim électrique ne doit fonctionner ni à cabrer ni à piquer.',
@@ -1627,7 +1743,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         ideal: [{ waitFor: 'apReady', timeout: 15000 }, { press: 'ap_ap' }] },
       { id: 'o', n: '1.o', label: 'AP Disc Switch', response: 'TEST', kind: 'achieve', ctls: ['ap_disc'], cond: 'apDiscTested', group: 13, after: ['n'], region: 'yoke', ref: R(AS, 60),
         ideal: [{ press: 'ap_disc' }] },
-      { id: 'p', n: '1.p', label: 'Trim', response: 'SET TO TAKE-OFF POSITION MANUALLY', kind: 'confirm', item: 'trim_to', group: 14, ref: R(AS, 60), simulated: false },
+      { id: 'p', n: '1.p', label: 'Trim', response: 'SET TO TAKE-OFF POSITION MANUALLY', kind: 'achieve', ctls: ['elev_trim'], cond: 'trimTO', group: 14, region: 'console', ref: R(AS, 60),
+        explain: 'Roue de trim (console, en arrière des manettes) : aligner le repère T/O sur l\'index. Haut de la roue vers l\'avant = piqueur (OM-B p.326).', ideal: [{ set: 'elev_trim', to: 'T/O' }] },
       { id: 'q', n: '1.q', label: 'ESP And USP Status', response: 'CHECK', kind: 'confirm', item: 'esp_usp_status', group: 14, ref: R(AS, 60) },
       { id: 'rL', n: '1.r', label: 'Fuel Selector LH', response: 'ON', kind: 'set', ctl: 'fuel_sel_l', pos: 'ON', group: 15, after: ['d'], region: 'fuelsel', ref: R(AS, 60) },
       { id: 'rR', n: '1.r', label: 'Fuel Selector RH', response: 'ON', kind: 'set', ctl: 'fuel_sel_r', pos: 'ON', group: 15, after: ['d'], region: 'fuelsel', ref: R(AS, 60) },
@@ -1795,7 +1912,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     ].concat(ecuSide('L', 2)).concat(ecuSide('R', 5)).concat([
       { id: '4a', n: '4.a', label: 'Annunciations / Engine / System Page', response: 'CHECKED', kind: 'observe', obs: ['mfd.eis', 'mfd.rpm', 'pfd.alerts'], group: 8, region: 'mfd', ref: R(BT, 63) },
       { id: '4b', n: '4.b', label: 'Circuit Breakers', response: 'CHECKED', kind: 'confirm', item: 'cb_checked', group: 8, ref: R(BT, 63) },
-      { id: '4c', n: '4.c', label: 'Trim', response: 'SET T/O', kind: 'confirm', item: 'trim_to', group: 8, ref: R(BT, 63) },
+      { id: '4c', n: '4.c', label: 'Trim', response: 'SET T/O', kind: 'achieve', ctls: ['elev_trim'], cond: 'trimTO', group: 8, region: 'console', ref: R(BT, 63), ideal: [{ set: 'elev_trim', to: 'T/O' }] },
       { id: '4dL', n: '4.d', label: 'Fuel Selector LH', response: 'ON', kind: 'look', ctl: 'fuel_sel_l', pos: 'ON', group: 8, region: 'fuelsel', ref: R(BT, 63), caution: 'Décollage avec CROSSFEED sélecté interdit.' },
       { id: '4dR', n: '4.d', label: 'Fuel Selector RH', response: 'ON', kind: 'look', ctl: 'fuel_sel_r', pos: 'ON', group: 8, region: 'fuelsel', ref: R(BT, 63) },
       { id: '4e', n: '4.e', label: 'Cabin Heat / Defrost / Clim', response: 'AS REQUIRED', kind: 'confirm', item: 'cabin_heat', group: 8, required: 'never', ref: R(BT, 63) },
@@ -2039,7 +2156,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         { label: 'CIRCUIT BREAKERS', resp: 'CHECKED', verify: { type: 'declarative', item: 'cb_checked', zone: 'cb_panel' } },
         { label: 'FLAPS', resp: 'SET', verify: { type: 'state', ctl: 'flaps', expect: 'UP' } },
         { label: 'FUEL PUMPS', resp: 'ON', verify: { type: 'cond', cond: 'pumpsOnBoth', zone: 'botM', what: 'Pompes LH et RH sur ON' } },
-        { label: 'TRIMS', resp: 'SET T/O', verify: { type: 'declarative', item: 'trim_to' } },
+        { label: 'TRIMS', resp: 'SET T/O', verify: { type: 'state', ctl: 'elev_trim', expect: 'T/O' } },
         { label: 'FUEL SELECTOR', resp: 'ON', verify: { type: 'cond', cond: 'fuelSelOnBoth', zone: 'fuelsel', what: 'Sélecteurs LH et RH sur ON' } },
         { label: 'RADIOS, NAV AIDS', resp: 'SET AND COHERENT', verify: { type: 'declarative', item: 'nav_set_to' } },
         { label: 'FLIGHT CONTROLS', resp: 'FREE', verify: { type: 'declarative', item: 'flight_controls_free' } },
@@ -2176,6 +2293,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     crossfeedTested: function (S) { return S.sys.history.crossfeed; },
     floodTested: function (S) { return S.controls.flood_light > 0.05 || S.sys.history.flood === true; },
     trimInhibitTested: function (S) { return S.sys.history.trimInhibited; },
+    trimTO: function (S) { return S.controls.elev_trim === 'T/O'; },
     apReady: function (S) { return S.sys.apState === 'ready'; },
     apEngaged: function (S) { return S.sys.history.apEngaged; },
     apDiscTested: function (S) { return S.sys.history.apDisc; },
@@ -2982,111 +3100,149 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* ------------------------------ Flow (time line) ------------------------------
    * chips : { t: mot-clé tel qu'écrit, say: phrase dite, ctls: commandes ou zones à balayer, doubt }
    * Une puce sans ctls est une vérification « je dis / je fais » (rien à toucher dans le cockpit). */
+  /* Flow « Time line DA42 » (notes manuscrites) relu contre l'OM-B / la C/L / le PDP.
+   * Chaque puce = UNE commande à UN endroit :  t = mot-clé des notes · a / r = item et action réels (anglais, comme l'OM-B)
+   * ctls = où toucher · add = ajouté depuis l'OM-B (absent des notes) · doubt = interprétation à confirmer · say = texte dit (anglais). */
+  function C(t, a, r, ctls, o) { var c = { t: t, a: a, r: r, ctls: ctls || null }; for (var k in (o || {})) c[k] = o[k]; return c; }
   TF.DATA.essFlow = [
-    { id: 'arr', icon: '🚪', title: 'Arrivée avion', sub: 'Inspection cabine (OM-B B02 §2.1)', ref: om('B02 §2 Pre-flight — Cabin Inspection', 49), chips: [
-      { t: 'PWR', say: 'Elect Master ON', ctls: ['elec_master'] },
-      { t: 'LIGHTS', say: 'feux : position, strobe, atterrissage, roulage', ctls: ['position_lights', 'strobe', 'landing_light', 'taxi_light'] },
-      { t: 'HEAT', say: 'pitot et stall heat', ctls: ['pitot_heat'] },
-      { t: 'FLAPS', say: 'volets', ctls: ['flaps'] },
-      { t: 'BACKSTOP', say: 'butée de profondeur variable : check' },
-      { t: 'PWR', say: 'Elect Master OFF', ctls: ['elec_master'] }
+    { id: 'arr', icon: '🚪', title: 'Arrivée avion', sub: 'Cabin inspection (OM-B B02 §2.1 e-k)', ref: om('B02 §2 Pre-flight — Cabin Inspection', 49), chips: [
+      C('PWR', 'Elect. Master', 'ON', ['elec_master']),
+      C('LIGHTS', 'Position, strobe, landing and taxi lights', 'CHECK', ['position_lights', 'strobe', 'landing_light', 'taxi_light']),
+      C('HEAT', 'Stall warning, stall heat, pitot heat', 'CHECK', ['pitot_heat']),
+      C('FLAPS', 'Flaps', 'CHECK', ['flaps'], { doubt: true, note: 'Mot des notes : absent de la Cabin inspection OM-B (les volets sont mis UP en Cabin preparation z).' }),
+      C('BACKSTOP', 'Variable elevator backstop', 'CHECK', null),
+      C('PWR', 'Elect. Master', 'OFF', ['elec_master'])
     ] },
     { id: 'tour', icon: '🚶', title: 'Tour avion', sub: 'Check Pitot — voir l\'onglet Tour avion', ref: om('B02 §2 Pre-flight — Walk-Around', 49), walk: true, chips: [
-      { t: 'check Pitot', say: 'tour avion, sans oublier le pitot' }
+      C('check Pitot', 'Walk-around, pitot probe', 'CHECK', null)
     ] },
-    { id: 'ret', icon: '🪑', title: 'Retour dans l\'avion', sub: 'Préparation cabine (OM-B B02 §2.12) — commencer aux pompes, puis balayer', ref: om('B02 §2 Pre-flight — Cabin Preparation', 55), chips: [
-      { t: 'Pumps', say: 'pompes OFF', ctls: ['fuel_pump_l', 'fuel_pump_r'] },
-      { t: 'Trims', say: 'trims', ctls: ['trim_hat'] },
-      { t: 'Fuel selector', say: 'sélecteurs carburant ON', ctls: ['fuel_sel_l', 'fuel_sel_r'] },
-      { t: 'Power levers', say: 'manettes IDLE', ctls: ['power_l', 'power_r'] },
-      { t: 'Gear', say: 'train DOWN', ctls: ['gear_lever'] },
-      { t: 'Avionic master', say: 'avionique OFF', ctls: ['av_master'] },
-      { t: 'Elect master', say: 'Elect Master OFF', ctls: ['elec_master'] },
-      { t: 'Engine masters', say: 'Engine Masters OFF', ctls: ['eng_master_l', 'eng_master_r'] },
-      { t: 'Start key', say: 'clé OUT', ctls: ['start_key'] },
-      { t: 'Pitot heat', say: 'pitot OFF', ctls: ['pitot_heat'] },
-      { t: 'Alternators', say: 'alternateurs ON', ctls: ['alt_l', 'alt_r'] },
-      { t: 'Voters', say: 'voters AUTO', ctls: ['voter_l', 'voter_r'] },
-      { t: 'Emergency switch', say: 'emergency OFF, cache fermé', ctls: ['emergency_sw'] },
-      { t: 'Stand-by instruments', say: 'instruments de secours', ctls: ['stby'] },
-      { t: 'ELT', say: 'ELT ARMED', ctls: ['elt'] },
-      { t: 'Circuit breakers', say: 'disjoncteurs', ctls: ['cb_panel'] },
-      { t: 'Flaps', say: 'volets UP', ctls: ['flaps'] }
+    { id: 'ret', icon: '🪑', title: 'Retour dans l\'avion', sub: 'Cabin preparation (OM-B B02 §2.12 e-a) — « commence aux pumps » : la console d\'abord, puis le tableau', ref: om('B02 §2 Pre-flight — Cabin Preparation', 55), chips: [
+      C('Pumps', 'Auxiliary pumps', 'OFF', ['aux_pump_l', 'aux_pump_r'], { note: 'Les « pumps » du début = AUX PUMPS (derrière la roue de trim, OM-B p.333). Les Fuel pumps LH/RH viennent en dernier.' }),
+      C('Trims', 'Trims', 'CHECK', ['elev_trim']),
+      C('Fuel selector', 'Fuel selectors', 'ON', ['fuel_sel_l', 'fuel_sel_r']),
+      C('Power levers', 'Power levers', 'CHECK, SET IDLE', ['power_l', 'power_r']),
+      C('Gear', 'Gear selector', 'DOWN', ['gear_lever']),
+      C('Avionic master', 'Avionic Master', 'OFF', ['av_master']),
+      C('Elect master', 'Elect. Master', 'OFF', ['elec_master']),
+      C('Engine masters', 'Engine Masters', 'BOTH OFF', ['eng_master_l', 'eng_master_r']),
+      C('Start key', 'Start key', 'OUT', ['start_key']),
+      C('Pitot heat', 'Pitot heat', 'OFF', ['pitot_heat']),
+      C('Alternators', 'Alternators', 'ON', ['alt_l', 'alt_r']),
+      C('Voters', 'Voter switches', 'AUTO', ['voter_l', 'voter_r']),
+      C('Emergency switch', 'Emergency switch', 'OFF AND GUARDED', ['emergency_sw']),
+      C('Stand-by instruments', 'Stand-by instruments', 'CHECKED', ['stby']),
+      C('ELT', 'ELT', 'ARMED', ['elt']),
+      C('Circuit breakers', 'Circuit breakers', 'CHECKED', ['cb_panel']),
+      C('Flaps', 'Flap selector', 'UP', ['flaps']),
+      C('Fuel pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { add: true })
     ] },
-    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before start (OM-B B02 §3, p.56)', ref: om('B02 §3 Before Starting Engine', 56), chips: [
-      { t: 'Power + Horizon', say: 'Elect Master, horizon de secours', ctls: ['elec_master', 'stby_cage'] },
-      { t: 'Lights', say: 'feux de position', ctls: ['position_lights'] },
-      { t: 'Fuel T°', say: 'température carburant au MFD', ctls: ['mfd'] },
-      { t: 'De-ice', say: 'dégivrage', ctls: ['deice_mode'] },
-      { t: 'Alarmes', say: 'test des alarmes', ctls: ['gear_fire_test'] }
+    { id: 'avs', icon: '🔑', title: 'Avant mise en route', sub: 'Before start procedure (OM-B B02 §3 5.a-j) — ordre de l\'OM-B', ref: om('B02 §3 Before Starting Engine', 56), chips: [
+      C('Horizon', 'Spare horizon', 'CAGED', ['stby_cage']),
+      C('Power', 'Elect. Master', 'ON', ['elec_master']),
+      C('Lights', 'Nav lights', 'ON', ['position_lights']),
+      C('Alarmes', 'Alarm panel', 'TESTED', ['gear_fire_test']),
+      C('De-ice', 'Annun test de-ice', 'AS REQUIRED', ['deice_annun']),
+      C('Fuel T°', 'Fuel temperature', 'CHECK', ['mfd'])
     ] },
-    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Start-up (OM-B B02 §3, p.57-58)', ref: om('B02 §3 Engine Start-up', 57), chips: [
-      { t: 'Clear', say: 'hélice dégagée' },
-      { t: 'Master', say: 'Engine Master', ctls: ['eng_master_l'] },
-      { t: 'Glow', say: 'préchauffage au PFD', ctls: ['pfd'] },
-      { t: 'Key', say: 'clé', ctls: ['start_key'] },
-      { t: 'Param', say: 'paramètres moteur', ctls: ['mfd'] },
-      { t: 'Breakers', say: 'disjoncteurs', ctls: ['cb_panel'] },
-      { t: '→ R', say: 'puis le moteur droit, même flow' }
+    { id: 'start', icon: '🔥', title: 'Mise en route — gauche puis droite', sub: 'Start-up procedure (OM-B B02 §3, p.57-58)', ref: om('B02 §3 Engine Start-up', 57), chips: [
+      C('Strobe', 'Strobe lights', 'ON', ['strobe'], { add: true }),
+      C('Clear', 'Propeller area', 'CLEAR', null),
+      C('Master', 'Engine Master, left first', 'ON', ['eng_master_l']),
+      C('Glow', 'L ENGINE GLOW annunciation', 'CHECK ON, wait until off', ['pfd']),
+      C('Key', 'Start key', 'START', ['start_key']),
+      C('Param', 'Starter off, oil pressure, idle RPM', 'CHECK', ['mfd']),
+      C('Breakers', 'Circuit breaker', 'CHECK', ['cb_panel']),
+      C('→ R', 'Repeat with right engine', 'SAME FLOW', null)
     ] },
-    { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start (OM-B B02 §3, p.58-59)', ref: om('B02 §3 After Start-up', 58), chips: [
-      { t: 'Avionic', say: 'Avionic Master ON', ctls: ['av_master'] },
-      { t: 'Ceintures', say: 'ceintures' },
-      { t: 'Crossfeed', say: 'test crossfeed', ctls: ['fuel_sel_l', 'fuel_sel_r'] }
+    { id: 'post', icon: '✅', title: 'Après mise en route', sub: 'After start-up procedure (OM-B B02 §3 1.a-d)', ref: om('B02 §3 After Start-up', 58), chips: [
+      C('Ceintures', 'Safety harnesses', 'ON AND FASTENED', null),
+      C('Avionic', 'Avionic Master', 'ON', ['av_master']),
+      C('Crossfeed', 'Fuel selectors (first flight of the day)', 'CROSSFEED', ['fuel_sel_l', 'fuel_sel_r'])
     ] },
-    { id: 'ap', icon: '🤖', title: 'Test pilote automatique', sub: 'puis departure briefing', ref: om('B02 §3 After Start-up — AP', 59), chips: [
-      { t: 'FD', say: 'directeur de vol', ctls: ['ap_fd'] },
-      { t: 'HDG + Bug', say: 'mode HDG et heading bug', ctls: ['ap_hdg', 'mk_hdg'] },
-      { t: 'AP', say: 'pilote automatique', ctls: ['ap_ap'] },
-      { t: 'L + R', say: 'à gauche puis à droite', ctls: ['mk_hdg'], doubt: true },
-      { t: '↑↓', say: 'trim électrique haut, bas', ctls: ['trim_hat'], doubt: true },
-      { t: 'GA', say: 'go-around (bouton non représenté)' },
-      { t: 'CWS', say: 'CWS (bouton non représenté)' },
-      { t: 'Kill', say: 'AP disconnect', ctls: ['ap_disc'] },
-      { t: 'Dep BFG', say: 'departure briefing' }
+    { id: 'ap', icon: '🤖', title: 'Test pilote automatique', sub: 'OM-B After start-up m-p, puis departure briefing', ref: om('B02 §3 After Start-up — AP', 59), chips: [
+      C('FD', 'Flight director', 'ON', ['ap_fd']),
+      C('HDG', 'HDG mode', 'SELECT', ['ap_hdg']),
+      C('Bug', 'Heading bug', 'SET', ['mk_hdg']),
+      C('AP', 'Autopilot', 'ENGAGE BY PRESSING AP BUTTON', ['ap_ap']),
+      C('L + R', 'Heading bug left then right', 'CONTROLS FOLLOW', ['mk_hdg'], { doubt: true }),
+      C('↑↓', 'NOSE UP / NOSE DN', 'CONTROLS FOLLOW', ['ap_nose_up', 'ap_nose_dn'], { doubt: true, note: 'Interprétation : après le test latéral (L + R), test vertical avec NOSE UP / NOSE DN. À confirmer avec l\'instructeur.' }),
+      C('GA', 'Go-around button', 'TEST', null, { doubt: true, note: 'Bouton GA non représenté dans le cockpit 2D.' }),
+      C('CWS', 'CWS button', 'TEST', null, { doubt: true, note: 'Bouton CWS non représenté dans le cockpit 2D.' }),
+      C('Kill', 'AP disc switch', 'TEST', ['ap_disc']),
+      C('Trim', 'Trim', 'SET TO TAKE-OFF POSITION MANUALLY', ['elev_trim'], { add: true }),
+      C('Dep BFG', 'Departure briefing', 'DONE', null)
     ] },
     { id: 'taxi', icon: '🛞', title: 'Roulage', sub: 'Taxiing (OM-B p.60) + PDP p.129-130', ref: om('B02 §3 Taxiing', 60), chips: [
-      { t: 'Bille', say: 'la bille', ctls: ['pfd'] },
-      { t: 'AbB', say: 'AbB (mot du manuscrit à confirmer)', ctls: ['pfd'], doubt: true },
-      { t: 'Caps', say: 'les caps', ctls: ['pfd'] }
+      C('Taxi light', 'Taxi light', 'ON', ['taxi_light'], { add: true }),
+      C('Parking brake', 'Parking brake', 'RELEASE', ['parking_brake'], { add: true }),
+      C('Caps', 'Turning right: headings', 'INCREASE', ['pfd']),
+      C('Bille', 'Turning right: ball', 'LEFT', ['pfd']),
+      C('AbB', 'Turn coordinator and horizon', 'RIGHT, STABLE', ['pfd'], { doubt: true, note: 'Mot du manuscrit illisible : interprété d\'après le PDP p.129 (turn coordinator, horizon).' }),
+      C('Point d\'arrêt', 'Parking brake', 'ON', ['parking_brake'], { add: true }),
+      C('Point d\'arrêt', 'Taxi light', 'OFF', ['taxi_light'], { add: true })
     ] },
-    { id: 'run', icon: '🧪', title: 'Essais moteur', sub: 'Before take-off (OM-B B02 §4, p.61-62)', ref: om('B02 §4 Before Take-Off', 61), chips: [
-      { t: 'T° gearbox ≥ 40 °C', say: 'température boîte au-dessus de 40 degrés', ctls: ['mfd'] },
-      { t: 'IDLE', say: 'manettes IDLE', ctls: ['power_l', 'power_r'] },
-      { t: 'Clearance → Dep BFG', say: 'clairance, puis departure briefing' }
+    { id: 'run', icon: '🧪', title: 'Essais moteur', sub: 'Before take-off (OM-B B02 §4, p.61-63)', ref: om('B02 §4 Before Take-Off', 61), chips: [
+      C('T° gearbox', 'Gearbox oil temperature', 'ABOVE 40 °C', ['mfd']),
+      C('IDLE', 'Power levers', 'IDLE', ['power_l', 'power_r']),
+      C('Parking brake', 'Parking brake', 'ON', ['parking_brake'], { add: true }),
+      C('ECU test', 'ECU test button', 'PRESS AND HOLD', ['ecu_test_l', 'ecu_test_r'], { add: true }),
+      C('Voter', 'Voter switch: ECU A, AUTO, ECU B, AUTO', 'CHECK', ['voter_l', 'voter_r'], { add: true }),
+      C('Trim', 'Trim', 'SET T/O', ['elev_trim'], { add: true }),
+      C('Pumps', 'Fuel pumps LH / RH', 'ON', ['fuel_pump_l', 'fuel_pump_r'], { add: true }),
+      C('Landing light', 'Landing light', 'ON', ['landing_light'], { add: true }),
+      C('Clearance', 'Clearance, then departure briefing', 'CONFIRMED', null)
     ] },
     { id: 'to', icon: '🛫', title: 'Décollage', sub: 'Take-off (OM-B B02 §5, p.64-65) + PDP', ref: om('B02 §5 Take-off', 64), chips: [
-      { t: 'Heading', say: 'cap', ctls: ['pfd'] },
-      { t: 'HDG BUG', say: 'heading bug', ctls: ['mk_hdg'] },
-      { t: 'TOSA', say: 'TOSA', ctls: ['pfd'] },
-      { t: 'ALT set', say: 'altitude affichée', ctls: ['mk_alt'] },
-      { t: '2 × 70 %', say: 'deux manettes à 70 %', ctls: ['power_l', 'power_r'] },
-      { t: 'Release brakes', say: 'freins relâchés', ctls: ['parking_brake'] },
-      { t: 'Doucement 2 × 100 %', say: 'doucement, deux manettes plein gaz', ctls: ['power_l', 'power_r'] },
-      { t: 'Speed alive → « 60 » → « Rotate »', say: 'speed alive, sixty, rotate', ctls: ['pfd', 'stby'] },
-      { t: '+12° ANU', say: 'assiette plus 12', ctls: ['pfd'] },
-      { t: 'Positive RoC → frein + train', say: 'vario positif : freins, train sur rentré', ctls: ['gear_lever'] },
-      { t: '≥ 400 ft AAL → 2 × 92 %, 92 kt', say: 'à 400 pieds sol, deux manettes 92 %, 92 nœuds', ctls: ['power_l', 'power_r'] },
-      { t: '≥ TOSA : Lights / Pumps / Flaps / Gear / Alti × 2', div: 'D9', say: 'au-dessus de la TOSA : feux, pompes, volets, train, les deux altimètres', ctls: ['landing_light', 'fuel_pump_l', 'fuel_pump_r', 'flaps', 'gear_lights', 'pfd', 'stby'] }
+      C('Heading', 'Heading', 'CHECK', ['pfd']),
+      C('HDG BUG', 'Heading bug', 'SET', ['mk_hdg']),
+      C('TOSA', 'TOSA', 'CHECK', ['pfd']),
+      C('ALT set', 'Selected altitude', 'SET', ['mk_alt']),
+      C('2 × 70 %', 'Power levers', '70 %', ['power_l', 'power_r']),
+      C('Release brakes', 'Brakes', 'RELEASE', ['parking_brake']),
+      C('Doucement 2 × 100 %', 'Power levers', 'MAX, smoothly', ['power_l', 'power_r']),
+      C('Speed alive', 'Speed alive, one time', 'PFD', ['pfd']),
+      C('Two times', 'Speed alive, two times', 'STAND-BY AIRSPEED', ['stby']),
+      C('« 60 »', 'Sixty', 'CALL', ['pfd']),
+      C('« Rotate »', 'Rotate', 'CALL', null),
+      C('+12° ANU', 'Pitch attitude', '12 DEGREES NOSE UP', ['pfd']),
+      C('Positive RoC', 'Brakes', 'APPLY', null),
+      C('Train', 'Landing gear', 'UP', ['gear_lever']),
+      C('≥ 400 ft AAL', 'Power levers', '92 %', ['power_l', 'power_r']),
+      C('92 kt', 'Airspeed', '92 KNOTS', ['pfd']),
+      C('≥ TOSA : Lights', 'Landing light', 'OFF', ['landing_light'], { div: 'D9' }),
+      C('Pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r']),
+      C('Flaps', 'Flaps', 'CHECK UP', ['flaps']),
+      C('Gear', 'Landing gear', 'CHECK UP', ['gear_lights']),
+      C('Alti × 2 (PFD)', 'Altimeter', 'SET AND COMPARED', ['pfd']),
+      C('Alti × 2 (secours)', 'Stand-by altimeter', 'SET AND COMPARED', ['stby'])
     ] },
-    { id: 'pa', icon: '🧭', title: 'Pilote automatique', sub: 'Engagement à 400 ft mini', ref: NF, chips: [
-      { t: 'Mini 400 ft', say: 'pilote automatique au-dessus de 400 pieds' },
-      { t: 'FD', say: 'directeur de vol', ctls: ['ap_fd'] },
-      { t: '2D : HDG / NAV', say: 'latéral : HDG ou NAV', ctls: ['ap_hdg', 'ap_nav'] },
-      { t: '3D : ALT / VS / FLC', say: 'vertical : ALT, VS ou FLC', ctls: ['ap_alt', 'ap_vs', 'ap_flc'] },
-      { t: 'Montée : ALT / FLC / BARO', say: 'en montée : altitude, FLC, calage', ctls: ['mk_alt', 'ap_flc', 'k_crs'] },
-      { t: 'Descente : ALT / VS / BARO', say: 'en descente : altitude, VS, calage', ctls: ['mk_alt', 'ap_vs', 'k_crs'] }
+    { id: 'pa', icon: '🧭', title: 'Pilote automatique', sub: 'Engagement à 400 ft mini (GFC 700, OM-B p.67)', ref: NF, chips: [
+      C('Mini 400 ft', 'Autopilot', 'NOT BELOW 400 FEET', null),
+      C('FD', 'Flight director', 'ON', ['ap_fd']),
+      C('2D : HDG / NAV', 'Lateral mode', 'HDG OR NAV', ['ap_hdg', 'ap_nav']),
+      C('3D : ALT / VS / FLC', 'Vertical mode', 'ALT, VS OR FLC', ['ap_alt', 'ap_vs', 'ap_flc']),
+      C('↗ ALT', 'Climb: altitude preselect', 'SET', ['mk_alt']),
+      C('↗ FLC', 'Climb: mode controller', 'FLC', ['ap_flc']),
+      C('↗ BARO', 'Climb: baro', 'SET', ['k_crs']),
+      C('↘ ALT', 'Descent: altitude preselect', 'SET', ['mk_alt']),
+      C('↘ VS', 'Descent: mode controller', 'VS', ['ap_vs']),
+      C('↘ BARO', 'Descent: baro', 'SET', ['k_crs'])
     ] },
     { id: 'ifr', icon: '🌫', title: 'IFR', sub: 'Descente, attente, segments, remise de gaz', ref: NF, chips: [
-      { t: 'Descente : −10 min max → briefing APP', say: 'briefing approche au plus tard dix minutes avant la descente' },
-      { t: 'Attente : SUSP pour annuler', say: 'attente : SUSP pour annuler la suspension', ctls: ['pfd'] },
-      { t: 'Segment intermédiaire : check LPV', say: 'segment intermédiaire : vérifier LPV', ctls: ['pfd'] },
-      { t: 'Si LNAV → RAIM !', say: 'si LNAV, RAIM' },
-      { t: 'Segment final : flaps', say: 'segment final : volets', ctls: ['flaps'], doubt: true },
-      { t: 'Début de descente : gear', say: 'début de descente finale : train', ctls: ['gear_lever'] },
-      { t: 'G/A : PWR / APP flaps / … / gear + flaps / pumps', say: 'remise de gaz : puissance, volets APP, train et volets, pompes', ctls: ['power_l', 'power_r', 'flaps', 'gear_lever', 'fuel_pump_l', 'fuel_pump_r'], doubt: true }
+      C('Descente', 'Approach briefing', 'NOT LATER THAN 10 MINUTES BEFORE DESCENT', null),
+      C('Attente', 'Holding: SUSP softkey', 'TO CANCEL SUSPEND', ['pfd']),
+      C('Segment intermédiaire', 'Approach mode', 'CHECK LPV', ['pfd']),
+      C('Si LNAV', 'RAIM', 'CHECK', null),
+      C('Segment final', 'Flaps', 'APP', ['flaps'], { doubt: true, note: 'Notes : « ½ pt 30 ou 1 pt FAF 20 → flaps » (lecture à confirmer).' }),
+      C('Début de descente', 'Landing gear', 'DOWN', ['gear_lever']),
+      C('G/A : PWR', 'Power levers', 'MAX', ['power_l', 'power_r']),
+      C('APP flaps', 'Flaps', 'APP', ['flaps'], { doubt: true }),
+      C('Gear', 'Landing gear', 'UP', ['gear_lever'], { doubt: true }),
+      C('Flaps', 'Flaps', 'UP', ['flaps'], { doubt: true }),
+      C('Pumps', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { doubt: true })
     ] }
   ];
+  TF.DATA.essFlow.forEach(function (b) { b.chips.forEach(function (c) { if (!c.say) c.say = c.a + '. ' + c.r + '.'; }); });
 
   /* ------------------------------ Tour avion (OM-B p.49-55) ------------------------------
    * x, y : position sur le schéma vu de dessus (nez en haut). Points essentiels : tout ce qui n'est
@@ -3400,6 +3556,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       '<radialGradient id="gNut" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#f4f4f4"/><stop offset="0.55" stop-color="#9a9aa0"/><stop offset="1" stop-color="#4a4a50"/></radialGradient>' +
       '<linearGradient id="gBat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7d7d84"/><stop offset="0.45" stop-color="#f6f6f6"/><stop offset="1" stop-color="#6c6c72"/></linearGradient>' +
       '<radialGradient id="gKnob" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="#5a5a62"/><stop offset="0.6" stop-color="#202024"/><stop offset="1" stop-color="#0b0b0d"/></radialGradient>' +
+      '<linearGradient id="gKey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#44444b"/><stop offset="1" stop-color="#232328"/></linearGradient>' +
       '<radialGradient id="gBtn" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#55555c"/><stop offset="1" stop-color="#151518"/></radialGradient>' +
       '<radialGradient id="gBtnP" cx="0.5" cy="0.6" r="0.7"><stop offset="0" stop-color="#2c2c31"/><stop offset="1" stop-color="#0a0a0c"/></radialGradient>' +
       '<radialGradient id="gRedBtn" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#ff6a6a"/><stop offset="0.6" stop-color="#d0141c"/><stop offset="1" stop-color="#7a0a0e"/></radialGradient>' +
@@ -3508,8 +3665,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   D.push = function (def, v, ex) {
     var r = Math.min(def.w, def.h) / 2, p = ex.pressed, cx = def.x, cy = def.y;
     var s = '';
+    if (/^ap_(?!disc)|^mfd_ent$|^mfd_clr$/.test(def.id)) return D.bezelKey(def, p);
     if (!p) return '';
-    if (/^ap_|^mfd_ent|^mfd_clr/.test(def.id)) return '<rect x="' + (def.x - def.w / 2) + '" y="' + (def.y - def.h / 2) + '" width="' + def.w + '" height="' + def.h + '" rx="2" fill="#000" opacity=".55"/><rect x="' + (def.x - def.w / 2) + '" y="' + (def.y - def.h / 2) + '" width="' + def.w + '" height="' + def.h + '" rx="2" fill="none" stroke="#3fe0e8" stroke-width=".8"/>';
     if (def.id !== 'ap_disc') return '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.9) + '" fill="#000" opacity=".6"/><circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.95) + '" fill="none" stroke="#3fe0e8" stroke-width=".9"/>';
     if (def.id === 'ap_disc') {
       s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 1.8) + '" fill="#2c2c30"/>';
@@ -3517,18 +3674,36 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (!p) s += '<ellipse cx="' + (cx - r * 0.25) + '" cy="' + (cy - r * 0.3) + '" rx="' + (r * 0.35) + '" ry="' + (r * 0.2) + '" fill="#fff" opacity=".55"/>';
       return s;
     }
-    if (/^ap_|^mfd_ent|^mfd_clr/.test(def.id)) { // touches rectangulaires du bezel
-      var x = def.x - def.w / 2, y = def.y - def.h / 2;
-      s += '<rect x="' + (x - 1) + '" y="' + (y - 1) + '" width="' + (def.w + 2) + '" height="' + (def.h + 2) + '" rx="2" fill="#0c0c0e"/>';
-      s += '<rect x="' + x + '" y="' + (y + (p ? 0.6 : 0)) + '" width="' + def.w + '" height="' + (def.h - (p ? 0.6 : 0)) + '" rx="1.8" fill="' + (p ? '#141417' : '#2f2f35') + '" stroke="#55555c" stroke-width=".35"/>';
-      s += '<text x="' + cx + '" y="' + (cy + 1.4 + (p ? 0.5 : 0)) + '" font-size="' + (def.short.length > 4 ? 2.6 : 3.4) + '" fill="#e8e8ea" font-family="Arial" font-weight="700" text-anchor="middle">' + TF.util.esc(def.short) + '</text>';
-      return s;
-    }
     s += patch(def, 1.5, r);
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.95) + '" fill="#09090a"/>';
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * (p ? 0.68 : 0.78)) + '" fill="url(#' + (p ? 'gBtnP' : 'gBtn') + ')" stroke="#6a6a72" stroke-width=".35"/>';
     if (!p) s += '<ellipse cx="' + (cx - r * 0.2) + '" cy="' + (cy - r * 0.25) + '" rx="' + (r * 0.28) + '" ry="' + (r * 0.16) + '" fill="#fff" opacity=".25"/>';
     if (def.id === 'deice_max' && p) s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.5) + '" fill="#ffb02e" opacity=".75"/>';
+    return s;
+  };
+
+  /* --- Touche de bezel Garmin (contrôleur AFCS, ENT/CLR) redessinée en vectoriel pour rester lisible au zoom --- */
+  D.bezelKey = function (def, p) {
+    var x = def.x - def.w / 2, y = def.y - def.h / 2, w = def.w, h = def.h, cx = def.x, dy = p ? 0.5 : 0;
+    var s = '<rect x="' + (x - 1.1) + '" y="' + (y - 1.1) + '" width="' + (w + 2.2) + '" height="' + (h + 2.2) + '" rx="2.2" fill="#08080a"/>';
+    s += '<rect x="' + x + '" y="' + (y + dy) + '" width="' + w + '" height="' + (h - dy) + '" rx="1.9" fill="' + (p ? '#121215' : 'url(#gKey)') + '" stroke="' + (p ? '#3fe0e8' : '#5d5d66') + '" stroke-width="' + (p ? '.8' : '.35') + '"/>';
+    if (!p) s += '<rect x="' + (x + 1) + '" y="' + (y + 0.7) + '" width="' + (w - 2) + '" height="1" rx=".5" fill="#fff" opacity=".18"/>';
+    var lab = def.short, parts = /^NOSE /.test(lab) ? ['NOSE', lab.slice(5)] : [lab];
+    if (parts.length === 2) {
+      s += '<text x="' + cx + '" y="' + (def.y - 0.6 + dy) + '" font-size="2.9" fill="#f2f2f4" font-family="Arial" font-weight="700" text-anchor="middle">' + parts[0] + '</text>';
+      s += '<text x="' + cx + '" y="' + (def.y + 2.6 + dy) + '" font-size="2.9" fill="#f2f2f4" font-family="Arial" font-weight="700" text-anchor="middle">' + parts[1] + '</text>';
+    } else s += '<text x="' + cx + '" y="' + (def.y + 1.6 + dy) + '" font-size="' + (lab.length > 3 ? 3.3 : 4.3) + '" fill="#f2f2f4" font-family="Arial" font-weight="700" text-anchor="middle">' + TF.util.esc(lab) + '</text>';
+    return s;
+  };
+  /* Voyants du contrôleur AFCS : AP et YD s'allument quand engagés (Garmin p.414) */
+  D.afcsLeds = function (I) {
+    var s = '', on = { ap_ap: I.ap && I.ap.engaged, ap_yd: I.g && I.g.yd && I.ap && I.ap.state === 'ready' };
+    ['ap_ap', 'ap_yd'].forEach(function (id) {
+      var d = TF.DATA.controls.filter(function (c) { return c.id === id; })[0]; if (!d) return;
+      var lx = d.x, ly = d.y - d.h / 2 + 1.6;
+      s += '<rect x="' + (lx - 3) + '" y="' + (ly - 0.6) + '" width="6" height="1.3" rx=".6" fill="' + (on[id] ? '#3dff6a' : '#2a2a2e') + '"/>';
+      if (on[id]) s += '<rect x="' + (lx - 4) + '" y="' + (ly - 1.6) + '" width="8" height="3.3" rx="1.6" fill="#3dff6a" opacity=".25"/>';
+    });
     return s;
   };
 
@@ -3696,6 +3871,36 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     for (var k = 0; k < 3; k++) if (k !== i) s += '<rect x="' + (x + 2.5) + '" y="' + (y + 2 + k * seg) + '" width="' + (w - 5) + '" height="' + (seg - 1) + '" rx="1.2" fill="url(#gRockR)" opacity=".85"/>';
     return s;
   };
+  /* --- Roue de trim de profondeur (vue de dessus : roue verticale dans la console) --- */
+  D.trimwheel = function (def, v) {
+    var cx = def.x, cy = def.y, w = def.w, h = def.h, i = posIndex(def, v), to = def.positions.indexOf('T/O');
+    var x = cx - w / 2, y = cy - h / 2, s = '';
+    // plaque de console (schématique) qui porte aussi les AUX PUMPS
+    s += '<rect x="' + (x - 16) + '" y="' + (y - 16) + '" width="' + (w + 22) + '" height="' + (h + 104) + '" rx="5" fill="#1d1d22" stroke="#45454d" stroke-width=".8"/>';
+    s += '<text x="' + (cx - 5) + '" y="' + (y - 8) + '" font-size="4.6" fill="#d8d8de" font-family="Arial" font-weight="700" text-anchor="middle">PITCH TRIM</text>';
+    s += '<text x="' + (cx - 5) + '" y="' + (y - 1.8) + '" font-size="3.4" fill="#9a9aa4" font-family="Arial" font-weight="700" text-anchor="middle">NOSE DN ▲</text>';
+    s += '<text x="' + (cx - 5) + '" y="' + (y + h + 6) + '" font-size="3.4" fill="#9a9aa4" font-family="Arial" font-weight="700" text-anchor="middle">▼ NOSE UP</text>';
+    // fente + roue
+    s += '<rect x="' + (x - 1.5) + '" y="' + (y + 2) + '" width="' + (w + 3) + '" height="' + (h - 4) + '" rx="3" fill="#050506"/>';
+    s += '<rect x="' + x + '" y="' + (y + 3) + '" width="' + w + '" height="' + (h - 6) + '" rx="2.5" fill="url(#gCyl)"/>';
+    var off = ((i * 2.6) % 5.2);
+    for (var k = -1; k < h / 5.2 + 1; k++) {
+      var yy = y + 4 + k * 5.2 + off; if (yy < y + 4 || yy > y + h - 5) continue;
+      var shade = 0.25 + 0.55 * Math.sin(Math.PI * (yy - y) / h);
+      s += '<rect x="' + (x + 1) + '" y="' + yy.toFixed(2) + '" width="' + (w - 2) + '" height="1.6" fill="#000" opacity="' + shade.toFixed(2) + '"/>';
+    }
+    // repère T/O peint sur la roue : il se déplace avec la roue (aligné sur l'index quand trim = T/O)
+    var my = cy + (i - to) * 5.6;
+    if (my > y + 5 && my < y + h - 5) s += '<rect x="' + (x + 1) + '" y="' + (my - 1.2) + '" width="' + (w - 2) + '" height="2.4" fill="#f4f4f4"/>';
+    // index fixe T/O sur la plaque
+    s += '<path d="M' + (x - 5.5) + ',' + (cy - 3) + ' L' + (x - 1.8) + ',' + cy + ' L' + (x - 5.5) + ',' + (cy + 3) + 'Z" fill="' + (i === to ? '#3dff6a' : '#e8e8ec') + '"/>';
+    s += '<text x="' + (x - 13) + '" y="' + (cy - 4.5) + '" font-size="3.6" fill="' + (i === to ? '#3dff6a' : '#e8e8ec') + '" font-family="Arial" font-weight="700">T/O</text>';
+    s += '<text x="' + (cx - 5) + '" y="' + (y + h + 15) + '" font-size="3.6" fill="#9a9aa4" font-family="Arial" font-weight="700" text-anchor="middle">AUX PUMP</text>';
+    s += '<text x="' + (cx - 6) + '" y="' + (y + h + 54) + '" font-size="3.4" fill="#9a9aa4" font-family="Arial" font-weight="700" text-anchor="middle">L</text>';
+    s += '<text x="' + (cx + 9) + '" y="' + (y + h + 54) + '" font-size="3.4" fill="#9a9aa4" font-family="Arial" font-weight="700" text-anchor="middle">R</text>';
+    return s;
+  };
+
   D.draw = function (def, value, ex) {
     var f = D[def.type === 'toggle' ? 'toggle' : def.type];
     return f ? f(def, value, ex || {}) : '';
@@ -3870,22 +4075,34 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       s += rect(540, y0, 98, h, '#000', ' stroke="#555" stroke-width="1"');
       lines.forEach(function (l, k) { s += t(544, y0 + 15 + k * 14, l.s, 12, l.c, 'start', 700); });
     }
-    // Bandeau AFCS (Garmin p.388-393)
+    // Bandeau AFCS — Garmin Figure 7-2 p.389 : armé latéral (blanc) | actif latéral (vert) | AP · YD | actif vertical (vert) + référence | armé vertical (blanc)
     if (I.ap.state !== 'off') {
-      s += rect(176, 46, 290, 22, '#0b0f14', ' opacity=".92"');
-      if (I.ap.state === 'pft') s += '<rect x="304" y="49" width="34" height="16" fill="none" stroke="#fff" stroke-width="1.2"/>' + t(321, 62, 'PFT', 13, '#fff', 'middle', 700) + t(380, 62, 'AFCS', 13, '#ff3030', 'middle', 700);
-      else {
-        if (g.lat) s += t(186, 62, g.lat, 14, '#2fe35a', 'start', 700);
-        if (g.latArm) s += t(228, 62, g.latArm, 14, '#fff', 'start', 700);
-        if (I.ap.engaged) s += t(321, 62, 'AP', 15, '#2fe35a', 'middle', 700);
-        else if (I.ap.discFlash && Math.floor(I.t / 400) % 2 === 0) s += rect(306, 49, 30, 16, '#f2e23a') + t(321, 62, 'AP', 15, '#000', 'middle', 700);
-        if (g.yd) s += t(296, 62, 'YD', 13, '#2fe35a', 'end', 700);
-        if (g.vert) {
-          var ref = g.vert === 'VS' ? (g.refVs >= 0 ? '+' : '') + g.refVs + 'FPM' : g.vert === 'FLC' ? g.refIas + 'KT' : g.vert === 'ALT' ? (g.refAlt || g.altSel) + 'FT' : '';
-          var flash = g.altsFlash && (I.t - g.altsFlash) < 4000;
-          s += t(352, 62, g.vert === 'ALT' && flash ? 'ALTS' : g.vert, 14, '#2fe35a', 'start', 700) + t(392, 62, ref, 11, '#2fe35a', 'start', 700);
+      var GRN = '#2fe35a', YEL = '#f2e23a', RED = '#e8262b';
+      var on = Math.floor(I.t / 500) % 2 === 0;
+      // annonce clignotante : vidéo inverse (fond de couleur, texte noir) une demi-seconde sur deux (Figure 7-6 p.393)
+      var ann = function (x, w, txt, col, size, flash) {
+        if (flash && on) return rect(x, 49, w, 17, col) + t(x + w / 2, 62, txt, size, '#000', 'middle', 700);
+        return t(x + w / 2, 62, txt, size, col, 'middle', 700);
+      };
+      s += rect(176, 46, 268, 22, '#0b0f14', ' opacity=".92"');
+      s += '<path d="M256,48 V66 M318,48 V66" stroke="#5a6470" stroke-width="1"/>';
+      if (I.ap.state === 'pft') {
+        // Auto-test : PFT blanc encadré + annonce AFCS rouge jusqu'à la fin du test (OM-B 4A ; Garmin Table 7-6 p.418)
+        s += '<rect x="258" y="49" width="28" height="17" fill="none" stroke="#fff" stroke-width="1.2"/>' + t(272, 62, 'PFT', 12, '#fff', 'middle', 700);
+        s += rect(288, 49, 30, 17, RED) + t(303, 62, 'AFCS', 10, '#fff', 'middle', 700);
+      } else {
+        var av = TF.G1000.afcsView(g, I.t);
+        if (av.latArm) s += ann(177, 36, av.latArm, '#fff', 12, false);
+        if (av.lat) s += ann(214, 40, av.lat, GRN, 14, av.latFlash);
+        if (I.ap.engaged) s += ann(259, 28, 'AP', GRN, 15, false);
+        else if (I.ap.discFlash && on) s += t(273, 62, 'AP', 15, YEL, 'middle', 700); // déconnexion manuelle : AP jaune clignotant 5 s (p.415)
+        if (g.yd) s += ann(288, 28, 'YD', GRN, 15, false);
+        else if (av.ydFlash && on) s += t(302, 62, 'YD', 15, YEL, 'middle', 700); // YD coupé : jaune clignotant 5 s (p.415)
+        if (av.vert) {
+          s += ann(320, 40, av.vert, GRN, 14, av.vertFlash);
+          if (av.ref) s += t(362, 62, av.ref, 10, GRN, 'start', 700);
         }
-        if (g.vertArm) s += t(462, 62, g.vertArm, 14, '#fff', 'end', 700);
+        if (av.vertArm) s += ann(412, 31, av.vertArm, '#fff', 11, false);
       }
     }
     s += topBar(I, f.onGround ? 'LFBU' : 'Situation scénarisée');
@@ -4165,7 +4382,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     this.gPfd = el('g', {}, this.gScreens); this.gMfd = el('g', {}, this.gScreens);
     this.gCtl = el('g', {}, svg);
     this.gLights = el('g', {}, svg);
-    this.gGear = el('g', {}, this.gLights); this.gFlap = el('g', {}, this.gLights);
+    this.gGear = el('g', {}, this.gLights); this.gFlap = el('g', {}, this.gLights); this.gAfcs = el('g', {}, this.gLights);
     this.gHl = el('g', { 'class': 'hl-layer' }, svg);
     this.gLabels = el('g', { 'class': 'lbl-layer', style: 'display:none' }, svg);
     this.gHit = el('g', { 'class': 'hit-layer' }, svg);
@@ -4214,14 +4431,14 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   CockpitView.prototype.renderDynamic = function (force) {
     var I = this.c.indications(), sc = this.c.s.scenario;
     var blink = Math.floor(I.t / 400) % 2;
-    var fl = I.flight, kp = JSON.stringify([I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, Math.floor(I.t / 1000) % 5 === 0 && I.g.altsFlash ? I.t : 0]);
+    var fl = I.flight, kp = JSON.stringify([I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
     var km = JSON.stringify([I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel]);
     var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias)]);
-    var kl = JSON.stringify([I.gearLights, I.flapLights]);
+    var kl = JSON.stringify([I.gearLights, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
     if (force || kp !== this.lastDisp.p) { parseInto(this.gPfd, TF.Displays.pfd(I, sc)); this.lastDisp.p = kp; }
     if (force || km !== this.lastDisp.m) { parseInto(this.gMfd, TF.Displays.mfd(I, sc)); this.lastDisp.m = km; }
     if (force || ks !== this.lastDisp.s) { parseInto(this.gStby, TF.Displays.standby(I, this.c.get('stby_cage') === 'CAGED')); this.lastDisp.s = ks; }
-    if (force || kl !== this.lastDisp.l) { parseInto(this.gGear, TF.Draw.gearLights(I.gearLights)); parseInto(this.gFlap, TF.Draw.flapLights(I.flapLights)); this.lastDisp.l = kl; }
+    if (force || kl !== this.lastDisp.l) { parseInto(this.gGear, TF.Draw.gearLights(I.gearLights)); parseInto(this.gFlap, TF.Draw.flapLights(I.flapLights)); parseInto(this.gAfcs, TF.Draw.afcsLeds(I)); this.lastDisp.l = kl; }
     if (force) parseInto(this.gReg, TF.Draw.regPlate(sc.reg));
   };
   CockpitView.prototype.setLabels = function (on) { this.showLabels = on; this.gLabels.style.display = on ? '' : 'none'; };
@@ -4697,6 +4914,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     switch (d.type) {
       case 'rocker': case 'pushlatch':
         res = ck.setControl(id, d.positions[1 - d.positions.indexOf(v)]); break;
+      case 'trimwheel':
+        var ti = d.positions.indexOf(v), tj = info.part === 'upper' ? ti - 1 : ti + 1;
+        if (tj < 0 || tj >= d.positions.length) { K.toast('Trim en butée (' + esc(v) + ')', '', 1200); return; }
+        res = ck.setControl(id, d.positions[tj]);
+        K.toast('Trim : <b>' + esc(d.positions[tj]) + '</b>' + (d.positions[tj] === 'T/O' ? ' ✓ repère aligné' : ''), '', 1000); break;
       case 'toggle':
         var i = d.positions.indexOf(v), n = d.positions.length;
         if (n === 2) res = ck.setControl(id, d.positions[1 - i]);
@@ -5929,10 +6151,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   /* -------------------------------------------------------------- Flow -------------------------------------------------------------- */
   function chipHtml(c, state) {
-    return '<span class="fchip' + (c.ctls ? ' tgt' : ' say') + (state ? ' ' + state : '') + '">' + (c.ctls ? '' : '🗣 ') + esc(c.t) + (c.doubt ? ' <span class="doubt">?</span>' : '') + '</span>';
+    return '<span class="fchip' + (c.ctls ? ' tgt' : ' say') + (c.add ? ' add' : '') + (state ? ' ' + state : '') + '" title="' + esc(c.a + ' … ' + c.r) + '">' + (c.ctls ? '' : '🗣 ') + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') + '</span>';
   }
   function flowHtml() {
-    var h = srcBanner() + '<div class="ess-intro">Chaque étape tient en quelques mots-clés. <b>▶ Balayer</b> : l\'instructeur parcourt le cockpit dans l\'ordre et le dit. <b>✋ À toi</b> : touche les commandes dans le même ordre.</div><div class="tl">';
+    var h = srcBanner() + '<div class="ess-intro">Chaque étape tient en quelques mots-clés, relus contre l\'OM-B : <b>une puce = une commande à un endroit</b>. <b>▶ Balayer</b> : l\'instructeur parcourt le cockpit et annonce l\'item en anglais. <b>✋ À toi</b> : touche les commandes dans le même ordre. <span class="addb">OM-B</span> = ajouté depuis l\'OM-B (absent des notes) · <span class="doubt">?</span> = lecture à confirmer.</div><div class="tl">';
     TF.DATA.essFlow.forEach(function (b, i) {
       var div = b.chips.filter(function (c) { return c.div; })[0];
       h += '<div class="tl-it"><div class="tl-dot">' + b.icon + '</div><div class="tl-card"><div class="tl-h"><b>' + esc(b.title) + '</b><small>' + esc(b.sub) + '</small></div>' +
@@ -5974,7 +6196,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
         S.prev = c.ctls[c.ctls.length - 1];
       }, al);
     }
-    ses().dSay(c.say, 'fr', function () {
+    ses().dSay(c.say, 'en', function () {
       S.done.push(S.i); S.i++; ses().dWait(c.ctls ? 500 : 250, demoStep, al);
     }, null, al);
   }
@@ -6005,12 +6227,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* Touche dans le cockpit pendant « À toi » : on vérifie sans manipuler la commande */
   E.intercept = function (kind, id) {
     if (!S || S.mode !== 'try' || S.finished) return false;
-    if (kind === 'press') return true;
     var c = S.b.chips[S.i], v = app().view;
     if (!c) return true;
     if (!c.ctls) { K.toast('🗣 Cette étape se dit : « ' + esc(c.t) + ' » — touche « ✓ Fait » dans le panneau.', '', 2200); return true; }
     var hit = c.ctls.indexOf(id) >= 0;
-    if (!hit && kind === 'ctl') { var d = app().ck.defs[id]; if (d && c.ctls.indexOf(d.region) >= 0) hit = true; }
+    if (!hit && (kind === 'ctl' || kind === 'press')) { var d = app().ck.defs[id]; if (d && c.ctls.indexOf(d.region) >= 0) hit = true; }
     if (hit) {
       K.sound.ok(); v.clearHighlight(); c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
       S.lastRegion = regionOf(id);
@@ -6030,7 +6251,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     b.chips.forEach(function (c, i) {
       var st = S.done.indexOf(i) >= 0 ? ' ok' : i === S.i && !S.finished ? ' cur' : '';
       var tgt = c.ctls ? (S.mode === 'try' && st !== ' ok' ? '👆 dans le cockpit' : '🎯') : '🗣 à dire';
-      h += '<div class="clc-row' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + (c.doubt ? ' <span class="doubt">?</span>' : '') + '</span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
+      h += '<div class="clc-row' + st + '"><span class="clc-n">' + (i + 1) + '</span><span class="clc-l">' + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') +
+        '<small class="ess-act">' + esc(c.a) + ' … <b>' + esc(c.r) + '</b></small></span><span class="clc-r">' + (st === ' ok' ? '✓' : tgt) + '</span>';
+      if (st === ' cur' && c.note) h += '<div class="clc-acts"><div class="sc-note">' + esc(c.note) + '</div></div>';
       if (st === ' cur' && S.mode === 'try' && !c.ctls) h += '<div class="clc-acts"><button class="btn primary" data-act="said">✓ Fait</button></div>';
       if (st === ' cur' && S.mode === 'try' && c.ctls && S.chipErr >= 2) h += '<div class="clc-acts"><div class="sc-note">Indice : la commande clignote dans le cockpit.</div></div>';
       h += '</div>';
