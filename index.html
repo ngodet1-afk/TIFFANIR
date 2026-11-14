@@ -446,6 +446,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   #instructor.collapsed #instrToggle { -webkit-transform: none; transform: none; border: 1px solid #1f3352; border-bottom: 0; border-radius: 12px 12px 0 0; }
   #instructor.collapsed #instrToggle:after { content: '⌃'; line-height: 30px; }
   #instrBody { padding: 10px 12px 24px; }
+  .clc-list { max-height: none; }
+  .omb-list { max-height: 160px; }
   /* Accueil, L'essentiel : plein écran sous la barre du haut */
   #home, #ess { position: fixed; top: 46px; top: calc(46px + env(safe-area-inset-top)); z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
   #toolbar { left: 6px; bottom: 30px; padding: 4px; max-width: calc(100% - 12px); overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -532,7 +534,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '3.2';
+  TF.VERSION = '3.3';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -4743,11 +4745,27 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return String(h).replace(/\bC\/L(?= DA42| Issue)/g, '\u0001').replace(/\bC\/L\b/g, 'Check-list').replace(/\u0001/g, 'C/L').replace(/\bT\/O\b/g, 'Take-off');
   };
   /* Garde l'élément en cours au centre de sa liste : on voit toujours l'item d'avant et l'item d'après */
+  /* Garde l'item courant au milieu : d'abord dans la liste (si elle défile), puis dans le panneau qui la contient
+     (sur téléphone, c'est le panneau instructeur qui défile : l'item suit au lieu de rester bloqué en haut). */
+  function scroller(el) {
+    for (var p = el && el.parentNode; p && p !== document.body && p.nodeType === 1; p = p.parentNode) {
+      var oy = root.getComputedStyle ? root.getComputedStyle(p).overflowY : '';
+      if ((oy === 'auto' || oy === 'scroll') && p.scrollHeight > p.clientHeight + 2) return p;
+    }
+    return null;
+  }
   K.centerCurrent = function (box, cur) {
     if (!box || !cur) return;
-    var off = cur.offsetParent === box ? cur.offsetTop : cur.offsetTop - box.offsetTop;
-    var top = off - (box.clientHeight - cur.offsetHeight) / 2;
-    box.scrollTop = Math.max(0, top);
+    if (box.scrollHeight > box.clientHeight + 2) {
+      var off = cur.offsetParent === box ? cur.offsetTop : cur.offsetTop - box.offsetTop;
+      box.scrollTop = Math.max(0, off - (box.clientHeight - cur.offsetHeight) / 2);
+    }
+    var outer = scroller(box);
+    if (!outer) return;
+    var or = outer.getBoundingClientRect(), cr = cur.getBoundingClientRect();
+    var visible = cr.top >= or.top + 4 && cr.bottom <= or.bottom - 4;
+    // sur grand écran on ne bouge le panneau que si l'item est masqué ; sur téléphone on le recentre toujours
+    if (!visible || or.height < 520) outer.scrollTop += (cr.top + cr.height / 2) - (or.top + or.height * 0.42);
   };
   K.toast = function (msg, kind, ms) {
     var box = K.$('toast'), d = document.createElement('div');
@@ -4898,7 +4916,53 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     for (var i = 0; i < R.length; i++) t = t.replace(R[i][0], R[i][1]);
     return t.replace(/\.\.\.+|…/g, ', ').replace(/\s+/g, ' ');
   };
+  /* Mots anglais dans une phrase française : prononcés par la voix anglaise (sinon « engine » sonne « angine »).
+   * Lexique des termes de l'OM-B / C/L / PDP ; ON, OFF, UP… seulement en majuscules (« on » est aussi un mot français). */
+  var EN_WORDS = ('engine engines master masters power lever levers elect electric avionic avionics fuel pump pumps aux auxiliary selector selectors crossfeed ' +
+    'flap flaps gear trim trims take-off takeoff before after start start-up startup check checked checks checklist check-list c/l t/o landing light lights taxi taxiing ' +
+    'strobe strobes heat heating stall warning warn alternator alternators voter voters emergency switch switches standby stand-by circuit breaker breakers key keys ' +
+    'backstop rotate speed alive sixty positive climb cruise descent approach final parking brake brakes release set setting heading bug autopilot disconnect tone ' +
+    'flight director ident baro cross-checked holding airspeed procedure procedures complete completed departure clearance walk-around glow annunciation annunciations ' +
+    'oil pressure gearbox door canopy harness harnesses safety backrests chocks wing tip tips nacelle inspection preparation cabin spare instruments instrument ' +
+    'nose up down wheel steering below line items item lights reset armed guarded closed open idle max smoothly twice once times time one two caged uncaged ' +
+    'go-around go around missed field short normal outside clear left right first opposite repeat increase decrease stable turning ball turn coordinator ' +
+    'radio radios frequencies frequency aids plan loaded heater defrost vent flood quantity database weather passengers briefed rear front baggage ' +
+    'yaw damper engage engaged mode controller preselect select selected standard flight-level hold attitude pitch bank level').split(' ');
+  var EN_SET = {}; EN_WORDS.forEach(function (w) { EN_SET[w] = 1; });
+  var EN_UPPER = { ON: 1, OFF: 1, UP: 1, DOWN: 1, IDLE: 1, MAX: 1, SET: 1, CHECK: 1, AUTO: 1, NORMAL: 1, ARMED: 1, TEST: 1, TESTED: 1, DONE: 1, NOTE: 1, NOTED: 1, AS: 1, REQUIRED: 1, AND: 1, BOTH: 1, IN: 1, OUT: 1, START: 1 };
+  var FR_KEEP = { avion: 1, position: 1, contrôle: 1, test: 1, mode: 1, horizon: 1, pitot: 1, altitude: 1, ok: 1, briefing: 1, simple: 1, minute: 1, minutes: 1, radio: 1 };
+  function isEn(w) {
+    if (EN_UPPER[w]) return true;
+    var l = w.toLowerCase();
+    if (FR_KEEP[l]) return false;
+    return !!EN_SET[l];
+  }
+  /* découpe une phrase française en segments [{lang, text}] */
+  V.splitLang = function (text) {
+    var toks = String(text).match(/«[^»]*»|[A-Za-zÀ-ÿ'’\/\-]+|[^A-Za-zÀ-ÿ'’\/\-«]+/g) || [], segs = [];
+    function push(lang, t) { var last = segs[segs.length - 1]; if (last && last.lang === lang) last.text += t; else segs.push({ lang: lang, text: t }); }
+    toks.forEach(function (t, i) {
+      if (t.charAt(0) === '«') {
+        var ws = t.replace(/[«»]/g, ' ').match(/[A-Za-zÀ-ÿ'’\/\-]+/g) || [], en = ws.filter(isEn).length;
+        push(ws.length && en / ws.length >= 0.5 ? 'en' : 'fr', ' ' + t.replace(/[«»]/g, ' ') + ' ');
+      } else if (/[A-Za-zÀ-ÿ]/.test(t)) {
+        var nx = toks[i + 2], en = isEn(t) || (/^[A-Z]$/.test(t) && nx && isEn(nx)); // « L ENGINE GLOW »
+        push(en ? 'en' : 'fr', t);
+      }
+      else push(segs.length ? segs[segs.length - 1].lang : 'fr', t); // espaces, chiffres, ponctuation : suivent le segment en cours
+    });
+    // un segment anglais de ponctuation seule n'a pas de sens : on fusionne
+    return segs.filter(function (sg) { return /[A-Za-zÀ-ÿ0-9]/.test(sg.text); });
+  };
   V.say = function (text, lang, done, opts) {
+    if (text && lang === 'fr' && V.enabled()) {
+      var segs = V.splitLang(text);
+      if (segs.length > 1) {
+        segs.forEach(function (sg, i) { V.say(sg.text, sg.lang === 'en' ? 'en-in-fr' : 'fr-only', i === segs.length - 1 ? done : null, opts); });
+        return;
+      }
+    }
+    if (lang === 'en-in-fr') lang = 'en'; else if (lang === 'fr-only') lang = 'fr';
     if (text) text = V.spoken(text, lang || 'en');
     if (!V.enabled() || !text) { if (done) setTimeout(done, (opts && opts.silentMs != null ? opts.silentMs : 350) / scale); return; }
     queue.push({ text: text, lang: lang || 'en', done: done, rate: Math.max(0.5, Math.min(2, ((opts && opts.rate) || (lang === 'fr' ? 1.05 : 0.98)) * scale)), g: gen });
