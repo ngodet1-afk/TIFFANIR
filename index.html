@@ -830,6 +830,10 @@ body.immersion #immExit{display:block}
 .ess-sec-h b { display: block; font-size: 20px; color: #fff; } .ess-sec-h small { color: #9fb3cc; font-size: 12.5px; }
 .ess-tabs button { font-size: 13.5px; padding: 10px 4px; }
 
+.ct-top { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 12px; }
+.ct-top b { font-size: 20px; color: #fff; }
+.tr-deb li.info { color: #c8d4e4; }
+
 </style>
 </head>
 <body>
@@ -839,7 +843,7 @@ body.immersion #immExit{display:block}
       <img src="assets/logo-192.png" alt="">
       <span class="brand-txt"><b>TIFFAN'IR <i>(ME)</i></b><small>Les Casseurs Flowteurs · DA42 Cockpit Trainer</small></span>
     </button>
-    <div class="mode-chip" id="modeChip">Cockpit libre</div>
+    <div class="mode-chip" id="modeChip" style="display:none"></div>
     <div class="spacer"></div>
     <button class="tb primary" id="btnHome"><span class="ico">✈︎</span><span class="lbl">Mon vol</span></button>
     <button class="tb" id="btnEss" title="Procédures complètes (OM-B, check-lists, PDP)"><span class="ico">📚</span><span class="lbl">Procédures complètes</span></button>
@@ -896,7 +900,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '6.7';
+  TF.VERSION = '6.8';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -1094,7 +1098,7 @@ body.immersion #immExit{display:block}
     { id: 'botL', label: 'Interrupteurs bas gauche (PITOT / MASTERS / CLÉ / ELECT)', x: 330, y: 636, w: 300, h: 70 },
     { id: 'botM', label: 'Train / Pompes carburant', x: 600, y: 636, w: 290, h: 70 },
     { id: 'botR', label: 'Volets / disjoncteurs moteurs', x: 900, y: 636, w: 450, h: 70 },
-    { id: 'yoke', label: 'Manche gauche (AP DISC / TRIM)', x: 315, y: 700, w: 130, h: 90 },
+    { id: 'yoke', label: 'Manche gauche (AP DISC / TRIM, manche tiré pour le backstop)', x: 300, y: 695, w: 160, h: 225 },
     { id: 'console', label: 'Console centrale (+ roue de trim)', x: 650, y: 700, w: 230, h: 424 },
     { id: 'fuelsel', label: 'Sélecteurs carburant', x: 700, y: 1010, w: 160, h: 114 },
     { id: 'audio', label: 'Panneau audio Garmin GMA 1347 (entre PFD et MFD)', x: 688, y: 398, w: 54, h: 250 },
@@ -1223,6 +1227,9 @@ body.immersion #immExit{display:block}
   add({ id: 'power_r', label: 'POWER LEVER RIGHT', short: 'PWR R', type: 'power', region: 'console', x: 811, y: 975, w: 68, h: 94, initial: 0, ref: PL });
   // GA : bouton sur le flanc gauche de la manette gauche (repère « GO AROUND ») ; CWS : gâchette derrière la poignée du manche
   add({ id: 'ga_btn', label: 'GA (Go Around) — flanc gauche de la manette gauche', short: 'GA', type: 'push', region: 'console', x: 709, y: 978, w: 10, h: 24 });
+  // Manche : tirer à fond et maintenir (contrôle du Variable Elevator Backstop — PDP p.114-115, OM-B p.49 1.j)
+  add({ id: 'stick_pull', label: 'Manche — tirer à fond et maintenir / relâcher', short: 'MANCHE', type: 'stick', positions: ['NEUTRAL', 'FULL AFT'], region: 'yoke', x: 396, y: 880, w: 36, h: 60, initial: 'NEUTRAL',
+    ref: { doc: 'PDP', sec: 'Pre-flight inspection — Variable Elevator Back Stop « VEBS »', page: 115 } });
   add({ id: 'cws_btn', label: 'CWS (Control Wheel Steering) — gâchette derrière le manche', short: 'CWS', type: 'push', region: 'yoke', x: 347, y: 790, w: 18, h: 16 });
   /* Frein de parc (OM-B p.407) : « in the upper position when the brakes are released. To operate the parking brake, pull the lever
      downwards until it catches … To release, the lever is pushed upwards. » → POIGNÉE EN HAUT = OFF (libéré), EN BAS = ON (serré). */
@@ -2823,6 +2830,16 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       if (s.g.vert === 'PIT') tp = U.clamp((s.g.refPitch || 0) / 2, -1, 1);
       else if (s.g.vert === 'TO' || s.g.vert === 'GA') tp = U.clamp(7 / 2, -1, 1); // TO / GA : assiette à cabrer → manche tiré
     }
+    // Variable Elevator Backstop (PDP p.114-115) : manche tiré à fond → butée normale (15,5° à cabrer) ;
+    // les DEUX manettes au-dessus de ≈ 21 % → butée variable (13°) : le manche avance un peu ; une seule manette : rien ne se passe.
+    if (c.stick_pull === 'FULL AFT') {
+      var both = c.power_l > 21 && c.power_r > 21, act = sys.power && both && !(sys.fail && sys.fail.vebs);
+      tr = 0; tp = act ? 0.72 : 1; sys.elevUp = act ? 13 : 15.5;
+      var hv = sys.history;
+      if (sys.power && (c.power_l > 21) !== (c.power_r > 21)) { if (c.power_l > 21) hv.vebsL = true; else hv.vebsR = true; }
+      if (act) hv.vebsBoth = true;
+      if (hv.vebsBoth && c.power_l <= 3 && c.power_r <= 3) hv.vebsIdle = true;
+    } else sys.elevUp = null;
     var kk = Math.min(1, dt / 450); st.r += (tr - st.r) * kk; st.p += (tp - st.p) * kk;
     if (Math.abs(st.r) < 0.005) st.r = 0; if (Math.abs(st.p) < 0.005) st.p = 0;
     if (!sys.power) sys.mfdStage = 'off';
@@ -2943,6 +2960,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
         if (e.ecu && e.ecu.start != null && !e.ecu.done) { Ca.push(k + ' ECU A FAIL'); Ca.push(k + ' ECU B FAIL'); }
       });
       if (c.pitot_heat !== 'ON') { Ca.push('PITOT HT OFF'); Ca.push('STAL HT OFF'); }
+      if (sys.fail && sys.fail.vebs) Ca.push('STICK LIMIT'); // butée variable pas dans la bonne position (OM-B B.8 A ; PDP p.114)
       if (c.deice_annun === 'ANNUN-TEST') {
         if (sc.deiceFluidLow) Ca.push('DEICE LVL LO');
         if (sys.annunTestSince !== null && s.t - sys.annunTestSince >= T.annunTestPresLo) Ca.push('DEIC PRES LO');
@@ -3805,6 +3823,13 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   var C = TF.Conditions = {
     /* Conditions d'état */
+    /* Variable Elevator Backstop (PDP p.115) — étapes du contrôle */
+    stickAft: function (S) { return S.controls.stick_pull === 'FULL AFT'; },
+    vebsLeftOnly: function (S) { return S.controls.stick_pull === 'FULL AFT' && S.controls.power_l > 21 && S.controls.power_r <= 21; },
+    vebsRightOnly: function (S) { return S.controls.stick_pull === 'FULL AFT' && S.controls.power_r > 21 && S.controls.power_l <= 21 && !!S.sys.history.vebsL; },
+    vebsBoth: function (S) { return S.controls.stick_pull === 'FULL AFT' && S.controls.power_l > 21 && S.controls.power_r > 21 && !!S.sys.history.vebsBoth; },
+    vebsIdle: function (S) { return !!S.sys.history.vebsIdle && S.controls.power_l <= 3 && S.controls.power_r <= 3; },
+    vebsDone: function (S) { return !!S.sys.history.vebsIdle && S.controls.stick_pull !== 'FULL AFT'; },
     fmsMatchesGauge: function (S) { return Math.abs(S.sys.fmsFuel - (S.scenario.fuelMain[0] + S.scenario.fuelMain[1])) < 0.6; },
     annunTestDone: function (S) { return S.sys.history.annunTest && S.controls.deice_annun === 'OFF'; },
     fireTested: function (S) { return S.sys.history.fireTest; },
@@ -4749,7 +4774,12 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       C('Feux', 'Position lights, strobe lights', 'CHECK', ['position_lights', 'strobe'], { om: '1.g', sim: 'lightsPosStrobe', vals: ['Allumer, vérifier dehors, éteindre', 'Ne pas regarder les ACL en face'] }),
       C('Phares', 'Landing and taxi light', 'CHECK', ['landing_light', 'taxi_light'], { om: '1.h', sim: 'lightsLdgTaxi' }),
       C('Réchauffages', 'Stall warning, stall heat, pitot heat', 'CHECK', ['pitot_heat'], { om: '1.i', sim: 'pitotCheck', vals: ['STAL HT FAIL possible au sol (normal)'] }),
-      C('Backstop', 'Variable elevator backstop', 'CHECK', null, { om: '1.j', note: 'Indispensable : sinon, arrêter la préparation (OM-B p.49).' }),
+      C('Backstop : manche', 'Stick', 'PULL FULL BACKWARD AND HOLD', ['stick_pull'], { om: '1.j', sim: 'vebsPull', done: 'stickAft', vals: ['PDP p.115 « How to check the VEBS » — ELECTRIC MASTER ON', 'Débattement normal à cabrer 15,5°'], note: 'Contrôle obligatoire : si le backstop ne fonctionne pas, arrêter la préparation du vol (OM-B p.49 1.j).' }),
+      C('Manette gauche', 'Left power lever > 21 %', 'NOTHING HAPPENS', ['power_l'], { sim: 'vebsL', done: 'vebsLeftOnly', vals: ['Le manche reste en butée arrière'] }),
+      C('Manette droite', 'Right power lever > 21 %', 'NOTHING HAPPENS', ['power_r'], { sim: 'vebsR', done: 'vebsRightOnly', vals: ['Le manche reste en butée arrière'], note: 'Gauche ramenée au ralenti pour tester la droite seule (lecture de la liste PDP — à confirmer avec l\'instructeur).' }),
+      C('Les deux manettes', 'Both power levers > 21 %', 'STICK MOVES LITTLE FORWARD', ['power_l', 'power_r'], { sim: 'vebsBoth', done: 'vebsBoth', vals: ['Butée limitée à 13° à cabrer (PDP p.114)'] }),
+      C('Les deux manettes', 'Both power levers', 'IDLE — STICK MOVES MAX BACKWARD', ['power_l', 'power_r'], { sim: 'vebsIdle', done: 'vebsIdle', vals: ['Retour en butée 15,5°', 'Les volets n\'ont aucune influence (PDP p.115)'] }),
+      C('Manche', 'Stick', 'RELEASE', ['stick_pull'], { add: true, sim: 'vebsRel', done: 'vebsDone', note: 'Fin du contrôle : manche relâché, manettes IDLE.' }),
       C('PWR', 'Elect. Master', 'OFF', ['elec_master'], { add: true, sim: 'elecOff', note: 'Avant le tour avion (C/L PRE-FLIGHT INSPECTION : ELECT MASTER OFF).' })
     ] },
     { id: 'tour', icon: '🚶', title: 'Tour avion', sub: 'Check Pitot — voir l\'onglet Tour avion', ref: om('B02 §2 Pre-flight — Walk-Around', 49), walk: true, chips: [
@@ -6678,6 +6708,13 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       '<text x="' + def.x + '" y="' + (def.y + 3.2) + '" font-size="8" fill="#fff" font-family="Arial" font-weight="700" text-anchor="middle">' + TF.util.esc(v) + '</text>';
   };
 
+  /* --- Manche (stick_pull) : repère pointillé « tirer » ; plein quand le manche est tenu tiré à fond --- */
+  D.stick = function (def, v) {
+    var x = def.x - def.w / 2, y = def.y - def.h / 2, on = v === 'FULL AFT';
+    var s = '<rect x="' + x + '" y="' + y + '" width="' + def.w + '" height="' + def.h + '" rx="8" fill="' + (on ? '#3fe0e8' : 'none') + '" fill-opacity=".22" stroke="#3fe0e8" stroke-width="1" stroke-dasharray="' + (on ? '0' : '3 2') + '" opacity="' + (on ? 1 : 0.6) + '"/>';
+    s += '<text x="' + def.x + '" y="' + (def.y + 3) + '" font-size="7" fill="#3fe0e8" font-family="Arial" font-weight="700" text-anchor="middle">' + (on ? 'TIRÉ' : '⇣ TIRER') + '</text>';
+    return s;
+  };
   D.draw = function (def, value, ex) {
     var f = D[def.type === 'toggle' ? 'toggle' : def.type];
     return f ? f(def, value, ex || {}) : '';
@@ -7717,6 +7754,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     this.gLights = el('g', {}, svg);
     this.gGear = el('g', {}, this.gLights); this.gFlap = el('g', {}, this.gLights); this.gAfcs = el('g', {}, this.gLights);
     this.gHl = el('g', { 'class': 'hl-layer' }, svg);
+    this.gKnob = el('g', { 'class': 'knob-sel', 'pointer-events': 'none' }, svg);
     this.gLabels = el('g', { 'class': 'lbl-layer', style: 'display:none' }, svg);
     this.gHit = el('g', { 'class': 'hit-layer' }, svg);
     var self = this;
@@ -7788,7 +7826,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       var tf = moving ? 'translate(0,' + (stk.p * 9).toFixed(1) + ') rotate(' + (stk.r * 7).toFixed(2) + ' 380 1060) translate(380 1060) scale(' + (1 + stk.p * 0.035).toFixed(3) + ') translate(-380 -1060)' : '';
       this.gStickMv.setAttribute('transform', tf);
       // les commandes dessinées sur le manche (AP DISC, trim) suivent le manche
-      var self2 = this; ['ap_disc', 'trim_hat', 'cws_btn'].forEach(function (id) { var g = self2.ctlG[id]; if (g) { if (tf) g.setAttribute('transform', tf); else g.removeAttribute('transform'); } });
+      var self2 = this; ['ap_disc', 'trim_hat', 'cws_btn', 'stick_pull'].forEach(function (id) { var g = self2.ctlG[id]; if (g) { if (tf) g.setAttribute('transform', tf); else g.removeAttribute('transform'); } });
     }
   };
   CockpitView.prototype.setLabels = function (on) { this.showLabels = on; this.gLabels.style.display = on ? '' : 'none'; };
@@ -7905,6 +7943,16 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var r = this.box.getBoundingClientRect(), v = this.vb;
     return { x: r.left + (x - v.x) / v.w * this.W, y: r.top + (y - v.y) / v.h * this.H };
   };
+  /* repère du bouton rotatif survolé : anneau extérieur = gros bouton, cercle intérieur = petit bouton (sélection à la souris) */
+  CockpitView.prototype.showKnob = function (d) {
+    var sel = (this.knobSel && this.knobSel[d.id]) || 'L', R = Math.max(d.w, d.h) / 2, g = this.gKnob;
+    while (g.firstChild) g.removeChild(g.firstChild);
+    el('circle', { cx: d.x, cy: d.y, r: (R + 1.6).toFixed(2), fill: 'none', stroke: '#3fe0e8', 'stroke-width': sel === 'L' ? 1.6 : 0.5, opacity: sel === 'L' ? 1 : 0.5 }, g);
+    el('circle', { cx: d.x, cy: d.y, r: (R * 0.45).toFixed(2), fill: sel === 'S' ? '#3fe0e8' : 'none', 'fill-opacity': 0.3, stroke: '#3fe0e8', 'stroke-width': sel === 'S' ? 1.4 : 0.5, opacity: sel === 'S' ? 1 : 0.5 }, g);
+    var tx = el('text', { x: d.x, y: (d.y - R - 3.5).toFixed(2), 'font-size': 2.6, fill: '#3fe0e8', 'font-family': 'Arial', 'font-weight': 700, 'text-anchor': 'middle', stroke: '#000', 'stroke-width': 0.8, 'paint-order': 'stroke' }, g);
+    tx.textContent = (sel === 'S' ? 'PETIT' : 'GROS') + ' ⟲ G · D ⟳';
+  };
+  CockpitView.prototype.hideKnob = function () { var g = this.gKnob; while (g && g.firstChild) g.removeChild(g.firstChild); };
   CockpitView.prototype.preciseEnough = function (d) { return Math.min(d.w, d.h) * this.scale >= 15; };
 
   /* ---------------- Saisie ---------------- */
@@ -7977,9 +8025,28 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       self.emit('bgTap', s.p);
     }
     // Souris
-    svg.addEventListener('mousedown', function (e) { if (e.button !== 0) return; e.preventDefault(); down(e.clientX, e.clientY, e.target); });
+    // Boutons rotatifs à la souris : clic gauche = tourner à gauche, clic droit = à droite ; clic molette = bascule gros anneau / petit bouton ;
+    // Maj + clic = menu complet (PUSH, touches). Maintenir = rotation continue. (Tactile : inchangé, le toucher ouvre le menu.)
+    self.knobSel = {}; var kRep = null;
+    function knobStop() { if (kRep) { clearTimeout(kRep.t); clearInterval(kRep.i); kRep = null; } }
+    svg.addEventListener('mousedown', function (e) {
+      var ti = targetInfo(e.target), d = ti && ti.ctl && self.defs[ti.ctl];
+      if (d && d.type === 'knob' && !e.shiftKey && self.preciseEnough(d) && e.button <= 2) {
+        e.preventDefault(); knobStop();
+        if (e.button === 1) { self.knobSel[d.id] = self.knobSel[d.id] === 'S' ? 'L' : 'S'; self.showKnob(d); self.emit('knobSel', d.id, self.knobSel[d.id]); return; }
+        var act = (self.knobSel[d.id] || 'L') + (e.button === 0 ? '-' : '+');
+        self.emit('knobTurn', d.id, act); self.showKnob(d);
+        kRep = { t: setTimeout(function () { if (kRep) kRep.i = setInterval(function () { self.emit('knobTurn', d.id, act); }, 120); }, 420) };
+        return;
+      }
+      if (e.button !== 0) return; e.preventDefault(); down(e.clientX, e.clientY, e.target);
+    });
+    svg.addEventListener('contextmenu', function (e) { var ti = targetInfo(e.target); if (ti && ti.ctl && self.defs[ti.ctl] && self.defs[ti.ctl].type === 'knob') e.preventDefault(); });
+    svg.addEventListener('auxclick', function (e) { if (e.button === 1) e.preventDefault(); });
+    svg.addEventListener('mouseover', function (e) { var ti = targetInfo(e.target), d = ti && ti.ctl && self.defs[ti.ctl]; if (d && d.type === 'knob') { self.showKnob(d); self.emit('knobHover', d.id); } });
+    svg.addEventListener('mouseout', function (e) { var ti = targetInfo(e.target), d = ti && ti.ctl && self.defs[ti.ctl]; if (d && d.type === 'knob') self.hideKnob(); });
     root.addEventListener('mousemove', function (e) { if (st) move(e.clientX, e.clientY); });
-    root.addEventListener('mouseup', function () { up(); });
+    root.addEventListener('mouseup', function () { knobStop(); up(); });
     svg.addEventListener('wheel', function (e) {
       e.preventDefault();
       var f = Math.exp(-(e.deltaY || 0) * (e.ctrlKey ? 0.012 : 0.0022));
@@ -8441,6 +8508,17 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       if (d.type === 'hold3') ck.setControl(id, d.initial);
     });
     v.on('powerSet', function (id, val) { setPower(id, val); });
+    // boutons rotatifs à la souris (clic gauche / droit, clic molette = petit bouton)
+    v.on('knobTurn', function (id, act) {
+      if (app.modes.locked()) return K.toast('Démonstration en cours : observe, puis passe en mode guidé.', 'warn');
+      var d = ck.defs[id], k = KN[d.knob], r = ck.knob(id, act);
+      if (r && r.ok === false) return K.toast(esc(r.reason), 'err');
+      K.sound.click();
+      K.toast(esc(r && r.msg ? r.msg : (k ? k.val(ck.s.g, ck, d) : d.label)), '', 1300);
+    });
+    v.on('knobSel', function (id, sel) { K.toast((sel === 'S' ? 'Petit bouton' : 'Gros anneau') + ' sélectionné — clic gauche ⟲ · clic droit ⟳', '', 1300); });
+    var knobTip = false;
+    v.on('knobHover', function () { if (knobTip) return; knobTip = true; K.toast('🖱 Bouton rotatif : clic gauche ⟲ · clic droit ⟳ · clic molette = gros / petit bouton · Maj + clic = PUSH et touches', '', 3500); });
     v.on('precisionZoom', function (reg) {
       var r = TF.DATA.regions.filter(function (x) { return x.id === reg; })[0];
       if (r) K.toast('Zoom : ' + esc(r.label), '', 1300);
@@ -8467,6 +8545,10 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
         var i = d.positions.indexOf(v), n = d.positions.length;
         if (n === 2) res = ck.setControl(id, d.positions[1 - i]);
         else { var j = info.part === 'upper' ? i - 1 : i + 1; if (j < 0 || j >= n) { K.toast(esc(d.short) + ' déjà en butée (' + esc(v) + ')', '', 1200); return; } res = ck.setControl(id, d.positions[j]); }
+        break;
+      case 'stick':
+        res = ck.setControl(id, v === 'FULL AFT' ? 'NEUTRAL' : 'FULL AFT');
+        K.toast(v === 'FULL AFT' ? 'Manche relâché' : 'Manche tiré à fond et <b>maintenu</b> (touche à nouveau pour relâcher)', '', 1800);
         break;
       case 'guarded':
         if (!ck.isGuardOpen(id)) { res = ck.setGuard(id, true); K.toast('Cache ' + esc(d.short) + ' ouvert', '', 1100); }
@@ -8936,7 +9018,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   };
   P.setChip = function () {
     var c = K.$('modeChip');
-    c.textContent = this.phase ? (this.phase.icon + ' ' + this.phase.title + ' · ' + LEVELS[this.level]) : 'Cockpit libre';
+    c.textContent = this.phase ? (this.phase.icon + ' ' + this.phase.title + ' · ' + LEVELS[this.level]) : '';
+    c.style.display = this.phase ? '' : 'none'; // pastille de mode : affichée seulement pendant un exercice (« Cockpit libre » n'apportait rien)
     c.className = 'mode-chip ' + (this.level === 'memory' ? 'memory' : this.level === 'discover' ? 'demo' : this.level === 'practice' ? 'guided' : '');
     K.$('tbHint').classList.toggle('hidden', this.level !== 'practice');
   };
@@ -9965,10 +10048,16 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     h += tile('learn', big('ifr', 'mh-ifr', '📚 L\'IFR POUR LES NULS', 'Les bases de l\'IFR expliquées simplement') + '<div class="sp-row">' + chip('avion') + chip('tour') + '</div>');
     return h + '</div>';
   }
+  // garde la rubrique ouverte à l'écran (au lieu de remonter en haut de la page)
+  function toSection() { var sc = K.$('essSec'), el2 = K.$('ess'); if (sc && el2) el2.scrollTop = Math.max(0, sc.offsetTop - 10); }
   E.show = function (tab) {
     if (tab) E.tab = tab;
     TF.Home.hide(); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); }
     var el = K.$('ess'), h = '<div class="hm-in">';
+    if (E.tab === 'test') {
+      // Class test : page dédiée, sans les espaces de l'accueil
+      h += '<div class="ct-top"><button class="btn" data-act="ctback">← Retour</button><b>📝 Class test</b><span></span></div>' + testHtml() + '</div>';
+    } else {
     h += TF.Mep ? TF.Mep.heroHtml(spacesHtml()) : spacesHtml();
     var T = TAB[E.tab] || TAB.flow;
     h += '<div class="ess-sec" id="essSec"><div class="ess-sec-h" style="border-color:' + SP[T.sp].c + '"><span class="ess-sec-k" style="color:' + SP[T.sp].c + '">' + SP[T.sp].i + ' ' + esc(SP[T.sp].t) + '</span><b>' + T.i + ' ' + esc(T.t) + '</b><small>' + esc(T.d) + '</small></div>';
@@ -9977,6 +10066,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
     h += '</div><div class="hm-foot"><button data-act="voices">🗣 Voix de l\'instructeur</button><button data-act="cloud">👥 Équipe, classement et sauvegarde</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
+    }
     var keep = E._shown === E.tab && E.visible() ? el.scrollTop : 0; E._shown = E.tab;
     el.innerHTML = K.plain(h); el.classList.remove('hidden'); el.scrollTop = keep;
     K.bindActs(el, {
@@ -9986,7 +10076,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       mepmap: function () { E.close(); TF.Mep.show('map'); },
       trip: function () { E.close(); TF.Trip.show(); },
       cloud: function () { if (TF.Cloud) TF.Cloud.openPanel(); },
-      tab: function (b) { E.show(b.getAttribute('data-v')); var sc = K.$('essSec'); if (sc && b.getAttribute('data-sp')) { var el2 = K.$('ess'); el2.scrollTop = Math.max(0, sc.offsetTop - 10); } },
+      tab: function (b) { var v = b.getAttribute('data-v'); if (v === 'test' && E.tab !== 'test') E.prevTab = E.tab; E.show(v); toSection(); },
+      ctback: function () { E.ct = null; E.show(E.prevTab && E.prevTab !== 'test' ? E.prevTab : 'flow'); toSection(); },
       voices: function () { TF.Screens.voices(); },
       // briefings
       bfield: function () { }, bplay: function () { briefPlay(); }, bstop: function () { V.stop(); },
@@ -10263,6 +10354,12 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     apOnClimb: [{ press: 'ap_ap', ms: 200 }],
     altCapture: [{ waitFor: 'altHold2500', timeout: 90000 }],
     elecOnArr: [{ set: 'elec_master', to: 'ON' }],
+    vebsPull: [{ set: 'stick_pull', to: 'FULL AFT' }, { wait: 800 }],
+    vebsL: [{ set: 'power_l', to: 30 }, { wait: 1200 }],
+    vebsR: [{ set: 'power_l', to: 0 }, { set: 'power_r', to: 30 }, { wait: 1200 }],
+    vebsBoth: [{ set: 'power_l', to: 30 }, { set: 'power_r', to: 30 }, { wait: 1500 }],
+    vebsIdle: [{ set: 'power_l', to: 0 }, { set: 'power_r', to: 0 }, { wait: 1500 }],
+    vebsRel: [{ set: 'stick_pull', to: 'NEUTRAL' }, { wait: 600 }],
     elecOff: [{ set: 'elec_master', to: 'OFF' }],
     lightsPosStrobe: [{ set: 'position_lights', to: 'ON' }, { set: 'strobe', to: 'ON' }, { wait: 1800 }, { set: 'position_lights', to: 'OFF' }, { set: 'strobe', to: 'OFF' }],
     lightsLdgTaxi: [{ set: 'landing_light', to: 'ON' }, { set: 'taxi_light', to: 'ON' }, { wait: 1800 }, { set: 'landing_light', to: 'OFF' }, { set: 'taxi_light', to: 'OFF' }],
@@ -12266,6 +12363,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   /* Points du débriefing : true = fait correctement, false = erreur / oubli */
   function mark(k, ok, label, why) { if (R.items[k] && R.items[k].ok === false && ok) return; R.items[k] = { ok: ok, label: label, why: why || '' }; }
+  /* Remarque de PILOTAGE (vitesse de roulage, rotation, décrochage, qualité du toucher…) : affichée au débriefing mais JAMAIS comptée
+   * comme une erreur — l'appli est un entraîneur de PROCÉDURES, le pilotage au doigt n'y est pas réaliste. */
+  function info(k, label, why) { if (R.items[k]) return; R.items[k] = { ok: true, info: true, label: label, why: why || '' }; }
   function note(txt, cls) { R.flash = { t: txt, cls: cls || 'warn', until: Date.now() + 5000 }; drawMsg(); }
 
   /* ---------------- Radio AFIS ---------------- */
@@ -12411,7 +12511,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (f.ias > 0.5 && R.items.pbtaxi === undefined) mark('pbtaxi', true, 'Frein de parc libéré avant de mettre de la puissance');
     if (f.ias > 0.5 && ctl.taxi_light !== 'ON' && R.items.txl === undefined) mark('txl', false, 'Taxi light ON avant de rouler (OM-B Taxiing b)', 'Roulage commencé phare de roulage éteint.');
     if (f.ias > 0.5 && ctl.taxi_light === 'ON' && R.items.txl === undefined) mark('txl', true, 'Taxi light ON avant de rouler (OM-B Taxiing b)');
-    if (f.ias > 15.5 && !R.fastWarn) { R.fastWarn = true; note('Ça roule vite (> 15 kt) : réduis ou freine. Repère du simulateur, pas une limite OM-B.'); mark('speed', false, 'Vitesse de roulage maîtrisée', 'Pointe au-delà de 15 kt (repère simulateur).'); }
+    if (f.ias > 15.5 && !R.fastWarn) { R.fastWarn = true; note('Ça roule vite (> 15 kt) : réduis ou freine. Repère du simulateur, pas une limite OM-B.'); info('speed', 'Vitesse de roulage maîtrisée', 'Pointe au-delà de 15 kt (repère simulateur).'); }
     if (R.brake && f.ias > 3 && f.pos < 0.3 && R.items.brk === undefined) mark('brk', true, 'Test des freins au début du roulage (OM-B Taxiing e)');
     var d = f.ias * 0.5144 * sec;
     if (d > 0) {
@@ -12423,11 +12523,10 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       var tr = clamp(rate / sec / 9, -1, 1); f.turn = Math.abs(tr) < 0.05 ? 0 : tr; f.slip = -f.turn;
       trail(f);
     } else { f.turn = 0; f.slip = 0; }
-    if (f.pos >= 0.97 && f.ias > 6 && !R.fastHold) { R.fastHold = true; if (R.mode !== 'express') mark('hold', false, 'Arrêt au point d\'arrêt E', 'Arrivée trop rapide : le simulateur a freiné pour toi.'); R.brake = true; }
+    if (f.pos >= 0.97 && f.ias > 6 && !R.fastHold) { R.fastHold = true; if (R.mode !== 'express') info('hold', 'Arrêt au point d\'arrêt E', 'Arrivée un peu rapide : le simulateur a freiné pour toi.'); R.brake = true; }
     if (f.pos >= 0.965 && f.pos < 1 && f.ias < 0.5 && R.ph === 'taxi') { f.pos = 1; var hp = TF.G1000.taxiPoint(1); f.mx = hp[0]; f.my = hp[1]; }
     if (f.pos >= 1) {
       f.ias = 0; f.turn = 0; f.slip = 0; R.brake = false;
-      if (R.items.hold === undefined) mark('hold', true, 'Arrêt au point d\'arrêt E');
       if (R.items.brk === undefined) mark('brk', false, 'Test des freins au début du roulage (OM-B Taxiing e)', 'Pas de freinage d\'essai en début de roulage (bouton « Freins »).');
       if (R.ph === 'taxi') { R.ph = 'hold'; K.sound.ok(); }
     }
@@ -12472,7 +12571,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function rotate(assisted) {
     var f = ck().s.flight; if (R.rot || f.ias < 76) return;
     R.rot = { ias: Math.round(f.ias), assisted: assisted };
-    if (R.mode !== 'express') mark('rot', !assisted, 'Rotation à partir de VR (76 KIAS mini, OM-B p.65 j)', assisted ? 'Rotation faite par l\'aide du simulateur à ' + R.rot.ias + ' kt.' : '');
+    if (R.mode !== 'express') info('rot', 'Rotation à partir de VR (76 KIAS mini, OM-B p.65 j)', assisted ? 'Rotation faite par l\'aide du simulateur à ' + R.rot.ias + ' kt.' : 'Rotation à ' + R.rot.ias + ' kt.');
     f.onGround = false; f.pitch = 8; f.vs = 300; f.alt = FIELD + 2; R.ph = 'climb'; K.sound.click();
     flightStart();
   }
@@ -12514,8 +12613,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var c = ck(), s = c.s, f = s.flight, g = s.g, ctl = s.controls, F2 = R.fl.flags, G = geo();
     var agl = f.agl != null ? f.agl : f.alt - FIELD, nv = FD.nav(c);
     // ----- surveillances communes
-    if (!f.onGround && f.ias > 152 && s.sys.gear && s.sys.gear.pos > 0 && R.items.vlo === undefined) mark('vlo', false, 'Train rentré avant 152 KIAS (OM-B p.407)', 'Vitesse > 152 KIAS train sorti.');
-    if (f.stall && !F2.stallSeen) { F2.stallSeen = true; mark('stall', false, 'Pas de décrochage', 'Incidence de décrochage atteinte (modèle simplifié).'); note('⚠︎ STALL — rends la main, puissance !', 'crit'); K.sound.err(); }
+    if (!f.onGround && f.ias > 152 && s.sys.gear && s.sys.gear.pos > 0 && R.items.vlo === undefined) info('vlo', 'Train rentré avant 152 KIAS (OM-B p.407)', 'Vitesse > 152 KIAS train sorti.');
+    if (f.stall && !F2.stallSeen) { F2.stallSeen = true; info('stall', 'Pas de décrochage', 'Incidence de décrochage atteinte (modèle simplifié).'); note('⚠︎ STALL — rends la main, puissance !', 'crit'); K.sound.err(); }
     if (agl > 500 && !R.imc && R.ph === 'climb') { R.imc = true; note('☁︎ Entrée dans la couche (base 500 ft sol, météo d\'exercice) : pilotage aux instruments.', 'warn'); }
     if (R.mode === 'express') expressAuto(f, g, ctl, agl, nv);
     switch (R.ph) {
@@ -12568,7 +12667,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
           if (indAlt() <= DA() + 5 && f.vs < 0 && !F2.daBL) { F2.daBL = true; F2.daBLat = Date.now(); note('🔔 MINIMUMS — pas de références visuelles (exercice) : REMISE DE GAZ', 'crit'); if (TF.Voice.enabled()) TF.Voice.say('Minimums. Go around.', 'en'); }
           if (F2.daBL && !F2.gaBL) {
             var gaNow = g.vert === 'GA' || g.lat === 'GA' || (pw(95, 100) && f.vs > 0);
-            if (gaNow) { F2.gaBL = true; var lost = Math.round(DA() - indAlt()); mark('ga', lost < 120, 'Remise de gaz aux minima (DA ' + DA() + ' ft, exercice)', lost < 120 ? '' : 'Remise de gaz ' + lost + ' ft sous la DA.'); R.ph = 'ga1'; A({ lat: 'AHDG', hdg: Math.round(f.hdg), vert: 'AIAS', ias: 90, up: true }); }
+            if (gaNow) { F2.gaBL = true; var lost = Math.round(DA() - indAlt()); mark('ga', true, 'Remise de gaz aux minima (DA ' + DA() + ' ft, exercice)'); if (lost >= 120) info('galoss', 'Altitude perdue sous la DA pendant la remise de gaz', lost + ' ft (pilotage, non compté).'); R.ph = 'ga1'; A({ lat: 'AHDG', hdg: Math.round(f.hdg), vert: 'AIAS', ias: 90, up: true }); }
             else if (indAlt() < DA() - 100) { F2.gaBL = true; mark('ga', false, 'Remise de gaz aux minima (DA ' + DA() + ' ft, exercice)', 'Pas de remise de gaz : le simulateur l\'a faite à ' + Math.round(agl) + ' ft sol.'); setPower(100); if (s.sys.avionics) TF.G1000.goAround(c); R.ph = 'ga1'; A({ lat: 'AHDG', hdg: Math.round(f.hdg), vert: 'AIAS', ias: 90, up: true }); f.assistOn = true; }
           }
         } else {
@@ -12618,8 +12717,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function onTouch(t) {
     if (!R || !R.fl) return;
     var ok = t.onRwy && t.gear && t.vs > -700 && Math.abs(t.bank) < 10;
-    if (!t.onRwy || !t.gear || t.vs < -1200) { mark('ldg', false, 'Atterrissage', !t.gear ? 'Atterrissage train rentré.' : !t.onRwy ? 'Contact hors de la piste.' : 'Contact très dur (' + t.vs + ' ft/min).'); return finish('crash'); }
-    mark('ldg', ok, 'Toucher des roues sur la piste ' + (t.ad === 'LFBU' ? '28 d\'Angoulême' : 'de Limoges'), ok ? 'Vz ' + t.vs + ' ft/min, ' + t.ias + ' kt' : 'Vz ' + t.vs + ' ft/min (ferme), ' + t.ias + ' kt.');
+    if (!t.gear) { mark('ldg', false, 'Atterrissage train sorti', 'Atterrissage train rentré.'); return finish('crash'); }
+    mark('ldggear', true, 'Train sorti, 3 vertes à l\'atterrissage');
+    info('ldg', 'Toucher des roues ' + (t.onRwy ? 'sur la piste ' + (t.ad === 'LFBU' ? '28 d\'Angoulême' : 'de Limoges') : 'hors de la piste'), 'Vz ' + t.vs + ' ft/min, ' + t.ias + ' kt' + (ok ? '' : ' (pilotage, non compté)'));
     R.ph = 'rollout'; R.brake = false; K.sound.ok();
   }
   function rolloutTick(dt, f, ctl) {
@@ -12718,7 +12818,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       if (r.items.pumps === undefined) r.items.pumps = { ok: !!(r.fl && r.fl.flags.depDone), label: 'Fuel pumps OFF après le décollage (OM-B p.65 n)', why: 'Pompes non coupées.' };
     }
     if (r.expressChecks) r.items.chk = { ok: false, label: 'Vérifications avant décollage faites par toi', why: 'Faites en Express par le simulateur.' };
-    var keys = Object.keys(r.items), ok = keys.filter(function (k) { return r.items[k].ok; }).length, tot = keys.length || 1;
+    var all = Object.keys(r.items), keys = all.filter(function (k) { return !r.items[k].info; }), notes = all.filter(function (k) { return r.items[k].info; });
+    var ok = keys.filter(function (k) { return r.items[k].ok; }).length, tot = keys.length || 1;
     var pct = Math.round(ok / tot * 100), xp = 0;
     if (kind === 'ok' || kind === 'stopped') { xp = Math.round(ok * 2 * (r.mode === 'imm' ? 1.5 : r.mode === 'express' ? 0.5 : 1) * (kind === 'stopped' ? 0.5 : 1)); if (xp) TF.Profiles.addXp(xp); }
     var p = TF.Profiles.current();
@@ -12729,6 +12830,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     h += '<div class="mep-sub">' + esc(PHNAME[r.ph] || '') + ' · mode ' + esc(MODES[r.mode]) + (r.rot ? ' · rotation à ' + r.rot.ias + ' kt' + (r.rot.assisted ? ' (aide simulateur)' : '') : '') + '</div>';
     h += '<div class="mep-big">' + ok + ' / ' + tot + ' points · ' + pct + ' %' + (xp ? ' · +' + xp + ' XP' : '') + '</div>';
     h += '<ul class="tr-deb">' + keys.map(function (k) { var it = r.items[k]; return '<li class="' + (it.ok ? 'ok' : 'ko') + '">' + (it.ok ? '✓ ' : '✗ ') + esc(it.label) + (it.ok || !it.why ? '' : '<small>' + esc(it.why) + '</small>') + '</li>'; }).join('') + '</ul>';
+    if (notes.length) h += '<div class="mep-q">Remarques de pilotage (non comptées — entraîneur de procédures)</div><ul class="tr-deb">' + notes.map(function (k) { var it = r.items[k]; return '<li class="info">ℹ︎ ' + esc(it.label) + (it.why ? '<small>' + esc(it.why) + '</small>' : '') + '</li>'; }).join('') + '</ul>';
     if (kind === 'rejected') h += '<div class="mep-tag">Interrompre est une bonne décision si quelque chose ne va pas. Revois ta mise en puissance (70 % → freins → MAX) et rejoue.</div>';
     else h += '<div class="mep-tag">Modèle de vol simplifié et aides du simulateur : un entraînement aux procédures, pas une évaluation de pilotage. DA et instructions ATC d\'exercice.</div>';
     h += '<div class="mep-acts"><button class="btn" data-act="menu">🛫 Menu du vol</button><button class="btn primary" data-act="again">🔁 REJOUER (' + esc(MODES[r.mode]) + ')</button></div></div></div>';
