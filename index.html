@@ -578,6 +578,20 @@ body.immersion #immExit{display:block}
 .viewpop .btn{display:block;width:100%;margin:4px 0;text-align:left}
 .fr-expl{margin-top:6px;padding:6px 8px;border-radius:8px;background:#10324a;color:#d9f3ff;font-size:13px}
 
+/* v5.1 — temps simulé, Flash Flow, mission 3 min */
+#timeBadge{position:absolute;left:12px;top:10px;z-index:30;padding:4px 10px;border-radius:12px;background:rgba(10,30,45,.85);border:1px solid #3fe0e8;color:#bff6fb;font-size:12px;pointer-events:none}
+.flash-obj{margin:8px 0;padding:0;list-style:none}
+.flash-obj li{padding:7px 10px;margin:4px 0;border-radius:8px;background:#162232;font-size:14px}
+.flash-obj li.cur{background:#3a3210;border:1px solid #f2c21b}
+.flash-obj li.ok{background:#12301f;color:#9be7b0}
+.flash-obj li small{display:block;color:#a9b8cc;font-size:12px}
+.play3{display:block;width:100%;margin:0 0 10px;padding:16px;font-size:20px;font-weight:800;border-radius:14px;background:linear-gradient(135deg,#f2c21b,#e88a17);color:#1a1200;border:0;cursor:pointer}
+.play3 small{display:block;font-size:12px;font-weight:600;opacity:.8}
+.mis-steps{display:flex;margin:6px 0 10px}
+.mis-steps span{flex:1;height:6px;margin:0 2px;border-radius:3px;background:#243246}
+.mis-steps span.ok{background:#2fe35a}.mis-steps span.ko{background:#ff6b6b}.mis-steps span.cur{background:#f2c21b}
+.mis-q{font-size:15px;margin:8px 0}
+
 </style>
 </head>
 <body>
@@ -605,6 +619,7 @@ body.immersion #immExit{display:block}
         <button id="tbHome" title="Vue générale">⌂</button>
         <button id="tbViews" title="Vues mémorisées et vue précédente">👁</button>
         <button id="tbImm" title="Mode immersion : le cockpit plein écran">⛶</button>
+        <button id="tbTime" class="act" title="Vitesse du temps simulé pendant les phases passives : Express / Normal / Réaliste">⏩ Express</button>
         <span class="sep"></span>
         <button id="tbLook" class="act" title="Contrôler la position d'une commande sans la modifier">🔍<span class="tl"> Contrôler</span></button>
         <button id="tbVerif" class="act" title="Vérifications non simulables">☑︎<span class="tl"> Vérifs</span></button>
@@ -617,6 +632,7 @@ body.immersion #immExit{display:block}
       <div id="ess" class="hidden"></div>
       <div id="sysNote" class="sysnote hidden"></div>
       <div id="toast"></div>
+      <div id="timeBadge" class="hidden"></div>
       <div id="popover" class="hidden"></div>
     </section>
     <aside id="instructor">
@@ -637,7 +653,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '5.0';
+  TF.VERSION = '5.1';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -697,6 +713,21 @@ body.immersion #immExit{display:block}
     while (k !== undefined && k >= 0) { res.unshift(k); k = prev[k]; }
     return res;
   };
+
+  /* ===== Temps simulé : EXPRESS / NORMAL / RÉALISTE =====
+     Le temps réel (chronomètre de l'élève) reste Date.now(). Le temps simulé du cockpit avance « scale » fois plus vite
+     uniquement pendant les phases passives (démonstration, animations de procédure, attente d'une vitesse / altitude). */
+  var TM = TF.Time = { modes: { express: { k: 8, label: '⏩ Express' }, normal: { k: 3, label: '▶ Normal' }, real: { k: 1, label: '🕰 Réaliste' } }, passive: 0, demo: false };
+  TM.mode = (function () { try { return localStorage.getItem('tiffanir.time') || 'express'; } catch (e) { return 'express'; } })();
+  if (!TM.modes[TM.mode]) TM.mode = 'express';
+  TM.set = function (m) { if (!TM.modes[m]) return; TM.mode = m; try { localStorage.setItem('tiffanir.time', m); } catch (e) { } if (TF.bus) TF.bus.emit('time:mode', m); };
+  TM.k = function () { return TM.modes[TM.mode].k; };
+  /* facteur courant appliqué au temps simulé */
+  TM.scale = function () { return (TM.demo || TM.passive > 0) ? TM.k() : 1; };
+  TM.begin = function () { TM.passive++; }; TM.end = function () { TM.passive = Math.max(0, TM.passive - 1); };
+  TM.reset = function () { TM.passive = 0; TM.demo = false; };
+  /* attente réelle équivalente à « ms » de temps simulé */
+  TM.real = function (ms) { return ms / TM.scale(); };
 })(this);
 
 </script>
@@ -941,9 +972,9 @@ body.immersion #immExit{display:block}
   add({ id: 'aux_pump_r', label: 'AUX PUMP RH (carburant auxiliaire)', short: 'AUX R', type: 'rocker', positions: ['OFF', 'ON'], region: 'console', x: 689, y: 1071, w: 10, h: 17, initial: 'OFF', ref: AXP });
 
   /* Commandes sous le tableau (OM-B fig. « Major instruments and controls » p.370-371 : 14 alternate static valve,
-     28 alt air lever à droite de la console, 29 landing gear emergency extension lever à gauche de la console). */
+     28 alt air lever à droite de la console, 29 landing gear emergency extension lever à gauche de la console). Confirmé par l'équipage : train de secours rouge à gauche, alternate air noir à droite. */
   var FIG = { doc: 'OMB', sec: 'B12 §8 Major instruments and controls (fig. rep. 14, 28, 29)', page: 370 };
-  add({ id: 'alt_air', label: 'ALTERNATE AIR (levier, sous le tableau à droite de la console)', short: 'ALT AIR', type: 'photolever', positions: ['CLOSED', 'OPEN'], region: 'console', x: 851, y: 763, w: 36, h: 18, initial: 'CLOSED', ref: FIG,
+  add({ id: 'alt_air', label: 'ALTERNATE AIR (levier noir, sous le tableau à droite de la console)', short: 'ALT AIR', type: 'photolever', positions: ['CLOSED', 'OPEN'], region: 'console', x: 851, y: 763, w: 36, h: 18, initial: 'CLOSED', ref: FIG,
     note: 'Levier vers l\'avant = fermé (CLOSED) ; tiré vers l\'arrière = ALTERNATE AIR ON (OM-B p.417). Commun aux deux moteurs.' });
   add({ id: 'gear_emerg', label: 'MANUAL GEAR EXTENSION (levier rouge, sous le tableau à gauche de la console)', short: 'GEAR EMERG', type: 'photolever', positions: ['PUSHED IN', 'PULLED'], region: 'console', x: 701, y: 737, w: 22, h: 60, initial: 'PUSHED IN', ref: FIG,
     note: 'Tirer libère la pression hydraulique : le train sort par gravité (OM-B p.403-404). Normalement enfoncé (PUSHED IN).' });
@@ -3481,8 +3512,8 @@ body.immersion #immExit{display:block}
       C('Trim', 'Trims', 'CHECK', ['elev_trim'], { om: '12.f' }),
       C('Fuel selector', 'Fuel selectors', 'ON', ['fuel_sel_l', 'fuel_sel_r'], { om: '12.g' }),
       C('Power lever', 'Power levers', 'CHECK, SET IDLE', ['power_l', 'power_r'], { om: '12.h' }),
-      C('Alternate air', 'Alternate air', 'CLOSED', ['alt_air'], { om: '12.i', note: 'Levier ALTERNATE AIR sous le tableau, à droite de la console (OM-B p.370, rep. 28 ; p.417) : vers l\'avant = fermé.' }),
-      C('Manual gear extension', 'Manual gear extension', 'PUSHED IN', ['gear_emerg'], { om: '12.j', note: 'Levier rouge sous le tableau, à gauche de la console (OM-B p.370, rep. 29 ; p.403) : doit être enfoncé.' }),
+      C('Alternate air', 'Alternate air', 'CLOSED', ['alt_air'], { om: '12.i', note: 'Levier ALTERNATE AIR NOIR, sous le tableau à DROITE de la console (OM-B p.370 rep. 28 ; p.417) : commun aux deux moteurs ; CLOSED au sol.' }),
+      C('Manual gear extension', 'Manual gear extension', 'PUSHED IN', ['gear_emerg'], { om: '12.j', note: 'Levier ROUGE d\'extension de secours du train, sous le tableau à GAUCHE de la console (OM-B p.370 rep. 29 ; p.403) : enfoncé (PUSHED IN). Le tirer libère la pression hydraulique.' }),
       C('Alternate static', 'Alternate static source', 'CLOSED', ['alt_static'], { om: '12.k', note: 'Valve sous le tableau, à gauche, côté pilote (OM-B p.370, rep. 14 ; p.410).' }),
       C('Gear', 'Gear selector', 'DOWN', ['gear_lever'], { om: '12.l' }),
       C('Avionic master', 'Avionic Master', 'OFF', ['av_master'], { om: '12.m' }),
@@ -5798,7 +5829,7 @@ body.immersion #immExit{display:block}
   };
 
   /* ---------------- Sons (WebAudio, déverrouillage iOS au premier toucher) ---------------- */
-  var ctx = null, enabled = true, loops = {}, master = null, vol = 1, eng = null;
+  var ctx = null, enabled = true, loops = {}, master = null, vol = 1;
   function ac() {
     if (!ctx) { var C = root.AudioContext || root.webkitAudioContext; if (!C) return null; ctx = new C(); master = ctx.createGain(); master.gain.value = vol; master.connect(ctx.destination); }
     if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
@@ -5813,31 +5844,9 @@ body.immersion #immExit{display:block}
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.02);
   }
-  /* Sons moteurs synthétisés (aucun fichier audio) : fréquence de passage des pales (3 pales) = RPM / 60 × 3, démarreur aigu */
-  function engVoice(a) {
-    var lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.connect(master);
-    var g = a.createGain(); g.gain.value = 0; g.connect(lp);
-    var o1 = a.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 40; o1.connect(g); o1.start();
-    var o2 = a.createOscillator(); o2.type = 'square'; o2.frequency.value = 20; var g2 = a.createGain(); g2.gain.value = 0.5; o2.connect(g2); g2.connect(g); o2.start();
-    var sg = a.createGain(); sg.gain.value = 0; sg.connect(master);
-    var so = a.createOscillator(); so.type = 'triangle'; so.frequency.value = 300; so.connect(sg); so.start();
-    return { g: g, o1: o1, o2: o2, sg: sg, so: so };
-  }
   K.sound = {
     setVolume: function (v) { vol = v; if (master) master.gain.setTargetAtTime(v, ctx.currentTime, 0.05); },
     volume: function () { return vol; },
-    /* état des deux moteurs (run, rpm, starter) → sons continus ; silence si son coupé */
-    engines: function (L, R) {
-      var a = ctx; if (!a || a.state !== 'running') return;
-      if (!eng) eng = { L: engVoice(a), R: engVoice(a) };
-      [['L', L], ['R', R]].forEach(function (p) {
-        var v = eng[p[0]], d = p[1] || {}, t = a.currentTime, on = enabled && (d.rpm || 0) > 50, bp = Math.max(18, (d.rpm || 0) / 60 * 3);
-        v.o1.frequency.setTargetAtTime(bp, t, 0.25); v.o2.frequency.setTargetAtTime(bp / 2, t, 0.25);
-        v.g.gain.setTargetAtTime(on ? 0.035 + 0.025 * Math.min(1, (d.rpm || 0) / 2300) : 0, t, 0.3);
-        v.so.frequency.setTargetAtTime(260 + (d.rpm || 0) * 0.8, t, 0.2);
-        v.sg.gain.setTargetAtTime(enabled && d.starter ? 0.018 : 0, t, 0.12);
-      });
-    },
     setEnabled: function (v) { enabled = v; if (!v) Object.keys(loops).forEach(function (k) { K.sound.stop(k); }); },
     enabled: function () { return enabled; },
     click: function () { tone(1800, 0.03, 'square', 0.04); },
@@ -7239,6 +7248,7 @@ body.immersion #immExit{display:block}
       exam: function (b) { E.sweep(b.getAttribute('data-id'), 'try', 0, { level: 'exam' }); },
       resume: function (b) { var r = recommend(); E.sweep(r.b.id, r.level === 'demo' ? 'demo' : 'try', 0, { level: r.level }); },
       memstart: function (b) { memStart(b.getAttribute('data-v')); },
+      play3: function () { E.mission(); }, flashgo: function () { E.flash(); }, memgo: function () { memStart('find'); },
       chipgo: function (b) { E.sweep(b.getAttribute('data-id'), 'try', +b.getAttribute('data-i')); },
       walktab: function () { E.show('tour'); },
       // fiche
@@ -7425,10 +7435,11 @@ body.immersion #immExit{display:block}
     setUi(b.chips[from]);
     app().view.clearHighlight(); app().view.home(true);
     E.renderPanel();
-    S.t0 = Date.now(); S.hints = 0;
+    S.t0 = Date.now(); S.hints = 0; TF.Time.reset();
+    if (opt.until != null) S.until = opt.until; if (opt.mission) S.mission = true;
     if (mode === 'demo') demoStep(); else { realWatch(); tryFocus(); }
   };
-  E.stop = function (silent) { S = null; gen++; if (app().ck.s.ui) { app().ck.s.ui = null; app().view.renderDynamic(true); } app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
+  E.stop = function (silent) { S = null; gen++; TF.Time.reset(); if (app().ck.s.ui) { app().ck.s.ui = null; app().view.renderDynamic(true); } app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
 
   /* -------- Cockpit piloté par le flow : l'état suit les étapes (écrans allumés, moteurs qui démarrent) -------- */
   function setUi(c) {
@@ -7601,13 +7612,112 @@ body.immersion #immExit{display:block}
     });
     errs.sort(function (a, c) { return c.n - a.n; });
     var r = recommend(), LV = { demo: '▶ Découvrir', learn: '✋ Apprendre', memo: '🧠 Mémoriser', exam: '🎓 Examen' };
-    var h = '<div class="dash"><div class="dash-main"><div class="dash-k">Prochain entraînement conseillé</div><div class="dash-v">' + r.b.icon + ' ' + esc(r.b.title) + ' — ' + LV[r.level] + '</div><small>' + esc(r.why) + '</small>' +
+    var mb = bestAll().mission;
+    var h = '<button class="play3" data-act="play3">▶ JOUER 3 MINUTES<small>Mission du jour : flash flow, mémoire spatiale, question, revanche sur tes erreurs, défi final' + (mb ? ' · dernière : ' + '★★★'.slice(0, mb.stars) + '☆☆☆'.slice(0, 3 - mb.stars) : '') + '</small></button>' +
+      '<div class="row2" style="margin-bottom:10px"><button class="btn" data-act="flashgo">⚡ Flash Flow (15-60 s)</button><button class="btn" data-act="memgo">🎯 Trouve la commande</button></div>' +
+      '<div class="dash"><div class="dash-main"><div class="dash-k">Prochain entraînement conseillé</div><div class="dash-v">' + r.b.icon + ' ' + esc(r.b.title) + ' — ' + LV[r.level] + '</div><small>' + esc(r.why) + '</small>' +
       '<button class="btn primary big" data-act="resume">▶ Reprendre mon entraînement</button></div>' +
       '<div class="dash-nums"><div><b>' + mast + '</b><span>maîtrisés</span></div><div><b>' + rev + '</b><span>à réviser</span></div><div><b>' + todo + '</b><span>à découvrir</span></div><div><b>' + acts + '</b><span>actions justes</span></div></div>';
     if (errs.length) h += '<div class="dash-err"><b>Erreurs les plus fréquentes</b>' + errs.slice(0, 3).map(function (e) { return '<div>✗ ' + esc(e.t) + ' <small>(' + e.n + '×)</small></div>'; }).join('') + '</div>';
     return h + '</div>';
   }
 
+
+  /* ================= ⚡ FLASH FLOW : un segment de 3 à 5 actions d'un flow, 15 à 60 s, record par segment ================= */
+  function flashPick(prefer) {
+    var st = statsAll(), bs = flowBlocks().filter(function (b) { return b.state && b.chips.filter(function (c) { return realDone(c); }).length >= 2; });
+    if (prefer) bs = bs.filter(function (b) { return b.id === prefer; }).concat(bs);
+    // priorité : blocs avec des erreurs récentes, sinon au hasard
+    var weak = bs.filter(function (b) { return st[b.id] && Object.keys(st[b.id].miss || {}).length; });
+    var pool = weak.length && Math.random() < 0.6 ? weak : bs, b = prefer ? bs[0] : pool[Math.floor(Math.random() * pool.length)];
+    var starts = [], n = b.chips.length;
+    for (var i = 0; i < n; i++) { var seg = b.chips.slice(i, i + 5), r = seg.filter(function (c) { return realDone(c); }).length; if (r >= 2 && !b.chips[i].gate && (realDone(b.chips[i]) || b.chips[i].call)) starts.push(i); }
+    var miss = st[b.id] && Object.keys(st[b.id].miss || {}).map(Number), from = starts[Math.floor(Math.random() * starts.length)] || 0;
+    if (miss && miss.length) { var m0 = miss[Math.floor(Math.random() * miss.length)], best = starts.filter(function (x) { return x <= m0 && m0 < x + 5; })[0]; if (best != null) from = best; }
+    var to = Math.min(n - 1, from + 4); while (to > from + 2 && !realDone(b.chips[to]) && !b.chips[to].call) to--;
+    return { b: b, from: from, to: to };
+  }
+  E.flash = function (prefer, mission) { var f = flashPick(prefer); E.sweep(f.b.id, 'try', f.from, { level: 'flash', until: f.to, mission: mission }); };
+  function flashPanel(bdy, b) {
+    var from = S.flashFrom != null ? S.flashFrom : (S.flashFrom = S.done.length ? S.done[S.done.length - 1] + 1 : S.i), to = S.until;
+    if (S.flashFrom0 == null) S.flashFrom0 = S.i;
+    var f0 = S.flashFrom0, h = '<div class="ph-head"><span class="ph-icon">⚡</span><div><div class="ph-title">Flash Flow</div><div class="ph-lvl">' + esc(b.icon + ' ' + b.title) + (S.mission ? ' · mission du jour' : '') + '</div></div></div>';
+    if (!S.finished) {
+      h += '<div class="sc-note">Exécute ces actions dans le cockpit, pour de vrai. Le défi se termine dès qu\'elles sont faites.</div><ul class="flash-obj">';
+      for (var i = f0; i <= to; i++) { var c = b.chips[i], st2 = S.done.indexOf(i) >= 0 ? 'ok' : i === S.i ? 'cur' : ''; h += '<li class="' + st2 + '">' + (st2 === 'ok' ? '✓ ' : '') + '<b>' + esc(c.a) + '</b> — ' + esc(c.r) + (c.call ? '<small>🎙 annonce : « ' + esc(c.call) + ' »</small>' : !c.ctls ? '<small>🗣 à dire / vérifier</small>' : '') + '</li>'; }
+      h += '</ul>';
+      var cc = b.chips[S.i];
+      if (cc && !cc.ctls) h += '<button class="btn primary block" data-act="said">' + (cc.call ? '🎙 Annonce faite' : '✓ Fait') + '</button>';
+      if (cc && cc.ctls) h += '<button class="btn block hintbtn" data-act="hint">💡 Aide ' + (S.hintLv < 4 ? (S.hintLv + 1) + ' / 4' : '') + '</button>';
+      h += '<div class="counter">Erreurs : <b>' + S.errors + '</b> · ⏱ chrono réel</div><button class="btn link" data-act="back">✕ Quitter</button>';
+    } else {
+      var R = S.result, stx = '★★★'.slice(0, R.stars) + '☆☆☆'.slice(0, 3 - R.stars);
+      h += '<div class="feedback ' + (R.err ? 'info' : 'ok') + '"><div class="ess-stars">' + stx + '</div>' + (R.err || R.hints ? R.err + ' erreur' + (R.err > 1 ? 's' : '') + ' · ' + R.hints + ' aide' + (R.hints > 1 ? 's' : '') : '🎯 Parfait') + ' · ⏱ ' + fmtMs(R.ms) + (R.rec ? '<br><b>🏆 Record sur ce segment</b>' : R.best ? '<br><small>Record : ' + fmtMs(R.best.ms) + '</small>' : '') + '</div>';
+      if (S.mission) h += '<button class="btn primary block" data-act="misnext">Continuer la mission ▶</button>';
+      else h += '<div class="row2"><button class="btn primary" data-act="flagain">↺ Revanche</button><button class="btn" data-act="flnew">⚡ Autre défi</button></div>';
+      h += debriefHtml() + '<button class="btn link" data-act="back">↩ Retour</button>';
+    }
+    bdy.innerHTML = K.plain(h);
+    K.bindActs(bdy, {
+      said: function () { if (S) { K.sound.ok(); advanceTry(); } }, hint: function () { giveHint(); },
+      flagain: function () { E.sweep(b.id, 'try', S.flashFrom0, { level: 'flash', until: S.until }); }, flnew: function () { E.flash(); },
+      misnext: function () { missionNext({ ok: !S.result.err, label: '⚡ ' + b.title }); },
+      back: function () { var m = S && S.mission; E.stop(true); if (m) MS = null; ses().render(); E.show('flow'); }
+    });
+  }
+  function finishFlash(ms) {
+    var err = S.errors, hints = S.hints || 0, pen = err + hints, stars = pen === 0 ? 3 : pen <= 1 ? 2 : 1;
+    var all = bestAll(), key = 'flash:' + S.b.id + ':' + S.flashFrom0, prev = all[key], rec = stars === 3 && (!prev || ms < prev.ms);
+    if (rec) { all[key] = { stars: 3, ms: ms }; try { localStorage.setItem('tiffanir.ess.best', JSON.stringify(all)); } catch (e) { } }
+    var st = statsAll(), x = st[S.b.id] || { plays: 0, miss: {} }; x.at = Date.now(); x.ok = (x.ok || 0) + S.done.length - Object.keys(S.log).length;
+    Object.keys(S.log).forEach(function (k) { x.miss[k] = (x.miss[k] || 0) + 1; }); st[S.b.id] = x; statsSave(st);
+    if (pen === 0) { K.sound.ok(); TF.Profiles.addXp(2); }
+    S.finished = true; S.result = { err: err, hints: hints, ms: ms, stars: stars, rec: rec, best: prev }; E.renderPanel();
+  }
+
+  /* ================= 🎯 MISSION DU JOUR — 3 MIN : flash flow, mémoire spatiale, question, revanche sur une erreur, défi final ================= */
+  var MS = null;
+  E.mission = function () {
+    var st = statsAll(), missB = flowBlocks().filter(function (b) { return st[b.id] && Object.keys(st[b.id].miss || {}).length; });
+    MS = { i: -1, t0: Date.now(), res: [], steps: [{ k: 'flash' }, { k: 'mem' }, { k: 'quiz' }, { k: 'flash', prefer: missB.length ? missB[0].id : null, label: 'Revanche' }, { k: 'flash', label: 'Défi final' }] };
+    missionNext();
+  };
+  function missionNext(r) {
+    if (!MS) return; if (r) MS.res.push(r);
+    MS.i++;
+    if (MS.i >= MS.steps.length) return missionEnd();
+    var st = MS.steps[MS.i];
+    if (st.k === 'flash') { E.flash(st.prefer, true); return; }
+    if (st.k === 'mem') { memStart('find'); MG.limit = 3; MG.mission = true; memPanel(false); return; }
+    if (st.k === 'quiz') { E.stop(true); E.close(); TF.Home.hide(); missionQuiz(); }
+  }
+  function misBar() { return '<div class="mis-steps">' + MS.steps.map(function (x, i) { var r = MS.res[i]; return '<span class="' + (r ? (r.ok ? 'ok' : 'ko') : i === MS.i ? 'cur' : '') + '"></span>'; }).join('') + '</div>'; }
+  function missionQuiz() {
+    var Q = TF.DATA.classTest.questions, q = Q[Math.floor(Math.random() * Q.length)], L3 = ['a', 'b', 'c', 'd'], bdy = K.$('instrBody');
+    var h = '<div class="ph-head"><span class="ph-icon">🎯</span><div><div class="ph-title">Mission du jour</div><div class="ph-lvl">Question · étape ' + (MS.i + 1) + ' / ' + MS.steps.length + '</div></div></div>' + misBar() +
+      '<div class="mis-q"><b>Q' + q.n + '.</b> ' + esc(q.q) + '</div>' + q.o.map(function (o, k) { return '<button class="btn block" data-act="mq" data-v="' + L3[k] + '"><b>' + L3[k] + '.</b> ' + esc(o) + '</button>'; }).join('') + '<div id="mqFb"></div>';
+    bdy.innerHTML = K.plain(h);
+    K.bindActs(bdy, {
+      mq: function (el) {
+        var v = el.getAttribute('data-v'), ok = v === q.ans; if (ok) K.sound.ok(); else K.sound.err();
+        K.$('mqFb').innerHTML = K.plain('<div class="feedback ' + (ok ? 'ok' : 'info') + '">' + (ok ? '✓ Bonne réponse' : '✗ Réponse : ' + q.ans) + '<br><small>' + esc(q.why) + '</small><br><small>' + esc(q.src) + '</small></div><button class="btn primary block" data-act="mqn">Continuer la mission ▶</button>');
+        K.bindActs(bdy, { mqn: function () { missionNext({ ok: ok, label: '❓ Q' + q.n }); } });
+      }
+    });
+  }
+  function missionEnd() {
+    var bdy = K.$('instrBody'), ms = Date.now() - MS.t0, ok = MS.res.filter(function (r) { return r.ok; }).length;
+    var h = '<div class="ph-head"><span class="ph-icon">🎯</span><div><div class="ph-title">Mission du jour terminée</div><div class="ph-lvl">⏱ ' + fmtMs(ms) + ' (temps réel)</div></div></div>' + misBar() +
+      '<div class="feedback ' + (ok === MS.res.length ? 'ok' : 'info') + '"><div class="ess-stars">' + ok + ' / ' + MS.res.length + '</div>' + (ok === MS.res.length ? 'Mission parfaite !' : 'Les points ratés reviendront dans tes prochaines missions.') + '</div>' +
+      MS.res.map(function (r) { return '<div class="' + (r.ok ? '' : 'db-it') + '">' + (r.ok ? '✓ ' : '✗ ') + esc(r.label) + '</div>'; }).join('') +
+      '<div class="row2"><button class="btn primary" data-act="misagain">▶ Nouvelle mission</button><button class="btn" data-act="misstop">⏹ Arrêter</button></div>';
+    TF.Profiles.addXp(ok);
+    var all = bestAll(); all['mission'] = { stars: ok === MS.res.length ? 3 : ok >= 3 ? 2 : 1, ms: ms, at: Date.now() }; try { localStorage.setItem('tiffanir.ess.best', JSON.stringify(all)); } catch (e) { }
+    MS = null; S = null; app().view.clearHighlight();
+    bdy.innerHTML = K.plain(h);
+    K.bindActs(bdy, { misagain: function () { E.mission(); }, misstop: function () { ses().render(); E.show('flow'); } });
+  }
+  E.missionActive = function () { return !!MS; };
   /* ================= Mémoire du cockpit : « Trouve la commande », « Quelle est cette commande ? », révisions espacées ================= */
   var MG = null; // jeu en cours
   function memAll() { try { return JSON.parse(localStorage.getItem('tiffanir.mem') || '{}'); } catch (e) { return {}; } }
@@ -7646,7 +7756,7 @@ body.immersion #immExit{display:block}
   }
   function memNext() {
     var v = app().view; v.clearHighlight(); v.home(true);
-    if (MG.n >= 10) return memPanel(true);
+    if (MG.n >= (MG.limit || 10)) { if (MG.mission) { var okm = MG.ok >= (MG.limit || 10) - 1, lb = '🧠 Trouve la commande ' + MG.ok + '/' + MG.limit; MG = null; app().view.clearHighlight(); return missionNext({ ok: okm, label: lb }); } return memPanel(true); }
     MG.q = memPick(MG.weak); MG.n++; MG.tries = 0;
     if (MG.kind === 'name') {
       var all = memPool().filter(function (x) { return x !== MG.q; }); all.sort(function () { return Math.random() - 0.5; });
@@ -7662,7 +7772,7 @@ body.immersion #immExit{display:block}
       h += '<div class="feedback ' + (MG.ok >= 8 ? 'ok' : 'info') + '"><div class="ess-stars">' + MG.ok + ' / 10</div>' + (MG.ok >= 8 ? 'Très bien : ces commandes reviendront dans quelques jours.' : 'Les commandes ratées reviendront en priorité.') + '</div>' +
         '<div class="row2"><button class="btn primary" data-act="mgagain">↺ Encore 10</button><button class="btn" data-act="mgback">↩ Retour</button></div>';
     } else {
-      h += '<div class="counter">Question <b>' + MG.n + '</b> / 10 · justes : <b>' + MG.ok + '</b></div>';
+      h += (MG.mission && MS ? misBar() : '') + '<div class="counter">Question <b>' + MG.n + '</b> / ' + (MG.limit || 10) + ' · justes : <b>' + MG.ok + '</b></div>';
       if (MG.kind === 'find') h += '<div class="mem-q">Touche dans le cockpit :<b>' + esc(d.label || MG.q) + '</b></div><div class="sc-note">Touche une zone pour zoomer, puis la commande. Aucune aide : 2 essais.</div>';
       else h += '<div class="mem-q">Quelle est la commande qui clignote ?</div>' + MG.opts.map(function (id) { return '<button class="btn big block" data-act="mgpick" data-v="' + id + '">' + esc((defs[id] || {}).label || id) + '</button>'; }).join('');
       h += '<button class="btn link" data-act="mgback">↩ Arrêter</button>';
@@ -7742,7 +7852,7 @@ body.immersion #immExit{display:block}
     var v = app().view, qt = S.level === 'memo' || S.level === 'exam'; if (qt) K.sound.click(); else K.sound.ok(); v.clearHighlight(); if (!qt) c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
     S.done.push(S.i); nextIdx(); S.chipErr = 0; S.real = (S.real || 0) + 1;
     var rest = residual(c), g = S.g;
-    if (rest.length) { var PE = TF.ProcEngine, ck = app().ck; new PE.Runner(ck, null, { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) k(); }, ms); } }).run(rest, function () { app().view.renderDynamic(true); }); }
+    if (rest.length) { var PE = TF.ProcEngine, ck = app().ck; TF.Time.begin(); new PE.Runner(ck, null, { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) k(); }, TF.Time.real(ms)); } }).run(rest, function () { TF.Time.end(); app().view.renderDynamic(true); }); }
     setUi(S.b.chips[S.i]); E.renderPanel();
     setTimeout(function () { if (S && S.g === g) v.clearHighlight(); }, 700);
     if (S.i >= S.b.chips.length) finishTry();
@@ -7755,31 +7865,36 @@ body.immersion #immExit{display:block}
   function runSim(c, fast, cb) {
     cb = cb || function () { };
     var ck = app().ck;
-    if (c && c.gate && !TF.evalCond(c.gate, ck.s)) { // étape « au bon moment » : on attend la vitesse / l'altitude
-      return waitFor(function () { return TF.evalCond(c.gate, ck.s); }, function () { runSim(c, fast, cb); }, fast, 200000);
+    if (c && c.gate && !TF.evalCond(c.gate, ck.s)) { // étape « au bon moment » : on attend la vitesse / l'altitude (temps simulé accéléré)
+      if (!fast) TF.Time.begin();
+      return waitFor(function () { return TF.evalCond(c.gate, ck.s); }, function () { if (!fast) TF.Time.end(); runSim(c, fast, cb); }, fast, 200000);
     }
     var f = c && c.sim && SIMS[c.sim];
     if (!f) return cb();
     if (f.ops) f = f.ops();
     if (f.length != null && typeof f !== 'function') {
       var PE = TF.ProcEngine, g = S && S.g;
-      var clock = fast ? PE.Runner.instantClock(ck) : { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) { app().view.renderDynamic(true); k(); } }, ms); } };
-      new PE.Runner(ck, null, clock).run(f, function () { app().view.renderDynamic(true); cb(); });
+      var clock = fast ? PE.Runner.instantClock(ck) : { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) { app().view.renderDynamic(true); k(); } }, TF.Time.real(ms)); } };
+      if (!fast) TF.Time.begin();
+      var ended = false;
+      new PE.Runner(ck, null, clock).run(f, function () { if (!fast && !ended) { ended = true; TF.Time.end(); } app().view.renderDynamic(true); cb(); });
       return;
     }
-    var r = f(ck, fast, function () { app().view.renderDynamic(true); cb(); });
-    if (f.length < 3) { app().view.renderDynamic(true); cb(); }
+    if (!fast) TF.Time.begin();
+    var done1 = false;
+    var r = f(ck, fast, function () { if (!fast && !done1) { done1 = true; TF.Time.end(); } app().view.renderDynamic(true); cb(); });
+    if (f.length < 3) { if (!fast && !done1) { done1 = true; TF.Time.end(); } app().view.renderDynamic(true); cb(); }
   }
   function alive(g) { return function () { return S && S.g === g; }; }
   function demoStep() {
     var g = S.g, al = alive(g), b = S.b, v = app().view;
-    if (S.i >= b.chips.length) { S.finished = true; E.renderPanel(); return; }
+    if (S.i >= b.chips.length) { S.finished = true; TF.Time.demo = false; E.renderPanel(); return; }
     var c = b.chips[S.i];
     setUi(c);
     E.renderPanel();
     v.clearHighlight();
-    if (c.gate && !TF.evalCond(c.gate, app().ck.s)) { // étape « au bon moment » : on attend la vitesse / l'altitude, puis on annonce
-      waitFor(function () { return TF.evalCond(c.gate, app().ck.s); }, function () { if (al()) demoStep(); }, false, 200000); return;
+    if (c.gate && !TF.evalCond(c.gate, app().ck.s)) { // étape « au bon moment » : on attend la vitesse / l'altitude (temps accéléré), puis on annonce
+      TF.Time.begin(); waitFor(function () { return TF.evalCond(c.gate, app().ck.s); }, function () { TF.Time.end(); if (al()) demoStep(); }, false, 200000); return;
     }
     if (c.ctls) {
       v.focusOn(c.ctls[0]);
@@ -7815,6 +7930,8 @@ body.immersion #immExit{display:block}
     if (rec) { all[S.b.id] = { stars: stars, ms: ms }; try { localStorage.setItem('tiffanir.ess.best', JSON.stringify(all)); } catch (e) { } }
     if (!err) { K.sound.ok(); TF.Profiles.addXp(5); K.toast('🎯 Flow « ' + esc(S.b.title) + ' » sans erreur : +5 XP', 'ok', 2200); }
     else TF.Profiles.addXp(2);
+    TF.Time.reset();
+    if (S.level === 'flash') return finishFlash(ms);
     var hints = S.hints || 0; if (S.level === 'exam' || S.level === 'memo') { var pen = err + hints; stars = pen === 0 ? 3 : pen <= 2 ? 2 : 1; }
     var all2 = statsAll(), x = all2[S.b.id] || { plays: 0, miss: {} }; x.plays++; x.at = Date.now(); x.ok = (x.ok || 0) + S.done.length;
     if (!S.only) x[S.level] = Math.max(x[S.level] || 0, stars);
@@ -7829,6 +7946,7 @@ body.immersion #immExit{display:block}
   /* étape suivante ; en « Rejouer mes erreurs », les étapes réussies sont jouées automatiquement (état conservé) */
   function nextIdx() {
     S.i++; S.hintLv = 0;
+    if (S.until != null && S.i > S.until) { S.i = S.b.chips.length; return; }  // Flash Flow : fin du segment
     while (S.only && S.i < S.b.chips.length && S.only.indexOf(S.i) < 0) { runSim(S.b.chips[S.i], true); S.done.push(S.i); S.i++; }
   }
   function advanceTry() {
@@ -7890,6 +8008,7 @@ body.immersion #immExit{display:block}
     var b = S.b, LVN = { demo: '▶ Découvrir', learn: '✋ Apprendre', memo: '🧠 Mémoriser', exam: '🎓 Examen' };
     var h = '<div class="ph-head"><span class="ph-icon">' + b.icon + '</span><div><div class="ph-title">' + esc(b.title) + '</div><div class="ph-lvl">' + LVN[S.level] + (S.only ? ' · rejouer mes erreurs' : '') + '</div></div></div>';
     if ((S.level === 'memo' || S.level === 'exam') && !S.finished) return quietPanel(bdy, b, h);
+    if (S.level === 'flash') return flashPanel(bdy, b);
     h += '<div class="sc-note" style="margin:-2px 0 8px">' + esc(b.sub) + '</div><div class="clc"><div class="clc-top"><span>FLOW — ' + esc(b.title).toUpperCase() + '</span></div><div class="clc-list">';
     b.chips.forEach(function (c, i) {
       var st = S.done.indexOf(i) >= 0 ? ' ok' : i === S.i && !S.finished ? ' cur' : '';
@@ -8633,8 +8752,13 @@ body.immersion #immExit{display:block}
 
   /* Boucle temps réel (10 Hz) */
   var last = Date.now();
-  setInterval(function () { var now = Date.now(), dt = Math.min(500, now - last); last = now; app.ck.tick(dt); sysNotes(); if (app.modes.pollWindow) app.modes.pollWindow(); }, 100);
-  setInterval(function () { try { var e = app.ck.s.eng, I = app.ck.indications().eng; K.sound.engines({ rpm: I.L.rpm || 0, starter: I.L.starter }, { rpm: I.R.rpm || 0, starter: I.R.starter }); } catch (er) { } }, 300);
+  setInterval(function () {
+    var now = Date.now(), dt = Math.min(500, now - last); last = now;
+    var sdt = dt * TF.Time.scale();               // temps simulé : accéléré seulement pendant les phases passives
+    while (sdt > 250) { app.ck.update(250); sdt -= 250; }
+    app.ck.tick(sdt); sysNotes(); if (app.modes.pollWindow) app.modes.pollWindow();
+    var bd = K.$('timeBadge'), sc = TF.Time.scale(); if (bd) { bd.classList.toggle('hidden', sc <= 1); if (sc > 1) bd.textContent = '⏩ temps simulé ×' + sc + ' — les durées réelles sont plus longues'; }
+  }, 100);
 
   /* Sons et notes système */
   app.ck.on('aural', function (k) { if (k === 'apdisc') K.sound.apdisc(); });
@@ -8654,6 +8778,11 @@ body.immersion #immExit{display:block}
 
   /* Barre d'outils cockpit (réduite à l'essentiel) */
   K.$('tbHome').onclick = function () { app.view.home(true); };
+  /* Vitesse du temps simulé */
+  function syncTime() { var b = K.$('tbTime'); if (b) b.textContent = TF.Time.modes[TF.Time.mode].label; }
+  K.$('tbTime').onclick = function () { var o = ['express', 'normal', 'real'], m = o[(o.indexOf(TF.Time.mode) + 1) % 3]; TF.Time.set(m); syncTime();
+    K.toast(m === 'express' ? '⏩ Express : attentes passives condensées (×8)' : m === 'normal' ? '▶ Normal : animations courtes (×3)' : '🕰 Réaliste : temps réel', '', 1600); };
+  syncTime();
   /* Vues mémorisées + vue précédente (historique des cadrages) */
   (function () {
     var v = app.view, hist = [], orig = v.setView, back = false;
