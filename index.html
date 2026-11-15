@@ -833,6 +833,10 @@ body.immersion #immExit{display:block}
 .ct-top { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 12px; }
 .ct-top b { font-size: 20px; color: #fff; }
 .tr-deb li.info { color: #c8d4e4; }
+/* 6.8.1 : fenêtre des boutons rotatifs calée à droite, compacte (l'écran PFD / MFD reste visible à gauche) */
+#popover.dock { width: 250px; min-width: 0; max-width: 250px; padding: 10px; }
+#popover.dock .pop-pos { padding-top: 7px; padding-bottom: 7px; }
+#popover.dock .ref { font-size: 10px; }
 
 </style>
 </head>
@@ -900,7 +904,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '6.8';
+  TF.VERSION = '6.8.1';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -7754,7 +7758,6 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     this.gLights = el('g', {}, svg);
     this.gGear = el('g', {}, this.gLights); this.gFlap = el('g', {}, this.gLights); this.gAfcs = el('g', {}, this.gLights);
     this.gHl = el('g', { 'class': 'hl-layer' }, svg);
-    this.gKnob = el('g', { 'class': 'knob-sel', 'pointer-events': 'none' }, svg);
     this.gLabels = el('g', { 'class': 'lbl-layer', style: 'display:none' }, svg);
     this.gHit = el('g', { 'class': 'hit-layer' }, svg);
     var self = this;
@@ -7943,16 +7946,6 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var r = this.box.getBoundingClientRect(), v = this.vb;
     return { x: r.left + (x - v.x) / v.w * this.W, y: r.top + (y - v.y) / v.h * this.H };
   };
-  /* repère du bouton rotatif survolé : anneau extérieur = gros bouton, cercle intérieur = petit bouton (sélection à la souris) */
-  CockpitView.prototype.showKnob = function (d) {
-    var sel = (this.knobSel && this.knobSel[d.id]) || 'L', R = Math.max(d.w, d.h) / 2, g = this.gKnob;
-    while (g.firstChild) g.removeChild(g.firstChild);
-    el('circle', { cx: d.x, cy: d.y, r: (R + 1.6).toFixed(2), fill: 'none', stroke: '#3fe0e8', 'stroke-width': sel === 'L' ? 1.6 : 0.5, opacity: sel === 'L' ? 1 : 0.5 }, g);
-    el('circle', { cx: d.x, cy: d.y, r: (R * 0.45).toFixed(2), fill: sel === 'S' ? '#3fe0e8' : 'none', 'fill-opacity': 0.3, stroke: '#3fe0e8', 'stroke-width': sel === 'S' ? 1.4 : 0.5, opacity: sel === 'S' ? 1 : 0.5 }, g);
-    var tx = el('text', { x: d.x, y: (d.y - R - 3.5).toFixed(2), 'font-size': 2.6, fill: '#3fe0e8', 'font-family': 'Arial', 'font-weight': 700, 'text-anchor': 'middle', stroke: '#000', 'stroke-width': 0.8, 'paint-order': 'stroke' }, g);
-    tx.textContent = (sel === 'S' ? 'PETIT' : 'GROS') + ' ⟲ G · D ⟳';
-  };
-  CockpitView.prototype.hideKnob = function () { var g = this.gKnob; while (g && g.firstChild) g.removeChild(g.firstChild); };
   CockpitView.prototype.preciseEnough = function (d) { return Math.min(d.w, d.h) * this.scale >= 15; };
 
   /* ---------------- Saisie ---------------- */
@@ -8025,28 +8018,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       self.emit('bgTap', s.p);
     }
     // Souris
-    // Boutons rotatifs à la souris : clic gauche = tourner à gauche, clic droit = à droite ; clic molette = bascule gros anneau / petit bouton ;
-    // Maj + clic = menu complet (PUSH, touches). Maintenir = rotation continue. (Tactile : inchangé, le toucher ouvre le menu.)
-    self.knobSel = {}; var kRep = null;
-    function knobStop() { if (kRep) { clearTimeout(kRep.t); clearInterval(kRep.i); kRep = null; } }
-    svg.addEventListener('mousedown', function (e) {
-      var ti = targetInfo(e.target), d = ti && ti.ctl && self.defs[ti.ctl];
-      if (d && d.type === 'knob' && !e.shiftKey && self.preciseEnough(d) && e.button <= 2) {
-        e.preventDefault(); knobStop();
-        if (e.button === 1) { self.knobSel[d.id] = self.knobSel[d.id] === 'S' ? 'L' : 'S'; self.showKnob(d); self.emit('knobSel', d.id, self.knobSel[d.id]); return; }
-        var act = (self.knobSel[d.id] || 'L') + (e.button === 0 ? '-' : '+');
-        self.emit('knobTurn', d.id, act); self.showKnob(d);
-        kRep = { t: setTimeout(function () { if (kRep) kRep.i = setInterval(function () { self.emit('knobTurn', d.id, act); }, 120); }, 420) };
-        return;
-      }
-      if (e.button !== 0) return; e.preventDefault(); down(e.clientX, e.clientY, e.target);
-    });
-    svg.addEventListener('contextmenu', function (e) { var ti = targetInfo(e.target); if (ti && ti.ctl && self.defs[ti.ctl] && self.defs[ti.ctl].type === 'knob') e.preventDefault(); });
-    svg.addEventListener('auxclick', function (e) { if (e.button === 1) e.preventDefault(); });
-    svg.addEventListener('mouseover', function (e) { var ti = targetInfo(e.target), d = ti && ti.ctl && self.defs[ti.ctl]; if (d && d.type === 'knob') { self.showKnob(d); self.emit('knobHover', d.id); } });
-    svg.addEventListener('mouseout', function (e) { var ti = targetInfo(e.target), d = ti && ti.ctl && self.defs[ti.ctl]; if (d && d.type === 'knob') self.hideKnob(); });
+    svg.addEventListener('mousedown', function (e) { if (e.button !== 0) return; e.preventDefault(); down(e.clientX, e.clientY, e.target); });
     root.addEventListener('mousemove', function (e) { if (st) move(e.clientX, e.clientY); });
-    root.addEventListener('mouseup', function () { knobStop(); up(); });
+    root.addEventListener('mouseup', function () { up(); });
     svg.addEventListener('wheel', function (e) {
       e.preventDefault();
       var f = Math.exp(-(e.deltaY || 0) * (e.ctrlKey ? 0.012 : 0.0022));
@@ -8252,12 +8226,14 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   /* Popover ancré à un point écran (dans #stage) */
   var popClose = null;
-  K.popover = function (html, at, onMount) {
+  /* opts.dock = 'right' : fenêtre calée sur le bord droit de la scène (le cockpit est recadré à gauche par l'appelant) */
+  K.popover = function (html, at, onMount, opts) {
     var p = K.$('popover'), stage = K.$('stage');
-    p.innerHTML = html; p.classList.remove('hidden');
+    p.innerHTML = html; p.classList.remove('hidden'); p.classList.toggle('dock', !!(opts && opts.dock));
     var sr = stage.getBoundingClientRect(), pw = p.offsetWidth, ph = p.offsetHeight;
     var x = at.x - sr.left + 18, y = at.y - sr.top - ph / 2;
     if (x + pw > sr.width - 8) x = at.x - sr.left - pw - 18;
+    if (opts && opts.dock) { x = sr.width - pw - 8; y = 8; }
     x = Math.max(8, Math.min(x, sr.width - pw - 8)); y = Math.max(8, Math.min(y, sr.height - ph - 70));
     p.style.left = x + 'px'; p.style.top = y + 'px';
     if (onMount) onMount(p);
@@ -8508,17 +8484,6 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       if (d.type === 'hold3') ck.setControl(id, d.initial);
     });
     v.on('powerSet', function (id, val) { setPower(id, val); });
-    // boutons rotatifs à la souris (clic gauche / droit, clic molette = petit bouton)
-    v.on('knobTurn', function (id, act) {
-      if (app.modes.locked()) return K.toast('Démonstration en cours : observe, puis passe en mode guidé.', 'warn');
-      var d = ck.defs[id], k = KN[d.knob], r = ck.knob(id, act);
-      if (r && r.ok === false) return K.toast(esc(r.reason), 'err');
-      K.sound.click();
-      K.toast(esc(r && r.msg ? r.msg : (k ? k.val(ck.s.g, ck, d) : d.label)), '', 1300);
-    });
-    v.on('knobSel', function (id, sel) { K.toast((sel === 'S' ? 'Petit bouton' : 'Gros anneau') + ' sélectionné — clic gauche ⟲ · clic droit ⟳', '', 1300); });
-    var knobTip = false;
-    v.on('knobHover', function () { if (knobTip) return; knobTip = true; K.toast('🖱 Bouton rotatif : clic gauche ⟲ · clic droit ⟳ · clic molette = gros / petit bouton · Maj + clic = PUSH et touches', '', 3500); });
     v.on('precisionZoom', function (reg) {
       var r = TF.DATA.regions.filter(function (x) { return x.id === reg; })[0];
       if (r) K.toast('Zoom : ' + esc(r.label), '', 1300);
@@ -8613,7 +8578,17 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
         '<div class="kn-ring small"><span>Petit bouton · ' + esc(k.small) + '</span><div class="pop-row"><button class="pop-pos kb" data-a="S-">⟲</button><button class="pop-pos kb" data-a="S+">⟳</button></div></div>' +
         (k.push ? '<button class="pop-pos" data-a="push">PUSH — ' + esc(k.push) + '</button>' : '') + (k.keys ? (function () { var p = d.id === 'mk_fms' ? 'mfd_' : 'pfd_'; return '<div class="pop-row"><button class="pop-pos kb" data-key="' + p + 'dto">D→</button><button class="pop-pos kb" data-key="' + p + 'menu">MENU</button></div><div class="pop-row"><button class="pop-pos kb" data-key="' + p + 'fpl">FPL</button><button class="pop-pos kb" data-key="' + p + 'proc">PROC</button></div><div class="pop-row"><button class="pop-pos kb" data-key="' + p + 'clr">CLR</button><button class="pop-pos kb" data-key="' + p + 'ent">ENT</button></div>'; })() : '') + '</div><div class="ref">' + esc(TF.refText(d.ref)) + (d.id === 'k_fms' ? ' · Timer/References : Garmin p.37, p.72-73 · fenêtres FPL / PROC / D→ : p.183-242' : d.id === 'mk_fms' ? ' · pages MFD p.27-29, plan de vol p.189-219, procédures p.232-242' : '') + '</div>';
     }
+    // la fenêtre se cale à droite de la scène et l'écran concerné (PFD ou MFD) est recadré dans la place restante :
+    // on voit le réglage se dérouler à l'écran pendant qu'on tourne le bouton
+    var scr = d.region === 'mfd' ? 'mfd' : d.region === 'pfd' ? 'pfd' : null;
+    function reframe(el) {
+      if (!scr) return;
+      var V = app.view, R = TF.Displays.rects[scr], m = 6, pw = el.offsetWidth + 24, W = V.W, H = V.H - 76;
+      var fw = Math.max(120, W - pw), s2 = Math.min(fw / (R.w + 2 * m), H / (R.h + 2 * m)), vw = W / s2, vh = V.H / s2;
+      V.setView({ x: R.x - m - (fw / s2 - R.w - 2 * m) / 2, y: R.y - m - (H / s2 - R.h - 2 * m) / 2, w: vw, h: vh }, true);
+    }
     K.popover(body(), at, function (el) {
+      reframe(el);
       Array.prototype.forEach.call(el.querySelectorAll('[data-key]'), function (b) { b.onclick = function () { var id = b.getAttribute('data-key'); ck.press(id); ck.release(id); K.sound.click(); el.querySelector('#kv').textContent = k.val(ck.s.g, ck, d); }; });
       Array.prototype.forEach.call(el.querySelectorAll('[data-a]'), function (b) {
         var a = b.getAttribute('data-a'), timer = null, rep = null;
@@ -8623,7 +8598,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
         b.addEventListener('touchstart', start, { passive: false }); b.addEventListener('mousedown', start);
         ['touchend', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function (ev) { b.addEventListener(ev, stop); });
       });
-    });
+    }, { dock: !!scr });
   }
   function keyPopover(d, at) {
     var ck = app.ck, cur = ck.get('start_key');
