@@ -547,6 +547,37 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 .ess-best{margin-left:6px;font-size:12px;color:#f2c21b;white-space:nowrap}
 .ess-best.none{color:#7d8ea6}
 
+/* v5.0 — parcours d'apprentissage, mémoire du cockpit, immersion */
+.dash{display:flex;flex-wrap:wrap;margin:6px 0 14px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#0f2a3d,#132036);border:1px solid #23456a}
+.dash-main{flex:1 1 260px;margin-right:12px}
+.dash-k{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#7fc8e8}
+.dash-v{font-size:19px;font-weight:800;margin:4px 0 2px}
+.dash-main small{display:block;color:#9fb3c8;margin-bottom:10px}
+.dash-nums{display:flex;flex:1 1 260px;justify-content:space-around;align-items:center}
+.dash-nums div{text-align:center;margin:4px}
+.dash-nums b{display:block;font-size:26px;color:#f2c21b}
+.dash-nums span{font-size:12px;color:#9fb3c8}
+.dash-err{flex:1 1 100%;margin-top:10px;font-size:13px;color:#ffb4b4}
+.dash-err b{color:#fff}
+.tl-acts .btn{margin:2px 4px 2px 0}
+.mem-grid{display:flex;flex-wrap:wrap;margin:10px 0}
+.mem-grid .btn{flex:1 1 220px;margin:6px;text-align:left;line-height:1.3}
+.mem-grid small{font-weight:400;opacity:.8}
+.mem-q{font-size:16px;margin:10px 0}
+.mem-q b{display:block;font-size:20px;color:#f2c21b;margin-top:6px}
+.quiet-prog{height:8px;border-radius:4px;background:#1d2a3a;margin:10px 0 6px;overflow:hidden}
+.quiet-prog div{height:100%;background:#3fe0e8}
+.hintbtn{margin:8px 0 4px}
+.debrief{margin:10px 0;padding:10px;border-radius:10px;background:#141c28;font-size:13px}
+.debrief .db-it{margin-top:6px;padding-top:6px;border-top:1px solid #243246;color:#ffd0d0}
+.debrief .db-it small{color:#a9b8cc}
+body.immersion #topbar,body.immersion #instructor,body.immersion #miniMap{display:none!important}
+body.immersion #stage{top:0!important;right:0!important}
+#immExit{position:fixed;top:10px;right:10px;z-index:60;display:none}
+body.immersion #immExit{display:block}
+.viewpop .btn{display:block;width:100%;margin:4px 0;text-align:left}
+.fr-expl{margin-top:6px;padding:6px 8px;border-radius:8px;background:#10324a;color:#d9f3ff;font-size:13px}
+
 </style>
 </head>
 <body>
@@ -572,6 +603,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       <div id="simHold" class="hidden"></div>
       <div id="toolbar">
         <button id="tbHome" title="Vue générale">⌂</button>
+        <button id="tbViews" title="Vues mémorisées et vue précédente">👁</button>
+        <button id="tbImm" title="Mode immersion : le cockpit plein écran">⛶</button>
         <span class="sep"></span>
         <button id="tbLook" class="act" title="Contrôler la position d'une commande sans la modifier">🔍<span class="tl"> Contrôler</span></button>
         <button id="tbVerif" class="act" title="Vérifications non simulables">☑︎<span class="tl"> Vérifs</span></button>
@@ -591,6 +624,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       <div id="instrBody"></div>
     </aside>
   </main>
+  <button id="immExit" class="btn" title="Quitter le mode immersion">✕ Immersion</button>
   <div id="sheetWrap" class="hidden"><div id="sheet"></div></div>
   <div id="splash"></div>
 </div>
@@ -603,7 +637,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '4.12';
+  TF.VERSION = '5.0';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -5764,9 +5798,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   };
 
   /* ---------------- Sons (WebAudio, déverrouillage iOS au premier toucher) ---------------- */
-  var ctx = null, enabled = true, loops = {};
+  var ctx = null, enabled = true, loops = {}, master = null, vol = 1, eng = null;
   function ac() {
-    if (!ctx) { var C = root.AudioContext || root.webkitAudioContext; if (!C) return null; ctx = new C(); }
+    if (!ctx) { var C = root.AudioContext || root.webkitAudioContext; if (!C) return null; ctx = new C(); master = ctx.createGain(); master.gain.value = vol; master.connect(ctx.destination); }
     if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
     return ctx;
   }
@@ -5777,9 +5811,33 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t0);
     g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(gain || 0.12, t0 + 0.015);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+  /* Sons moteurs synthétisés (aucun fichier audio) : fréquence de passage des pales (3 pales) = RPM / 60 × 3, démarreur aigu */
+  function engVoice(a) {
+    var lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.connect(master);
+    var g = a.createGain(); g.gain.value = 0; g.connect(lp);
+    var o1 = a.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 40; o1.connect(g); o1.start();
+    var o2 = a.createOscillator(); o2.type = 'square'; o2.frequency.value = 20; var g2 = a.createGain(); g2.gain.value = 0.5; o2.connect(g2); g2.connect(g); o2.start();
+    var sg = a.createGain(); sg.gain.value = 0; sg.connect(master);
+    var so = a.createOscillator(); so.type = 'triangle'; so.frequency.value = 300; so.connect(sg); so.start();
+    return { g: g, o1: o1, o2: o2, sg: sg, so: so };
   }
   K.sound = {
+    setVolume: function (v) { vol = v; if (master) master.gain.setTargetAtTime(v, ctx.currentTime, 0.05); },
+    volume: function () { return vol; },
+    /* état des deux moteurs (run, rpm, starter) → sons continus ; silence si son coupé */
+    engines: function (L, R) {
+      var a = ctx; if (!a || a.state !== 'running') return;
+      if (!eng) eng = { L: engVoice(a), R: engVoice(a) };
+      [['L', L], ['R', R]].forEach(function (p) {
+        var v = eng[p[0]], d = p[1] || {}, t = a.currentTime, on = enabled && (d.rpm || 0) > 50, bp = Math.max(18, (d.rpm || 0) / 60 * 3);
+        v.o1.frequency.setTargetAtTime(bp, t, 0.25); v.o2.frequency.setTargetAtTime(bp / 2, t, 0.25);
+        v.g.gain.setTargetAtTime(on ? 0.035 + 0.025 * Math.min(1, (d.rpm || 0) / 2300) : 0, t, 0.3);
+        v.so.frequency.setTargetAtTime(260 + (d.rpm || 0) * 0.8, t, 0.2);
+        v.sg.gain.setTargetAtTime(enabled && d.starter ? 0.018 : 0, t, 0.12);
+      });
+    },
     setEnabled: function (v) { enabled = v; if (!v) Object.keys(loops).forEach(function (k) { K.sound.stop(k); }); },
     enabled: function () { return enabled; },
     click: function () { tone(1800, 0.03, 'square', 0.04); },
@@ -7150,9 +7208,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     var pr = TF.Profiles.current();
     h += '<div class="ess-top"><div><div class="hm-hello">' + (pr ? 'Bonjour ' + esc(pr.name) + ' 👋 · ' : '') + 'Mon vol</div><div class="hm-sub">L\'essentiel : le flow et les procédures essentielles, l\'avion en chiffres, le tour avion. Le détail exhaustif est dans 📚 Procédures complètes.</div></div>' +
       '<button class="btn" data-act="home">📚 Procédures complètes</button></div>';
-    h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['brief', '🗣 Briefings'], ['test', '📝 Class test']].map(function (t) {
+    h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['mem', '🧠 Mémoire cockpit'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['brief', '🗣 Briefings'], ['test', '📝 Class test']].map(function (t) {
       return '<button data-act="tab" data-v="' + t[0] + '" class="' + (E.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>'; }).join('') + '</div>';
-    h += E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
+    h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
     h += '<div class="hm-foot"><button data-act="voices">🗣 Voix</button><button data-act="free">🛠 Cockpit libre</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     var keep = E._shown === E.tab && E.visible() ? el.scrollTop : 0; E._shown = E.tab;
@@ -7177,6 +7235,10 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       // flow
       sweep: function (b) { E.sweep(b.getAttribute('data-id'), 'demo'); },
       tryit: function (b) { E.sweep(b.getAttribute('data-id'), 'try'); },
+      memo: function (b) { E.sweep(b.getAttribute('data-id'), 'try', 0, { level: 'memo' }); },
+      exam: function (b) { E.sweep(b.getAttribute('data-id'), 'try', 0, { level: 'exam' }); },
+      resume: function (b) { var r = recommend(); E.sweep(r.b.id, r.level === 'demo' ? 'demo' : 'try', 0, { level: r.level }); },
+      memstart: function (b) { memStart(b.getAttribute('data-v')); },
       chipgo: function (b) { E.sweep(b.getAttribute('data-id'), 'try', +b.getAttribute('data-i')); },
       walktab: function () { E.show('tour'); },
       // fiche
@@ -7242,7 +7304,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return '<span class="fchip' + (c.ctls ? ' tgt' : ' say') + (c.add ? ' add' : '') + (state ? ' ' + state : '') + '" title="' + esc(c.a + ' … ' + c.r) + '">' + (c.ctls ? '' : '🗣 ') + esc(c.t) + (c.add ? ' <span class="addb">OM-B</span>' : '') + (c.doubt ? ' <span class="doubt">?</span>' : '') + '</span>';
   }
   function flowHtml() {
-    var h = srcBanner() + '<div class="ess-intro">Le flow suit les <b>procédures officielles (OM-B Issue C + check-list DA42 VI)</b>, sauf la préparation cabine (ordre de l\'équipage). <b>▶ Balayer</b> : l\'instructeur parcourt le cockpit et annonce chaque item en anglais. <b>✋ À toi</b> : <b>🕹 fais-le vraiment</b> — interrupteurs, touches du G1000 (ENT, DEC / INC / RST FUEL…), boutons, manettes : l\'étape est validée quand le cockpit est dans le bon état ; <b>👆</b> = étape à toucher ou à lire. Score ★★★ et record par bloc. <span class="addb">OM-B</span> = ajouté · <span class="doubt">?</span> = à confirmer.</div><div class="tl">';
+    var h = srcBanner() + dashHtml() + '<div class="ess-intro">Le flow suit les <b>procédures officielles (OM-B Issue C + check-list DA42 VI)</b>, sauf la préparation cabine (ordre de l\'équipage). Quatre niveaux par bloc : <b>▶ Découvrir</b> (l\'instructeur montre, annonce en anglais et manipule) · <b>✋ Apprendre</b> (tu manipules vraiment ; 💡 aides graduées : région, zone, commande, démonstration) · <b>🧠 Mémoriser</b> (sans la liste, tout est noté) · <b>🎓 Examen</b> (sans aide, chronométré ; la justesse prime). En fin de bloc : débriefing, <b>🔁 Rejouer mes erreurs</b> et <b>✈️ Enchaîner</b> le bloc suivant cockpit conservé (chair flying). 🕹 = commande à manipuler · 👆 = à toucher ou lire. <span class="addb">OM-B</span> = ajouté · <span class="doubt">?</span> = à confirmer.</div><div class="tl">';
     TF.DATA.essFlow.forEach(function (b, i) {
       var div = b.chips.filter(function (c) { return c.div; })[0];
       h += '<div class="tl-it"><div class="tl-dot">' + b.icon + '</div><div class="tl-card"><div class="tl-h"><b>' + esc(b.title) + '</b><small>' + esc(b.sub) + '</small></div>' +
@@ -7250,7 +7312,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       if (div) { var dv = TF.DATA.divergences.filter(function (x) { return x.id === div.div; })[0]; h += '<div class="caution" style="font-size:12px"><b>' + dv.id + '</b> — ' + esc(dv.decision) + '</div>'; }
       h += '<div class="tl-acts">';
       if (b.walk) h += '<button class="btn" data-act="walktab">🚶 Ouvrir le tour avion</button>';
-      else { var bb = bestAll()[b.id]; h += '<button class="btn primary" data-act="sweep" data-id="' + b.id + '">▶ Balayer</button><button class="btn" data-act="tryit" data-id="' + b.id + '">✋ À toi</button>' + (bb ? '<span class="ess-best">' + '★★★'.slice(0, bb.stars) + '☆☆☆'.slice(0, 3 - bb.stars) + ' · ' + fmtMs(bb.ms) + '</span>' : '<span class="ess-best none">pas encore joué</span>'); }
+      else { var bb = bestAll()[b.id]; h += '<button class="btn primary" data-act="sweep" data-id="' + b.id + '" title="Niveau 1 : l\'instructeur montre">▶ Découvrir</button><button class="btn" data-act="tryit" data-id="' + b.id + '" title="Niveau 2 : tu manipules, avec aides">✋ Apprendre</button><button class="btn" data-act="memo" data-id="' + b.id + '" title="Niveau 3 : sans la liste">🧠 Mémoriser</button><button class="btn" data-act="exam" data-id="' + b.id + '" title="Niveau 5 : sans aide, chronométré">🎓 Examen</button>' + (bb ? '<span class="ess-best">' + '★★★'.slice(0, bb.stars) + '☆☆☆'.slice(0, 3 - bb.stars) + ' · ' + fmtMs(bb.ms) + '</span>' : '<span class="ess-best none">pas encore joué</span>'); }
       h += '<span class="tl-ref">' + esc(TF.refText(b.ref)) + '</span></div></div></div>';
     });
     return h + '</div>';
@@ -7344,15 +7406,17 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   /* ----------------------------------------------- Balayage dans le cockpit (démo / à toi) ----------------------------------------------- */
   E.active = function () { return !!S; };
-  E.sweep = function (id, mode, from) {
+  E.sweep = function (id, mode, from, opt) {
+    opt = opt || {}; MG = null;
     var b = TF.DATA.essFlow.filter(function (x) { return x.id === id; })[0]; if (!b) return;
     E.close(); ses().idle(); TF.Home.hide();
     var ck = app().ck, sc = app().scenario();
     if (!ses().phase) { /* cockpit au repos, écrans allumés pour lire les zones */ }
     from = Math.max(0, Math.min(+from || 0, b.chips.length - 1));
-    S = { b: b, mode: mode, i: from, errors: 0, chipErr: 0, prev: null, g: ++gen, done: [] };
+    if (opt.only && opt.only.length) from = opt.only[0];
+    S = { b: b, mode: mode, i: from, errors: 0, chipErr: 0, prev: null, g: ++gen, done: [], level: mode === 'demo' ? 'demo' : (opt.level || 'learn'), only: opt.only || null, log: {}, hintLv: 0 };
     for (var k = 0; k < from; k++) S.done.push(k);
-    if (b.state) {
+    if (b.state && !opt.keep) {
       var PE = TF.ProcEngine; ck.reset(sc); ck.restore(PE.buildInitial(b.state, sc)); app().view.renderAll();
       if (b.stbyFree) ck.setControl('stby_cage', 'NORMAL'); // horizon de secours décagé dès l'avant mise en route (ordre équipage)
       ck.s.ui = {}; if (ck.s.sys.mfdStage === 'normal') ck.s.sys.mfdPage = b.mfdPage || 'map'; // démarrage : page EIS - Engine (comme dans l'avion)
@@ -7513,6 +7577,137 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     return [{ script: r }, { wait: r[r.length - 1].t + 200 }];
   }
   function taxiScr(id) { var st = TF.ProcEngine.procById('taxi').steps.filter(function (x) { return x.id === id; })[0]; return st && st.script ? st.script : []; }
+
+  /* ================= Progression : statistiques par bloc, recommandation, tableau de bord ================= */
+  function statsAll() { try { return JSON.parse(localStorage.getItem('tiffanir.ess.stats') || '{}'); } catch (e) { return {}; } }
+  function statsSave(a) { try { localStorage.setItem('tiffanir.ess.stats', JSON.stringify(a)); } catch (e) { } }
+  function flowBlocks() { return TF.DATA.essFlow.filter(function (b) { return !b.walk; }); }
+  /* prochain bloc conseillé : jamais joué → Découvrir ; < 3★ → Apprendre ; 3★ en Apprendre → Mémoriser ; puis le plus ancien en Examen */
+  function recommend() {
+    var st = statsAll(), bs = flowBlocks(), i, b, x;
+    for (i = 0; i < bs.length; i++) { b = bs[i]; x = st[b.id]; if (!x) return { b: b, level: 'demo', why: 'jamais fait' }; }
+    for (i = 0; i < bs.length; i++) { b = bs[i]; x = st[b.id]; if ((x.learn || 0) < 3) return { b: b, level: 'learn', why: 'pas encore 3★ en Apprendre' }; }
+    for (i = 0; i < bs.length; i++) { b = bs[i]; x = st[b.id]; if ((x.memo || 0) < 3) return { b: b, level: 'memo', why: 'à mémoriser sans la liste' }; }
+    var old = bs.slice().sort(function (a, c) { return (st[a.id].at || 0) - (st[c.id].at || 0); })[0];
+    return { b: old, level: 'exam', why: 'révision la plus ancienne' };
+  }
+  function dashHtml() {
+    var st = statsAll(), bs = flowBlocks(), mast = 0, rev = 0, todo = 0, acts = 0, errs = [];
+    bs.forEach(function (b) {
+      var x = st[b.id]; if (!x) { todo++; return; }
+      acts += x.ok || 0;
+      if ((x.exam || 0) >= 3 || (x.memo || 0) >= 3) mast++; else rev++;
+      Object.keys(x.miss || {}).forEach(function (k) { var c = b.chips[+k]; if (c) errs.push({ n: x.miss[k], t: b.title + ' · ' + c.t }); });
+    });
+    errs.sort(function (a, c) { return c.n - a.n; });
+    var r = recommend(), LV = { demo: '▶ Découvrir', learn: '✋ Apprendre', memo: '🧠 Mémoriser', exam: '🎓 Examen' };
+    var h = '<div class="dash"><div class="dash-main"><div class="dash-k">Prochain entraînement conseillé</div><div class="dash-v">' + r.b.icon + ' ' + esc(r.b.title) + ' — ' + LV[r.level] + '</div><small>' + esc(r.why) + '</small>' +
+      '<button class="btn primary big" data-act="resume">▶ Reprendre mon entraînement</button></div>' +
+      '<div class="dash-nums"><div><b>' + mast + '</b><span>maîtrisés</span></div><div><b>' + rev + '</b><span>à réviser</span></div><div><b>' + todo + '</b><span>à découvrir</span></div><div><b>' + acts + '</b><span>actions justes</span></div></div>';
+    if (errs.length) h += '<div class="dash-err"><b>Erreurs les plus fréquentes</b>' + errs.slice(0, 3).map(function (e) { return '<div>✗ ' + esc(e.t) + ' <small>(' + e.n + '×)</small></div>'; }).join('') + '</div>';
+    return h + '</div>';
+  }
+
+  /* ================= Mémoire du cockpit : « Trouve la commande », « Quelle est cette commande ? », révisions espacées ================= */
+  var MG = null; // jeu en cours
+  function memAll() { try { return JSON.parse(localStorage.getItem('tiffanir.mem') || '{}'); } catch (e) { return {}; } }
+  function memSave(a) { try { localStorage.setItem('tiffanir.mem', JSON.stringify(a)); } catch (e) { } }
+  var BOXD = [0, 0, 864e5, 3 * 864e5, 7 * 864e5, 14 * 864e5]; // Leitner : boîte 1 tout de suite, puis 1, 3, 7, 14 jours
+  function memPool() {
+    var defs = app().ck.defs, seen = {}, out = [];
+    TF.DATA.essFlow.forEach(function (b) { b.chips.forEach(function (c) { (c.ctls || []).forEach(function (id) { if (defs[id] && !seen[id] && !/^(pfd|mfd|stby)$/.test(id)) { seen[id] = 1; out.push(id); } }); }); });
+    return out;
+  }
+  function memPick(weak) {
+    var m = memAll(), now = Date.now(), pool = memPool().map(function (id) { var x = m[id] || { box: 1, due: 0, ko: 0 }; return { id: id, box: x.box, due: x.due, ko: x.ko || 0 }; });
+    if (weak) { var w = pool.filter(function (x) { return x.ko > 0 && x.box <= 2; }); if (w.length) pool = w; }
+    var due = pool.filter(function (x) { return x.due <= now; }); if (due.length) pool = due;
+    pool.sort(function (a, c) { return a.box - c.box || c.ko - a.ko || Math.random() - 0.5; });
+    var top = pool.slice(0, Math.min(6, pool.length)); return top[Math.floor(Math.random() * top.length)].id;
+  }
+  function memScore(id, ok) {
+    var m = memAll(), x = m[id] || { box: 1, due: 0, ko: 0 };
+    if (ok) x.box = Math.min(5, x.box + 1); else { x.box = 1; x.ko = (x.ko || 0) + 1; }
+    x.due = Date.now() + BOXD[x.box]; m[id] = x; memSave(m);
+  }
+  function memHtml() {
+    var m = memAll(), pool = memPool(), now = Date.now(), due = 0, sure = 0, weak = 0;
+    pool.forEach(function (id) { var x = m[id]; if (!x || x.due <= now) due++; if (x && x.box >= 4) sure++; if (x && x.ko && x.box <= 2) weak++; });
+    return '<div class="ess-intro">Apprends <b>où</b> sont les commandes, sans leur nom affiché. <b>' + pool.length + '</b> commandes utilisées dans les flows · <b>' + sure + '</b> sûres · <b>' + due + '</b> à revoir aujourd\'hui · <b>' + weak + '</b> points faibles. Révisions espacées : une commande ratée revient tout de suite, une commande trouvée revient après 1, 3, 7 puis 14 jours.</div>' +
+      '<div class="mem-grid"><button class="btn primary big" data-act="memstart" data-v="find">🎯 Trouve la commande<br><small>on te donne le nom, tu la touches dans le cockpit</small></button>' +
+      '<button class="btn big" data-act="memstart" data-v="name">❓ Quelle est cette commande ?<br><small>on te la montre, tu choisis son nom</small></button>' +
+      '<button class="btn big" data-act="memstart" data-v="weak"' + (weak ? '' : ' disabled') + '>🩹 Mes points faibles<br><small>' + (weak ? weak + ' commande' + (weak > 1 ? 's' : '') + ' ratée' + (weak > 1 ? 's' : '') : 'aucune pour l\'instant') + '</small></button></div>' +
+      '<div class="sc-note">Pour retrouver les commandes <b>dans l\'ordre d\'un flow</b>, utilise 🧠 Mémoriser dans l\'onglet Le flow ; ▶ Découvrir rejoue le parcours du regard.</div>';
+  }
+  function memStart(kind) {
+    E.close(); ses().idle(); TF.Home.hide(); S = null;
+    MG = { kind: kind === 'name' ? 'name' : 'find', weak: kind === 'weak', n: 0, ok: 0, q: null, g: ++gen };
+    memNext();
+  }
+  function memNext() {
+    var v = app().view; v.clearHighlight(); v.home(true);
+    if (MG.n >= 10) return memPanel(true);
+    MG.q = memPick(MG.weak); MG.n++; MG.tries = 0;
+    if (MG.kind === 'name') {
+      var all = memPool().filter(function (x) { return x !== MG.q; }); all.sort(function () { return Math.random() - 0.5; });
+      MG.opts = [MG.q].concat(all.slice(0, 3)).sort(function () { return Math.random() - 0.5; });
+      setTimeout(function () { if (!MG) return; v.focusOn(MG.q); setTimeout(function () { if (MG) v.highlight(MG.q, 'pulse'); }, 500); }, 300);
+    }
+    memPanel(false);
+  }
+  function memPanel(end) {
+    var bdy = K.$('instrBody'); if (!bdy || !MG) return;
+    var defs = app().ck.defs, d = defs[MG.q] || {}, h = '<div class="ph-head"><span class="ph-icon">🧠</span><div><div class="ph-title">Mémoire du cockpit</div><div class="ph-lvl">' + (MG.kind === 'find' ? 'Trouve la commande' : 'Quelle est cette commande ?') + (MG.weak ? ' · points faibles' : '') + '</div></div></div>';
+    if (end) {
+      h += '<div class="feedback ' + (MG.ok >= 8 ? 'ok' : 'info') + '"><div class="ess-stars">' + MG.ok + ' / 10</div>' + (MG.ok >= 8 ? 'Très bien : ces commandes reviendront dans quelques jours.' : 'Les commandes ratées reviendront en priorité.') + '</div>' +
+        '<div class="row2"><button class="btn primary" data-act="mgagain">↺ Encore 10</button><button class="btn" data-act="mgback">↩ Retour</button></div>';
+    } else {
+      h += '<div class="counter">Question <b>' + MG.n + '</b> / 10 · justes : <b>' + MG.ok + '</b></div>';
+      if (MG.kind === 'find') h += '<div class="mem-q">Touche dans le cockpit :<b>' + esc(d.label || MG.q) + '</b></div><div class="sc-note">Touche une zone pour zoomer, puis la commande. Aucune aide : 2 essais.</div>';
+      else h += '<div class="mem-q">Quelle est la commande qui clignote ?</div>' + MG.opts.map(function (id) { return '<button class="btn big block" data-act="mgpick" data-v="' + id + '">' + esc((defs[id] || {}).label || id) + '</button>'; }).join('');
+      h += '<button class="btn link" data-act="mgback">↩ Arrêter</button>';
+    }
+    bdy.innerHTML = K.plain(h);
+    K.bindActs(bdy, {
+      mgpick: function (el) { memAnswer(el.getAttribute('data-v')); },
+      mgagain: function () { memStart(MG.weak ? 'weak' : MG.kind); },
+      mgback: function () { MG = null; app().view.clearHighlight(); ses().render(); E.show('mem'); }
+    });
+  }
+  function memAnswer(id) {
+    var v = app().view, ok = id === MG.q;
+    if (ok) { K.sound.ok(); MG.ok++; memScore(MG.q, MG.tries === 0); v.clearHighlight(); v.highlight(MG.q, 'ok'); K.toast('✓ ' + esc(app().ck.defs[MG.q].label), 'ok', 1400); memPanel(false); setTimeout(function () { if (MG) memNext(); }, 1100); return; }
+    K.sound.err(); MG.tries++;
+    if (MG.kind === 'find') { v.highlight(id, 'err'); }
+    if (MG.tries >= 2 || MG.kind === 'name') {
+      memScore(MG.q, false); v.focusOn(MG.q); v.highlight(MG.q, 'pulse');
+      K.toast('C\'était : <b>' + esc(app().ck.defs[MG.q].label) + '</b>', 'warn', 2400); setTimeout(function () { if (MG) memNext(); }, 2300);
+    } else K.toast('Non — encore un essai', 'warn', 1200);
+  }
+  E.memActive = function () { return !!MG; };
+
+  /* ================= Explications de l'instructeur : pourquoi l'état attendu n'est pas atteint (règles réellement simulées) ================= */
+  function whyNot(c, id) {
+    var ck = app().ck, s = ck.s, sys = s.sys;
+    if (/^(ap_|ga_btn|cws_btn)/.test(id || '') && id !== 'ap_disc') {
+      if (!sys.power) return 'Pas d\'alimentation : ELECT. MASTER sur ON d\'abord.';
+      if (!sys.avionics) return 'L\'avionique n\'est pas alimentée : AVIONIC MASTER sur ON (le pilote automatique en dépend).';
+      if (sys.apState !== 'ready') return 'Auto-test du pilote automatique (PFT) en cours : attends que PFT et AFCS s\'effacent du PFD.';
+    }
+    if (/^mfd_/.test(id || '')) {
+      if (!sys.power) return 'Écrans éteints : ELECT. MASTER sur ON.';
+      if (sys.mfdStage !== 'normal' && id !== 'mfd_ent') return 'Le MFD est encore sur sa page de mise sous tension : valide-la avec ENT.';
+      if (/^mfd_sk[456]$/.test(id) && sys.mfdPage !== 'engine') return 'DEC / INC / RST FUEL n\'existent que sur la page EIS - Engine : appuie d\'abord sur ENGINE (1re touche).';
+    }
+    if (/^ecu_test_/.test(id || '')) {
+      var e = s.eng[id === 'ecu_test_l' ? 'L' : 'R'];
+      if (e.state !== 'run') return 'Le test ECU se fait moteur tournant.';
+      if (s.controls[id === 'ecu_test_l' ? 'power_l' : 'power_r'] >= 3) return 'Manette de puissance au ralenti (IDLE) avant le test ECU.';
+      if (!e.ecu || !e.ecu.done) return 'Maintiens le bouton jusqu\'à la fin de la séquence (ECU A / B FAIL s\'éteignent), puis relâche.';
+    }
+    if (c && c.sim === 'fmsSet') return 'Le calculateur doit être égal au carburant jaugé (Main L + R) : DEC / INC FUEL par pas de 1 gal, RST FUEL = plein.';
+    return null;
+  }
   /* ---------- « À toi » en commandes réelles : on manipule vraiment le cockpit, l'étape est validée par l'état obtenu ---------- */
   var SIMDONE = { fdOn: 'fdOnC', hdgSel: 'latHdg', hdgSync: 'latHdg', bugSync: 'bugSynced', apOn: 'apEngaged', apOnClimb: 'apEngaged', apDisc: 'apDiscTested', dbAck: 'dbAcked',
     fmsSet: 'fmsMatchesGauge', alarmTest: 'fireTested', gaTest: 'gaMode', cwsTest: 'cwsTested', altSel2500: 'altSel2500c', altBug: 'altSel2500c', flcOn: 'flcActive', vsOn: 'vsActive',
@@ -7544,8 +7739,8 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     }, 250);
   }
   function completeReal(c) {
-    var v = app().view; K.sound.ok(); v.clearHighlight(); c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
-    S.done.push(S.i); S.i++; S.chipErr = 0; S.real = (S.real || 0) + 1;
+    var v = app().view, qt = S.level === 'memo' || S.level === 'exam'; if (qt) K.sound.click(); else K.sound.ok(); v.clearHighlight(); if (!qt) c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
+    S.done.push(S.i); nextIdx(); S.chipErr = 0; S.real = (S.real || 0) + 1;
     var rest = residual(c), g = S.g;
     if (rest.length) { var PE = TF.ProcEngine, ck = app().ck; new PE.Runner(ck, null, { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) k(); }, ms); } }).run(rest, function () { app().view.renderDynamic(true); }); }
     setUi(S.b.chips[S.i]); E.renderPanel();
@@ -7595,10 +7790,18 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       }, al);
     }
     if (c.call) K.toast('🎙 Annonce : « ' + esc(c.call) + ' »', 'call', 2600);
+    var fr = frOn() && (c.vals && c.vals[0] || c.note) || '';
+    if (fr) { var el2 = K.$('instrBody'), box = el2 && el2.querySelector('.clc-row.cur'); if (box) { var d2 = document.createElement('div'); d2.className = 'fr-expl'; d2.textContent = '🇫🇷 ' + fr; box.appendChild(d2); } }
     ses().dSay(c.say, 'en', function () {
-      runSim(c, false, function () { if (!al()) return; S.done.push(S.i); S.i++; ses().dWait(c.ctls ? 500 : 250, demoStep, al); });
+      runSim(c, false, function () {
+        if (!al()) return;
+        function nx() { S.done.push(S.i); S.i++; ses().dWait(c.ctls ? 500 : 250, demoStep, al); }
+        if (fr) ses().dSay(fr.replace(/[→«»]/g, ' '), 'fr', nx, null, al); else nx();
+      });
     }, null, al);
   }
+  /* explication vocale en français pendant « Découvrir » (réglable) */
+  function frOn() { try { return localStorage.getItem('tiffanir.frExpl') !== '0'; } catch (e) { return true; } }
   function tryFocus() {
     if (!S) return;
     var c = S.b.chips[S.i];
@@ -7612,14 +7815,26 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     if (rec) { all[S.b.id] = { stars: stars, ms: ms }; try { localStorage.setItem('tiffanir.ess.best', JSON.stringify(all)); } catch (e) { } }
     if (!err) { K.sound.ok(); TF.Profiles.addXp(5); K.toast('🎯 Flow « ' + esc(S.b.title) + ' » sans erreur : +5 XP', 'ok', 2200); }
     else TF.Profiles.addXp(2);
-    S.finished = true; S.result = { n: n, err: err, ms: ms, stars: stars, rec: rec, real: S.real || 0 }; E.renderPanel();
+    var hints = S.hints || 0; if (S.level === 'exam' || S.level === 'memo') { var pen = err + hints; stars = pen === 0 ? 3 : pen <= 2 ? 2 : 1; }
+    var all2 = statsAll(), x = all2[S.b.id] || { plays: 0, miss: {} }; x.plays++; x.at = Date.now(); x.ok = (x.ok || 0) + S.done.length;
+    if (!S.only) x[S.level] = Math.max(x[S.level] || 0, stars);
+    Object.keys(S.log).forEach(function (k) { x.miss[k] = (x.miss[k] || 0) + 1; });
+    S.b.chips.forEach(function (c2, k) { if (!S.log[k] && x.miss[k] && S.done.indexOf(k) >= 0) { x.miss[k]--; if (x.miss[k] <= 0) delete x.miss[k]; } });
+    all2[S.b.id] = x; statsSave(all2);
+    S.finished = true; S.result = { n: n, err: err, ms: ms, stars: stars, rec: rec, real: S.real || 0, hints: hints }; E.renderPanel();
   }
   E.best = bestAll;
   function fmtMs(ms) { var t = Math.round(ms / 1000); return (t >= 60 ? Math.floor(t / 60) + ' min ' : '') + (t % 60) + ' s'; }
+  function logChip(i, k) { var L = S.log[i] || (S.log[i] = { err: 0, hint: 0 }); L[k]++; }
+  /* étape suivante ; en « Rejouer mes erreurs », les étapes réussies sont jouées automatiquement (état conservé) */
+  function nextIdx() {
+    S.i++; S.hintLv = 0;
+    while (S.only && S.i < S.b.chips.length && S.only.indexOf(S.i) < 0) { runSim(S.b.chips[S.i], true); S.done.push(S.i); S.i++; }
+  }
   function advanceTry() {
     var cur = S.b.chips[S.i];
     if (cur && cur.gate && !TF.evalCond(cur.gate, app().ck.s)) { K.toast('⏳ Pas encore : attends ' + (cur.gateTxt || 'le bon moment'), 'info', 1800); return; }
-    S.done.push(S.i); S.i++; S.chipErr = 0;
+    S.done.push(S.i); nextIdx(); S.chipErr = 0;
     runSim(cur, false, function () { if (S) { setUi(S.b.chips[S.i]); E.renderPanel(); } });
     setUi(S.b.chips[S.i]);
     var next = S.b.chips[S.i], v = app().view;
@@ -7634,21 +7849,29 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   function regionOf(id) { var d = app().ck.defs[id]; return d ? d.region : id; }
   /* Touche dans le cockpit pendant « À toi » : on vérifie sans manipuler la commande */
   E.intercept = function (kind, id) {
+    if (MG && !S) { if (MG.kind === 'find' && (kind === 'ctl' || kind === 'press' || kind === 'ind') && MG.q) { memAnswer(id); return true; } return MG.kind === 'name'; }
     if (!S || S.mode !== 'try' || S.finished) return false;
+    var quiet = S.level === 'memo' || S.level === 'exam';
     var c = S.b.chips[S.i], v = app().view;
     if (!c) return true;
     if (!c.ctls) { K.toast(c.call ? '🎙 Annonce à faire à voix haute : « ' + esc(c.call) + ' », puis « J\'ai fait l\'annonce ».' : '🗣 Cette étape se dit : « ' + esc(c.t) + ' » — touche « ✓ Fait » dans le panneau.', '', 2400); return true; }
     var hit = c.ctls.indexOf(id) >= 0;
     if (!hit && (kind === 'ctl' || kind === 'press')) { var d = app().ck.defs[id]; if (d && c.ctls.indexOf(d.region) >= 0) hit = true; }
     if (hit && c.gate && !TF.evalCond(c.gate, app().ck.s)) { K.toast('⏳ Pas encore : attends ' + esc(c.gateTxt || 'le bon moment'), 'info', 1800); return true; }
-    if (hit && realDone(c)) { realWatch(); return false; }   // commande réelle : on la manipule vraiment, l'état valide l'étape
+    if (hit && realDone(c)) {   // commande réelle : on la manipule vraiment, l'état valide l'étape
+      realWatch(); var i0 = S.i, g0 = S.g;
+      if (!quiet) setTimeout(function () { if (S && S.g === g0 && S.i === i0 && !S.finished) { var w = whyNot(c, id); if (w) K.toast('🧑‍✈️ ' + esc(w), 'info', 3200); } }, 1400);
+      return false;
+    }
     if (!hit && kind === 'ind' && realDone(c)) return false;  // lecture d'un écran pendant une étape réelle : libre
     if (hit) {
-      K.sound.ok(); v.clearHighlight(); c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
+      if (quiet) K.sound.click(); else K.sound.ok(); v.clearHighlight(); if (!quiet) c.ctls.forEach(function (t) { v.highlight(t, 'ok'); });
       S.lastRegion = regionOf(id);
       advanceTry();
     } else {
-      K.sound.err(); S.errors++; S.chipErr++;
+      S.errors++; S.chipErr++; logChip(S.i, 'err'); (S.wrong = S.wrong || []).push({ i: S.i, id: id });
+      if (quiet) { E.renderPanel(); return true; }   // mémoriser / examen : enregistré silencieusement
+      K.sound.err();
       v.clearHighlight(); v.highlight(id, 'err');
       if (S.chipErr >= 2) setTimeout(function () { if (S) c.ctls.forEach(function (t) { v.highlight(t, 'pulse'); }); }, 500);
       E.renderPanel();
@@ -7664,7 +7887,9 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   };
   E.renderPanel = function () {
     var bdy = K.$('instrBody'); if (!bdy || !S) return;
-    var b = S.b, h = '<div class="ph-head"><span class="ph-icon">' + b.icon + '</span><div><div class="ph-title">' + esc(b.title) + '</div><div class="ph-lvl">L\'essentiel · ' + (S.mode === 'demo' ? 'balayage' : 'à toi') + '</div></div></div>';
+    var b = S.b, LVN = { demo: '▶ Découvrir', learn: '✋ Apprendre', memo: '🧠 Mémoriser', exam: '🎓 Examen' };
+    var h = '<div class="ph-head"><span class="ph-icon">' + b.icon + '</span><div><div class="ph-title">' + esc(b.title) + '</div><div class="ph-lvl">' + LVN[S.level] + (S.only ? ' · rejouer mes erreurs' : '') + '</div></div></div>';
+    if ((S.level === 'memo' || S.level === 'exam') && !S.finished) return quietPanel(bdy, b, h);
     h += '<div class="sc-note" style="margin:-2px 0 8px">' + esc(b.sub) + '</div><div class="clc"><div class="clc-top"><span>FLOW — ' + esc(b.title).toUpperCase() + '</span></div><div class="clc-list">';
     b.chips.forEach(function (c, i) {
       var st = S.done.indexOf(i) >= 0 ? ' ok' : i === S.i && !S.finished ? ' cur' : '';
@@ -7694,16 +7919,23 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
       h += '</div>';
     });
     h += '</div></div>';
-    if (S.mode === 'try' && !S.finished) h += '<div class="counter">Erreurs : <b>' + S.errors + '</b> · touche une zone pour zoomer, puis la commande</div>';
+    if (S.mode === 'try' && !S.finished) {
+      var cc = b.chips[S.i];
+      if (cc && cc.ctls) h += '<button class="btn block hintbtn" data-act="hint">💡 Aide ' + (S.hintLv < 4 ? (S.hintLv + 1) + ' / 4 : ' + ['la région', 'la zone précise', 'la commande', 'démonstration'][S.hintLv] : '') + '</button>';
+      h += '<div class="counter">Erreurs : <b>' + S.errors + '</b> · aides : <b>' + (S.hints || 0) + '</b> · touche une zone pour zoomer, puis la commande</div>';
+    }
     if (S.finished && S.mode === 'try') { var R = S.result, st = '★★★'.slice(0, R.stars) + '☆☆☆'.slice(0, 3 - R.stars);
       h += '<div class="feedback ' + (R.err ? 'info' : 'ok') + '"><div class="ess-stars">' + st + '</div>' + (R.err ? 'Terminé avec ' + R.err + ' erreur' + (R.err > 1 ? 's' : '') + '.' : '🎯 Sans erreur !') +
-        '<br>⏱ ' + fmtMs(R.ms) + (R.real ? ' · ' + R.real + ' commande' + (R.real > 1 ? 's' : '') + ' manipulée' + (R.real > 1 ? 's' : '') + ' pour de vrai' : '') + (R.rec ? '<br><b>🏆 Nouveau record pour ce bloc !</b>' : '') + '</div>'; }
+        '<br>⏱ ' + fmtMs(R.ms) + (R.real ? ' · ' + R.real + ' commande' + (R.real > 1 ? 's' : '') + ' manipulée' + (R.real > 1 ? 's' : '') + ' pour de vrai' : '') + (R.rec ? '<br><b>🏆 Nouveau record pour ce bloc !</b>' : '') + '</div>' + debriefHtml(); }
     if (S.mode === 'demo' && !S.finished) h += ses().demoControls().replace(/<button class="btn block" data-act="toPractice">[\s\S]*?<\/button>/, '');
+    if (S.mode === 'demo' && !S.finished) h += '<button class="btn block" data-act="frx">🇫🇷 Explications vocales en français : ' + (frOn() ? 'oui' : 'non') + '</button>';
     var idx = TF.DATA.essFlow.indexOf(b), nxt = TF.DATA.essFlow[idx + 1];
     while (nxt && nxt.walk) nxt = TF.DATA.essFlow[TF.DATA.essFlow.indexOf(nxt) + 1];
     if (S.finished || S.mode === 'try') {
-      h += '<div class="row2">' + (S.mode === 'demo' ? '<button class="btn primary" data-act="try">✋ À toi</button>' : '<button class="btn" data-act="redo">↺ Refaire</button>') +
+      h += '<div class="row2">' + (S.mode === 'demo' ? '<button class="btn primary" data-act="try">✋ Apprendre</button>' : '<button class="btn" data-act="redo">↺ Refaire</button>') +
         (nxt ? '<button class="btn" data-act="nextb" data-id="' + nxt.id + '">' + nxt.icon + ' Suivant ▶</button>' : '') + '</div>';
+      if (S.finished && S.mode === 'try' && nxt) h += '<button class="btn block primary" data-act="chain" data-id="' + nxt.id + '">✈️ Enchaîner : ' + esc(nxt.title) + ' (cockpit conservé)</button>';
+      if (S.finished && S.mode === 'try' && Object.keys(S.log).length) h += '<button class="btn block" data-act="replayerr">🔁 Rejouer mes erreurs (' + Object.keys(S.log).length + ')</button>';
       if (S.mode === 'try') h += '<button class="btn block" data-act="demo">▶ Revoir le balayage</button>';
     }
     h += '<button class="btn link" data-act="back">↩ Retour à Mon vol</button>';
@@ -7713,7 +7945,11 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     K.bindActs(bdy, {
       said: function () { if (S) { K.sound.ok(); advanceTry(); } },
       goto: function (el) { if (!S) return; var k = +el.getAttribute('data-i'); if (k === S.i && !S.finished) return; V.stop(); E.sweep(b.id, S.mode, k); },
-      try: function () { E.sweep(b.id, 'try'); }, redo: function () { E.sweep(b.id, 'try'); }, demo: function () { E.sweep(b.id, 'demo'); },
+      try: function () { E.sweep(b.id, 'try'); }, redo: function () { E.sweep(b.id, 'try', 0, { level: S.level }); }, demo: function () { E.sweep(b.id, 'demo'); },
+      hint: function () { giveHint(); },
+      frx: function () { try { localStorage.setItem('tiffanir.frExpl', frOn() ? '0' : '1'); } catch (e) { } E.renderPanel(); },
+      chain: function (el) { E.sweep(el.getAttribute('data-id'), 'try', 0, { level: S.level, keep: true }); },
+      replayerr: function () { var o = Object.keys(S.log).map(Number).sort(function (a, c) { return a - c; }); E.sweep(b.id, 'try', 0, { level: 'learn', only: o }); },
       nextb: function (el) { E.sweep(el.getAttribute('data-id'), S.mode); },
       back: function () { E.stop(true); ses().render(); E.show('flow'); },
       bplay2: function () { briefPlay(); }, bopen: function () { E.stop(true); ses().render(); E.show('brief'); },
@@ -7721,6 +7957,47 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
     });
   };
 
+
+  /* Mémoriser / Examen : ni liste, ni surlignage ; seul le contexte du flow est affiché, tout est enregistré pour le débriefing */
+  function quietPanel(bdy, b, h) {
+    var c = b.chips[S.i], tot = S.only ? S.only.length : b.chips.length, done = S.done.length;
+    h += '<div class="sc-note">' + esc(b.sub) + '</div><div class="quiet-prog"><div style="width:' + Math.round(100 * done / tot) + '%"></div></div><div class="counter">' + done + ' / ' + tot + ' étapes · ' + (S.level === 'exam' ? '⏱ chronométré, aucune aide' : 'de mémoire') + '</div>';
+    h += '<div class="sc-note">Fais les actions dans l\'ordre, directement dans le cockpit. Pour un item qui se <b>dit</b> ou se <b>vérifie</b> sans commande, ou une <b>annonce</b>, utilise les boutons :</div>';
+    h += '<div class="row2"><button class="btn" data-act="qsaid">🗣 Item dit / vérifié</button><button class="btn call-btn" data-act="qcall">🎙 Annonce faite</button></div>';
+    h += '<button class="btn link" data-act="back">↩ Abandonner</button>';
+    bdy.innerHTML = K.plain(h);
+    K.bindActs(bdy, {
+      qsaid: function () { if (!S) return; var c2 = S.b.chips[S.i]; if (c2 && !c2.ctls && !c2.call) { K.sound.click(); advanceTry(); } else { S.errors++; logChip(S.i, 'err'); E.renderPanel(); } },
+      qcall: function () { if (!S) return; var c2 = S.b.chips[S.i]; if (c2 && c2.call) { K.sound.click(); advanceTry(); } else { S.errors++; logChip(S.i, 'err'); E.renderPanel(); } },
+      back: function () { E.stop(true); ses().render(); E.show('flow'); }
+    });
+  }
+  /* Aides graduées : 1 région, 2 zone précise, 3 commande surlignée, 4 démonstration de l'étape */
+  function giveHint() {
+    if (!S || S.finished) return; var c = S.b.chips[S.i], v = app().view; if (!c || !c.ctls) return;
+    S.hints = (S.hints || 0) + 1; logChip(S.i, 'hint');
+    var id = c.ctls[0], d = app().ck.defs[id], reg = TF.DATA.regions.filter(function (r) { return r.id === (d ? d.region : id); })[0];
+    if (S.hintLv === 0) { if (reg) { v.setView(reg, true); K.toast('💡 Regarde : <b>' + esc(reg.label) + '</b>', 'info', 2200); } else K.toast('💡 ' + esc(c.t), 'info', 2000); }
+    else if (S.hintLv === 1) { v.focusOn(id); K.toast('💡 C\'est dans cette zone', 'info', 1600); }
+    else if (S.hintLv === 2) { v.focusOn(id); v.clearHighlight(); c.ctls.forEach(function (t) { v.highlight(t, 'pulse'); }); }
+    else {
+      K.toast('💡 Démonstration de l\'étape', 'info', 1600); var i0 = S.i;
+      runSim(c, false, function () { if (S && S.i === i0) { S.done.push(S.i); nextIdx(); setUi(S.b.chips[S.i]); E.renderPanel(); if (S.i >= S.b.chips.length) finishTry(); } });
+      return;
+    }
+    S.hintLv++; E.renderPanel();
+  }
+  /* Débriefing : actions justes, erreurs par étape (commande touchée à tort), aides, temps */
+  function debriefHtml() {
+    var b = S.b, keys = Object.keys(S.log).map(Number).sort(function (a, c) { return a - c; }), defs = app().ck.defs;
+    var h = '<div class="debrief"><b>Débriefing</b><div>✓ ' + (S.done.length - keys.length) + ' étape' + (S.done.length - keys.length > 1 ? 's' : '') + ' sans erreur ni aide</div>';
+    if (keys.length) h += keys.map(function (k) {
+      var L = S.log[k], c = b.chips[k], wr = (S.wrong || []).filter(function (w) { return w.i === k; }).map(function (w) { return (defs[w.id] || {}).short || w.id; });
+      return '<div class="db-it">✗ <b>' + (k + 1) + '. ' + esc(c.t) + '</b> — ' + esc(c.r) + (L.err ? '<br><small>' + L.err + ' erreur' + (L.err > 1 ? 's' : '') + (wr.length ? ' : touché ' + esc(wr.slice(0, 3).join(', ')) : '') + '</small>' : '') + (L.hint ? '<br><small>' + L.hint + ' aide' + (L.hint > 1 ? 's' : '') + '</small>' : '') +
+        (c.ctls && defs[c.ctls[0]] ? '<br><small>Où : ' + esc(defs[c.ctls[0]].label) + '</small>' : '') + '</div>';
+    }).join('');
+    return h + '</div>';
+  }
   /* ----------------------------------------------------------- Tour avion ----------------------------------------------------------- */
   function planeSvg(cur) {
     var s = '<svg viewBox="0 0 600 600" class="wk-svg" xmlns="http://www.w3.org/2000/svg">';
@@ -8357,6 +8634,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   /* Boucle temps réel (10 Hz) */
   var last = Date.now();
   setInterval(function () { var now = Date.now(), dt = Math.min(500, now - last); last = now; app.ck.tick(dt); sysNotes(); if (app.modes.pollWindow) app.modes.pollWindow(); }, 100);
+  setInterval(function () { try { var e = app.ck.s.eng, I = app.ck.indications().eng; K.sound.engines({ rpm: I.L.rpm || 0, starter: I.L.starter }, { rpm: I.R.rpm || 0, starter: I.R.starter }); } catch (er) { } }, 300);
 
   /* Sons et notes système */
   app.ck.on('aural', function (k) { if (k === 'apdisc') K.sound.apdisc(); });
@@ -8376,6 +8654,25 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
 
   /* Barre d'outils cockpit (réduite à l'essentiel) */
   K.$('tbHome').onclick = function () { app.view.home(true); };
+  /* Vues mémorisées + vue précédente (historique des cadrages) */
+  (function () {
+    var v = app.view, hist = [], orig = v.setView, back = false;
+    v.setView = function (t, a) { if (!back && this.vb) { hist.push(TF.util.clone(this.vb)); if (hist.length > 15) hist.shift(); } return orig.call(this, t, a); };
+    v.backView = function () { var p = hist.pop(); if (!p) return false; back = true; orig.call(v, p, true); back = false; return true; };
+    var VIEWS = [['Vue générale', null], ['Panneau gauche', 'leftSub'], ['PFD', 'pfd'], ['MFD + pilote automatique', 'mfd'], ['Partie supérieure', { x: 300, y: 285, w: 960, h: 115 }], ['Partie inférieure', { x: 300, y: 630, w: 1060, h: 90 }], ['Console centrale', 'console'], ['Commandes moteurs', { x: 640, y: 880, w: 260, h: 250 }], ['Sélecteurs carburant', 'fuelsel']];
+    K.$('tbViews').onclick = function (e) {
+      var h = '<div class="viewpop"><b>Vues</b>' + VIEWS.map(function (x, i) { return '<button class="btn" data-act="vw" data-i="' + i + '">' + x[0] + '</button>'; }).join('') + '<button class="btn" data-act="vback">↶ Vue précédente</button></div>';
+      K.popover(h, { x: e.clientX, y: e.clientY }, function (p) {
+        K.bindActs(p, {
+          vw: function (el) { var x = VIEWS[+el.getAttribute('data-i')][1]; K.closePopover(); if (!x) return v.home(true); var r = typeof x === 'string' ? TF.DATA.regions.filter(function (q) { return q.id === x; })[0] : x; if (r) v.setView(r, true); },
+          vback: function () { K.closePopover(); if (!v.backView()) K.toast('Pas de vue précédente', '', 1200); }
+        });
+      });
+    };
+    function imm(on) { document.body.classList.toggle('immersion', on); setTimeout(function () { v.resize(); }, 60); }
+    K.$('tbImm').onclick = function () { imm(!document.body.classList.contains('immersion')); };
+    K.$('immExit').onclick = function () { imm(false); };
+  })();
   K.$('tbLook').onclick = function () { app.modes.armLook(); };
   K.$('tbCallout').onclick = function () { if (TF.Ess.onCallout && TF.Ess.onCallout()) return; TF.Interact.declareCallout(); };
   K.$('tbRate').onclick = function () { app.modes.cycleRate(); };
@@ -8389,7 +8686,13 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   K.$('btnProfile').onclick = function () { TF.Screens.profile(); };
   K.$('btnBrand').onclick = function () { TF.Screens.splash(function () { app.onProfile(); }); };
   K.$('btnLabels').onclick = function () { var on = !app.view.showLabels; app.view.setLabels(on); this.classList.toggle('on', on); var p = TF.Profiles.current(); if (p) TF.Profiles.setSetting('showLabels', on); };
-  K.$('btnSound').onclick = function () { var on = !K.sound.enabled(); K.sound.setEnabled(on); TF.Voice.setEnabled(on); this.classList.toggle('on', on); this.textContent = on ? '🔊' : '🔇'; var p = TF.Profiles.current(); if (p) { TF.Profiles.setSetting('sound', on); TF.Profiles.setSetting('voice', on); } };
+  /* Son : fort → faible → coupé (moteurs, clics, alarmes, voix) */
+  K.$('btnSound').onclick = function () {
+    var st = !K.sound.enabled() ? 'off' : K.sound.volume() < 0.6 ? 'low' : 'high', nx = st === 'high' ? 'low' : st === 'low' ? 'off' : 'high', on = nx !== 'off';
+    K.sound.setEnabled(on); K.sound.setVolume(nx === 'low' ? 0.35 : 1); TF.Voice.setEnabled(on); this.classList.toggle('on', on); this.textContent = nx === 'high' ? '🔊' : nx === 'low' ? '🔉' : '🔇';
+    K.toast(nx === 'high' ? 'Son fort' : nx === 'low' ? 'Son faible' : 'Son coupé', '', 900);
+    var p = TF.Profiles.current(); if (p) { TF.Profiles.setSetting('sound', on); TF.Profiles.setSetting('voice', on); }
+  };
   K.$('btnFull').onclick = function () {
     var d = document, de = d.documentElement;
     var fs = d.fullscreenElement || d.webkitFullscreenElement;
