@@ -750,6 +750,26 @@ body.immersion #immExit{display:block}
 .tr-deb li small { display: block; color: #c9d3e3; font-size: 12px; }
 .mh-trip { background: linear-gradient(135deg, #0b4f2e, #1f8f4e); }
 
+/* v6.2 — checks sans aide : instructeur silencieux */
+#obsCard { position: absolute; left: 50%; top: 10px; -webkit-transform: translateX(-50%); transform: translateX(-50%); z-index: 9; background: rgba(10, 18, 34, .94); border: 2px solid #ffcf6b; border-radius: 14px; padding: 10px 14px; text-align: center; max-width: 440px; box-shadow: 0 8px 24px rgba(0,0,0,.5); color: #fff; }
+#obsCard .oc-k { font-size: 10.5px; letter-spacing: .6px; color: #ffcf6b; font-weight: 800; }
+#obsCard .oc-t { font-size: 15px; font-weight: 900; letter-spacing: .4px; margin: 3px 0 6px; line-height: 1.25; }
+#obsCard button { padding: 8px 28px; border-radius: 11px; border: 1px solid #3fe0e8; background: #17a6b3; color: #fff; font-weight: 900; font-size: 16px; }
+.obs-ban { position: absolute; left: 50%; top: 18%; -webkit-transform: translateX(-50%); transform: translateX(-50%); z-index: 12; padding: 14px 26px; border-radius: 14px; font-size: 20px; font-weight: 900; letter-spacing: .8px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.55); text-align: center; }
+.obs-ban.complete { background: #127a3a; border: 2px solid #6ff09a; } .obs-ban.deviations { background: #6b5a10; border: 2px solid #ffd76b; } .obs-ban.ended { background: #5a2a14; border: 2px solid #ff9a6b; }
+.obs-live { margin: 8px 0; padding: 10px; border-radius: 11px; background: #0f2236; border: 1px solid #23385a; font-size: 13.5px; line-height: 1.4; }
+.obs-h { font-size: 16px; font-weight: 900; letter-spacing: .5px; padding: 9px 10px; border-radius: 10px; margin: 6px 0; } .obs-h.complete { background: #12462a; color: #9ff0b0; } .obs-h.deviations { background: #4a3e0c; color: #ffe08a; } .obs-h.ended { background: #4a2210; color: #ffb48a; }
+.obs-sub { font-size: 12px; color: #9fb3cc; margin-bottom: 8px; }
+.obs-grid { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -3px; }
+.obs-grid .og { -webkit-flex: 1 1 45%; flex: 1 1 45%; margin: 3px; padding: 8px 6px; border-radius: 10px; background: #13213a; font-size: 10.5px; font-weight: 800; letter-spacing: .3px; text-align: center; color: #c8d4e4; }
+.obs-grid .og b { display: block; font-size: 24px; color: #fff; } .og.miss b { color: #ff8a8a; } .og.err b { color: #ffb36b; } .og.acc b { color: #8ff0a0; } .og.fix b { color: #8fd8ff; }
+.obs-syn { margin: 8px 0 4px; font-weight: 800; font-size: 13.5px; } .obs-tot { font-size: 12.5px; color: #b9c6dc; margin-bottom: 8px; }
+.obs-sec { margin: 8px 0; } .os-t { font-weight: 900; font-size: 13.5px; margin-bottom: 4px; }
+.os-i { padding: 6px 8px; border-left: 3px solid #3a5a88; background: rgba(255,255,255,.03); margin-bottom: 5px; border-radius: 0 8px 8px 0; font-size: 13px; }
+.obs-sec.miss .os-i { border-color: #ff8a8a; } .obs-sec.err .os-i { border-color: #ffb36b; } .obs-sec.acc .os-i { border-color: #8ff0a0; } .obs-sec.fix .os-i { border-color: #8fd8ff; } .obs-sec.ver .os-i { border-color: #c9b8ff; }
+.os-i small { display: block; color: #c9d3e3; font-size: 12px; margin-top: 2px; } .os-i small.os-ref { color: #8fa1b8; font-style: italic; }
+.obs-acts .btn { display: block; width: 100%; margin-top: 6px; }
+
 </style>
 </head>
 <body>
@@ -816,7 +836,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '6.1';
+  TF.VERSION = '6.2';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -1100,6 +1120,9 @@ body.immersion #immExit{display:block}
   add({ id: 'k_com', label: 'COM (bouton double, PUSH 1-2)', short: 'COM', type: 'knob', region: 'pfd', x: 667.5, y: 456, w: 16, h: 16, ref: GK, knob: 'com' });
   add({ id: 'k_crs', label: 'CRS / BARO (bouton double)', short: 'CRS/BARO', type: 'knob', region: 'pfd', x: 667.5, y: 499, w: 16, h: 16, ref: GK, knob: 'crs' });
   add({ id: 'k_fms', label: 'FMS (bouton double)', short: 'FMS', type: 'knob', region: 'pfd', x: 668.75, y: 620, w: 17, h: 17, ref: { doc: 'G1000', sec: 'FMS knob', page: 6 }, knob: 'fms' });
+  // Touches du bezel PFD à gauche du bouton FMS (photo : CLR x 658, ENT x 677, y 595 — Garmin Figure 1-2 p.5)
+  add({ id: 'pfd_clr', label: 'PFD — CLR', short: 'CLR', type: 'push', region: 'pfd', x: 658, y: 595, w: 14, h: 10, ref: { doc: 'G1000', sec: 'Controls (CLR) ; Timer/References p.72', page: 6 } });
+  add({ id: 'pfd_ent', label: 'PFD — ENT', short: 'ENT', type: 'push', region: 'pfd', x: 677.5, y: 595, w: 14, h: 10, ref: { doc: 'G1000', sec: 'Controls (ENT) ; Timer/References p.72', page: 6 } });
   add({ id: 'xfer_com', label: 'Transfert COM ↔ (maintenir 2 s : 121.5)', short: '↔ COM', type: 'push', region: 'pfd', x: 657.5, y: 434, w: 12, h: 8, ref: GK });
   add({ id: 'xfer_nav', label: 'Transfert NAV ↔', short: '↔ NAV', type: 'push', region: 'pfd', x: 362.5, y: 435, w: 12, h: 8, ref: GK });
   // Bezel gauche du MFD (au-dessus et au-dessous des touches AFCS) : boutons utilisés en pratique pour NAV / HDG / ALT
@@ -1211,7 +1234,7 @@ body.immersion #immExit{display:block}
       com: [{ a: 123150, s: 124050 }, { a: 121500, s: 118080 }], comSel: 0,
       nav: [{ a: 114500, s: 109350 }, { a: 114500, s: 109350 }], navSel: 0,
       hdg: 8, altSel: 1400, baro: 1013, std: false, crs: 44, cdi: 'GPS',
-      xpdr: { code: '7000', mode: 'STBY', level: 0, entry: '' }, pfdLevel: 'top', inset: true, tmrRef: true, meters: false, baroUnit: 'HPA',
+      xpdr: { code: '7000', mode: 'STBY', level: 0, entry: '' }, pfdLevel: 'top', inset: true, tmrRef: true, ref: { cur: -1, vs: { glide: 0, vr: 76, vx: 77, vy: 92 }, min: { type: 'OFF', alt: 0 } }, meters: false, baroUnit: 'HPA',
       fd: false, yd: false, lat: '', vert: '', latArm: '', vertArm: '', refVs: 0, refIas: 0, refAlt: null,
       // Clignotements AFCS (Garmin p.390, 393, 415) : instant de la dernière transition automatique
       latAt: null, vertAt: null, latArmAt: null, ydDiscAt: null,
@@ -1297,10 +1320,48 @@ body.immersion #immExit{display:block}
       if (big) { g.baro = U.clamp(g.baro + dir, 940, 1050); g.std = false; }
       else g.crs = wrap(g.crs + dir, 1, 360);
     } else if (k === 'fms') {
-      if (g.xpdr.level === 2 && !big) { /* saisie de code au FMS : non simulée */ }
+      // Fenêtre Timer/References ouverte : grand anneau = champ, petit bouton = valeur (Garmin p.37 et p.72-73)
+      if (id === 'k_fms' && g.tmrRef) return G.refKnob(ck, big, dir, act);
       return { ok: true, msg: 'FMS : pages et saisies de plan de vol non simulées dans cette version.' };
     }
     return { ok: true };
+  };
+
+  /* ---- Fenêtre TIMER/REFERENCES (Garmin G1000 NXi DA42NG, p.37 « Vspeed bugs », p.72-73 « Setting the Minimum Descent
+   * Altitude/Decision Height ») : champs GLIDE, Vr, Vx, Vy, MINIMUMS (type puis altitude, 0 à 16 000 ft).
+   * Non simulés : chronomètre, TEMP COMP (température) — RAD ALT absent (pas de radioaltimètre sur DA42 VI, À CONFIRMER). */
+  var REF_F = ['glide', 'vr', 'vx', 'vy', 'minType', 'minAlt'];
+  var MIN_T = ['OFF', 'BARO'];
+  G.REF_FIELDS = REF_F;
+  function refOf(g) { if (!g.ref) g.ref = { cur: -1, vs: { glide: 0, vr: 76, vx: 77, vy: 92 }, min: { type: 'OFF', alt: 0 } }; return g.ref; }
+  G.refKnob = function (ck, big, dir, act) {
+    var g = ck.s.g, r = refOf(g);
+    if (act === 'push') return { ok: true, msg: 'Curseur : tourne le grand anneau pour choisir un champ.' };
+    if (big) { r.cur = r.cur < 0 ? (dir > 0 ? 0 : REF_F.length - 1) : wrap(r.cur + dir, 0, REF_F.length - 1); return { ok: true }; }
+    if (r.cur < 0) { r.cur = 4; return { ok: true, msg: 'Curseur sur Minimums (grand anneau pour changer de champ).' }; }
+    var f = REF_F[r.cur];
+    if (f === 'minType') { var i = MIN_T.indexOf(r.min.type); r.min.type = MIN_T[wrap(i + dir, 0, MIN_T.length - 1)]; r.minArmed = false; r.minDone = false; }
+    else if (f === 'minAlt') { r.min.alt = U.clamp(r.min.alt + dir * 10, 0, 16000); r.minArmed = false; r.minDone = false; if (r.min.type === 'OFF') return { ok: true, msg: 'Type de minimums sur OFF : choisis BARO dans le champ précédent.' }; }
+    else r.vs[f] = U.clamp(r.vs[f] + dir, 0, 250);
+    return { ok: true };
+  };
+  G.refKey = function (ck, key) {
+    var g = ck.s.g, r = refOf(g);
+    if (!ck.s.sys.power || !g.tmrRef) return;
+    if (key === 'ent') { if (r.cur >= 0) r.cur = Math.min(r.cur + 1, REF_F.length - 1); }
+    if (key === 'clr') { g.tmrRef = false; r.cur = -1; }  // « To remove the window, press the CLR Key or the Tmr/Ref Softkey »
+  };
+  /* Alerte minimums barométriques (Garmin p.72) : boîte et repère cyan à moins de 2 500 ft, blancs à moins de 100 ft,
+   * ambre à l'altitude + « Minimums, minimums ». Inhibée au sol et tant qu'on n'est pas passé à plus de 150 ft au-dessus ;
+   * désactivée si on remonte de 50 ft au-dessus après l'avoir atteinte (remise à zéro : nouveau réglage / coupure). */
+  G.tickMins = function (ck) {
+    var g = ck.s.g, r = refOf(g), f = ck.s.flight;
+    if (r.min.type !== 'BARO' || !ck.s.sys.power) { r.minState = null; return; }
+    var alt = G.indicatedAlt(ck), d = alt - r.min.alt;
+    if (!f.onGround && d >= 150) r.minArmed = true;
+    if (r.minArmed && !r.minDone && d <= 0) { r.minDone = true; r.minAt = ck.s.t; ck.emit('aural', 'minimums'); }
+    if (r.minDone && d >= 50) { r.minArmed = false; r.minDone = false; r.minOff = true; }
+    r.minState = d > 2500 ? null : (r.minDone || d <= 0) ? 'amber' : d <= 100 ? 'white' : 'cyan';
   };
 
   /* Softkeys PFD par niveau — Garmin 190-02237-00 Rev. A, tableau des softkeys PFD p.21-23 et §4 XPDR p.118.
@@ -1348,7 +1409,7 @@ body.immersion #immExit{display:block}
           if (g.latArm) g.latArm = '';
         }
         else if (lab === 'Ident') ident();
-        else if (lab === 'Tmr/Ref') g.tmrRef = !g.tmrRef;
+        else if (lab === 'Tmr/Ref') { g.tmrRef = !g.tmrRef; refOf(g).cur = -1; }
         else if (lab === 'SUSP') { g.susp = false; g.maSeq = true; ck.s.sys.history.suspRel = true; } // reprise du séquencement : 1er point de la procédure de remise de gaz actif (Garmin p.66, FAQ « missed approach »)
         else if (lab === 'OBS') { if (g.cdi === 'GPS') g.obs = !g.obs; }                                // OBS seulement en navigation GPS (tableau softkeys PFD)
         break;
@@ -1784,6 +1845,8 @@ body.immersion #immExit{display:block}
         else if (sys.apDiscAlert && s.t - sys.apDiscAlert < 5000) sys.apDiscAlert = 0; // 2e appui : annule le clignotement AP (Garmin p.415)
         if (s.g.yd && sys.apState === 'ready') { s.g.yd = false; s.g.ydDiscAt = s.t; } // YD jaune clignotant 5 s (Garmin p.415)
       }
+      if (id === 'pfd_ent') TF.G1000.refKey(this, 'ent');
+      if (id === 'pfd_clr') TF.G1000.refKey(this, 'clr');
       if (id === 'mfd_ent') {
         if (sys.mfdStage === 'database') { sys.mfdStage = 'normal'; sys.dbAcked = true; }
       }
@@ -1868,7 +1931,7 @@ body.immersion #immExit{display:block}
       sys.crossfeedMs += dt; if (sys.crossfeedMs >= 25000) sys.history.crossfeed = true;
     }
     if (s.pressed.gear_fire_test && sys.power) sys.history.fireTestMs += dt;
-    TF.G1000.updateFlight(this, dt); TF.G1000.tickSoftkeys(this);
+    TF.G1000.updateFlight(this, dt); TF.G1000.tickSoftkeys(this); TF.G1000.tickMins(this);
     var pl = c.power_l, pr = c.power_r;
     if (s.eng.L.state === 'run' && s.eng.R.state === 'run' && pl >= 7 && pl <= 13 && pr >= 7 && pr <= 13) sys.history.cooldownMs += dt;
     ['L', 'R'].forEach(function (k) {
@@ -4138,6 +4201,60 @@ body.immersion #immExit{display:block}
 })(this);
 
 </script>
+<script>/* js/data/ess-order.js */
+/* Mode « checks sans aide » (🧠 Mémoriser / 🎓 Examen) — règles d'ORDRE des blocs du flow.
+ *
+ * Trois catégories, fondées sur les documents (jamais déduites par le programme) :
+ *  - hard : ordre IMPÉRATIF. { a, b } = l'item a doit être satisfait quand l'item b est fait. Pour un item « état »
+ *           (commande réelle), c'est l'ÉTAT de l'item a au moment de b qui compte ; sinon a doit avoir été fait avant b.
+ *  - free : actions INDÉPENDANTES expressément permises dans n'importe quel ordre : { items: [...] } (ordre libre entre ces
+ *           items) ou { blocks: [[...], [...]] } (séquences permutables entre elles, ordre interne conservé).
+ *  - tout le reste : ordre RECOMMANDÉ (séquence documentaire). Une permutation non couverte par « free » n'est ni une
+ *    erreur ni une variation acceptable : elle est signalée « À VÉRIFIER » avec l'instructeur.
+ * Les prérequis réellement modélisés (alimentation électrique, moteur tournant, AP engagé…) n'ont pas besoin d'être
+ * listés : l'action impossible n'atteint pas l'état attendu et n'est donc jamais validée.
+ * Indices = position de l'item dans le bloc (TF.DATA.essFlow) ; vérifiés par les tests (libellés `ta` / `tb`).
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  TF.DATA.essOrder = {
+    start: {
+      hard: [
+        { a: 3, b: 7, ta: 'Clear', tb: 'Key', why: 'La zone hélice doit être dégagée avant de lancer le démarreur.', ref: 'OM-B B02 §3 Start-up — avertissement p.57' },
+        { a: 5, b: 7, ta: 'Glow', tb: 'Key', why: 'Start key « when L GLOW ON is off » : le préchauffage doit être terminé avant le démarreur.', ref: 'OM-B B02 §3 Start-up 1.f' }
+      ]
+    },
+    taxi: {
+      hard: [
+        { a: 2, b: 3, ta: 'Outside', tb: 'Parking brake', why: 'Extérieur dégagé avant de libérer le frein de parc et de rouler.', ref: 'OM-B B02 §3 Taxiing c-d' }
+      ]
+    },
+    run: {
+      hard: [
+        { a: 7, b: 8, ta: 'Parking brake', tb: 'ECU test gauche', why: '« During the test sequence the engines will produce thrust therefore the parking brake must be set. »', ref: 'OM-B B02 §4 3. ECU test, p.61' },
+        { a: 7, b: 10, ta: 'Parking brake', tb: 'ECU test droit', why: '« During the test sequence the engines will produce thrust therefore the parking brake must be set. »', ref: 'OM-B B02 §4 3. ECU test, p.61' },
+        { a: 2, b: 8, ta: 'IDLE', tb: 'ECU test gauche', why: 'Power lever IDLE avant d\'appuyer sur ECU TEST (g → m).', ref: 'OM-B B02 §4 3.g-m, p.62' },
+        { a: 2, b: 10, ta: 'IDLE', tb: 'ECU test droit', why: 'Power lever IDLE avant d\'appuyer sur ECU TEST (g → m).', ref: 'OM-B B02 §4 3.g-m, p.62' }
+      ],
+      free: [
+        { blocks: [[8, 9], [10, 11]], why: 'Moteur gauche et moteur droit : « The following test sequence can be executed for both engines simultaneously, or in sequence. » (ECU test puis voter, moteur par moteur, dans un ordre quelconque).', ref: 'OM-B B02 §4 3. note, p.61' }
+      ]
+    }
+  };
+  /* Blocs joués en observation silencieuse (préparation au sol, sans étape « au bon moment ») */
+  TF.DATA.essObserve = { arr: 1, ret: 1, avs: 1, start: 1, post: 1, ap: 1, taxi: 1, run: 1, park: 1 };
+  /* Annonce de fin : intitulé documentaire quand il existe (dernier item du bloc ou OM-B) ; sinon « CHECK SESSION COMPLETE » */
+  TF.DATA.essEndCall = {
+    ret: 'Pre-flight inspection complete',
+    avs: 'Before start procedure complete',
+    start: 'Start-up procedure complete',
+    ap: 'After start-up procedure complete',
+    run: 'Before take-off procedure complete'
+  };
+})(this);
+
+</script>
 <script>/* js/data/classtest.js */
 /* Données — « MEP DA42 VI CLASS TEST », Issue 1.2 du 02 MAY 2020 (Airbus), questions 1 à 40 reproduites telles quelles.
  * Chaque réponse a été vérifiée dans les documents fournis : OM-B DA42 VI Issue C (pages imprimées),
@@ -5313,7 +5430,7 @@ body.immersion #immExit{display:block}
   D.push = function (def, v, ex) {
     var r = Math.min(def.w, def.h) / 2, p = ex.pressed, cx = def.x, cy = def.y;
     var s = '';
-    if (/^ap_(?!disc)|^mfd_ent$|^mfd_clr$/.test(def.id)) return D.bezelKey(def, p);
+    if (/^ap_(?!disc)|^mfd_ent$|^mfd_clr$|^pfd_ent$|^pfd_clr$/.test(def.id)) return D.bezelKey(def, p);
     if (/^aud_/.test(def.id)) return p ? D.audioKeyFace(def, true) : '';
     if (def.id === 'cws_btn') // gâchette invisible de face : repère pointillé, plein quand on appuie
       return '<rect x="' + (cx - 9) + '" y="' + (cy - 7) + '" width="18" height="14" rx="4" fill="' + (p ? '#3fe0e8' : 'none') + '" fill-opacity=".35" stroke="#3fe0e8" stroke-width=".8" stroke-dasharray="' + (p ? '0' : '2 1.5') + '" opacity="' + (p ? 1 : 0.55) + '"/>';
@@ -5737,6 +5854,13 @@ body.immersion #immExit{display:block}
     s += rect(446, 46, 66, 18, '#000') + t(462, 60, String(g.altSel), 14, '#3fe0e8', 'start', 700);
     for (var a = Math.floor((alt - 300) / 100) * 100; a <= alt + 300; a += 100) { var ya = 210 - (a - alt) * 0.62; if (ya > 66 && ya < 340) s += '<line x1="446" y1="' + ya + '" x2="458" y2="' + ya + '" stroke="#fff" stroke-width="2"/>' + t(505, ya + 6, String(a), 16, '#fff', 'end', 700); }
     var yb = 210 - (g.altSel - alt) * 0.62; if (yb > 66 && yb < 340) s += '<path d="M446,' + (yb - 7) + ' l8,0 l0,14 l-8,0 l4,-7Z" fill="#3fe0e8"/>';
+    // Minimums barométriques (Garmin p.72) : boîte au-dessus du calage + repère sur la bande
+    var mn = g.ref && g.ref.min, mst = g.ref && g.ref.minState;
+    if (mn && mn.type === 'BARO' && mst) {
+      var mc = mst === 'amber' ? '#f5a623' : mst === 'white' ? '#fff' : '#3fe0e8', ym = 210 - (mn.alt - alt) * 0.62;
+      if (ym > 66 && ym < 340) s += '<path d="M446,' + ym + ' l12,-7 l0,14Z" fill="none" stroke="' + mc + '" stroke-width="2"/><line x1="446" y1="' + ym + '" x2="512" y2="' + ym + '" stroke="' + mc + '" stroke-width="1.5" stroke-dasharray="4 3"/>';
+      s += rect(446, 311, 66, 18, '#000', ' stroke="' + mc + '" stroke-width="1"') + t(450, 324, 'BARO MIN', 8, mc, 'start', 700) + t(509, 324, String(mn.alt), 11, mc, 'end', 700);
+    }
     s += '<path d="M440,210 L450,198 L512,198 L512,222 L450,222Z" fill="#000" stroke="#fff" stroke-width="1.5"/>' + t(508, 217, String(alt), 19, '#fff', 'end', 700);
     s += rect(446, 330, 66, 18, '#000') + t(479, 344, g.std ? 'STD BARO' : (g.baroUnit === 'IN' ? (g.baro * 0.02953).toFixed(2) + 'IN' : g.baro + 'HPA'), 13, '#3fe0e8', 'middle', 700);
     if (g.meters) s += rect(446, 8, 66, 16, '#000', ' stroke="#fff" stroke-width="1"') + t(479, 21, Math.round(I.altitude * 0.3048) + 'M', 12, '#fff', 'middle', 700);
@@ -5769,9 +5893,13 @@ body.immersion #immExit{display:block}
     // Carte en incrustation (non simulée) + références
     if (g.inset !== false) s += navMap(I, 20, 375, 146, 72, true) + '<rect x="20" y="375" width="146" height="72" fill="none" stroke="#9aa" stroke-width="1"/>';
     if (g.tmrRef) {
-      s += rect(456, 352, 180, 96, '#0a0d12', ' stroke="#9aa" stroke-width="1" rx="4"') + t(546, 366, 'References', 12, '#3fe0e8', 'middle', 700);
-      [['GLIDE', '0KT'], ['Vr', '76KT'], ['Vx', '77KT'], ['Vy', '92KT']].forEach(function (p, k) { s += t(464, 384 + k * 15, p[0], 12, '#fff') + t(590, 384 + k * 15, p[1], 12, '#3fe0e8', 'end', 700) + t(626, 384 + k * 15, 'On', 11, '#3fe0e8', 'end'); });
-      s += t(464, 444, 'Flight ID', 11, '#fff') + t(628, 444, sc.reg.replace('-', ''), 12, '#3fe0e8', 'end', 700);
+      var rf = g.ref || { cur: -1, vs: { glide: 0, vr: 76, vx: 77, vy: 92 }, min: { type: 'OFF', alt: 0 } };
+      function cur(k, x, y, w) { return rf.cur === k ? '<rect x="' + x + '" y="' + (y - 10) + '" width="' + w + '" height="12" fill="#3fe0e8"/>' : ''; }
+      function col(k) { return rf.cur === k ? '#000' : '#3fe0e8'; }
+      s += rect(456, 350, 180, 98, '#0a0d12', ' stroke="#9aa" stroke-width="1" rx="4"') + t(546, 362, 'References', 11, '#3fe0e8', 'middle', 700);
+      [['GLIDE', 'glide'], ['Vr', 'vr'], ['Vx', 'vx'], ['Vy', 'vy']].forEach(function (p, k) { var y = 375 + k * 12.5; s += t(464, y, p[0], 11, '#fff') + cur(k, 556, y, 36) + t(590, y, rf.vs[p[1]] + 'KT', 11, col(k), 'end', 700) + t(626, y, 'On', 10, '#3fe0e8', 'end'); });
+      s += t(464, 425, 'Minimums', 11, '#fff') + cur(4, 532, 425, 44) + t(574, 425, rf.min.type, 11, col(4), 'end', 700) + (rf.min.type !== 'OFF' || rf.cur === 5 ? cur(5, 578, 425, 52) + t(628, 425, rf.min.alt + 'FT', 11, col(5), 'end', 700) : '');
+      s += t(464, 441, 'Flight ID', 10, '#fff') + t(628, 441, sc.reg.replace('-', ''), 11, '#3fe0e8', 'end', 700);
     }
     // Fenêtre d'alertes
     var al = I.alerts, lines = [];
@@ -6999,7 +7127,12 @@ body.immersion #immExit{display:block}
     hdg: { big: '±10°', small: '±1°', push: 'HDG SYNC', val: function (g) { return 'Heading bug : ' + ('00' + g.hdg).slice(-3) + '°'; } },
     alt: { big: '±1000 ft', small: '±100 ft', push: null, val: function (g) { return 'Altitude sélectée : ' + g.altSel + ' ft'; } },
     crs: { big: 'BARO ±1 hPa', small: 'CRS ±1°', push: 'Recentrer CDI', val: function (g) { return 'BARO ' + (g.std ? 'STD' : g.baro + ' hPa') + ' · CRS ' + ('00' + g.crs).slice(-3) + '°'; } },
-    fms: { big: 'groupe de pages', small: 'page', push: 'curseur', val: function () { return 'Plan de vol et pages FMS non simulés'; } }
+    fms: { big: 'champ (Tmr/Ref) · pages', small: 'valeur (Tmr/Ref) · page', push: 'curseur', keys: true,
+      val: function (g) {
+        if (!g.tmrRef) return 'Plan de vol et pages FMS non simulés. Fenêtre Timer/References : softkey Tmr/Ref.';
+        var r = g.ref || { cur: -1, vs: {}, min: {} }, F = TF.G1000.REF_FIELDS, nm = { glide: 'GLIDE', vr: 'Vr', vx: 'Vx', vy: 'Vy', minType: 'Minimums (type)', minAlt: 'Minimums (altitude)' };
+        return 'Timer/References — ' + (r.cur < 0 ? 'curseur inactif (grand anneau)' : 'champ ' + nm[F[r.cur]]) + ' · Minimums ' + r.min.type + (r.min.type !== 'OFF' ? ' ' + r.min.alt + ' ft' : '');
+      } }
   };
   function knobPopover(d, at) {
     var ck = app.ck, k = KN[d.knob];
@@ -7007,9 +7140,10 @@ body.immersion #immExit{display:block}
       return '<div class="pop-title">🎛 ' + esc(d.label) + '</div><div class="pop-sub" id="kv">' + esc(k.val(ck.s.g)) + '</div>' +
         '<div class="knob-ui"><div class="kn-ring"><span>Grand anneau · ' + esc(k.big) + '</span><div class="pop-row"><button class="pop-pos kb" data-a="L-">⟲</button><button class="pop-pos kb" data-a="L+">⟳</button></div></div>' +
         '<div class="kn-ring small"><span>Petit bouton · ' + esc(k.small) + '</span><div class="pop-row"><button class="pop-pos kb" data-a="S-">⟲</button><button class="pop-pos kb" data-a="S+">⟳</button></div></div>' +
-        (k.push ? '<button class="pop-pos" data-a="push">PUSH — ' + esc(k.push) + '</button>' : '') + '</div><div class="ref">' + esc(TF.refText(d.ref)) + '</div>';
+        (k.push ? '<button class="pop-pos" data-a="push">PUSH — ' + esc(k.push) + '</button>' : '') + (k.keys && d.id === 'k_fms' ? '<div class="pop-row"><button class="pop-pos kb" data-key="pfd_clr">CLR</button><button class="pop-pos kb" data-key="pfd_ent">ENT</button></div>' : '') + '</div><div class="ref">' + esc(TF.refText(d.ref)) + (d.id === 'k_fms' ? ' · Timer/References : Garmin p.37, p.72-73' : '') + '</div>';
     }
     K.popover(body(), at, function (el) {
+      Array.prototype.forEach.call(el.querySelectorAll('[data-key]'), function (b) { b.onclick = function () { var id = b.getAttribute('data-key'); ck.press(id); ck.release(id); K.sound.click(); el.querySelector('#kv').textContent = k.val(ck.s.g); }; });
       Array.prototype.forEach.call(el.querySelectorAll('[data-a]'), function (b) {
         var a = b.getAttribute('data-a'), timer = null, rep = null;
         function act() { var r = ck.knob(d.id, a); if (r && r.ok === false) { K.toast(esc(r.reason), 'err'); stop(); return; } if (r && r.msg) K.toast(esc(r.msg), '', 1200); el.querySelector('#kv').textContent = k.val(ck.s.g); K.sound.click(); }
@@ -8624,7 +8758,7 @@ body.immersion #immExit{display:block}
   /* ----------------------------------------------- Balayage dans le cockpit (démo / à toi) ----------------------------------------------- */
   E.active = function () { return !!S; };
   E.sweep = function (id, mode, from, opt) {
-    opt = opt || {}; MG = null;
+    opt = opt || {}; MG = null; obsCleanup();
     var b = TF.DATA.essFlow.filter(function (x) { return x.id === id; })[0]; if (!b) return;
     E.close(); ses().idle(); TF.Home.hide();
     var ck = app().ck, sc = app().scenario();
@@ -8644,9 +8778,9 @@ body.immersion #immExit{display:block}
     E.renderPanel();
     S.t0 = Date.now(); S.hints = 0; TF.Time.reset();
     if (opt.until != null) S.until = opt.until; if (opt.mission) S.mission = true;
-    if (mode === 'demo') demoStep(); else { realWatch(); tryFocus(); }
+    if (mode === 'demo') demoStep(); else if (obsApplies(b, opt)) obsStart(); else { realWatch(); tryFocus(); }
   };
-  E.stop = function (silent) { S = null; gen++; TF.Time.reset(); if (app().ck.s.ui) { app().ck.s.ui = null; app().view.renderDynamic(true); } app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
+  E.stop = function (silent) { obsCleanup(); S = null; gen++; TF.Time.reset(); if (app().ck.s.ui) { app().ck.s.ui = null; app().view.renderDynamic(true); } app().view.clearHighlight(); V.stop(); if (!silent) ses().render(); };
 
   /* -------- Cockpit piloté par le flow : l'état suit les étapes (écrans allumés, moteurs qui démarrent) -------- */
   function setUi(c) {
@@ -9182,6 +9316,7 @@ body.immersion #immExit{display:block}
   /* Touche dans le cockpit pendant « À toi » : on vérifie sans manipuler la commande */
   E.intercept = function (kind, id) {
     if (MG && !S) { if (MG.kind === 'find' && (kind === 'ctl' || kind === 'press' || kind === 'ind') && MG.q) { memAnswer(id); return true; } return MG.kind === 'name'; }
+    if (S && S.obs) return obsOn() ? obsIntercept(kind, id) : false;
     if (!S || S.mode !== 'try' || S.finished) return false;
     var quiet = S.level === 'memo' || S.level === 'exam';
     var c = S.b.chips[S.i], v = app().view;
@@ -9212,6 +9347,7 @@ body.immersion #immExit{display:block}
   };
   /* Bouton « 🎙 Annonce » de la barre d'outils pendant « À toi » : valide l'annonce attendue */
   E.onCallout = function () {
+    if (S && S.obs) { if (obsOn()) obsCall(); return true; }
     if (!S || S.mode !== 'try' || S.finished) return false;
     var c = S.b.chips[S.i];
     if (!c || !c.call) { K.toast('Pas d\'annonce attendue à cette étape.', 'warn', 1600); return true; }
@@ -9221,6 +9357,7 @@ body.immersion #immExit{display:block}
     var bdy = K.$('instrBody'); if (!bdy || !S) return;
     var b = S.b, LVN = { demo: '▶ Découvrir', learn: '✋ Apprendre', memo: '🧠 Mémoriser', exam: '🎓 Examen' };
     var h = '<div class="ph-head"><span class="ph-icon">' + b.icon + '</span><div><div class="ph-title">' + esc(b.title) + '</div><div class="ph-lvl">' + LVN[S.level] + (S.only ? ' · rejouer mes erreurs' : '') + '</div></div></div>';
+    if (S.obs) return S.obs.end ? obsDebrief(bdy, b, h) : obsPanel(bdy, b, h);
     if ((S.level === 'memo' || S.level === 'exam') && !S.finished) return quietPanel(bdy, b, h);
     if (S.level === 'flash') return flashPanel(bdy, b);
     h += '<div class="sc-note" style="margin:-2px 0 8px">' + esc(b.sub) + '</div><div class="clc"><div class="clc-top"><span>FLOW — ' + esc(b.title).toUpperCase() + '</span></div><div class="clc-list">';
@@ -9290,6 +9427,259 @@ body.immersion #immExit{display:block}
     });
   };
 
+
+  /* ================================================================================================================
+   * MODE « CHECKS SANS AIDE » (🧠 Mémoriser / 🎓 Examen) — l'instructeur silencieux
+   * Le pilote agit librement dans le cockpit. Rien n'est affiché ni surligné. Chaque manipulation est enregistrée
+   * (commande, état avant / après, instant, items déjà faits). Un item est validé par l'ÉTAT obtenu (commande réelle),
+   * par un toucher de vérification (item « vérifier / lire »), par ✓ FAIT (item physique non simulé, cartouche) ou par
+   * 🎙 (annonce). L'ordre est analysé à la fin : ordre impératif (TF.DATA.essOrder.hard), actions indépendantes
+   * documentées (free), le reste = ordre recommandé → « à vérifier », jamais une erreur inventée.
+   * ================================================================================================================ */
+  function obsApplies(b, opt) {
+    return S && S.mode === 'try' && (S.level === 'memo' || S.level === 'exam') && !S.only && opt.until == null && !!(TF.DATA.essObserve && TF.DATA.essObserve[b.id]);
+  }
+  function obsKind(c) { if (c.call) return 'call'; if (!c.ctls) return 'decl'; return realDone(c) ? 'state' : 'touch'; }
+  var obsHooked = false;
+  function obsStart() {
+    var b = S.b, ck = app().ck;
+    var O = { items: [], ev: [], touched: {}, touchedReg: {}, extra: {}, auto: 0, t0: Date.now(), maxDone: -1, seq: 0, hardFail: [], end: false };
+    b.chips.forEach(function (c, i) {
+      var it = { i: i, c: c, kind: obsKind(c), done: false };
+      if (it.kind === 'state') { it.fn = realDone(c); it.init = !!it.fn(ck.s); it.prevV = it.init; it.everFalse = !it.init; }
+      O.items.push(it);
+    });
+    O.items.forEach(function (it) {
+      var cs = it.c.ctls || [];
+      it.later = O.items.some(function (j) { return j.i > it.i && (j.c.ctls || []).some(function (x) { return cs.indexOf(x) >= 0; }); });
+      it.earlier = O.items.filter(function (j) { return j.i < it.i && j.kind === 'state' && (j.c.ctls || []).some(function (x) { return cs.indexOf(x) >= 0; }); });
+    });
+    O.init = {}; for (var k in ck.s.controls) O.init[k] = ck.s.controls[k];
+    O.rules = (TF.DATA.essOrder || {})[b.id] || {};
+    S.obs = O;
+    if (!obsHooked) { obsHooked = true; ck.on('action', obsAction); }
+    O.timer = setInterval(obsTick, 250);
+    obsCard(); E.renderPanel();
+  }
+  function obsOn() { return S && S.obs && !S.obs.end; }
+  function inBlock(id) { var d = app().ck.defs[id]; return S.obs.items.some(function (it) { var cs = it.c.ctls || []; return cs.indexOf(id) >= 0 || (d && cs.indexOf(d.region) >= 0); }); }
+  function obsTouch(id) { var O = S.obs, d = app().ck.defs[id], now = Date.now(); O.touched[id] = now; if (d && d.region) O.touchedReg[d.region] = now; }
+  function touchedAny(it) { var O = S.obs; return (it.c.ctls || []).some(function (x) { return O.touched[x] || O.touchedReg[x]; }); }
+  /* toute manipulation réelle du cockpit (glisser, popover, appui maintenu, bouton rotatif…) */
+  function obsAction(ev) {
+    if (!obsOn() || ev.auto) return; var O = S.obs; if (O.auto > 0) return;
+    obsTouch(ev.ctl);
+    O.ev.push({ t: Date.now() - O.t0, type: ev.type, ctl: ev.ctl, from: ev.from, to: ev.to != null ? ev.to : ev.act });
+    if (ev.type === 'set' && !inBlock(ev.ctl) && !O.extra[ev.ctl]) O.extra[ev.ctl] = { from: O.init[ev.ctl] };
+    obsTick();
+  }
+  function obsTick() {
+    if (!obsOn()) return; var O = S.obs, s = app().ck.s;
+    O.items.forEach(function (it) {
+      if (it.kind !== 'state') return;
+      var v = !!it.fn(s);
+      if (!it.done) {
+        if (v && touchedAny(it) && it.earlier.every(function (j) { return j.done; })) obsCredit(it, it.everFalse ? 'action' : 'verified');
+      } else if (!it.later) {
+        if (!v && it.prevV) it.lost = true;
+        if (v && it.lost) { it.lost = false; it.corrected = true; O.ev.push({ t: Date.now() - O.t0, type: 'fix', i: it.i }); }
+      }
+      if (!v) it.everFalse = true;
+      it.prevV = v;
+    });
+  }
+  function obsAuto(fnRun) { var O = S.obs; O.auto++; var done = false; fnRun(function () { if (!done) { done = true; O.auto = Math.max(0, O.auto - 1); app().view.renderDynamic(true); } }); }
+  function obsCredit(it, how) {
+    var O = S.obs, ck = app().ck; if (it.done || O.end) return;
+    it.done = true; it.t = Date.now(); it.how = how; it.seq = ++O.seq;
+    (O.rules.hard || []).forEach(function (r) {
+      if (r.b !== it.i) return; var a = O.items[r.a];
+      var ok = a.kind === 'state' ? (a.done || !!a.fn(ck.s)) : a.done;
+      if (!ok) O.hardFail.push(r);
+    });
+    O.maxDone = Math.max(O.maxDone, it.i);
+    O.ev.push({ t: it.t - O.t0, type: 'item', i: it.i, how: how });
+    K.sound.click();
+    var g = S.g;
+    if (it.kind === 'state') {
+      var rest = residual(it.c);
+      if (rest.length) obsAuto(function (cb) { var PE = TF.ProcEngine; TF.Time.begin(); new PE.Runner(ck, null, { advance: function (ms, k) { setTimeout(function () { if (S && S.g === g) k(); else cb(); }, TF.Time.real(ms)); } }).run(rest, function () { TF.Time.end(); cb(); }); });
+    } else if (it.c.sim) obsAuto(function (cb) { runSim(it.c, false, cb); });
+    setUi(S.b.chips[Math.min(O.maxDone + 1, S.b.chips.length - 1)]);
+    obsCard(); E.renderPanel();
+    if (O.items.every(function (x) { return x.done; })) setTimeout(function () { if (S && S.obs === O && !O.end) obsFinish(false); }, 900);
+  }
+  /* toucher dans le cockpit : vérification (item « lire / vérifier ») ou manipulation libre */
+  function obsIntercept(kind, id) {
+    var O = S.obs, d = app().ck.defs[id];
+    obsTouch(id);
+    if (kind === 'ctl' && ses().lookArmed) { O.ev.push({ t: Date.now() - O.t0, type: 'look', ctl: id }); setTimeout(obsTick, 0); return false; } // 🔍 Contrôler : vérifie sans modifier
+    var cand = O.items.filter(function (it) {
+      if (it.done || it.kind !== 'touch') return false;
+      return it.c.ctls.indexOf(id) >= 0 || (kind === 'ind' && d == null && it.c.ctls.indexOf(id) >= 0);
+    })[0];
+    if (cand) { O.ev.push({ t: Date.now() - O.t0, type: 'check', ctl: id, i: cand.i }); obsCredit(cand, 'touch'); return true; }
+    if (kind === 'ind') return true;   // lecture d'un écran : enregistrée, sans fenêtre d'aide
+    setTimeout(obsTick, 0);
+    return false;                      // manipulation libre de la commande
+  }
+  function obsCall() {
+    var O = S.obs, it = O.items.filter(function (x) { return !x.done && x.kind === 'call'; })[0];
+    if (it) obsCredit(it, 'call'); else { O.ev.push({ t: Date.now() - O.t0, type: 'call-extra' }); K.sound.click(); }
+  }
+  /* Cartouche : uniquement pour l'élément physique non simulé devenu pertinent */
+  function obsCard() {
+    var st = K.$('stage'), el = K.$('obsCard');
+    if (!obsOn()) { if (el) el.parentNode.removeChild(el); return; }
+    var O = S.obs, it = O.items.filter(function (x) { return !x.done && x.kind === 'decl' && x.i <= O.maxDone + 1; })[0];
+    if (!it) { if (el) el.parentNode.removeChild(el); return; }
+    if (!el) { el = document.createElement('div'); el.id = 'obsCard'; if (st) st.appendChild(el); }
+    el.innerHTML = '<div class="oc-k">ÉLÉMENT NON SIMULÉ — À CONFIRMER</div><div class="oc-t">' + esc((it.c.a + ' — ' + it.c.r).toUpperCase()) + '</div><button data-i="' + it.i + '">✓ FAIT</button>';
+    el.querySelector('button').onclick = function () { if (obsOn() && !it.done) { O.ev.push({ t: Date.now() - O.t0, type: 'decl', i: it.i }); obsCredit(it, 'decl'); } };
+  }
+  function obsPanel(bdy, b, h) {
+    var O = S.obs, n = O.ev.filter(function (e) { return e.type !== 'item'; }).length;
+    h += '<div class="sc-note">' + esc(b.sub) + '</div>';
+    h += '<div class="obs-live"><b>👀 L\'instructeur observe.</b> Fais le bloc de mémoire, dans l\'ordre qui te paraît logique. Pas de liste, pas de surlignage : tout est noté et débriefé à la fin.' + (S.level === 'exam' ? '<br>⏱ <span id="obsClock">0 s</span>' : '') + '<br><small>' + n + ' manipulation' + (n > 1 ? 's' : '') + ' enregistrée' + (n > 1 ? 's' : '') + '</small></div>';
+    h += '<div class="sc-note">Commande réelle : manipule-la (ou 🔍 Contrôler pour vérifier une position sans la changer). Vérification d\'un écran ou d\'un instrument : touche-le. Annonce : 🎙.</div>';
+    h += '<div class="row2"><button class="btn call-btn" data-act="ocall">🎙 Annonce faite</button><button class="btn primary" data-act="oend">⏹ Terminer la séance</button></div>';
+    h += '<button class="btn link" data-act="oquit">↩ Abandonner sans débriefing</button>';
+    bdy.innerHTML = K.plain(h);
+    K.bindActs(bdy, {
+      ocall: function () { if (obsOn()) obsCall(); },
+      oend: function () { if (obsOn()) obsFinish(true); },
+      oquit: function () { E.stop(true); ses().render(); E.show('flow'); }
+    });
+  }
+  setInterval(function () { var c = K.$('obsClock'); if (c && obsOn()) c.textContent = fmtMs(Date.now() - S.obs.t0); }, 1000);
+
+  /* -------- Analyse de fin de séance -------- */
+  function lisIdx(arr) { // plus longue sous-suite croissante (indices dans arr)
+    var n = arr.length, len = [], prv = [], best = -1;
+    // à longueur égale, on garde la suite qui finit le plus bas : un item fait très en avance est l'écart, pas ceux qui suivent la référence
+    for (var i = 0; i < n; i++) { len[i] = 1; prv[i] = -1; for (var j = 0; j < i; j++) if (arr[j] < arr[i] && (len[j] + 1 > len[i] || (len[j] + 1 === len[i] && prv[i] >= 0 && arr[j] < arr[prv[i]]))) { len[i] = len[j] + 1; prv[i] = j; } if (best < 0 || len[i] > len[best] || (len[i] === len[best] && arr[i] < arr[best])) best = i; }
+    var out = {}; while (best >= 0) { out[best] = 1; best = prv[best]; } return out;
+  }
+  function obsAnalyse() {
+    var O = S.obs, s = app().ck.s, R = { missed: [], undone: [], errors: [], ok: [], acceptable: [], verify: [], corrected: [], extra: [], verified: [] };
+    var done = O.items.filter(function (x) { return x.done; }).sort(function (a, c) { return a.seq - c.seq; });
+    O.items.forEach(function (it) {
+      if (!it.done) { R.missed.push({ it: it, why: it.kind === 'state' && it.init && !it.everFalse ? 'Déjà dans le bon état au départ, mais jamais vérifié (ni manipulé, ni contrôlé 🔍).' : '' }); return; }
+      if (it.kind === 'state' && !it.later && !it.fn(s)) { it.final = false; R.missed.push({ it: it, why: 'Fait pendant la séance, puis défait : l\'état final n\'est pas conforme.' }); return; }
+      if (it.corrected) R.corrected.push({ it: it, why: 'Remis dans le bon état après un écart.' });
+      if (it.how === 'verified') R.verified.push(it);
+    });
+    // erreurs d'ordre (dépendances impératives non respectées) — une seule fois par règle
+    var seenR = {}; O.hardFail.forEach(function (r) { var k = r.a + '>' + r.b; if (seenR[k]) return; seenR[k] = 1; R.errors.push(r); });
+    var inErr = {}; R.errors.forEach(function (r) { inErr[r.a] = 1; inErr[r.b] = 1; });
+    // écarts de séquence : items hors de la plus longue suite dans l'ordre de référence
+    var keep = lisIdx(done.map(function (x) { return x.i; }));
+    done.forEach(function (d, k) {
+      if (keep[k] || inErr[d.i]) return;
+      var crossed = done.filter(function (j) { return (j.i < d.i && j.seq > d.seq) || (j.i > d.i && j.seq < d.seq); });
+      var free = (O.rules.free || []).filter(function (f) {
+        if (f.items) return f.items.indexOf(d.i) >= 0 && crossed.every(function (j) { return f.items.indexOf(j.i) >= 0; });
+        var bo = function (i) { for (var q = 0; q < f.blocks.length; q++) if (f.blocks[q].indexOf(i) >= 0) return q; return -1; }, bd = bo(d.i);
+        return bd >= 0 && crossed.every(function (j) { var bj = bo(j.i); return bj >= 0 && bj !== bd; });
+      })[0];
+      var early = crossed.some(function (j) { return j.i > d.i; }) ? false : true; // fait avant des items qui le précèdent
+      var e = { it: d, crossed: crossed, early: early };
+      if (free) { e.why = free.why; e.ref = free.ref; R.acceptable.push(e); } else R.verify.push(e);
+    });
+    // manipulations hors procédure
+    Object.keys(O.extra).forEach(function (id) {
+      var x = O.extra[id], now = s.controls[id];
+      if (now === x.from) R.corrected.push({ ctl: id, why: 'Commande hors procédure manipulée puis remise dans son état initial.' });
+      else R.extra.push({ ctl: id, from: x.from, to: now });
+    });
+    var mOk = done.filter(function (d) { return d.final !== false; }).length;
+    R.total = O.items.length; R.done = mOk; R.ms = Date.now() - O.t0;
+    return R;
+  }
+  var NUM = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+  function nEn(n, one, many) { return (n <= 10 ? NUM[n] : String(n)) + ' ' + (n === 1 ? one : many); }
+  function obsVoiceOn() { try { return localStorage.getItem('tiffanir.obsVoice') !== '0'; } catch (e) { return true; } }
+  function obsFinish(userEnded) {
+    var O = S.obs; if (!O || O.end) return;
+    obsTick(); O.end = true; clearInterval(O.timer); S.finished = true;
+    var R = obsAnalyse(), b = S.b;
+    var status = !R.missed.length ? (R.errors.length ? 'deviations' : 'complete') : 'ended';
+    var procName = (TF.DATA.essEndCall || {})[b.id];
+    R.status = status; R.userEnded = userEnded; O.res = R;
+    // bandeau de fin
+    var st = K.$('stage'), ban = document.createElement('div');
+    ban.className = 'obs-ban ' + status;
+    ban.textContent = status === 'ended' ? 'SESSION ENDED — DEBRIEF AVAILABLE' : (status === 'complete' ? '✓ ' : '✓ ') + (procName ? procName.toUpperCase() : 'CHECK SESSION COMPLETE') + (status === 'deviations' ? ' — WITH DEVIATIONS' : '');
+    if (st) { st.appendChild(ban); setTimeout(function () { if (ban.parentNode) ban.parentNode.removeChild(ban); }, 4500); }
+    obsCard();
+    // annonce vocale (anglais)
+    var first = status === 'ended' ? 'Session ended. Debrief available.' : (procName ? procName + '.' : 'Check session complete.') + (status === 'deviations' ? ' With deviations.' : '');
+    var sum = [];
+    if (R.missed.length) sum.push(nEn(R.missed.length, 'item missed', 'items missed'));
+    if (R.errors.length) sum.push(nEn(R.errors.length, 'sequencing error', 'sequencing errors'));
+    if (R.acceptable.length) sum.push(nEn(R.acceptable.length, 'acceptable sequence variation', 'acceptable sequence variations'));
+    if (R.corrected.length) sum.push(nEn(R.corrected.length, 'corrected action', 'corrected actions'));
+    var line = first + (status !== 'ended' && procName ? ' Check session complete.' : '') + (sum.length ? ' ' + sum.join('. ') + '.' : ' No deviation.');
+    R.voice = line;
+    if (V.enabled() && obsVoiceOn()) { V.stop(); V.say(line, 'en'); }
+    K.sound[status === 'ended' ? 'click' : 'ok']();
+    // progression du pilote
+    var pen = R.missed.length + R.errors.length, stars = pen === 0 ? 3 : pen <= 2 ? 2 : 1;
+    var all = bestAll(), prev = all[b.id], rec = !R.missed.length && (!prev || stars > prev.stars || (stars === prev.stars && R.ms < prev.ms));
+    if (rec) { all[b.id] = { stars: stars, ms: R.ms }; try { localStorage.setItem('tiffanir.ess.best', JSON.stringify(all)); } catch (e) { } }
+    var all2 = statsAll(), x = all2[b.id] || { plays: 0, miss: {} }; x.plays++; x.at = Date.now(); x.ok = (x.ok || 0) + R.done;
+    if (!R.missed.length) x[S.level] = Math.max(x[S.level] || 0, stars);
+    R.missed.forEach(function (m) { x.miss[m.it.i] = (x.miss[m.it.i] || 0) + 1; });
+    R.errors.forEach(function (r) { x.miss[r.b] = (x.miss[r.b] || 0) + 1; });
+    all2[b.id] = x; statsSave(all2);
+    var xp = pen === 0 ? 5 : 2; TF.Profiles.addXp(xp); R.xp = xp; R.stars = stars; R.rec = rec;
+    S.result = { n: R.total, err: pen, ms: R.ms, stars: stars, rec: rec, real: 0, hints: 0 };
+    E.renderPanel();
+    TF.bus.emit('ess:done', { block: b.id, level: S.level, mode: S.mode, n: R.total, err: pen, hints: 0, ms: R.ms, stars: stars, obs: true, msgs: obsMsgs(R) });
+  }
+  function itLabel(it) { return (it.i + 1) + '. ' + it.c.t + ' — ' + it.c.a + ' … ' + it.c.r; }
+  function itRef(it) { return it.c.om ? 'OM-B ' + (S.b.ref && S.b.ref.sec ? S.b.ref.sec.replace(/^B02 /, '') + ' ' : '') + it.c.om : TF.refText(S.b.ref); }
+  function obsMsgs(R) {
+    var m = [];
+    R.missed.forEach(function (x) { m.push('Oubli : ' + itLabel(x.it) + (x.why ? ' (' + x.why + ')' : '')); });
+    R.errors.forEach(function (r) { m.push('Erreur d\'ordre : « ' + S.b.chips[r.b].t + ' » fait avant « ' + S.b.chips[r.a].t + ' » — ' + r.why); });
+    return m;
+  }
+  function obsDebrief(bdy, b, h) {
+    var R = S.obs.res, defs = app().ck.defs, procName = (TF.DATA.essEndCall || {})[b.id];
+    var head = R.status === 'ended' ? 'SESSION ENDED — DEBRIEF AVAILABLE' : (procName ? procName.toUpperCase() : 'CHECK SESSION COMPLETE') + (R.status === 'deviations' ? ' — WITH DEVIATIONS' : '');
+    h += '<div class="obs-h ' + R.status + '">' + (R.status === 'ended' ? '' : '✓ ') + esc(head) + '</div>';
+    h += '<div class="obs-sub">' + esc(b.title.toUpperCase()) + ' — DEBRIEF · ' + (S.level === 'exam' ? '🎓 Examen' : '🧠 Mémoriser') + ' · ⏱ ' + fmtMs(R.ms) + ' · ' + '★★★'.slice(0, R.stars) + '☆☆☆'.slice(0, 3 - R.stars) + ' · +' + R.xp + ' XP' + (R.rec ? ' · 🏆 record' : '') + '</div>';
+    h += '<div class="obs-grid"><div class="og miss"><b>' + R.missed.length + '</b>ITEM' + (R.missed.length > 1 ? 'S' : '') + ' OUBLIÉ' + (R.missed.length > 1 ? 'S' : '') + '</div><div class="og err"><b>' + R.errors.length + '</b>ERREUR' + (R.errors.length > 1 ? 'S' : '') + ' D\'ORDRE</div><div class="og acc"><b>' + R.acceptable.length + '</b>VARIATION' + (R.acceptable.length > 1 ? 'S' : '') + ' ACCEPTABLE' + (R.acceptable.length > 1 ? 'S' : '') + '</div><div class="og fix"><b>' + R.corrected.length + '</b>ACTION' + (R.corrected.length > 1 ? 'S' : '') + ' CORRIGÉE' + (R.corrected.length > 1 ? 'S' : '') + '</div></div>';
+    h += '<div class="obs-syn">' + R.missed.length + ' oubli' + (R.missed.length > 1 ? 's' : '') + ' — ' + R.errors.length + ' erreur' + (R.errors.length > 1 ? 's' : '') + ' d\'ordre — ' + R.acceptable.length + ' variation' + (R.acceptable.length > 1 ? 's' : '') + ' acceptable' + (R.acceptable.length > 1 ? 's' : '') + ' — ' + R.corrected.length + ' erreur' + (R.corrected.length > 1 ? 's' : '') + ' corrigée' + (R.corrected.length > 1 ? 's' : '') + '</div>';
+    h += '<div class="obs-tot">' + R.total + ' items attendus · ' + R.done + ' réalisés' + (R.verified.length ? ' (dont ' + R.verified.length + ' vérifié' + (R.verified.length > 1 ? 's' : '') + ' sur un état déjà conforme)' : '') + (R.verify.length ? ' · ' + R.verify.length + ' écart' + (R.verify.length > 1 ? 's' : '') + ' de séquence à vérifier' : '') + '</div>';
+    function sec(t, cls, arr, fn) { if (!arr.length) return ''; return '<div class="obs-sec ' + cls + '"><div class="os-t">' + t + '</div>' + arr.map(fn).join('') + '</div>'; }
+    h += sec('❌ Items oubliés', 'miss', R.missed, function (x) { var it = x.it, d = it.c.ctls && defs[it.c.ctls[0]]; return '<div class="os-i"><b>' + esc(itLabel(it)) + '</b>' + (x.why ? '<small>' + esc(x.why) + '</small>' : '') + (d ? '<small>Où : ' + esc(d.label) + '</small>' : it.kind === 'call' ? '<small>Annonce attendue : « ' + esc(it.c.call) + ' »</small>' : '') + '<small class="os-ref">' + esc(itRef(it)) + '</small></div>'; });
+    h += sec('⛔ Erreurs d\'ordre (dépendance obligatoire)', 'err', R.errors, function (r) { return '<div class="os-i"><b>« ' + esc(b.chips[r.b].t) + ' » réalisé alors que « ' + esc(b.chips[r.a].t) + ' » n\'était pas satisfait</b><small>' + esc(r.why) + '</small><small class="os-ref">' + esc(r.ref) + '</small></div>'; });
+    h += sec('✅ Variations acceptables (non pénalisées)', 'acc', R.acceptable, function (e) { return '<div class="os-i"><b>' + esc(itLabel(e.it)) + '</b><small>Fait ' + (e.early ? 'avant' : 'après') + ' : ' + esc(e.crossed.map(function (j) { return j.c.t; }).join(', ')) + '. ' + esc(e.why) + '</small><small class="os-ref">' + esc(e.ref) + '</small></div>'; });
+    h += sec('❔ Écarts de séquence à vérifier avec l\'instructeur', 'ver', R.verify, function (e) { return '<div class="os-i"><b>' + esc(itLabel(e.it)) + '</b><small>Fait ' + (e.early ? 'avant' : 'après') + ' : ' + esc(e.crossed.map(function (j) { return j.c.t; }).join(', ')) + '. Ordre recommandé par la documentation ; aucune source ne permet de dire si cette permutation est acceptable : non compté comme erreur.</small><small class="os-ref">' + esc(itRef(e.it)) + '</small></div>'; });
+    h += sec('🔧 Actions corrigées pendant la séance', 'fix', R.corrected, function (x) { return '<div class="os-i"><b>' + esc(x.it ? itLabel(x.it) : ((defs[x.ctl] || {}).label || x.ctl)) + '</b><small>' + esc(x.why) + '</small></div>'; });
+    h += sec('⚠︎ Commandes hors procédure laissées modifiées', 'ext', R.extra, function (x) { return '<div class="os-i"><b>' + esc((defs[x.ctl] || {}).label || x.ctl) + '</b><small>' + esc(String(x.from)) + ' → ' + esc(String(x.to)) + '</small></div>'; });
+    var idx = TF.DATA.essFlow.indexOf(b), nxt = TF.DATA.essFlow[idx + 1]; while (nxt && nxt.walk) nxt = TF.DATA.essFlow[TF.DATA.essFlow.indexOf(nxt) + 1];
+    var errIdx = R.missed.map(function (x) { return x.it.i; }).concat(R.errors.map(function (r) { return r.b; })).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(function (a, c) { return a - c; });
+    h += '<div class="obs-acts">' + (errIdx.length ? '<button class="btn primary" data-act="oerr">🔁 Rejouer mes erreurs (' + errIdx.length + ')</button>' : '') +
+      '<button class="btn" data-act="oredo">↺ Nouvelle tentative</button>' + (nxt ? '<button class="btn' + (errIdx.length ? '' : ' primary') + '" data-act="onext">' + nxt.icon + ' Procédure suivante : ' + esc(nxt.title) + '</button>' : '') +
+      '<button class="btn" data-act="ovoice">🔊 Débriefing vocal : ' + (obsVoiceOn() ? 'oui' : 'non') + '</button><button class="btn link" data-act="oback">↩ Retour à Mon vol</button></div>';
+    if (R.status === 'ended') h += '<div class="sc-note">La procédure n\'est pas validée tant que des items obligatoires restent non réalisés.</div>';
+    bdy.innerHTML = K.plain(h);
+    var lvl = S.level;
+    K.bindActs(bdy, {
+      oerr: function () { E.sweep(b.id, 'try', 0, { level: 'learn', only: errIdx }); },
+      oredo: function () { E.sweep(b.id, 'try', 0, { level: lvl }); },
+      onext: function () { E.sweep(nxt.id, 'try', 0, { level: lvl, keep: true }); },
+      ovoice: function () { try { localStorage.setItem('tiffanir.obsVoice', obsVoiceOn() ? '0' : '1'); } catch (e) { } if (obsVoiceOn() && V.enabled()) V.say(R.voice, 'en'); E.renderPanel(); },
+      oback: function () { E.stop(true); ses().render(); E.show('flow'); }
+    });
+  }
+  function obsCleanup() { if (S && S.obs) { clearInterval(S.obs.timer); S.obs.end = true; } var el = K.$('obsCard'); if (el && el.parentNode) el.parentNode.removeChild(el); }
+  E.obs = function () { return S && S.obs ? S.obs : null; };
+  E.obsFinish = function () { if (obsOn()) obsFinish(true); };
+  E.obsCall = function () { if (obsOn()) obsCall(); };
 
   /* Mémoriser / Examen : ni liste, ni surlignage ; seul le contexte du flow est affiché, tout est enregistré pour le débriefing */
   function quietPanel(bdy, b, h) {
@@ -10165,7 +10555,8 @@ body.immersion #immExit{display:block}
     var res = { ok: Math.max(0, o.n - o.err), total: o.n, hints: o.hints || 0, errs: o.err, crit: 0, mode: p.mode };
     if (o.mode === 'demo') res = { ok: 0, total: o.n, hints: 0, errs: 0, crit: 0, mode: 'discover' };
     var xp = record(p.mid, res);
-    setTimeout(function () { if (p.chain) chainNext({ mid: p.mid, res: res, xp: xp, msgs: [] }); else showResult(p.mid, res, xp, []); }, 900);
+    var ms = o.msgs || [], dl = o.obs ? 4500 : 900; // checks sans aide : laisser voir le bilan de fin avant le résultat de mission
+    setTimeout(function () { if (p.chain) chainNext({ mid: p.mid, res: res, xp: xp, msgs: ms }); else showResult(p.mid, res, xp, ms); }, dl);
   });
 
   /* ---------------- Enchaînements : synthèse, préparation de vol ---------------- */
@@ -11314,7 +11705,7 @@ body.immersion #immExit{display:block}
   }, 100);
 
   /* Sons et notes système */
-  app.ck.on('aural', function (k) { if (k === 'apdisc') K.sound.apdisc(); if (k === 'gearLock') K.sound.lock(); });
+  app.ck.on('aural', function (k) { if (k === 'apdisc') K.sound.apdisc(); if (k === 'gearLock') K.sound.lock(); if (k === 'minimums') { if (TF.Voice.enabled()) TF.Voice.say('Minimums. Minimums.', 'en'); else K.sound.apdisc(); K.toast('🔔 « Minimums, minimums »', 'warn', 2500); } });
   app.ck.on('change', function (id, from, to) { if ((id === 'gear_lever' || id === 'parking_brake') && from != null && from !== to) K.sound.clunk(); });
   var noteEl = K.$('sysNote');
   function sysNotes() {
