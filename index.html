@@ -785,6 +785,20 @@ body.immersion #immExit{display:block}
 .ecu-v { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; } .ecu-v span { -webkit-flex: 1; flex: 1; font-size: 12px; font-weight: 800; color: #b9c6dc; }
 .ecu-ref { font-size: 10.5px; color: #8fa1b8; margin-top: 6px; }
 
+/* v6.4 — vol LFBU ⇄ LFBL : manche virtuel, statut AP / aide, accélération */
+#trStick { position: absolute; left: 14px; bottom: 84px; width: 110px; height: 110px; border-radius: 50%; z-index: 9; background: radial-gradient(circle, rgba(30,50,80,.85), rgba(10,18,34,.9)); border: 2px solid #3a5a88; -webkit-user-select: none; user-select: none; touch-action: none; }
+#trStick .ts-k { position: absolute; left: 35px; top: 35px; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #e8eef6, #7d8796); box-shadow: 0 3px 8px rgba(0,0,0,.6); pointer-events: none; }
+#trStick .ts-l { position: absolute; left: 0; right: 0; bottom: -18px; text-align: center; font-size: 11px; color: #c8d4e4; font-weight: 700; pointer-events: none; }
+.tr-ap.on { background: #0f3a2a !important; color: #9ff0b0 !important; } .tr-acc { background: #3a2a10 !important; color: #ffd98a !important; }
+#trBar .mx-a button.on { background: #0f3a44; border-color: #3fe0e8; }
+
+/* v6.5 — photos de profil (dessins vectoriels) et profil invité */
+.sp-av { width: 58px; height: 58px; border-radius: 29px; background: none; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,.45); }
+.sp-av svg { display: block; }
+.sp-pilot.guest { border-style: dashed !important; opacity: .92; }
+#btnProfile .ico svg { vertical-align: middle; border-radius: 11px; }
+.mh-av svg { vertical-align: middle; margin-right: 6px; border-radius: 17px; }
+
 </style>
 </head>
 <body>
@@ -851,7 +865,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '6.3';
+  TF.VERSION = '6.5';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -921,7 +935,8 @@ body.immersion #immExit{display:block}
   TM.set = function (m) { if (!TM.modes[m]) return; TM.mode = m; try { localStorage.setItem('tiffanir.time', m); } catch (e) { } if (TF.bus) TF.bus.emit('time:mode', m); };
   TM.k = function () { return TM.modes[TM.mode].k; };
   /* facteur courant appliqué au temps simulé */
-  TM.scale = function () { return (TM.demo || TM.passive > 0) ? TM.k() : 1; };
+  TM.tripK = 1; // vol LFBU ⇄ LFBL : accélération automatique quand il n'y a rien à faire
+  TM.scale = function () { return Math.max(TM.tripK || 1, (TM.demo || TM.passive > 0) ? TM.k() : 1); };
   TM.begin = function () { TM.passive++; }; TM.end = function () { TM.passive = Math.max(0, TM.passive - 1); };
   TM.reset = function () { TM.passive = 0; TM.demo = false; };
   /* attente réelle équivalente à « ms » de temps simulé */
@@ -1526,7 +1541,9 @@ body.immersion #immExit{display:block}
   /* Bouton GA : ne déconnecte PAS l'AP (confirmé équipage) ; au sol mode Takeoff (TO / TO), en vol Go-around (GA / GA) */
   G.goAround = function (ck) {
     var g = ck.s.g, sys = ck.s.sys, gnd = ck.s.flight.onGround;
-    g.fd = true; g.lat = gnd ? 'TO' : 'GA'; g.vert = gnd ? 'TO' : 'GA'; g.latArm = ''; g.vertArm = ''; g.latAt = g.vertAt = null;
+    g.fd = true; g.lat = gnd ? 'TO' : 'GA'; g.vert = gnd ? 'TO' : 'GA'; g.latArm = ''; g.latAt = g.vertAt = null;
+    // ALTS armé avec TO / GA si l'altitude sélectée est au moins 400 ft au-dessus (Garmin, Selected Altitude Capture Mode)
+    g.vertArm = (g.altSel != null && g.altSel - ck.s.flight.alt >= 400) ? 'ALTS' : '';
     sys.history.ga = true;
     // En vol : séquencement des points suspendu (annonce SUSP sur le HSI, softkey OBS → SUSP). L'élève relâche avec la softkey SUSP du PFD
     // (consigne équipage ; Garmin p.65-66). Divergence possible : le PDP p.251 indique que le GA « release SUSP » — à confirmer en simulateur.
@@ -1549,6 +1566,7 @@ body.immersion #immExit{display:block}
     // vitesse du scénario (pause / ralenti / attente de l'élève) : réglée par la séance
     var rate = typeof ck.flightRate === 'function' ? ck.flightRate() : 1;
     dt = dt * rate; if (!dt) return;
+    if (f.fdm && TF.FDM) { TF.FDM.step(ck, dt); return; } // modèle de vol (vol LFBU ⇄ LFBL)
     if (f.script) {
       f.scriptT += dt;
       var sc = f.script, k = 0;
@@ -1601,6 +1619,190 @@ body.immersion #immExit{display:block}
   G.startScript = function (ck, script) { ck.s.flight.script = script; ck.s.flight.scriptT = 0; };
   /* Altitude indiquée (altimètre principal) : 1 hPa ≈ 28 ft */
   G.indicatedAlt = function (ck) { var f = ck.s.flight, g = ck.s.g; return Math.round(f.alt + (g.baro - (ck.s.scenario.qnh || 1013)) * 28); };
+})(this);
+
+</script>
+<script>/* js/model/fdm.js */
+/* TIFFAN'IR 6.4 — Modèle de vol SIMPLIFIÉ du DA42 (masse ponctuelle, attitude commandée) + radionavigation ILS.
+ *
+ * ⚠︎ Modèle pédagogique, PAS un modèle certifié ni une donnée constructeur. Calage :
+ *   - montée 1 337 ft/min à 100 %, MTOM 1 900 kg, MSL ISA, volets UP (OM-B, Performance — Climb) ;
+ *   - croisière 75 % ≈ 165 kt TAS (notes de cours, altitude non précisée → prise vers 5 000 ft) ;
+ *   - VS1 72 kt / VS0 64 kt (notes de cours), Vy 90-92 kt, VR 76 kt, VNO 151 kt, VLO 152 kt (OM-B).
+ *   - Puissance 2 × 123,5 kW (OM-B, Engine), rendement hélice 0,8 (hypothèse), surface alaire 16,29 m² (hypothèse).
+ *   Non modélisés : vent en altitude, asymétrie moteur (lacet), givrage, carburant consommé, relief (sauf aérodromes).
+ * Repère : origine = seuil 10 de LFBU, x vers l'est, y vers le nord (m). Caps VRAIS (déclinaison ≈ 1,5° E négligée).
+ * Données terrain : AIP France AD 2 LFBU / AD 2 LFBL (eAIP 09 JUL 2026) — positions, élévations, LOC/GP/DME.
+ * Les éléments non publiés dans ces pages (position LOC/GP de LFBU, altitudes FAP, minima, remise de gaz) sont signalés.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, U = TF.util;
+  var F = TF.FDM = {};
+  var RAD = Math.PI / 180, KT = 0.514444, FPM = 196.850, FT = 0.3048, NM = 1852;
+  var LAT0 = 45 + 43 / 60 + 49.99 / 3600, LON0 = 12 / 60 + 23.30 / 3600, COS0 = Math.cos(LAT0 * RAD);
+  function dms(d, m, s) { return d + m / 60 + s / 3600; }
+  function ll(lat, lon) { return [(lon - LON0) * 111320 * COS0, (lat - LAT0) * 110574]; }
+  F.ll = ll;
+  function along(p, brgT, dist) { return [p[0] + Math.sin(brgT * RAD) * dist, p[1] + Math.cos(brgT * RAD) * dist]; }
+
+  /* ---------------- Aérodromes et moyens (AIP) ---------------- */
+  var BU_T28 = ll(dms(45, 43, 42.72), dms(0, 13, 48.77)), BU_T10 = ll(dms(45, 43, 49.99), dms(0, 12, 23.30));
+  var BL_T21 = ll(dms(45, 52, 12.63), dms(1, 11, 20.90)), BL_T03 = ll(dms(45, 51, 8.96), dms(1, 10, 21.14));
+  F.AD = {
+    LFBU: { name: 'Angoulême', elev: 414, thr: BU_T28, end: BU_T10, rwy: 276.92, crsMag: 276, len: 1860,
+      ils: { freq: 109350, ident: 'ILS 28', loc: along(BU_T10, 276.92, 300), gp: along(BU_T28, 276.92, 300), gpElev: 420, rdh: 50, approx: true },
+      src: 'AIP AD 2 LFBU : seuils, QFU 276.92° vrai, LOC 109.35, GP 3°, DME 30Y. Positions LOC / GP non relevées : estimées (± 300 m).' },
+    LFBL: { name: 'Limoges', elev: 1278, thr: BL_T21, end: BL_T03, rwy: 213.26, crsMag: 212, len: 2350,
+      ils: { freq: 110100, ident: 'LG', loc: ll(dms(45, 51, 3.5), dms(1, 10, 16.1)), gp: ll(dms(45, 52, 7.0), dms(1, 11, 9.0)), gpElev: 1292, rdh: 54 },
+      fap: ll(dms(45, 59, 12.6), dms(1, 17, 56.4)), ibl21: ll(dms(46, 2, 16.5), dms(1, 20, 50.1)),
+      src: 'AIP AD 2 LFBL : THR 21 1278 ft, QFU 213.26° vrai (212° MAG), LOC 21 « LG » 110.1, GP 3° RDH 54 ft, DME CH 38X ; FAP et IBL21 (AD 2 LFBL données RNP / MIAC).' }
+  };
+  F.NAVFREQ = {}; Object.keys(F.AD).forEach(function (k) { F.NAVFREQ[F.AD[k].ils.freq] = k; });
+  F.dist = function (a, b) { return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1])); };
+  F.brg = function (a, b) { var t = Math.atan2(b[0] - a[0], b[1] - a[1]) / RAD; return (t + 360) % 360; };
+  function wrap180(a) { return ((a % 360) + 540) % 360 - 180; }
+  /* altitude du glide (ft) à la distance d (m) de l'antenne GP — plan à 3° (valeur calculée, pas une donnée IAC) */
+  F.glideAlt = function (ad, d) { var I = F.AD[ad].ils; return I.gpElev + d * Math.tan(3 * RAD) / FT; }; // plan issu du pied de l'antenne GP (RDH 54 ft = tan 3° × 311 m, AIP)
+
+  /* ---------------- Atmosphère ISA ---------------- */
+  function rho(hft) { var h = Math.max(-1000, hft) * FT; return 1.225 * Math.pow(1 - 2.25577e-5 * h, 4.2559); }
+  F.ias = function (tasMs, hft) { return tasMs * Math.sqrt(rho(hft) / 1.225) / KT; };
+  F.tas = function (iasKt, hft) { return iasKt * KT / Math.sqrt(rho(hft) / 1.225); };
+
+  /* ---------------- Aérodynamique (calée, voir en-tête) ---------------- */
+  var M = 1900, Wt = M * 9.81, S = 16.29, CLA = 5.0, K = 0.0651, CD0 = 0.0223, PMAX = 123500, ETA = 0.8;
+  var FL = { UP: { cl0: 0.35, clmax: 1.36, cd: 0 }, APP: { cl0: 0.52, clmax: 1.55, cd: 0.008 }, LDG: { cl0: 0.70, clmax: 1.73, cd: 0.025 }, TRANSIT: { cl0: 0.52, clmax: 1.5, cd: 0.012 } };
+  F.CONST = { M: M, S: S, CLA: CLA, K: K, CD0: CD0, PMAX: PMAX, ETA: ETA };
+
+  /* ---------------- Radionavigation : NAV1 sur un ILS ---------------- */
+  F.nav = function (ck) {
+    var f = ck.s.flight, g = ck.s.g, fr = g.nav[0].a, ad = F.NAVFREQ[fr];
+    if (!ad || !ck.s.sys.avionics) return { valid: false, freq: fr };
+    var A = F.AD[ad], I = A.ils, p = [f.mx, f.my];
+    var dLoc = F.dist(p, I.loc), brgFromLoc = F.brg(I.loc, p), back = (A.rwy + 180) % 360;
+    var ang = wrap180(brgFromLoc - back);                  // > 0 : avion à GAUCHE de l'axe en rapprochement (aiguille à droite)
+    var front = Math.abs(ang) < 35 && dLoc < 25 * NM;
+    var xt = Math.sin(ang * RAD) * dLoc;                    // écart latéral (m), + = à gauche
+    var dGp = F.dist(p, I.gp), gsAng = Math.atan2((f.alt - I.gpElev) * FT, Math.max(1, dGp)) / RAD;
+    var gsOk = front && dGp < 15 * NM && Math.abs(ang) < 8; // portée GS nominale 10 NM ; étendue à 15 NM dans le simulateur pour l'interception à 4 000 ft
+    return { valid: front, ad: ad, ident: I.ident, loc: ang, xt: xt, dots: U.clamp(ang / 1.25, -2.5, 2.5), gs: gsAng - 3, gsDots: gsOk ? U.clamp((gsAng - 3) / 0.35, -2.5, 2.5) : null,
+      gsValid: gsOk, dme: dGp / NM, crs: A.rwy, crsMag: A.crsMag, glideAlt: F.glideAlt(ad, dGp), approx: !!I.approx };
+  };
+  /* géométrie de l'axe ILS sans récepteur (vecteurs ATC) : xt > 0 = à gauche de l'axe en rapprochement */
+  F.locGeom = function (ad, p) { var A = F.AD[ad], I = A.ils, d = F.dist(p, I.loc), ang = wrap180(F.brg(I.loc, p) - (A.rwy + 180) % 360); return { ang: ang, xt: Math.sin(ang * RAD) * d, d: F.dist(p, A.thr) }; };
+  F.along = along; F.wrap180 = wrap180;
+  /* aérodrome le plus proche (élévation pour la hauteur sol) */
+  F.nearest = function (p) { var best = null, bd = 1e12; Object.keys(F.AD).forEach(function (k) { var d = F.dist(p, F.AD[k].thr); if (d < bd) { bd = d; best = k; } }); return { ad: best, d: bd }; };
+  /* sur la piste ? (distance au segment seuil-bout, demi-largeur 30 m) */
+  F.onRunway = function (ad, p) {
+    var A = F.AD[ad], a = A.thr, b = A.end, vx = b[0] - a[0], vy = b[1] - a[1], L2 = vx * vx + vy * vy, t = U.clamp(((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / L2, -0.05, 1.05);
+    var cx = a[0] + vx * t - p[0], cy = a[1] + vy * t - p[1]; return Math.sqrt(cx * cx + cy * cy) < 30 && t >= -0.02 && t <= 1.02;
+  };
+
+  /* ---------------- Initialisation à partir de l'état courant ---------------- */
+  F.start = function (ck) {
+    var f = ck.s.flight;
+    f.fdm = true; f.manual = true; f.tas = F.tas(Math.max(60, f.ias || 80), f.alt);
+    f.gamma = Math.asin(U.clamp((f.vs || 0) / FPM / f.tas, -0.5, 0.5)) / RAD;
+    f.pitch = f.pitch != null ? f.pitch : 5; f.bank = f.bank || 0;
+    if (f.cmdPitch == null) f.cmdPitch = f.pitch; if (f.cmdBank == null) f.cmdBank = 0;
+    f.flcVs = f.vs || 0;
+  };
+  F.stop = function (ck) { ck.s.flight.fdm = false; };
+
+  /* assiette nécessaire pour une vitesse verticale voulue (incidence d'équilibre + pente) */
+  function pitchFor(f, vsFpm, fl, q) {
+    var V = Math.max(25, f.tas), gam = Math.asin(U.clamp(vsFpm / FPM / V, -0.35, 0.35)), cb = Math.cos(f.bank * RAD);
+    var CLr = Wt * Math.cos(gam) / (q * S * Math.max(0.5, cb)), a = (CLr - fl.cl0) / CLA;
+    return U.clamp((a + gam) / RAD, -12, 18);
+  }
+
+  /* ---------------- Pas de simulation ---------------- */
+  F.step = function (ck, dtMs) {
+    var n = Math.max(1, Math.ceil(dtMs / 50)), h = dtMs / n / 1000;
+    for (var i = 0; i < n; i++) sub(ck, h);
+    var f = ck.s.flight; if (!f.trail) f.trail = []; var l = f.trail[f.trail.length - 1];
+    if (!l || Math.abs(l[0] - f.mx) + Math.abs(l[1] - f.my) > 400) { f.trail.push([Math.round(f.mx), Math.round(f.my)]); if (f.trail.length > 400) f.trail.shift(); }
+  };
+  function sub(ck, dt) {
+    var s = ck.s, f = s.flight, g = s.g, sys = s.sys, c = s.controls;
+    if (f.onGround) return;
+    var fl = FL[sys.flapPos] || FL.UP, gear = sys.gear ? sys.gear.pos : 1;
+    var V = Math.max(20, f.tas), r = rho(f.alt), q = 0.5 * r * V * V;
+    var ias = F.ias(V, f.alt), vs = V * Math.sin(f.gamma * RAD) * FPM;
+    var nv = F.nav(ck);
+    // ----- commandes : pilote automatique (si engagé) sinon pilote (manche virtuel) / aide du simulateur
+    var tp = f.cmdPitch, tb = f.cmdBank, ap = sys.apEngaged && sys.avionics;
+    var useModes = ap || (f.assist && f.assistOn !== false && !f.stickActive);
+    if (useModes) {
+      var lat = ap ? g.lat : (f.assist && f.assist.lat) || 'ROL', vert = ap ? g.vert : (f.assist && f.assist.vert) || 'PIT';
+      // latéral
+      if (lat === 'HDG') tb = U.clamp(wrap180(g.hdg - f.hdg) * 1.2, -20, 20);
+      else if ((lat === 'LOC' || lat === 'VOR') && nv.valid) { var want = nv.crs + U.clamp(nv.xt * 0.03, -30, 30); tb = U.clamp(wrap180(want - f.hdg) * 1.4, -20, 20); }
+      else if (lat === 'GPS' && f.navTarget) { var bt = F.brg([f.mx, f.my], f.navTarget); tb = U.clamp(wrap180(bt - f.hdg) * 1.2, -20, 20); }
+      else if (lat === 'AHDG' && f.assist) tb = U.clamp(wrap180(f.assist.hdg - f.hdg) * 1.2, -20, 20);
+      else if (lat === 'ROL') tb = Math.abs(f.bank) < 6 ? 0 : f.bank;
+      else if (lat === 'TO' || lat === 'GA') tb = 0;
+      // vertical
+      var vsd = null, ref = ap ? g : f.assist;
+      if (vert === 'ALT') vsd = U.clamp(((ref.refAlt != null ? ref.refAlt : f.alt) - f.alt) * 3, -800, 800);
+      else if (vert === 'VS') vsd = ref.refVs || 0;
+      else if (vert === 'ALTS') { var d = g.altSel - f.alt; vsd = U.clamp(d * 4, -1000, 1000); }
+      else if (vert === 'FLC' || vert === 'AIAS') {
+        var tgt = vert === 'AIAS' ? f.assist.ias : g.refIas, up = vert === 'AIAS' ? (f.assist.up !== false) : (g.altSel >= f.alt);
+        f.flcVs = U.clamp((f.flcVs || 0) + (ias - tgt) * 60 * dt, up ? -100 : -2000, up ? 1600 : 200); vsd = f.flcVs;
+      }
+      else if (vert === 'GS' && nv.gsValid) { var gsFpm = -V * Math.cos(f.gamma * RAD) * Math.tan(3 * RAD) * FPM; vsd = U.clamp(gsFpm - (f.alt - nv.glideAlt) * 6, -1500, 300); }
+      else if (vert === 'PIT') tp = ap ? (g.refPitch || 0) : tp;
+      else if (vert === 'TO' || vert === 'GA') tp = 7;
+      if (vsd != null) tp = pitchFor(f, vsd, fl, q);
+      if (!ap && f.assist && f.assist.vert === 'HOLD') tp = f.cmdPitch;
+    }
+    // arrondi assisté (aide simulateur, signalée) : près du sol, sans AP, la descente est freinée
+    var nr = F.nearest([f.mx, f.my]), agl = f.alt - F.AD[nr.ad].elev;
+    if (f.flareAid && !ap && agl < 25 && vs < -150 && nr.d < 4000) tp = Math.max(tp, pitchFor(f, -120, fl, q));
+    f.fdCmd = { p: tp, b: tb };
+    // ----- dynamique d'attitude (taux limités)
+    f.pitch += U.clamp(tp - f.pitch, -3 * dt, 3 * dt);
+    f.bank += U.clamp(tb - f.bank, -10 * dt, 10 * dt);
+    // ----- forces
+    var alpha = (f.pitch - f.gamma) * RAD, CL = fl.cl0 + CLA * alpha, stall = false;
+    if (CL > fl.clmax) { CL = fl.clmax * 0.8; stall = true; }
+    var L = q * S * CL, D = q * S * (CD0 + fl.cd + 0.012 * gear + K * CL * CL);
+    var T = 0; ['L', 'R'].forEach(function (k) { if (s.eng[k].state === 'run') T += ETA * (c[k === 'L' ? 'power_l' : 'power_r'] / 100) * PMAX / Math.max(V, 25); });
+    var dV = (T - D) / M - 9.81 * Math.sin(f.gamma * RAD);
+    var dG = (L * Math.cos(f.bank * RAD) - Wt * Math.cos(f.gamma * RAD)) / (M * V);
+    var dPsi = L * Math.sin(f.bank * RAD) / (M * V * Math.max(0.3, Math.cos(f.gamma * RAD)));
+    f.tas = Math.max(15, f.tas + dV * dt);
+    f.gamma = U.clamp(f.gamma + dG * dt / RAD, -25, 25);
+    f.hdg = (f.hdg + dPsi * dt / RAD + 360) % 360;
+    var gs = f.tas * Math.cos(f.gamma * RAD);
+    f.mx += Math.sin(f.hdg * RAD) * gs * dt; f.my += Math.cos(f.hdg * RAD) * gs * dt;
+    f.alt += f.tas * Math.sin(f.gamma * RAD) * dt / FT;
+    f.vs = f.tas * Math.sin(f.gamma * RAD) * FPM; f.ias = F.ias(f.tas, f.alt); f.gs = gs / KT;
+    f.turn = U.clamp(dPsi / RAD / 3, -1.5, 1.5); f.slip = 0; f.stall = stall; f.agl = f.alt - F.AD[nr.ad].elev;
+    // ----- contact sol
+    if (f.agl <= 0) {
+      f.alt = F.AD[nr.ad].elev; f.onGround = true; f.fdm = false;
+      f.touch = { ad: nr.ad, vs: Math.round(vs), ias: Math.round(ias), onRwy: F.onRunway(nr.ad, [f.mx, f.my]), gear: gear >= 1, bank: Math.round(f.bank), hdg: f.hdg };
+      f.vs = 0; f.pitch = 0; f.bank = 0; f.gamma = 0;
+      ck.emit('touchdown', f.touch);
+    }
+    // ----- transitions de modes AFCS avec la vraie géométrie
+    modes(ck, nv);
+  }
+  function modes(ck, nv) {
+    var g = ck.s.g, f = ck.s.flight, t = ck.s.t;
+    if (!g.fd) return;
+    if ((g.latArm === 'LOC' || g.latArm === 'VOR') && nv.valid && Math.abs(nv.dots) < 2) { g.lat = 'LOC'; g.latArm = ''; g.latAt = t; }
+    if (g.vertArm === 'GS' && g.lat === 'LOC' && nv.gsValid && f.alt >= nv.glideAlt - 60 && f.alt <= nv.glideAlt + 100) { g.vert = 'GS'; g.vertArm = ''; g.vertAt = t; } // capture par en dessous (le glide « descend » sur l'avion)
+    if (g.vertArm === 'ALTS' && g.vert !== 'ALTS' && g.vert !== 'ALT' && g.vert !== 'GS') {
+      var lead = Math.max(100, Math.abs(f.vs) / 6), toward = (g.altSel - f.alt) * f.vs > 0;
+      if (toward && Math.abs(g.altSel - f.alt) <= lead) { g.vert = 'ALTS'; g.vertArm = 'ALT'; g.vertAt = t; }
+    }
+    if (g.vert === 'ALTS' && Math.abs(g.altSel - f.alt) < 50) { g.vert = 'ALT'; g.vertArm = ''; g.refAlt = g.altSel; g.vertAt = t; }
+  }
 })(this);
 
 </script>
@@ -2079,6 +2281,7 @@ body.immersion #immExit{display:block}
     I.gearLights = sys.power ? { unsafe: gp > 0 && gp < 1, l: gDown, n: gDown, r: gDown } : null;
     I.flapLights = sys.power ? { up: sys.flapPos === 'UP', app: sys.flapPos === 'APP', ldg: sys.flapPos === 'LDG' } : null;
     I.stby = { caged: c.stby_cage === 'CAGED', powered: sys.power || c.emergency_sw === 'ON' };
+    I.nav = TF.FDM ? TF.FDM.nav(this) : null; if (I.nav) I.nav.freqIls = !!(TF.FDM.NAVFREQ[s.g.nav[0].a]);
     I.flight = s.flight; I.g = s.g; I.stick = s.sys.stick || { r: 0, p: 0 };
     I.altitude = Math.round(TF.G1000.indicatedAlt(this)); I.qnh = s.g.baro; I.altStby = Math.round(s.flight.alt);
     I.t = s.t;
@@ -4965,8 +5168,8 @@ body.immersion #immExit{display:block}
     { cond: function (S, X) { return S.controls['fuel_sel_' + X.good] === 'OFF'; }, msg: '⛔ Sélecteur carburant du moteur vif sur OFF.', crit: true }
   ];
   function identify() {
-    return { ask: function (X) { return 'L\'avion embarde et s\'incline vers la ' + (X.bad === 'L' ? 'GAUCHE' : 'DROITE') + '. Symétrie rétablie, ton pied ' + (X.bad === 'L' ? 'DROIT' : 'GAUCHE') + ' pousse fort, l\'autre est sans effort. Les paramètres du moteur en panne chutent sur la page moteur. Moteur en panne ?'; },
-      ch: ['Moteur GAUCHE', 'Moteur DROIT'], ans: function (X) { return X.bad === 'L' ? 0 : 1; }, why: 'OM-B p.98 : « Dead foot — dead engine ». Le pied sans effort est du côté du moteur en panne ; les instruments moteur confirment.', crit: true };
+    return { ask: function (X) { return 'L\'avion embarde et s\'incline vers la ' + (X.bad === 'l' ? 'GAUCHE' : 'DROITE') + '. Symétrie rétablie, ton pied ' + (X.bad === 'l' ? 'DROIT' : 'GAUCHE') + ' pousse fort, l\'autre est sans effort. Les paramètres du moteur en panne chutent sur la page moteur. Moteur en panne ?'; },
+      ch: ['Moteur GAUCHE', 'Moteur DROIT'], ans: function (X) { return X.bad === 'l' ? 0 : 1; }, why: 'OM-B p.98 : « Dead foot — dead engine ». Le pied sans effort est du côté du moteur en panne ; les instruments moteur confirment.', crit: true };
   }
   add({ id: 'm03-which', type: 'cockpit', title: 'WHICH ENGINE?', comp: ['APK', 'PSD', 'SAW', 'KNO'], fctp: 'Engine failure in flight — identification, engine failure procedures, engine shut down', dur: '≈ 3 min',
     refs: [om(98, 'Detecting the inoperative engine'), om(102, 'Engine failure during flight'), om(108, 'Engine securing (feathering) procedure'), cl('ENGINE FAILURE IN FLIGHT')],
@@ -5179,6 +5382,7 @@ body.immersion #immExit{display:block}
   var TF = root.TF;
   var KEY = 'tiffanir.v1';
   var NAMES = ['Nicolas', 'Julien', 'Jayson', 'Olivier', 'Cyril'];
+  var GUEST = 'invite'; // profil Invité : local seulement, hors classement et hors cloud, remis à zéro à chaque choix
   var DAY = 86400000;
   var INTERVALS = [0, 0, DAY, 2 * DAY, 4 * DAY, 7 * DAY]; // boîtes de Leitner 1..5
   var FLIGHTS = [{ id: 'sim', label: 'Simulateur' }, { id: 'v1', label: 'Vol 1' }, { id: 'v2', label: 'Vol 2' }, { id: 'v3', label: 'Vol 3' }, { id: 'v4', label: 'Vol 4' }, { id: 'v5', label: 'Vol 5' }, { id: 'v6', label: 'Vol 6' }];
@@ -5211,7 +5415,10 @@ body.immersion #immExit{display:block}
     if (raw) { try { data = JSON.parse(raw); } catch (e) { data = null; } }
     if (!data || data.app !== 'tiffanir') data = blank();
     NAMES.forEach(function (n) { var id = n.toLowerCase(); if (!data.profiles[id]) data.profiles[id] = newProfile(n); migrate(data.profiles[id]); });
+    ensureGuest();
   }
+  function guestProfile() { var g = newProfile('Invité'); g.id = GUEST; g.guest = true; return g; }
+  function ensureGuest() { if (!data.profiles[GUEST]) data.profiles[GUEST] = guestProfile(); else { data.profiles[GUEST].guest = true; migrate(data.profiles[GUEST]); } }
   function migrate(p) {
     var d = newProfile(p.name);
     ['phases', 'xp', 'badges', 'days', 'bestStreak'].forEach(function (k) { if (p[k] == null) p[k] = d[k]; });
@@ -5227,6 +5434,12 @@ body.immersion #immExit{display:block}
   var P = TF.Profiles = {
     NAMES: NAMES, FLIGHTS: FLIGHTS,
     list: function () { return NAMES.map(function (n) { return data.profiles[n.toLowerCase()]; }); },
+    /* équipage + invité (écran d'accueil) */
+    all: function () { return P.list().concat([data.profiles[GUEST]]); },
+    GUEST: GUEST,
+    isGuest: function (p) { p = p || P.current(); return !!(p && p.guest); },
+    /* nouvelle session invité : progression remise à zéro */
+    resetGuest: function () { data.profiles[GUEST] = guestProfile(); save(true); },
     get: function (id) { return data.profiles[id]; },
     select: function (id) { data.current = id; save(); TF.bus.emit('profile:changed', P.current()); },
     current: function () { return data.current ? data.profiles[data.current] : null; },
@@ -5276,6 +5489,7 @@ body.immersion #immExit{display:block}
       if (!o || o.app !== 'tiffanir' || !o.data || !o.data.profiles) return { ok: false, reason: 'Ce fichier n\'est pas une sauvegarde TIFFAN\'IR.' };
       var cur = data.current; data = o.data; if (!data.current) data.current = cur;
       NAMES.forEach(function (n) { var id = n.toLowerCase(); if (!data.profiles[id]) data.profiles[id] = newProfile(n); migrate(data.profiles[id]); });
+      ensureGuest();
       save(); TF.bus.emit('profile:changed', P.current());
       return { ok: true };
     },
@@ -5841,7 +6055,7 @@ body.immersion #immExit{display:block}
   }
 
   /* Assiette commune PFD / horizon de secours : scénarisée (rotation, montée) si fournie, sinon déduite du vario */
-  X.pitchOf = function (f) { return f.pitch != null && f.script ? f.pitch : f.onGround ? 0 : (f.vs > 300 ? 7 : f.vs < -300 ? -3 : 2); };
+  X.pitchOf = function (f) { if (f.fdm || f.fdmGround) return f.pitch || 0; return f.pitch != null && f.script ? f.pitch : f.onGround ? 0 : (f.vs > 300 ? 7 : f.vs < -300 ? -3 : 2); };
   /* ================================ PFD ================================ */
   X.pfd = function (I, sc, rOver) {
     var r = rOver || X.rects.pfd;
@@ -5849,8 +6063,11 @@ body.immersion #immExit{display:block}
     var g = I.g, f = I.flight, s = '';
     var pitch = X.pitchOf(f);
     var hz = 218 + pitch * 4.2;
-    s += rect(0, 46, VW, Math.max(0, hz - 46), 'url(#gSky)') + rect(0, hz, VW, VH - hz, 'url(#gGnd)');
-    s += '<line x1="0" y1="' + hz + '" x2="' + VW + '" y2="' + hz + '" stroke="#fff" stroke-width="2"/>';
+    // horizon artificiel : tangage + inclinaison (modèle de vol) — rendu découpé à l'écran
+    var bk = f.fdm ? (f.bank || 0) : 0;
+    s += '<svg x="0" y="46" width="' + VW + '" height="' + (VH - 46) + '" viewBox="0 46 ' + VW + ' ' + (VH - 46) + '"><g transform="rotate(' + (-bk).toFixed(1) + ' 300 218)">';
+    s += rect(-400, -600, VW + 800, Math.max(0, hz + 600), 'url(#gSky)') + rect(-400, hz, VW + 800, VH + 600, 'url(#gGnd)');
+    s += '<line x1="-400" y1="' + hz + '" x2="' + (VW + 400) + '" y2="' + hz + '" stroke="#fff" stroke-width="2"/>';
     var cx = 300, cy = 250, R = 125;
     s += '<path d="M' + (cx - R * Math.sin(Math.PI / 3)) + ',' + (cy - R * Math.cos(Math.PI / 3)) + ' A' + R + ',' + R + ' 0 0 1 ' + (cx + R * Math.sin(Math.PI / 3)) + ',' + (cy - R * Math.cos(Math.PI / 3)) + '" fill="none" stroke="#fff" stroke-width="2"/>';
     [-60, -45, -30, -20, -10, 10, 20, 30, 45, 60].forEach(function (a) {
@@ -5866,10 +6083,12 @@ body.immersion #immExit{display:block}
       s += '<line x1="' + (cx - p[1] / 2) + '" y1="' + y + '" x2="' + (cx + p[1] / 2) + '" y2="' + y + '" stroke="#fff" stroke-width="1.6"/>';
       if (p[1] === 60) s += t(cx - p[1] / 2 - 18, y + 5, String(Math.abs(p[0])), 12, '#fff') + t(cx + p[1] / 2 + 6, y + 5, String(Math.abs(p[0])), 12, '#fff');
     });
+    s += '</g></svg>';
     // Barres du directeur de vol
     if (g.fd && I.avionics) {
       // commande FD au sol : décalée par l'assiette de référence (PIT) et inclinée vers le bug de cap (HDG)
       var fdP = f.onGround && g.vert === 'PIT' ? (g.refPitch || 0) : (f.onGround && g.vert === 'TO' ? 7 : 0), fdR = 0;
+      if (f.fdm && f.fdCmd) { fdP = f.fdCmd.p - (f.pitch || 0); fdR = Math.max(-20, Math.min(20, (f.fdCmd.b - (f.bank || 0)))); }
       if (f.onGround && g.lat === 'HDG') fdR = Math.max(-20, Math.min(20, (((g.hdg - f.hdg + 540) % 360) - 180) * 3));
       s += '<g transform="translate(0,' + (-fdP * 4.2).toFixed(1) + ') rotate(' + fdR.toFixed(1) + ' ' + cx + ' 218)"><path d="M' + (cx - 70) + ',' + (218 + 8) + ' L' + cx + ',' + 210 + ' L' + (cx + 70) + ',' + (218 + 8) + '" fill="none" stroke="#e04ad8" stroke-width="5" opacity=".9"/></g>';
     }
@@ -5920,7 +6139,15 @@ body.immersion #immExit{display:block}
     var tr = Math.max(-1.5, Math.min(1.5, f.turn || 0));
     if (Math.abs(tr) > 0.05) { var a1 = -Math.PI / 2, a2 = a1 + tr * 18 * Math.PI / 180, rr = hr + 3;
       s += '<path d="M' + (hx + rr * Math.cos(a1)) + ',' + (hy + rr * Math.sin(a1)) + ' A' + rr + ',' + rr + ' 0 0 ' + (tr > 0 ? 1 : 0) + ' ' + (hx + rr * Math.cos(a2)) + ',' + (hy + rr * Math.sin(a2)) + '" fill="none" stroke="#e04ad8" stroke-width="4"/>'; }
-    s += t(hx - 30, hy + 30, g.cdi, 11, ccol, 'middle', 700);
+    var NV = I.nav;
+    if (NV && g.cdi === 'VOR1' && NV.valid) { // déviation LOC (barre) et glide (losange) — modèle de radionavigation
+      s += '<g transform="rotate(' + (g.crs - hd) + ' ' + hx + ' ' + hy + ')">';
+      [-2, -1, 1, 2].forEach(function (k) { s += '<circle cx="' + (hx + k * 18) + '" cy="' + hy + '" r="3" fill="none" stroke="#fff" stroke-width="1.4"/>'; });
+      s += '<line x1="' + (hx + NV.dots * 18) + '" y1="' + (hy - 40) + '" x2="' + (hx + NV.dots * 18) + '" y2="' + (hy + 40) + '" stroke="#2fe35a" stroke-width="4"/></g>';
+      if (NV.gsDots != null) { var gy = 210 + Math.max(-2.3, Math.min(2.3, NV.gsDots)) * 26; s += rect(428, 150, 14, 120, '#000', ' opacity=".5"'); [-2, -1, 1, 2].forEach(function (k) { s += '<circle cx="435" cy="' + (210 + k * 26) + '" r="3" fill="none" stroke="#fff" stroke-width="1.2"/>'; }); s += '<path d="M435,' + (gy - 7) + ' l6,7 l-6,7 l-6,-7Z" fill="#2fe35a"/>'; }
+      s += rect(176, 380, 74, 34, '#000', ' opacity=".8"') + t(180, 394, NV.ident, 11, '#2fe35a', 'start', 700) + t(180, 409, 'DME ' + NV.dme.toFixed(1), 11, '#2fe35a', 'start', 700);
+    } else if (NV && g.cdi === 'VOR1' && !NV.valid && I.avionics) s += t(hx, hy + 52, 'NO LOC', 11, '#f2e23a', 'middle', 700);
+    s += t(hx - 30, hy + 30, g.cdi === 'VOR1' && NV && NV.freqIls ? 'LOC1' : g.cdi, 11, ccol, 'middle', 700);
     // Annonce de séquencement en bas à droite du symbole avion (Garmin Figure 2-26)
     if (g.cdi === 'GPS' && (g.susp || g.obs)) s += t(hx + 30, hy + 30, g.susp ? 'SUSP' : 'OBS', 11, ccol, 'middle', 700);
     s += rect(176, 352, 64, 18, '#000') + t(208, 366, 'HDG ' + ('00' + g.hdg).slice(-3) + '°', 11, '#3fe0e8', 'middle', 700);
@@ -5986,11 +6213,11 @@ body.immersion #immExit{display:block}
         if (av.vertArm) s += ann(412, 31, av.vertArm, '#fff', 11, false);
       }
     }
-    s += topBar(I, f.onGround ? 'LFBU' : 'Situation scénarisée');
+    s += topBar(I, f.fdm ? (f.navName || 'Vol') : f.onGround ? 'LFBU' : 'Situation scénarisée');
     // Bas d'écran : OAT, transpondeur, softkeys (niveaux Garmin)
     s += rect(0, 452, VW, 36, '#0b0f14');
     var x = g.xpdr, code = g.pfdLevel === 'code' ? (x.entry + '____').slice(0, 4) : x.code, idnt = x.identAt != null && I.t - x.identAt < 18000;
-    s += t(6, 468, 'OAT ' + sc.oat + '°C', 12, '#fff') + t(90, 468, 'GS ' + Math.round(f.ias) + 'KT', 12, '#fff');
+    s += t(6, 468, 'OAT ' + sc.oat + '°C', 12, '#fff') + t(90, 468, 'GS ' + Math.round(f.gs != null && f.fdm ? f.gs : f.ias) + 'KT', 12, '#fff');
     s += t(404, 468, 'XPDR', 12, '#fff') + t(444, 468, code, 13, g.pfdLevel === 'code' ? '#3fe0e8' : (x.mode === 'ALT' || x.mode === 'ON' ? '#2fe35a' : '#fff'), 'start', 700) + t(482, 468, idnt ? 'IDNT' : x.mode, 12, idnt ? '#2fe35a' : '#fff', 'start', 700);
     var now = new Date(); s += t(632, 468, 'UTC ' + ('0' + now.getUTCHours()).slice(-2) + ':' + ('0' + now.getUTCMinutes()).slice(-2), 12, '#fff', 'end');
     var sk = TF.G1000.pfdSoftkeys(g);
@@ -6432,7 +6659,7 @@ body.immersion #immExit{display:block}
   CockpitView.prototype.renderDynamic = function (force) {
     var I = this.c.indications(), sc = this.c.s.scenario;
     var blink = Math.floor(I.t / 400) % 2;
-    var fl = I.flight, kp = JSON.stringify([Math.round(TF.Displays.pitchOf(fl) * 2), Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
+    var fl = I.flight, nvk = I.nav && I.nav.valid ? [Math.round(I.nav.dots * 10), I.nav.gsDots == null ? 'x' : Math.round(I.nav.gsDots * 10), Math.round(I.nav.dme * 10)] : 0, kp = JSON.stringify([nvk, Math.round(fl.bank || 0), fl.fdCmd ? [Math.round(fl.fdCmd.p), Math.round(fl.fdCmd.b)] : 0, Math.round(TF.Displays.pitchOf(fl) * 2), Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
     var km = JSON.stringify([I.lastSk, Math.round((I.flight.mx || 0) / 8), Math.round((I.flight.my || 0) / 8), Math.round(I.flight.hdg), I.g.hdg, I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
     var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias), Math.round(TF.Displays.pitchOf(I.flight) * 2)]);
     var kl = JSON.stringify([I.gearLights, I.gearLights && I.gearLights.l, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
@@ -6737,7 +6964,13 @@ body.immersion #immExit{display:block}
     // Échelle : au sol, la plateforme ; en vol, l'aérodrome + l'avion (zoom automatique)
     var cx, cy, span;
     if (f.onGround && Math.hypot(f.mx - 900, f.my + 110) < 1600) { cx = 930; cy = -230; span = 2100; }
-    else { var ax = 930, ay = -113, dx = f.mx - ax, dy = f.my - ay; cx = (f.mx + ax) / 2; cy = (f.my + ay) / 2; span = Math.max(3500, Math.abs(dx) * 1.35 + 900, Math.abs(dy) * 1.35 * W / H + 900); }
+    else {
+      // en vol : cadre englobant l'avion, Angoulême et la destination (Limoges / point visé) quand le vol s'éloigne
+      var pts = [[f.mx, f.my], [930, -113]], FD = TF.FDM;
+      if (FD) { var dBL = FD.dist([f.mx, f.my], FD.AD.LFBL.thr); if (f.navTarget) pts.push(f.navTarget); if (dBL < 40 * 1852 || f.fdm) pts.push(FD.AD.LFBL.thr); }
+      var x0 = 1e12, x1 = -1e12, y0 = 1e12, y1 = -1e12; pts.forEach(function (p) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); });
+      cx = (x0 + x1) / 2; cy = (y0 + y1) / 2; span = Math.max(3500, (x1 - x0) * 1.25 + 900, (y1 - y0) * 1.25 * W / H + 900);
+    }
     var sc = W / span;
     function P(x, y) { return [(W / 2 + (x - cx) * sc).toFixed(1), (H / 2 - (y - cy) * sc).toFixed(1)]; }
     var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '">';
@@ -6764,6 +6997,13 @@ body.immersion #immExit{display:block}
       var mid = P(930, -113);
       s += '<text x="' + mid[0] + '" y="' + (+mid[1] - 6) + '" font-size="8" fill="#cfe" text-anchor="middle">LFBU</text>';
     }
+    // Limoges (piste 03/21), IBL21, FAP, point visé — AIP AD 2 LFBL
+    if (TF.FDM) {
+      var B = TF.FDM.AD.LFBL, ba = P(B.thr[0], B.thr[1]), bb = P(B.end[0], B.end[1]);
+      s += '<line x1="' + ba[0] + '" y1="' + ba[1] + '" x2="' + bb[0] + '" y2="' + bb[1] + '" stroke="#5b6168" stroke-width="' + Math.max(2.2, 45 * sc) + '"/><text x="' + (+bb[0] + 4) + '" y="' + (+bb[1] + 3) + '" font-size="8" fill="#cfe" font-weight="700">LFBL</text>';
+      [[B.ibl21, 'IBL21'], [B.fap, 'FAP']].forEach(function (w) { var q = P(w[0][0], w[0][1]); s += '<path d="M' + q[0] + ',' + (+q[1] - 3.5) + ' l3,5.5 l-6,0Z" fill="none" stroke="#e44ad8" stroke-width="1"/><text x="' + (+q[0] + 4) + '" y="' + (+q[1] + 3) + '" font-size="6.5" fill="#f2b6ef">' + w[1] + '</text>'; });
+      if (f.navTarget && !f.onGround) { var nt = P(f.navTarget[0], f.navTarget[1]), me0 = P(f.mx, f.my); s += '<line x1="' + me0[0] + '" y1="' + me0[1] + '" x2="' + nt[0] + '" y2="' + nt[1] + '" stroke="#e44ad8" stroke-width="1.2" stroke-dasharray="5 3" opacity=".8"/>'; }
+    }
     // trace
     if (f.trail && f.trail.length > 1) s += '<polyline points="' + f.trail.map(function (p) { return P(p[0], p[1]).join(','); }).join(' ') + ' ' + P(f.mx, f.my).join(',') + '" fill="none" stroke="#e44ad8" stroke-width="1.3" opacity=".85"/>';
     // cap affiché (bug HDG) en vol
@@ -6782,7 +7022,7 @@ body.immersion #immExit{display:block}
     s += '<rect x="0" y="0" width="' + W + '" height="13" fill="rgba(0,0,0,.55)"/>';
     s += '<text x="4" y="9.5" font-size="8" fill="#fff" font-weight="700">' + TF.util.esc(ph) + '</text>';
     s += '<text x="' + (W - 4) + '" y="9.5" font-size="8" fill="#9fe6f0" text-anchor="end">' + (f.onGround ? Math.round(f.ias) + ' kt' : Math.round(f.alt / 10) * 10 + ' ft · ' + Math.round(f.ias) + ' kt · ' + ('00' + Math.round(f.hdg)).slice(-3) + '°') + '</text>';
-    s += '<text x="' + (W - 3) + '" y="' + (H - 3) + '" font-size="6" fill="#8fa1b8" text-anchor="end">LFBU · taxiways d\'après AIP GMC 01 (≈)</text>';
+    s += '<text x="' + (W - 3) + '" y="' + (H - 3) + '" font-size="6" fill="#8fa1b8" text-anchor="end">' + (f.fdm ? 'AIP AD 2 LFBU / LFBL · pas une carte de navigation' : 'LFBU · taxiways d\'après AIP GMC 01 (≈)') + '</text>';
     s += '</svg>';
     el.innerHTML = s;
   };
@@ -8222,7 +8462,7 @@ body.immersion #immExit{display:block}
 
   /* --- états affichés --- */
   var LABEL = { local: '💾 Sauvegarde locale seulement', pending: '⏳ Synchronisation en attente', syncing: '🔄 Synchronisation…', ok: '☁️ Synchronisé', offline: '📴 Hors connexion, sauvegarde locale', error: '⚠️ Erreur de sauvegarde — action requise' };
-  C.label = function () { return LABEL[C.status] || ''; };
+  C.label = function () { var p = TF.Profiles.current(); if (p && p.guest) return '👤 Invité : progression locale, hors cloud et hors classement'; return LABEL[C.status] || ''; };
   function setStatus(s, err) { C.status = s; if (err != null) C.lastError = err; renderBadge(); if (C.panelOpen) C.renderPanel(); }
   function renderBadge() {
     var b = K.$('tbCloud'); if (!b) return;
@@ -8235,7 +8475,7 @@ body.immersion #immExit{display:block}
   /* --- 2-5. synchronisation --- */
   C.schedule = function (ms) { clearTimeout(timer); timer = setTimeout(function () { C.sync(); }, ms == null ? 2500 : ms); };
   C.sync = function () {
-    var p = TF.Profiles.current(); if (!p || !C.available()) { setStatus('local'); return Promise.resolve(false); }
+    var p = TF.Profiles.current(); if (!p || p.guest || !C.available()) { setStatus('local'); return Promise.resolve(false); }
     var a = C.acct(p.id); if (!a.session) { setStatus('local'); return Promise.resolve(false); }
     if (inflight) { C.schedule(1500); return inflight; }
     var events = (a.queue || []).slice(0, 300), sent = {}; events.forEach(function (e) { sent[e.id] = 1; });
@@ -8281,12 +8521,12 @@ body.immersion #immExit{display:block}
     return C.sync();
   }
   C.loginGoogle = function (idToken) {
-    var p = TF.Profiles.current(); if (!p) return Promise.reject({ code: 'noprofile' });
+    var p = TF.Profiles.current(); if (!p || p.guest) return Promise.reject({ code: p ? 'guest' : 'noprofile' });
     setStatus('syncing');
     return call({ action: 'login', idToken: idToken, pid: p.id, pseudo: p.name }).then(function (j) { return linked(p, j); }, function (e) { setStatus('error', loginErr(e.code)); throw e; });
   };
   C.redeem = function (code) {
-    var p = TF.Profiles.current(); if (!p) return Promise.reject({ code: 'noprofile' });
+    var p = TF.Profiles.current(); if (!p || p.guest) return Promise.reject({ code: p ? 'guest' : 'noprofile' });
     setStatus('syncing');
     return call({ action: 'redeem', pairCode: code }).then(function (j) { return linked(p, j); }, function (e) { setStatus('error', loginErr(e.code)); throw e; });
   };
@@ -8294,7 +8534,7 @@ body.immersion #immExit{display:block}
   C.logout = function () { var p = TF.Profiles.current(); if (!p) return; var a = C.acct(p.id); delete a.session; delete a.uid; saveAcct(p.id, a); setStatus('local'); };
   function loginErr(c) {
     return { badtoken: 'Connexion Google refusée par le serveur.', noclient: 'Connexion Google pas encore configurée sur le serveur (GOOGLE_CLIENT_ID).', badcode: 'Code d\'appairage inconnu ou expiré.', busy: 'Trop d\'essais : réessaie dans 10 minutes.',
-      offline: 'Pas de réseau : réessaie plus tard.', code: 'Code d\'équipe manquant (lien « ?equipe=… »).', noconfig: 'Sauvegarde cloud non configurée (config.js).' }[c] || ('Erreur : ' + c);
+      offline: 'Pas de réseau : réessaie plus tard.', code: 'Code d\'équipe manquant (lien « ?equipe=… »).', guest: 'Profil Invité : pas de sauvegarde cloud. Choisis ton prénom pour sauvegarder.', noconfig: 'Sauvegarde cloud non configurée (config.js).' }[c] || ('Erreur : ' + c);
   }
 
   /* --- Google Identity Services, chargé seulement si un ID client est configuré --- */
@@ -8359,6 +8599,10 @@ body.immersion #immExit{display:block}
     var el = K.$('cloudPanel'); if (!el) { el = root.document.createElement('div'); el.id = 'cloudPanel'; root.document.body.appendChild(el); }
     var a = C.acct(p.id), on = !!a.session, c = cfg();
     var h = '<div class="cp-box"><div class="cp-h"><b>☁️ Ma sauvegarde — ' + esc(p.name) + '</b><button data-act="x">✕</button></div>';
+    if (p.guest) {
+      el.innerHTML = h + '<div class="cp-info">👤 Profil Invité : la progression reste sur cet appareil le temps de la session, sans sauvegarde cloud ni classement. Elle repart de zéro à chaque nouvelle session invité.</div></div>';
+      el.className = 'show'; var xb = el.querySelector('[data-act="x"]'); if (xb) xb.onclick = function () { C.panelOpen = false; el.className = ''; }; return;
+    }
     h += '<div class="cp-st cp-' + C.status + '">' + C.label() + (a.lastSync && C.status === 'ok' ? ' <small>(' + new Date(a.lastSync).toLocaleString('fr-FR') + ')</small>' : '') + '</div>';
     if (C.lastError) h += '<div class="cp-err">' + esc(C.lastError) + '</div>';
     h += '<div class="cp-row"><b>' + (p.xp || 0) + ' XP</b> · ' + esc(TF.Profiles.level(p).name) + (on ? ' · compte relié' : '') + (C.pending(p.id) ? ' · ' + C.pending(p.id) + ' envoi(s) en attente' : '') + '</div>';
@@ -10665,7 +10909,7 @@ body.immersion #immExit{display:block}
   MP.heroHtml = function () {
     var p = TF.Profiles.current(); if (!p) return '';
     var L = TF.Profiles.level(p), nx = MP.nextMission(), nm = nx ? mis(nx.mid) : null;
-    var h = '<div class="mep-hero"><div class="mh-st"><b>' + esc(p.name) + '</b> · ' + (p.xp || 0) + ' XP · ' + esc(L.name) + ' · <button class="lnk" data-act="cloud">' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</button>' + (nm ? '<br><small>Prochaine mission : ' + esc(ses(nx.sid).n) + ' — ' + esc(nm.title) + '</small>' : '') + '</div>';
+    var h = '<div class="mep-hero"><div class="mh-st">' + (TF.Avatars ? '<span class="mh-av">' + TF.Avatars.svg(p.id, 34) + '</span>' : '') + '<b>' + esc(p.name) + '</b> · ' + (p.xp || 0) + ' XP · ' + esc(L.name) + ' · <button class="lnk" data-act="cloud">' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</button>' + (nm ? '<br><small>Prochaine mission : ' + esc(ses(nx.sid).n) + ' — ' + esc(nm.title) + '</small>' : '') + '</div>';
     h += '<div class="mh-b"><button class="mh-go" data-act="mepresume">▶ REPRENDRE MON ENTRAÎNEMENT</button><button class="mh-mep" data-act="mepmap">✈ MES VOLS MEP<small>Prépare chaque vol, réussis les missions et arrive prêt devant ton instructeur.</small></button>';
     h += '<button class="mh-trip" data-act="trip">🛫 VOL IFR LFBU ⇄ LFBL<small>Roulage, radio AFIS et décollage depuis Angoulême — segment 1 jouable</small></button>';
     h += '<button class="mh-free" data-act="free">🎮 COCKPIT LIBRE</button><button class="mh-ifr" data-act="ifr">📚 L\'IFR POUR LES NULS</button></div></div>';
@@ -10805,6 +11049,7 @@ body.immersion #immExit{display:block}
     imm: 'Aucune mise en évidence, aucun rappel. Tes oublis comptent dans le débriefing.'
   };
   var WINDS = [[270, 8], [260, 12], [290, 6], [280, 10], [250, 7]];
+  var FLIGHT = { climb: 1, enroute: 1, app1: 1, ga1: 1, 'return': 1, app2: 1, flare: 1 };
   function app() { return TF.app; }
   function ck() { return app().ck; }
   function el() { return K.$('trip'); }
@@ -10818,21 +11063,22 @@ body.immersion #immExit{display:block}
     if (TF.Ess) TF.Ess.close(); if (TF.Mep) TF.Mep.abort(); if (TF.Ifr) TF.Ifr.close(); if (TF.Home) TF.Home.hide();
     var e = el(), p = TF.Profiles.current(), best = p && p.trip ? p.trip.seg1 || 0 : 0;
     var h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">🛫 VOL IFR LFBU ⇄ LFBL</div><div class="mep-sub">Angoulême → Limoges (ILS 21) → retour Angoulême. Tu pilotes dans le cockpit ; le simulateur gère une physique simplifiée.</div></div><button class="btn" data-act="close">✈︎ Retour</button></div>';
-    h += '<div class="tr-segs">';
-    h += '<div class="tr-seg on"><b>1 · Roulage et décollage LFBU</b><small>Pkg Airbus → point d\'arrêt E → piste 28 · AFIS 123.155' + (best ? ' · meilleur score ' + best + ' %' : '') + '</small></div>';
-    h += '<div class="tr-seg off"><b>2 · Montée, croisière et ILS 21 à Limoges</b><small>En construction — uniquement à partir de cartes SIA publiées</small></div>';
-    h += '<div class="tr-seg off"><b>3 · Retour vers Angoulême</b><small>En construction</small></div></div>';
+    var sg = T.seg || 1, SEG = [[1, '1 · Roulage, décollage et montée', 'Pkg Airbus → point d\'arrêt E → piste 28 (AFIS 123.155), puis le vol complet' + (best ? ' · meilleur score ' + best + ' %' : '')],
+      [2, '2 · Croisière et ILS 21 à Limoges', 'Départ en palier 4 000 ft vers IBL21 · Limoges Approach 118.080 · percée ILS 21 (LOC LG 110.1) et remise de gaz aux minima'],
+      [3, '3 · Retour et ILS 28 Angoulême', 'Départ après la remise de gaz de Limoges · ILS 28 (109.35) · atterrissage complet']];
+    h += '<div class="tr-segs">' + SEG.map(function (x) { return '<button class="tr-seg' + (sg === x[0] ? ' on' : '') + '" data-act="seg" data-v="' + x[0] + '"><b>' + x[1] + '</b><small>' + esc(x[2]) + '</small></button>'; }).join('') + '</div>';
+    h += '<div class="mep-tag">Données terrain : AIP AD 2 LFBU / LFBL (eAIP 09 JUL 2026) — seuils, axes, ILS (fréquence, 3°, RDH), FAP et IBL21. Non disponibles ici : cartes IAC (altitudes publiées, minima, remise de gaz) → <b>DA d\'exercice</b> et <b>instructions ATC simulées</b>, signalées comme telles.</div>';
     h += '<div class="mep-q">Choisis ton mode :</div><div class="tr-modes">' + ['express', 'train', 'imm'].map(function (m) {
       return '<button class="mep-s' + (m === 'train' ? ' go' : '') + '" data-act="go" data-v="' + m + '"><b>' + MODES[m].toUpperCase() + '</b><small>' + esc(MODE_TXT[m]) + '</small></button>'; }).join('') + '</div>';
     h += '<div class="mep-tag">⚠︎ Entraînement aux procédures sur simulateur d\'appli : météo d\'exercice, physique simplifiée, aides au pilotage signalées comme telles. Ne jamais utiliser comme donnée de navigation réelle.</div>';
-    h += '<div class="mep-refs">Sources : OM-B DA42 VI Issue C p.60-65 et p.403-407 · VAC / AD 2 LFBU · PDP V1.2.</div></div>';
+    h += '<div class="mep-refs">Sources : OM-B DA42 VI Issue C p.60-65, p.403-407, performances (montée) · AIP AD 2 LFBU et AD 2 LFBL · PDP V1.2 · Garmin G1000 NXi.</div></div>';
     e.innerHTML = h; e.classList.remove('hidden'); e.scrollTop = 0;
-    K.bindActs(e, { close: function () { T.hide(); TF.Ess.show(); }, go: function (b) { T.start(b.getAttribute('data-v')); } });
+    K.bindActs(e, { close: function () { T.hide(); TF.Ess.show(); }, go: function (b) { T.start(b.getAttribute('data-v'), T.seg || 1); }, seg: function (b) { T.seg = +b.getAttribute('data-v'); T.show(); } });
   };
   T.hide = function () { var e = el(); if (e) e.classList.add('hidden'); };
 
   /* ---------------- Démarrage ---------------- */
-  T.start = function (mode) {
+  T.start = function (mode, seg) {
     var A = app(), c = A.ck, sc = c.s.scenario;
     T.abort(); T.hide();
     if (TF.Ess) { if (TF.Ess.active()) TF.Ess.stop(true); TF.Ess.close(); } if (TF.Home) TF.Home.hide(); if (TF.Mep) TF.Mep.abort(); A.modes.idle();
@@ -10846,11 +11092,29 @@ body.immersion #immExit{display:block}
     R = { mode: mode, ph: 'radio1', step: 0, wind: w, qnh: sc.qnh || 1013, brake: false, msgs: [], items: {}, last: Date.now(),
       afis: null, ask: null, radioErr: 0, speed: mode === 'express' ? 3 : 1, brakeTapAt: -1e9, pbBlockWarned: false, expressChecks: false };
     if (TF.Interact.resetPowerLink) TF.Interact.resetPowerLink();
+    if (seg === 2 || seg === 3) presetAir(seg, c, sc);
     A.view.renderAll(); if (A.view.home) A.view.home(true);
-    clearInterval(loop); loop = setInterval(tick, 100);
+    clearInterval(loop); loop = setInterval(tick, 100); hookTd();
+    if (seg === 2 || seg === 3) stick(true);
     draw();
   };
-  T.abort = function () { if (!R) return; R = null; if (ck()) ck().s.flight.manual = false; clearInterval(loop); loop = null; TF.DATA.timing.ecuExpress = false; var b = K.$('trBar'); if (b && b.parentNode) b.parentNode.removeChild(b); if (app() && app().view) app().view.clearHighlight(); };
+  /* départs en vol (segments 2 et 3) : état documenté « montée initiale » puis vol stabilisé à 4 000 ft */
+  function presetAir(seg, c, sc) {
+    c.restore(TF.ProcEngine.buildInitial('ess-climb', sc));
+    ['fuel_pump_l', 'fuel_pump_r', 'landing_light', 'taxi_light'].forEach(function (k) { c.setControl(k, 'OFF'); });
+    c.setControl('gear_lever', 'UP'); c.setControl('flaps', 'UP'); c.setControl('power_l', 70); c.setControl('power_r', 70);
+    var f = c.s.flight, G = geo(), A2 = FD.AD, g = c.s.g, start, tgt;
+    if (seg === 2) { start = FD.along(A2.LFBU.thr, FD.brg(A2.LFBU.thr, G.w0), 10 * NMm); tgt = G.w0; }
+    else { start = FD.along(A2.LFBL.thr, A2.LFBL.rwy, 3 * NMm); tgt = G.w1; }
+    f.onGround = false; f.script = null; f.mx = start[0]; f.my = start[1]; f.alt = CRUISE; f.ias = 140; f.vs = 0; f.hdg = FD.brg(start, tgt); f.pitch = 0; f.bank = 0; f.trail = [];
+    c.syncGear(); c.s.sys.apEngaged = false; g.fd = false; g.lat = g.vert = g.latArm = g.vertArm = ''; g.altSel = CRUISE; g.hdg = Math.round(f.hdg); g.com[0].a = APPF; g.cdi = 'GPS';
+    R.ph = seg === 2 ? 'enroute' : 'return'; R.leg = seg === 2 ? 'BL' : 'BU'; R.fl = { t: 0, flags: seg === 2 ? { depDone: true, lvl: true } : { depDone: true, lvl: true, missDone: true } };
+    FD.start(c); f.assistOn = R.mode !== 'imm'; f.flareAid = R.mode !== 'imm'; f.cmdPitch = 0; f.cmdBank = 0;
+    if (seg === 2) { f.navTarget = G.w0; R.hdgDep = r10(f.hdg); f.navName = 'Vecteurs ILS 21'; f.assist = { lat: 'GPS', vert: 'ALT', refAlt: CRUISE }; }
+    else { f.navTarget = G.w1; R.hdgRet = r10(f.hdg); f.navName = 'LFBL → LFBU'; f.assist = { lat: 'GPS', vert: 'ALT', refAlt: CRUISE }; }
+    R.rot = null; R.items = {};
+  }
+  T.abort = function () { TF.Time.tripK = 1; stick(false); if (!R) return; R = null; if (ck()) { var ff = ck().s.flight; ff.manual = false; ff.fdm = false; ff.assist = null; ff.stickActive = false; } clearInterval(loop); loop = null; TF.DATA.timing.ecuExpress = false; var b = K.$('trBar'); if (b && b.parentNode) b.parentNode.removeChild(b); if (app() && app().view) app().view.clearHighlight(); };
   T.state = function () { return R; };
 
   /* Points du débriefing : true = fait correctement, false = erreur / oubli */
@@ -10877,6 +11141,33 @@ body.immersion #immExit{display:block}
       rb: { ask: 'Collationne :', ch: ['Runway 28, QNH ' + q + ', will report holding point Echo, ' + C + '.', 'Runway 10, QNH ' + q + ', ' + C + '.', 'Roger, ' + C + '.'], good: 0,
         why: ['', 'La piste en service est la 28.', '« Roger » ne suffit pas : piste et calage se collationnent.'] }
     };
+    var f = ck().s.flight, altH = Math.round(f.alt / 100) * 100;
+    if (which === 'dep') return {
+      ask: 'Premier contact avec Limoges Approach (118.080, AIP LFBL) :',
+      ch: ['Limoges Tower, ' + C + ', airborne.', 'Limoges Approach, ' + C + ', DA42, airborne from Angouleme runway 28, passing ' + altH + ' feet climbing 4000 feet, IFR to Limoges, request ILS runway 21.', C + ', climbing.'],
+      good: 1, why: ['Le départ IFR dans la TMA se fait avec Limoges Approach (APP), pas la tour.', '', 'Message incomplet : position, altitude, intention.'],
+      reply: C + ', Limoges Approach, identified, climb 4000 feet QNH ' + q + ', fly heading ' + pad3(R.hdgDep) + ', vectors ILS approach runway 21.',
+      rb: { ask: 'Collationne :', ch: ['Climb 4000 feet QNH ' + q + ', heading ' + pad3(R.hdgDep) + ', vectors ILS runway 21, ' + C + '.', 'Climb flight level 40, heading ' + pad3(R.hdgDep) + ', ' + C + '.', 'Roger, ' + C + '.'], good: 0,
+        why: ['', 'C\'est une ALTITUDE au QNH (sous l\'altitude de transition 5 000 ft, AIP LFBL), pas un niveau.', 'Altitude, calage et cap se collationnent.'] } };
+    if (which === 'app') return { atcFirst: true,
+      reply: C + ', turn ' + R.turnDir + ' heading ' + pad3(R.hdgInt) + ', maintain 4000 feet until established, cleared ILS approach runway 21, report established.',
+      rb: { ask: 'Collationne la clairance d\'approche :', ch: ['Turn ' + R.turnDir + ' heading ' + pad3(R.hdgInt) + ', 4000 feet until established, cleared ILS runway 21, wilco, ' + C + '.', 'Heading ' + pad3((R.hdgInt + 180) % 360) + ', cleared ILS runway 21, ' + C + '.', 'Cleared ILS, ' + C + '.'], good: 0,
+        why: ['', 'Cap faux.', 'Cap, altitude et clairance d\'approche se collationnent.'] } };
+    if (which === 'miss') return { atcFirst: true,
+      reply: C + ', roger go-around, climb 4000 feet, turn ' + (FD.wrap180(R.hdgRet - f.hdg) > 0 ? 'right' : 'left') + ' heading ' + pad3(R.hdgRet) + ', vectors ILS runway 28 Angouleme.',
+      rb: { ask: 'Collationne :', ch: ['Climb 4000 feet, heading ' + pad3(R.hdgRet) + ', vectors ILS 28 Angouleme, ' + C + '.', 'Climb flight level 40, heading ' + pad3(R.hdgRet) + ', ' + C + '.', 'Wilco, ' + C + '.'], good: 0,
+        why: ['', 'Altitude au QNH, pas un niveau.', 'Altitude et cap se collationnent.'] } };
+    if (which === 'app2') return { atcFirst: true,
+      reply: C + ', turn ' + R.turnDir2 + ' heading ' + pad3(R.hdgInt2) + ', maintain 4000 feet until established, cleared ILS approach runway 28 Angouleme, when established contact Angouleme Information 123.155.',
+      rb: { ask: 'Collationne :', ch: ['Heading ' + pad3(R.hdgInt2) + ', 4000 feet until established, cleared ILS runway 28, Angouleme Information 123.155 when established, ' + C + '.', 'Heading ' + pad3(R.hdgInt2) + ', cleared ILS runway 10, ' + C + '.', 'Roger, 123.155, ' + C + '.'], good: 0,
+        why: ['', 'Mauvaise piste : 28.', 'Cap, altitude, clairance et fréquence se collationnent.'] } };
+    if (which === 'afis3') return {
+      ask: 'Annonce-toi à Angoulême Information (123.155) :',
+      ch: ['Angouleme Tower, ' + C + ', request landing clearance.', 'Angouleme Information, ' + C + ', established ILS runway 28, ' + (FD.nav(ck()).valid ? Math.round(FD.nav(ck()).dme) + ' miles' : 'inbound') + ', for full stop landing.', C + ', final.'],
+      good: 1, why: ['AFIS : pas de tour, pas de « landing clearance ».', '', 'Message incomplet.'],
+      reply: C + ', Angouleme Information, runway 28, ' + windEn() + ', QNH ' + q + ', no reported traffic.',
+      rb: { ask: 'Ta réponse :', ch: ['Runway 28, QNH ' + q + ', ' + C + '.', 'Cleared to land runway 28, ' + C + '.', 'Runway 10, ' + C + '.'], good: 0,
+        why: ['', 'Pas de « cleared to land » en AFIS.', 'Mauvaise piste : 28.'] } };
     return {
       ask: 'Au point d\'arrêt E, vérifications faites. Ton message :',
       ch: [C + ', ready for departure, request take-off clearance.', C + ', holding point Echo, ready, lining up and taking off runway 28.', 'Angouleme, ' + C + ', let\'s go.'],
@@ -10885,6 +11176,14 @@ body.immersion #immExit{display:block}
       rb: { ask: 'Ta réponse :', ch: ['Lining up and taking off runway 28, ' + C + '.', 'Cleared for take-off runway 28, ' + C + '.', 'Taking off runway 10, ' + C + '.'], good: 0,
         why: ['', 'Pas de « cleared » en AFIS : tu annonces que tu t\'alignes et décolles.', 'Mauvaise piste : 28.'] }
     };
+  }
+  var RADIO_LABEL = { taxi: 'Radio AFIS : annonce de roulage et collationnement', ready: 'Radio AFIS : prêt, alignement et décollage', dep: 'Radio : premier contact Limoges Approach et collationnement de la clairance', app: 'Radio : clairance d\'approche ILS 21 collationnée', miss: 'Radio : instructions après la remise de gaz collationnées', app2: 'Radio : clairance ILS 28 et changement de fréquence collationnés', afis3: 'Radio AFIS Angoulême : annonce en finale' };
+  function radioDone(w) {
+    var F2 = R.fl ? R.fl.flags : {}, f = ck().s.flight;
+    if (w === 'taxi') R.ph = 'taxi'; else if (w === 'ready') R.ph = 'lineup';
+    else if (w === 'dep') { F2.depDone = true; f.navTarget = geo().w0; f.navName = 'Vecteurs ILS 21'; A({ lat: 'GPS', vert: 'AIAS', ias: 92, up: true, refAlt: CRUISE }); }
+    else if (w === 'app') F2.vecDone = true; else if (w === 'miss') F2.missDone = true;
+    else if (w === 'app2') { F2.vec2Done = true; F2.afisAsk = true; } else if (w === 'afis3') F2.afisDone = true;
   }
   function answer(v) {
     var st = R.ask; if (!st) return;
@@ -10895,12 +11194,12 @@ body.immersion #immExit{display:block}
         st.rbMode = true; R.afis = st.data.reply; R.fb = null;
         if (TF.Voice && TF.Voice.enabled && TF.Voice.enabled()) TF.Voice.say(st.data.reply, 'en');
       } else {
-        mark('radio_' + st.which, true, st.which === 'taxi' ? 'Radio AFIS : annonce de roulage et collationnement' : 'Radio AFIS : prêt, alignement et décollage');
-        R.ask = null; R.afis = null; R.fb = null; R.ph = st.which === 'taxi' ? 'taxi' : 'lineup';
+        mark('radio_' + st.which, true, RADIO_LABEL[st.which]);
+        R.ask = null; R.afis = null; R.fb = null; radioDone(st.which);
       }
     } else {
       K.sound.err(); R.radioErr++; R.fb = q.why[v] || 'Pas la bonne réponse.';
-      mark('radio_' + st.which, false, st.which === 'taxi' ? 'Radio AFIS : annonce de roulage et collationnement' : 'Radio AFIS : prêt, alignement et décollage', R.fb);
+      mark('radio_' + st.which, false, RADIO_LABEL[st.which], R.fb);
     }
     draw();
   }
@@ -10939,7 +11238,14 @@ body.immersion #immExit{display:block}
     if (R.ph === 'taxi' || R.ph === 'radio1') taxiTick(dt, f, ctl, p, pb, n);
     else if (R.ph === 'lineup') lineupTick(dt, f, pb);
     else if (R.ph === 'roll') rollTick(dt, f, ctl, p, n);
-    else if (R.ph === 'climb') { climbTick(dt, f, ctl, p); if (R && R.ph === 'climb' && dt > rdt) f.alt += f.vs * (dt - rdt) / 60000; }
+    else if (FLIGHT[R.ph]) flightTick(rdt);
+    else if (R.ph === 'rollout') rolloutTick(rdt * (TF.Time.tripK || 1), f, ctl);
+    if (!R) return;
+    // accélération automatique : rien à faire jusqu'au prochain déclencheur (croisière, retour, interception lointaine)
+    var tk = FLIGHT[R.ph] ? flightTask() : null, k = 1;
+    if (tk && tk.wait && !R.ask && !R.noAuto) k = (R.ph === 'enroute' || R.ph === 'return') ? 12 : 4;
+    if (R.forceK) k = R.forceK;
+    if (TF.Time.tripK !== k) { TF.Time.tripK = k; R.drawAt = 0; }
     if (R && (R.ph !== prevPh || now - (R.drawAt || 0) > 500)) draw();
   }
   function taxiTick(dt, f, ctl, p, pb, n) {
@@ -11018,53 +11324,212 @@ body.immersion #immExit{display:block}
     var f = ck().s.flight; if (R.rot || f.ias < 76) return;
     R.rot = { ias: Math.round(f.ias), assisted: assisted };
     if (R.mode !== 'express') mark('rot', !assisted, 'Rotation à partir de VR (76 KIAS mini, OM-B p.65 j)', assisted ? 'Rotation faite par l\'aide du simulateur à ' + R.rot.ias + ' kt.' : '');
-    f.onGround = false; f.manual = true; f.pitch = 8; f.vs = 300; f.alt = FIELD + 2; R.ph = 'climb'; R.climbT = 0; K.sound.click();
+    f.onGround = false; f.pitch = 8; f.vs = 300; f.alt = FIELD + 2; R.ph = 'climb'; K.sound.click();
+    flightStart();
   }
-  function climbTick(dt, f, ctl, p) {
-    var sec = dt / 1000, agl = f.alt - FIELD, c = ck(), sys = c.s.sys;
-    R.climbT += dt;
-    // montée assistée (aide simulateur) : 83 KIAS (OM-B k) puis 90 KIAS dégagé des obstacles (OM-B l, ≤ 1900 kg) — dégagement fixé à 400 ft sol par le simulateur
-    var tIas = agl < 400 ? 83 : 90, tVs = clamp((p - 45) * 16, -300, 850) * (runningCount() / 2);
-    if (sys.apEngaged) { /* AP engagé : l'AFCS du simulateur gère la vitesse verticale */ }
-    else f.vs = f.vs + clamp(tVs - f.vs, -400 * sec, 400 * sec);
-    f.ias = f.ias + clamp(tIas - f.ias, -2 * sec, 2 * sec);
-    f.pitch = clamp(f.vs / 100 + 1, 0, 12);
-    var gp = sys.gear ? sys.gear.pos : 1;
-    if (ctl.gear_lever === 'UP' && R.items.gear === undefined) {
-      var posClimb = f.vs > 100 && agl > 20, brk = Date.now() - R.brakeTapAt < 8000;
-      mark('gear', posClimb, 'Train : vario positif établi → freins, UP (OM-B p.65 m)', posClimb ? '' : 'Train rentré sans vario positif établi.');
-      mark('gearbrk', brk, 'Freins appliqués avant de rentrer le train (note OM-B p.65)', brk ? '' : 'Bouton « Freins » non utilisé avant la rentrée du train.');
+  /* =====================================================================================================================
+   * VOL (6.4) : montée, croisière, ILS 21 Limoges (percée + remise de gaz aux minima), retour, ILS 28 Angoulême, atterrissage.
+   * Modèle de vol TF.FDM (simplifié). Phraséologie d'exercice en anglais. Aides du simulateur signalées comme telles.
+   * Non intégré (IAC non disponible ici) : altitudes publiées des procédures, minima, remise de gaz publiée → valeurs
+   * d'EXERCICE affichées comme telles (DA = seuil + 200 ft) et instructions ATC simulées.
+   * ===================================================================================================================== */
+  var FD = TF.FDM, NMm = 1852, APPF = 118080, NAVBL = 110100, NAVBU = 109350, CRUISE = 4000;
+  function geo() {
+    var A = FD.AD;
+    var t0 = FD.along(A.LFBL.thr, (A.LFBL.rwy + 180) % 360, 18 * NMm), t1 = FD.along(A.LFBU.thr, (A.LFBU.rwy + 180) % 360, 16 * NMm);
+    // points de guidage radar SIMULÉS (côté d'arrivée de l'axe, interception à 30°) — pas des points publiés
+    return { t0: t0, t1: t1, w0: FD.along(t0, (A.LFBL.rwy + 90) % 360, 3 * NMm), w1: FD.along(t1, (A.LFBU.rwy + 90) % 360, 3 * NMm), ibl: A.LFBL.ibl21 };
+  }
+  function here() { var f = ck().s.flight; return [f.mx, f.my]; }
+  function nmTo(p) { return FD.dist(here(), p) / NMm; }
+  function indAlt() { return TF.G1000.indicatedAlt(ck()); }
+  function minsSet(v) { var r = ck().s.g.ref; return !!(r && r.min.type === 'BARO' && Math.abs(r.min.alt - v) <= 20); }
+  function pw(lo, hi) { var c = ck().s.controls; return c.power_l >= lo && c.power_l <= hi && c.power_r >= lo && c.power_r <= hi; }
+  function r10(h) { h = Math.round(h / 10) * 10 % 360; return h <= 0 ? h + 360 : h; }
+  function setPower(v) { ck().setControl('power_l', v); ck().setControl('power_r', v); }
+  function A(o) { var f = ck().s.flight, a = f.assist || (f.assist = {}); for (var k in o) a[k] = o[k]; }
+  function DA() { return R.leg === 'BU' ? (ck().s.scenario.minima || 650) : 1480; }
+  /* départ du modèle de vol à la rotation */
+  function flightStart() {
+    var c = ck(), f = c.s.flight; FD.start(c);
+    f.assistOn = R.mode !== 'imm'; f.flareAid = R.mode !== 'imm'; f.navName = 'LFBU → LFBL'; f.cmdPitch = 8; f.cmdBank = 0;
+    f.assist = { lat: 'AHDG', hdg: 277, vert: 'AIAS', ias: 83, up: true };
+    R.fl = { t: 0, flags: {} }; R.leg = 'BL';
+  }
+  function flightTick(rdt) {
+    var c = ck(), s = c.s, f = s.flight, g = s.g, ctl = s.controls, F2 = R.fl.flags, G = geo();
+    var agl = f.agl != null ? f.agl : f.alt - FIELD, nv = FD.nav(c);
+    // ----- surveillances communes
+    if (!f.onGround && f.ias > 152 && s.sys.gear && s.sys.gear.pos > 0 && R.items.vlo === undefined) mark('vlo', false, 'Train rentré avant 152 KIAS (OM-B p.407)', 'Vitesse > 152 KIAS train sorti.');
+    if (f.stall && !F2.stallSeen) { F2.stallSeen = true; mark('stall', false, 'Pas de décrochage', 'Incidence de décrochage atteinte (modèle simplifié).'); note('⚠︎ STALL — rends la main, puissance !', 'crit'); K.sound.err(); }
+    if (agl > 500 && !R.imc && R.ph === 'climb') { R.imc = true; note('☁︎ Entrée dans la couche (base 500 ft sol, météo d\'exercice) : pilotage aux instruments.', 'warn'); }
+    if (R.mode === 'express') expressAuto(f, g, ctl, agl, nv);
+    switch (R.ph) {
+      case 'climb':
+        if (ctl.gear_lever === 'UP' && R.items.gear === undefined) {
+          var posClimb = f.vs > 100 && agl > 20, brk = Date.now() - R.brakeTapAt < 8000;
+          mark('gear', posClimb, 'Train : vario positif établi → freins, UP (OM-B p.65 m)', posClimb ? '' : 'Train rentré sans vario positif établi.');
+          mark('gearbrk', brk, 'Freins appliqués avant de rentrer le train (note OM-B p.65)', brk ? '' : 'Bouton « Freins » non utilisé avant la rentrée du train.');
+        }
+        if (agl > 400 && f.assist && f.assist.ias === 83) A({ ias: 90 });
+        if (agl > 400 && !F2.p92 && pw(88, 95)) { F2.p92 = true; mark('p92', true, 'Puissance réduite vers 92 % après le décollage (cours : 400 ft AAL)'); }
+        if (agl > 300 && !F2.pmk && ctl.fuel_pump_l === 'OFF' && ctl.fuel_pump_r === 'OFF') { F2.pmk = 1; mark('pumps', true, 'Fuel pumps OFF après le décollage (OM-B p.65 n)'); }
+        if (agl > 300 && !F2.lmk && ctl.landing_light === 'OFF') { F2.lmk = 1; mark('ldgoff', true, 'Landing light OFF (OM-B p.65 p)'); }
+        if (agl > 900 && !F2.depAsk) { F2.depAsk = true; R.hdgDep = r10(FD.brg(here(), G.w0)); }
+        if (F2.depDone) { R.ph = 'enroute'; }
+        break;
+      case 'enroute':
+        if (f.assist && f.assist.vert === 'AIAS' && f.alt > CRUISE - 60) A({ vert: 'ALT', refAlt: CRUISE });
+        if (!F2.lvl && f.alt > CRUISE - 100 && Math.abs(f.vs) < 300) F2.lvl = true;
+        if (F2.lvl && !F2.pCruise && pw(65, 75)) { F2.pCruise = true; mark('pcruise', true, 'Puissance croisière 70 % (AFAe training, OM-B §7)'); }
+        if (nmTo(G.w0) < 2 && !F2.vecAsk) { F2.vecAsk = true; var gm = FD.locGeom('LFBL', here()); R.hdgInt = r10(FD.AD.LFBL.rwy + (gm.xt > 0 ? 30 : -30)); R.turnDir = FD.wrap180(R.hdgInt - f.hdg) > 0 ? 'right' : 'left'; }
+        if (F2.vecDone) { R.ph = 'app1'; A({ lat: 'AHDG', hdg: R.hdgInt, vert: 'ALT', refAlt: CRUISE }); mark('prep1', g.nav[0].a === NAVBL && minsSet(1480) && !!F2.brief1, 'Préparation ILS 21 avant la clairance (NAV1, course, minimums, briefing)', 'Préparation incomplète quand l\'ATC a donné la clairance.'); }
+        break;
+      case 'app1': case 'app2':
+        var ad = R.ph === 'app1' ? 'LFBL' : 'LFBU';
+        if (f.assist && f.assist.lat === 'AHDG' && nv.valid && nv.ad === ad && Math.abs(nv.dots) < 2) A({ lat: 'LOC' });
+        if (f.assist && f.assist.lat === 'LOC' && f.assist.vert !== 'GS' && nv.gsValid && nv.ad === ad && f.alt >= nv.glideAlt - 60 && f.alt <= nv.glideAlt + 100) A({ vert: 'GS' });
+        if (nv.valid && nv.ad === ad && nv.dme < 8 && !F2[ad + 'fap']) { F2[ad + 'fap'] = true; var gd = s.sys.gear && s.sys.gear.pos >= 1; mark(ad + 'gear', gd, 'Train sorti, 3 vertes au plus tard au FAP (' + ad + ', PDP : sur le glide)', gd ? '' : 'Train encore rentré au passage du FAP.'); mark(ad + 'flaps', ctl.flaps !== 'UP', 'Volets APP en approche finale (' + ad + ')', ctl.flaps !== 'UP' ? '' : 'Volets encore UP au FAP.'); }
+        if (R.ph === 'app1') {
+          if (indAlt() <= DA() + 5 && f.vs < 0 && !F2.daBL) { F2.daBL = true; F2.daBLat = Date.now(); note('🔔 MINIMUMS — pas de références visuelles (exercice) : REMISE DE GAZ', 'crit'); if (TF.Voice.enabled()) TF.Voice.say('Minimums. Go around.', 'en'); }
+          if (F2.daBL && !F2.gaBL) {
+            var gaNow = g.vert === 'GA' || g.lat === 'GA' || (pw(95, 100) && f.vs > 0);
+            if (gaNow) { F2.gaBL = true; var lost = Math.round(DA() - indAlt()); mark('ga', lost < 120, 'Remise de gaz aux minima (DA ' + DA() + ' ft, exercice)', lost < 120 ? '' : 'Remise de gaz ' + lost + ' ft sous la DA.'); R.ph = 'ga1'; A({ lat: 'AHDG', hdg: Math.round(f.hdg), vert: 'AIAS', ias: 90, up: true }); }
+            else if (indAlt() < DA() - 100) { F2.gaBL = true; mark('ga', false, 'Remise de gaz aux minima (DA ' + DA() + ' ft, exercice)', 'Pas de remise de gaz : le simulateur l\'a faite à ' + Math.round(agl) + ' ft sol.'); setPower(100); if (s.sys.avionics) TF.G1000.goAround(c); R.ph = 'ga1'; A({ lat: 'AHDG', hdg: Math.round(f.hdg), vert: 'AIAS', ias: 90, up: true }); f.assistOn = true; }
+          }
+        } else {
+          if (agl < 520 && !F2.visBU) { F2.visBU = true; note('👀 Sortie de la couche vers 500 ft sol : piste en vue (exercice). Poursuis vers l\'atterrissage.', 'ok'); }
+          if (indAlt() <= DA() && !F2.daBU) { F2.daBU = true; mark('apdisc', !s.sys.apEngaged, 'AP déconnecté au plus tard aux minima (règle de l\'exercice, à confirmer)', s.sys.apEngaged ? 'AP encore engagé aux minima.' : ''); if (s.sys.apEngaged) { s.sys.apEngaged = false; s.sys.apDiscAlert = s.t; c.emit('aural', 'apdisc'); } }
+          if (agl < 150) { R.ph = 'flare'; }
+        }
+        break;
+      case 'ga1':
+        if (ctl.gear_lever === 'UP' && !F2.gaGear) { F2.gaGear = true; mark('gagear', f.vs > 100, 'Remise de gaz : train UP après vario positif', f.vs > 100 ? '' : 'Train rentré sans vario positif.'); }
+        if (f.alt > DA() + 400 && !F2.missAsk) { F2.missAsk = true; R.hdgRet = r10(FD.brg(here(), G.w1)); }
+        if (F2.missDone) { R.ph = 'return'; R.leg = 'BU'; f.navName = 'LFBL → LFBU'; f.navTarget = G.w1; A({ lat: 'GPS', hdg: R.hdgRet, vert: f.alt < CRUISE - 60 ? 'AIAS' : 'ALT', ias: 92, up: true, refAlt: CRUISE }); }
+        break;
+      case 'return':
+        if (f.assist && f.assist.vert === 'AIAS' && f.alt > CRUISE - 60) A({ vert: 'ALT', refAlt: CRUISE });
+        if (nmTo(G.w1) < 2 && !F2.vec2Ask) { F2.vec2Ask = true; var gm2 = FD.locGeom('LFBU', here()); R.hdgInt2 = r10(FD.AD.LFBU.rwy + (gm2.xt > 0 ? 30 : -30)); R.turnDir2 = FD.wrap180(R.hdgInt2 - f.hdg) > 0 ? 'right' : 'left'; }
+        if (F2.vec2Done) { R.ph = 'app2'; A({ lat: 'AHDG', hdg: R.hdgInt2, vert: 'ALT', refAlt: CRUISE }); mark('prep2', g.nav[0].a === NAVBU && minsSet(DA()) && !!F2.brief2, 'Préparation ILS 28 avant la clairance (NAV1, course, minimums, briefing)', 'Préparation incomplète quand l\'ATC a donné la clairance.'); }
+        break;
+      case 'flare':
+        if (agl < 30 && !F2.idle) { if (pw(0, 20)) { F2.idle = true; mark('idle', true, 'Manettes IDLE à l\'arrondi'); } }
+        break;
     }
-    if (f.ias > 152 && gp > 0) mark('vlo', false, 'Train rentré avant 152 KIAS (OM-B p.407)', 'Vitesse > 152 KIAS train sorti.');
-    if (agl > 500 && !R.imc) { R.imc = true; note('☁︎ Entrée dans la couche (base 500 ft sol, météo d\'exercice) : pilotage aux instruments.', 'warn'); }
-    if (agl >= 1500) finish('ok');
+  }
+  /* Express : le simulateur fait les réglages à ta place (aide signalée) */
+  function expressAuto(f, g, ctl, agl, nv) {
+    var c = ck(), F2 = R.fl.flags;
+    if (R.ph === 'climb') { if (f.vs > 200 && agl > 50 && ctl.gear_lever === 'DOWN') c.setControl('gear_lever', 'UP'); if (agl > 400 && !F2.xp1) { F2.xp1 = 1; setPower(92); c.setControl('fuel_pump_l', 'OFF'); c.setControl('fuel_pump_r', 'OFF'); c.setControl('landing_light', 'OFF'); } if (agl > 600 && g.com[0].a !== APPF) g.com[0].a = APPF; }
+    if (R.ph === 'enroute') { if (g.altSel !== CRUISE) g.altSel = CRUISE; if (F2.lvl && !F2.xp2) { F2.xp2 = 1; setPower(70); } if (!F2.xp3) { F2.xp3 = 1; g.nav[0].a = NAVBL; g.crs = 212; g.cdi = 'VOR1'; g.ref.min = { type: 'BARO', alt: 1480 }; F2.brief1 = true; } }
+    if (R.ph === 'app1' || R.ph === 'app2') { if (nv.valid && nv.dme < 10 && ctl.gear_lever === 'UP') c.setControl('gear_lever', 'DOWN'); if (nv.valid && nv.dme < 10 && ctl.flaps === 'UP') c.setControl('flaps', 'APP'); if (nv.valid && nv.dme < 10 && !F2['xpp' + R.ph]) { F2['xpp' + R.ph] = 1; setPower(58); } if (f.assist && f.assist.vert === 'GS' && !F2['xpg' + R.ph]) { F2['xpg' + R.ph] = 1; setPower(38); } if (R.ph === 'app2' && g.com[0].a !== AFIS) g.com[0].a = AFIS; }
+    if (R.ph === 'ga1' && !F2.xpga) { F2.xpga = 1; setPower(100); } if (R.ph === 'ga1' && f.vs > 200 && ctl.gear_lever === 'DOWN') { c.setControl('gear_lever', 'UP'); c.setControl('flaps', 'UP'); }
+    if (R.ph === 'return') { if (!F2.xpr) { F2.xpr = 1; setPower(70); g.nav[0].a = NAVBU; g.crs = 276; g.cdi = 'VOR1'; g.ref.min = { type: 'BARO', alt: DA() }; F2.brief2 = true; } }
+    if (R.ph === 'flare' && agl < 40 && !F2.xpi) { F2.xpi = 1; setPower(0); }
+  }
+  /* toucher des roues */
+  function onTouch(t) {
+    if (!R || !R.fl) return;
+    var ok = t.onRwy && t.gear && t.vs > -700 && Math.abs(t.bank) < 10;
+    if (!t.onRwy || !t.gear || t.vs < -1200) { mark('ldg', false, 'Atterrissage', !t.gear ? 'Atterrissage train rentré.' : !t.onRwy ? 'Contact hors de la piste.' : 'Contact très dur (' + t.vs + ' ft/min).'); return finish('crash'); }
+    mark('ldg', ok, 'Toucher des roues sur la piste ' + (t.ad === 'LFBU' ? '28 d\'Angoulême' : 'de Limoges'), ok ? 'Vz ' + t.vs + ' ft/min, ' + t.ias + ' kt' : 'Vz ' + t.vs + ' ft/min (ferme), ' + t.ias + ' kt.');
+    R.ph = 'rollout'; R.brake = false; K.sound.ok();
+  }
+  function rolloutTick(dt, f, ctl) {
+    var sec = dt / 1000, p = avgPower(ctl);
+    var a = (p > 30 ? 1.2 * (p / 100) : 0) - 0.7 - (R.brake ? 4 : 0) - 0.004 * f.ias;
+    f.ias = Math.max(0, f.ias + a * sec); var d = f.ias * 0.5144 * sec; f.mx += Math.sin(f.hdg * Math.PI / 180) * d; f.my += Math.cos(f.hdg * Math.PI / 180) * d; trail(f);
+    if (f.ias < 0.5) { f.ias = 0; mark('stop', true, 'Arrêt complet sur la piste'); finish('ok'); }
+  }
+  /* tâches du vol (la première non faite est affichée ; wait = rien à faire → accélération) */
+  function flightTask() {
+    var c = ck(), s = c.s, f = s.flight, g = s.g, ctl = s.controls, F2 = R.fl.flags, agl = f.agl != null ? f.agl : 0, nv = FD.nav(c);
+    var ap = s.sys.apEngaged;
+    function T2(t, ids, hint) { return { t: t, ids: ids || [], hint: hint }; }
+    switch (R.ph) {
+      case 'climb':
+        if (ctl.gear_lever === 'DOWN') return T2(f.vs > 100 && agl > 20 ? 'Vario positif : freins puis train UP (OM-B p.65 m).' : 'Montée initiale 83 KIAS (OM-B p.65 k)…', f.vs > 100 && agl > 20 ? ['gear_lever'] : []);
+        if (agl > 400 && !pw(88, 95) && !F2.p92) return T2('400 ft sol : manettes vers 92 % (puissance max continue).', ['power_l', 'power_r']);
+        if (ctl.fuel_pump_l === 'ON' || ctl.fuel_pump_r === 'ON') return T2('Fuel pumps LH/RH OFF (OM-B p.65 n).', ['fuel_pump_l', 'fuel_pump_r']);
+        if (ctl.landing_light === 'ON') return T2('Landing light OFF (OM-B p.65 p).', ['landing_light']);
+        if (F2.depAsk && g.com[0].a !== APPF) return T2('Change de fréquence : Limoges Approach 118.080 en COM1 (AIP LFBL).', ['k_com', 'xfer_com'], 'Petit bouton COM au pas 8,33 kHz, puis ⇆.');
+        if (F2.depAsk) return { radio: 'dep' };
+        return T2('Montée à 90 KIAS (Vy ≤ 1900 kg, OM-B p.65 l). ' + Math.round(agl) + ' ft sol.', []);
+      case 'enroute':
+        if (F2.vecAsk) return { radio: 'app' };
+        if (g.altSel !== CRUISE) return T2('Altitude sélectée 4 000 ft (clairance) — bouton ALT.', ['mk_alt', 'k_alt']);
+        if (s.sys.apEngaged && g.lat === 'HDG' && Math.abs(FD.wrap180(g.hdg - R.hdgDep)) > 3) return T2('Bug de cap sur ' + pad3(R.hdgDep) + ' (vecteurs ATC).', ['mk_hdg', 'k_hdg']);
+        if (F2.lvl && !F2.pCruise && !pw(65, 75)) return T2('En palier : puissance croisière 70 % (AFAe training).', ['power_l', 'power_r']);
+        if (g.nav[0].a !== NAVBL) return T2('Prépare l\'ILS 21 : NAV1 110.10 (LOC « LG ») en fréquence active.', ['k_nav', 'xfer_nav']);
+        if (Math.abs(FD.wrap180(g.crs - 212)) > 2) return T2('Course 212° (axe LOC 21) — bouton CRS.', ['k_crs']);
+        if (!minsSet(1480)) return T2('Minimums BARO 1 480 ft (exercice : seuil 1 278 + 200 ft — la DA réelle est sur l\'IAC) : Tmr/Ref puis bouton FMS.', ['pfd_sk10', 'k_fms']);
+        if (!F2.brief1) return { t: 'Briefing arrivée ILS 21 (piste, axe 212°, glide 3°, DA, remise de gaz).', decl: 'brief1' };
+        return { t: 'Croisière, cap ' + pad3(R.hdgDep || Math.round(f.hdg)) + ' (vecteurs) — ' + nmTo(geo().w0).toFixed(0) + ' NM avant l\'interception. ' + (ap ? 'AP engagé.' : (f.assistOn ? 'Aide au pilotage active.' : 'Tu pilotes.')), wait: true };
+      case 'app1': case 'app2':
+        var ad = R.ph === 'app1' ? 'LFBL' : 'LFBU', hi = R.ph === 'app1' ? R.hdgInt : R.hdgInt2;
+        if (R.ph === 'app2' && F2.afisAsk && g.com[0].a !== AFIS) return T2('Angoulême Information : COM1 123.155.', ['k_com', 'xfer_com']);
+        if (R.ph === 'app2' && F2.afisAsk && !F2.afisDone) return { radio: 'afis3' };
+        var nfq = ad === 'LFBL' ? NAVBL : NAVBU;
+        if (g.nav[0].a !== nfq) return T2('NAV1 ' + TF.G1000.fmtNav(nfq) + ' en fréquence active (ILS ' + (ad === 'LFBL' ? '21' : '28') + ').', ['k_nav', 'xfer_nav']);
+        if (g.cdi !== 'VOR1') return T2('CDI sur LOC1 (softkey CDI) pour l\'ILS.', ['pfd_sk6']);
+        if (ap && g.lat !== 'LOC' && g.latArm !== 'LOC' && g.latArm !== 'VOR') return T2('Cap ' + hi + '° (HDG) puis APR pour armer LOC / GS.', ['ap_hdg', 'ap_apr', 'mk_hdg']);
+        if (nv.valid && nv.ad === ad && nv.dme < 10.5 && s.sys.gear.pos < 1 && ctl.gear_lever === 'UP') return T2('Approche du FAP : train DOWN, 3 vertes.', ['gear_lever']);
+        if (nv.valid && nv.ad === ad && nv.dme < 10.5 && ctl.flaps === 'UP') return T2('Volets APP (VFE APP 133 kt).', ['flaps']);
+        if (nv.valid && nv.ad === ad && nv.dme < 10.5 && f.ias > 115 && !pw(0, 50)) return T2('Réduis vers 100-105 kt (PDP) : manettes ≈ 35-45 %.', ['power_l', 'power_r']);
+        if (nv.valid && nv.ad === ad && nv.dme < 9 && !F2['fin' + ad]) return { t: 'Final check-list (C/L FINAL).', decl: 'fin' + ad };
+        if (R.ph === 'app2' && agl < 700 && ctl.flaps !== 'LDG' && f.ias < 113) return T2('Piste en vue : volets LDG (VFE LDG 113 kt).', ['flaps']);
+        if (R.ph === 'app2' && agl < 400 && ap) return T2('AP DISC : déconnecte le pilote automatique pour l\'atterrissage.', ['ap_disc']);
+        if (R.ph === 'app1') return { t: 'ILS 21 : ' + (g.lat === 'LOC' || (f.assist && f.assist.lat === 'LOC' && !ap) ? 'LOC' : 'interception') + (g.vert === 'GS' || (f.assist && f.assist.vert === 'GS' && !ap) ? ' + GS' : '') + ' · DA ' + DA() + ' ft (exercice) · ' + (nv.valid ? 'DME ' + nv.dme.toFixed(1) : ''), wait: !nv.valid || nv.dme > 9 };
+        return { t: 'ILS 28 : ' + (nv.valid ? 'DME ' + nv.dme.toFixed(1) : 'interception') + ' · DA ' + DA() + ' ft (exercice)', wait: !nv.valid || nv.dme > 9 };
+      case 'ga1':
+        if (!pw(95, 100)) return T2('REMISE DE GAZ : GA + manettes MAX.', ['ga_btn', 'power_l', 'power_r']);
+        if (ctl.gear_lever === 'DOWN') return T2(f.vs > 100 ? 'Vario positif : train UP.' : 'Assiette de remise de gaz, vario positif…', f.vs > 100 ? ['gear_lever'] : []);
+        if (ctl.flaps !== 'UP' && f.ias > 90) return T2('Volets UP en sécurité.', ['flaps']);
+        if (F2.missAsk && !F2.missDone) return { radio: 'miss' };
+        return T2('Montée — remise de gaz publiée non intégrée : instructions ATC simulées.', []);
+      case 'return':
+        if (F2.vec2Ask) return { radio: 'app2' };
+        if (g.altSel !== CRUISE) return T2('Altitude sélectée 4 000 ft.', ['mk_alt', 'k_alt']);
+        if (!pw(65, 75) && f.alt > CRUISE - 150) return T2('Puissance croisière 70 %.', ['power_l', 'power_r']);
+        if (g.nav[0].a !== NAVBU) return T2('Prépare l\'ILS 28 d\'Angoulême : NAV1 109.35 active.', ['k_nav', 'xfer_nav']);
+        if (Math.abs(FD.wrap180(g.crs - 276)) > 2) return T2('Course 276° (axe LOC 28).', ['k_crs']);
+        if (!minsSet(DA())) return T2('Minimums BARO ' + DA() + ' ft (valeur d\'exercice du scénario) : Tmr/Ref + FMS.', ['pfd_sk10', 'k_fms']);
+        if (!F2.brief2) return { t: 'Briefing arrivée ILS 28 Angoulême.', decl: 'brief2' };
+        return { t: 'Retour vers Angoulême — cap ' + pad3(R.hdgRet) + ' · ' + nmTo(geo().w1).toFixed(0) + ' NM de l\'interception.', wait: true };
+      case 'flare':
+        return T2(agl > 30 ? 'Courte finale : axe, plan, vitesse.' : 'Arrondi : manettes IDLE.', agl > 30 ? [] : ['power_l', 'power_r']);
+      case 'rollout':
+        return T2('Roulement : freine (bouton « Freins ») jusqu\'à l\'arrêt.', []);
+    }
+    return { t: '' };
   }
 
   /* ---------------- Fin / débriefing ---------------- */
   function finish(kind) {
     var r = R; if (!r) return; T.abort();
     var c = ck(), s = c.s, ctl = s.controls;
-    if (kind === 'ok') {
+    if (kind === 'ok' && r.rot) {
       if (r.items.gear === undefined) r.items.gear = { ok: false, label: 'Train : vario positif établi → freins, UP (OM-B p.65 m)', why: 'Train encore sorti à 1 500 ft sol.' };
-      r.items.pumps = { ok: ctl.fuel_pump_l === 'OFF' && ctl.fuel_pump_r === 'OFF', label: 'Fuel pumps OFF après le décollage (OM-B p.65 n)', why: 'Pompes encore sur ON.' };
-      r.items.ldgoff = { ok: ctl.landing_light === 'OFF', label: 'Landing light OFF (OM-B p.65 p)', why: 'Phare d\'atterrissage encore allumé.' };
+      if (r.items.pumps === undefined) r.items.pumps = { ok: !!(r.fl && r.fl.flags.depDone), label: 'Fuel pumps OFF après le décollage (OM-B p.65 n)', why: 'Pompes non coupées.' };
     }
     if (r.expressChecks) r.items.chk = { ok: false, label: 'Vérifications avant décollage faites par toi', why: 'Faites en Express par le simulateur.' };
     var keys = Object.keys(r.items), ok = keys.filter(function (k) { return r.items[k].ok; }).length, tot = keys.length || 1;
     var pct = Math.round(ok / tot * 100), xp = 0;
-    if (kind === 'ok') { xp = Math.round(ok * 2 * (r.mode === 'imm' ? 1.5 : r.mode === 'express' ? 0.5 : 1)); if (xp) TF.Profiles.addXp(xp); }
+    if (kind === 'ok' || kind === 'stopped') { xp = Math.round(ok * 2 * (r.mode === 'imm' ? 1.5 : r.mode === 'express' ? 0.5 : 1) * (kind === 'stopped' ? 0.5 : 1)); if (xp) TF.Profiles.addXp(xp); }
     var p = TF.Profiles.current();
-    if (p && kind === 'ok') { p.trip = p.trip || {}; p.trip.seg1 = Math.max(p.trip.seg1 || 0, pct); p.trip.runs = (p.trip.runs || 0) + 1; TF.Profiles.save(true); }
+    if (p && (kind === 'ok' || kind === 'stopped')) { p.trip = p.trip || {}; p.trip.seg1 = Math.max(p.trip.seg1 || 0, pct); if (r.ph === 'rollout' || kind === 'ok') p.trip.full = Math.max(p.trip.full || 0, r.items.stop && r.items.stop.ok ? pct : 0); p.trip.runs = (p.trip.runs || 0) + 1; TF.Profiles.save(true); }
     var e = el(), good = kind === 'ok' && pct >= 80;
-    var h = '<div class="mep-in"><div class="mep-card mep-end ' + (good ? 'ok' : 'ko') + '"><h2>' + (kind === 'rejected' ? '🛑 Décollage interrompu' : good ? '✅ Segment 1 réussi' : '🔁 Segment 1 à retravailler') + '</h2>';
-    h += '<div class="mep-sub">Roulage et décollage LFBU · mode ' + esc(MODES[r.mode]) + (r.rot ? ' · rotation à ' + r.rot.ias + ' kt' + (r.rot.assisted ? ' (aide simulateur)' : '') : '') + '</div>';
+    var title = kind === 'rejected' ? '🛑 Décollage interrompu' : kind === 'crash' ? '💥 Atterrissage manqué' : kind === 'stopped' ? '⏹ Vol interrompu' : good ? '✅ Vol réussi' : '🔁 Vol à retravailler';
+    var h = '<div class="mep-in"><div class="mep-card mep-end ' + (good ? 'ok' : 'ko') + '"><h2>' + title + '</h2>';
+    h += '<div class="mep-sub">' + esc(PHNAME[r.ph] || '') + ' · mode ' + esc(MODES[r.mode]) + (r.rot ? ' · rotation à ' + r.rot.ias + ' kt' + (r.rot.assisted ? ' (aide simulateur)' : '') : '') + '</div>';
     h += '<div class="mep-big">' + ok + ' / ' + tot + ' points · ' + pct + ' %' + (xp ? ' · +' + xp + ' XP' : '') + '</div>';
     h += '<ul class="tr-deb">' + keys.map(function (k) { var it = r.items[k]; return '<li class="' + (it.ok ? 'ok' : 'ko') + '">' + (it.ok ? '✓ ' : '✗ ') + esc(it.label) + (it.ok || !it.why ? '' : '<small>' + esc(it.why) + '</small>') + '</li>'; }).join('') + '</ul>';
     if (kind === 'rejected') h += '<div class="mep-tag">Interrompre est une bonne décision si quelque chose ne va pas. Revois ta mise en puissance (70 % → freins → MAX) et rejoue.</div>';
-    else h += '<div class="mep-tag">Suite du voyage (montée, croisière, ILS 21 à Limoges, retour) : en construction — uniquement à partir des cartes SIA publiées.</div>';
+    else h += '<div class="mep-tag">Modèle de vol simplifié et aides du simulateur : un entraînement aux procédures, pas une évaluation de pilotage. DA et instructions ATC d\'exercice.</div>';
     h += '<div class="mep-acts"><button class="btn" data-act="menu">🛫 Menu du vol</button><button class="btn primary" data-act="again">🔁 REJOUER (' + esc(MODES[r.mode]) + ')</button></div></div></div>';
     e.innerHTML = h; e.classList.remove('hidden'); e.scrollTop = 0;
-    K.bindActs(e, { menu: function () { T.show(); }, again: function () { T.start(r.mode); } });
+    K.bindActs(e, { menu: function () { T.show(); }, again: function () { T.start(r.mode, T.seg || 1); } });
   }
 
   /* ---------------- Barre de mission (panneau instructeur) ---------------- */
@@ -11091,15 +11556,12 @@ body.immersion #immExit{display:block}
         if (R.brake) return c.power_l < 65 || c.power_r < 65 ? { t: 'Freins tenus. Manettes à 70 % (OM-B p.64 a).', ids: ['power_l', 'power_r'] } : { t: 'Relâche les freins (OM-B p.64 b), puis MAX (c).', ids: [] };
         if (avgPower(c) < 99) return { t: 'Manettes MAX (OM-B p.64 c). Vérifie RPM 2250-2300 et LOAD 89-100 % (d-g).', ids: ['power_l', 'power_r'] };
         return { t: f.ias < 76 ? 'Course au décollage : ' + Math.round(f.ias) + ' kt. Rotation à VR mini 76 KIAS (OM-B p.65 j).' : 'VR : ROTATION !', ids: [] };
-      case 'climb':
-        var agl = f.alt - FIELD;
-        if (c.gear_lever === 'DOWN') return { t: f.vs > 100 && agl > 20 ? 'Vario positif : freins puis train UP (OM-B p.65 m).' : 'Montée initiale 83 KIAS (OM-B p.65 k)…', ids: f.vs > 100 && agl > 20 ? ['gear_lever'] : [] };
-        if (c.fuel_pump_l === 'ON' || c.fuel_pump_r === 'ON') return { t: 'Fuel pumps LH/RH OFF (OM-B p.65 n).', ids: ['fuel_pump_l', 'fuel_pump_r'] };
-        if (c.landing_light === 'ON') return { t: 'Landing light OFF (OM-B p.65 p).', ids: ['landing_light'] };
-        return { t: 'Montée à 90 KIAS (Vy ≤ 1900 kg, OM-B p.65 l) jusqu\'à 1 500 ft sol. ' + Math.round(agl) + ' ft sol.', ids: [] };
+      default:
+        if (FLIGHT[R.ph] || R.ph === 'rollout') return flightTask();
     }
     return { t: '' };
   }
+  var PHNAME = { radio1: 'Roulage', taxi: 'Roulage', hold: 'Point d\'arrêt E', lineup: 'Alignement', roll: 'Décollage', climb: 'Montée', enroute: 'Croisière → Limoges', app1: 'ILS 21 Limoges', ga1: 'Remise de gaz', 'return': 'Retour → Angoulême', app2: 'ILS 28 Angoulême', flare: 'Atterrissage', rollout: 'Roulement' };
   function drawMsg() { var m = K.$('trMsg'); if (!m || !R) return; var fl = R.flash && Date.now() < R.flash.until ? R.flash : null; m.className = 'mx-msg' + (fl ? ' ' + fl.cls : ''); m.innerHTML = fl ? esc(fl.t) : ''; }
   function draw() {
     if (!R) return;
@@ -11108,29 +11570,40 @@ body.immersion #immExit{display:block}
     if (ins && ins.classList.contains('collapsed')) { ins.classList.remove('collapsed'); setTimeout(function () { app().view.resize(); }, 280); }
     if (!b) { b = root.document.createElement('div'); b.id = 'trBar'; if (host) { host.innerHTML = ''; host.appendChild(b); } else root.document.body.appendChild(b); }
     var s = ck().s, f = s.flight, c = s.controls, tk = task();
-    var h = '<div class="mx-h"><b>🛫 LFBU → LFBL · segment 1</b><span class="mx-k">' + esc(MODES[R.mode]) + '</span><button data-act="quit" title="Quitter">✕</button></div>';
-    h += '<div class="tr-hud"><span>' + (f.onGround ? 'GS' : 'IAS') + ' <b>' + Math.round(f.ias) + '</b> kt</span><span>Cap <b>' + pad3(f.hdg || 360) + '</b></span>' + (f.onGround ? '' : '<span>Sol <b>' + Math.round(f.alt - FIELD) + '</b> ft</span><span>V/S <b>' + Math.round(f.vs / 10) * 10 + '</b></span>') +
-      '<span class="' + (c.parking_brake === 'ON' ? 'tr-pb on' : 'tr-pb') + '">PARK BRK ' + c.parking_brake + '</span><span>PWR <b>' + Math.round(c.power_l) + '/' + Math.round(c.power_r) + '</b> %</span></div>';
-    h += '<div class="mx-lab">COM1 ' + TF.G1000.fmtCom(s.g.com[0].a) + (comOk() ? ' ✓ AFIS Angoulême' : ' · AFIS = 123.155') + ' · vent ' + windTxt() + ' · QNH ' + R.qnh + ' (exercice)</div>';
+    var fly = !!(FLIGHT[R.ph] || R.ph === 'rollout');
+    var h = '<div class="mx-h"><b>🛫 LFBU ⇄ LFBL · ' + esc(PHNAME[R.ph] || '') + '</b><span class="mx-k">' + esc(MODES[R.mode]) + '</span><button data-act="quit" title="Quitter">✕</button></div>';
+    if (fly && !f.onGround) {
+      h += '<div class="tr-hud"><span>IAS <b>' + Math.round(f.ias) + '</b> kt</span><span>ALT <b>' + Math.round(TF.G1000.indicatedAlt(ck()) / 10) * 10 + '</b></span><span>V/S <b>' + Math.round(f.vs / 50) * 50 + '</b></span><span>Cap <b>' + pad3(f.hdg) + '</b></span>' +
+        '<span>PWR <b>' + Math.round(c.power_l) + '/' + Math.round(c.power_r) + '</b> %</span><span class="' + (s.sys.apEngaged ? 'tr-ap on' : 'tr-ap') + '">' + (s.sys.apEngaged ? 'AP ' + (s.g.lat || '') + '/' + (s.g.vert || '') : (f.assistOn !== false && f.assist ? '🤖 aide' : '✋ main')) + '</span>' + (TF.Time.tripK > 1 ? '<span class="tr-acc">⏩ ×' + TF.Time.tripK + '</span>' : '') + '</div>';
+    } else {
+      h += '<div class="tr-hud"><span>' + (f.onGround ? 'GS' : 'IAS') + ' <b>' + Math.round(f.ias) + '</b> kt</span><span>Cap <b>' + pad3(f.hdg || 360) + '</b></span>' +
+        '<span class="' + (c.parking_brake === 'ON' ? 'tr-pb on' : 'tr-pb') + '">PARK BRK ' + c.parking_brake + '</span><span>PWR <b>' + Math.round(c.power_l) + '/' + Math.round(c.power_r) + '</b> %</span></div>';
+    }
+    h += '<div class="mx-lab">COM1 ' + TF.G1000.fmtCom(s.g.com[0].a) + ' · NAV1 ' + TF.G1000.fmtNav(s.g.nav[0].a) + ' · vent sol ' + windTxt() + ' · QNH ' + R.qnh + ' (exercice)' + (fly ? ' · DA ' + DA() + ' ft (exercice)' : '') + '</div>';
     // radio
-    if (tk.radio && (!R.ask || R.ask.which !== tk.radio)) R.ask = { which: tk.radio, data: radioStep(tk.radio), rbMode: false };
+    if (tk.radio && (!R.ask || R.ask.which !== tk.radio)) {
+      R.ask = { which: tk.radio, data: radioStep(tk.radio), rbMode: false };
+      if (R.ask.data.atcFirst) { R.ask.rbMode = true; R.afis = R.ask.data.reply; R.fb = null; K.sound.ok(); if (TF.Voice && TF.Voice.enabled && TF.Voice.enabled()) TF.Voice.say(R.afis, 'en'); }
+    }
     if (R.ask && tk.radio) {
-      var q = R.ask.rbMode ? R.ask.data.rb : R.ask.data;
-      if (R.afis) h += '<div class="tr-afis">📻 <b>AFIS :</b> « ' + esc(R.afis) + ' »</div>';
+      var q = R.ask.rbMode ? R.ask.data.rb : R.ask.data, who = /^(dep|app|miss|app2)$/.test(R.ask.which) ? 'LIMOGES APPROACH' : 'AFIS';
+      if (R.afis) h += '<div class="tr-afis">📻 <b>' + who + ' :</b> « ' + esc(R.afis) + ' »</div>';
       h += '<div class="mx-t">' + esc(q.ask) + '</div><div class="mx-ch tr-ch">' + q.ch.map(function (x, i) { return '<button data-act="ans" data-v="' + i + '">' + esc(x) + '</button>'; }).join('') + '</div>';
       if (R.fb) h += '<div class="mx-msg warn">' + esc(R.fb) + '</div>';
       h += '<div class="mx-note">Le simulateur ne reconnaît pas la voix : choisis le message que tu dirais. Phraséologie d\'exercice en anglais, indicatif en alphabet OACI ; à valider avec ton instructeur.</div>';
-    } else h += '<div class="mx-t">🎯 ' + esc(tk.t) + '</div>';
+    } else h += '<div class="mx-t">' + (tk.wait ? '⏳ ' : '🎯 ') + esc(tk.t) + '</div>' + (tk.decl ? '<div class="mx-ch"><button data-act="decl" data-v="' + tk.decl + '" class="pri">✓ Fait</button></div>' : '');
     if (tk.hint && R.mode !== 'imm') h += '<div class="mx-hint">💡 ' + esc(tk.hint) + '</div>';
     if (tk.checks) h += '<ul class="tr-chk">' + tk.checks.map(function (x) { return '<li class="' + (x.ok ? 'ok' : '') + '">' + (x.ok ? '✓ ' : '○ ') + esc(x.t) + '</li>'; }).join('') + '</ul>';
     h += '<div class="mx-msg" id="trMsg"></div><div class="mx-a">';
-    if ((R.ph === 'taxi' || R.ph === 'radio1' || R.ph === 'climb' || (R.ph === 'roll' && !R.brake)) && !R.rejected) h += '<button data-act="brake" class="' + (R.brake ? 'on' : '') + '">🦶 Freins' + (R.brake ? ' (tenus)' : '') + '</button>';
+    if ((R.ph === 'taxi' || R.ph === 'radio1' || R.ph === 'climb' || R.ph === 'rollout' || (R.ph === 'roll' && !R.brake)) && !R.rejected) h += '<button data-act="brake" class="' + (R.brake ? 'on' : '') + '">🦶 Freins' + (R.brake ? ' (tenus)' : '') + '</button>';
+    if (fly && !f.onGround) h += '<button data-act="aid" class="' + (f.assistOn !== false ? 'on' : '') + '">🤖 Aide au pilotage : ' + (f.assistOn !== false ? 'ON' : 'OFF') + '</button><button data-act="acc">' + (R.noAuto ? '⏩ Accélération auto : OFF' : '⏩ Accélération auto : ON') + '</button><button data-act="stk">🕹 Manche</button>';
     if (R.ph === 'roll' && R.brake) h += '<button data-act="release" class="pri">🦶 Relâcher les freins</button>';
     if (R.ph === 'roll' && !R.brake && f.ias >= 76 && !R.rot) h += '<button data-act="rotate" class="pri">⬆︎ ROTATION</button>';
     if (R.ph === 'hold' && R.mode === 'express' && tk.checks && tk.checks.some(function (x) { return !x.ok; })) h += '<button data-act="express">⚡ Faire les vérifs (Express)</button>';
     if (tk.lineup && !R.lu) h += '<button data-act="lineup" class="pri">↰ S\'aligner piste 28 (aide simulateur)</button>';
-    if (R.ph === 'taxi' || R.ph === 'climb') h += '<button data-act="speed">⏩ ×' + (R.speed || 1) + '</button>';
-    h += '<button data-act="pwr">🎚 Manettes</button><button data-act="home">⌂ Vue générale</button></div>';
+    if (R.ph === 'taxi') h += '<button data-act="speed">⏩ ×' + (R.speed || 1) + '</button>';
+    h += '<button data-act="pwr">🎚 Manettes</button><button data-act="home">⌂ Vue générale</button>' + (fly ? '<button data-act="stop">⏹ Terminer ici</button>' : '') + '</div>';
+    if (fly && !f.onGround) h += '<div class="mx-note">Modèle de vol simplifié (calé sur l\'OM-B : montée, vitesses) — pas un simulateur certifié. 🤖 = aide du simulateur (pas une fonction du DA42).</div>';
     b.innerHTML = h; b.className = 'show';
     drawMsg();
     var V = app().view; V.clearHighlight();
@@ -11148,9 +11621,36 @@ body.immersion #immExit{display:block}
       lineup: function () { if (ck().s.controls.parking_brake === 'ON') { note('Frein de parc serré : poignée vers le HAUT (OFF) d\'abord.', 'crit'); K.sound.err(); return; } R.lu = { t: 0 }; draw(); },
       pwr: function (x) { var r = x.getBoundingClientRect(); if (TF.Interact.openPower) TF.Interact.openPower('power_l', { x: r.left, y: r.top + r.height / 2 }); },
       home: function () { if (app().view.home) app().view.home(true); },
-      speed: function () { R.speed = (R.speed || 1) === 1 ? 3 : (R.speed === 3 ? 6 : 1); draw(); }
+      speed: function () { R.speed = (R.speed || 1) === 1 ? 3 : (R.speed === 3 ? 6 : 1); draw(); },
+      decl: function (x) { var k = x.getAttribute('data-v'); R.fl.flags[k] = true; mark('d_' + k, true, { brief1: 'Briefing arrivée ILS 21', brief2: 'Briefing arrivée ILS 28', finLFBL: 'Final check-list (Limoges)', finLFBU: 'Final check-list (Angoulême)' }[k] || k); K.sound.click(); draw(); },
+      aid: function () { var ff = ck().s.flight; ff.assistOn = ff.assistOn === false; if (ff.assistOn) { ff.cmdPitch = ff.pitch; ff.cmdBank = ff.bank; } draw(); },
+      acc: function () { R.noAuto = !R.noAuto; draw(); },
+      stk: function () { stick(!K.$('trStick')); },
+      stop: function () { finish(ck().s.flight.onGround ? 'ok' : 'stopped'); }
     });
   }
+  /* ---------------- Manche virtuel : inclinaison (gauche/droite) et assiette (haut/bas) — tient l'attitude au relâché ---------------- */
+  function stick(on) {
+    var st = K.$('stage'), el2 = K.$('trStick');
+    if (!on) { if (el2 && el2.parentNode) el2.parentNode.removeChild(el2); return; }
+    if (el2 || !st) return;
+    el2 = root.document.createElement('div'); el2.id = 'trStick'; el2.innerHTML = '<div class="ts-k"></div><span class="ts-l">🕹 manche</span>'; st.appendChild(el2);
+    var kn = el2.querySelector('.ts-k'), p0 = 0, active = false;
+    function pos(e) { var t = e.touches ? e.touches[0] : e, r = el2.getBoundingClientRect(); return [t.clientX - (r.left + r.width / 2), t.clientY - (r.top + r.height / 2)]; }
+    function apply(xy) {
+      var f = ck().s.flight, dx = clamp(xy[0], -55, 55), dy = clamp(xy[1], -55, 55);
+      kn.style.left = (55 + dx - 20) + 'px'; kn.style.top = (55 + dy - 20) + 'px';
+      f.cmdBank = dx / 55 * 30; f.cmdPitch = clamp(p0 - dy / 55 * 10, -10, 18);
+    }
+    function down(e) { e.preventDefault(); var f = ck().s.flight; if (!f.fdm) return; active = true; f.stickActive = true; if (f.assistOn !== false) { f.assistOn = false; note('✋ Tu pilotes : aide au pilotage coupée (bouton 🤖 pour la remettre).', 'warn'); } p0 = f.pitch; apply(pos(e)); }
+    function move(e) { if (!active) return; e.preventDefault(); apply(pos(e)); }
+    function up() { if (!active) return; active = false; var f = ck().s.flight; f.stickActive = false; f.cmdBank = Math.abs(f.bank) < 4 ? 0 : f.bank; kn.style.left = '35px'; kn.style.top = '35px'; draw(); }
+    el2.addEventListener('touchstart', down, { passive: false }); el2.addEventListener('touchmove', move, { passive: false }); el2.addEventListener('touchend', up); el2.addEventListener('touchcancel', up);
+    el2.addEventListener('mousedown', down); root.addEventListener('mousemove', move); root.addEventListener('mouseup', up);
+  }
+  var tdHooked = false;
+  function hookTd() { if (tdHooked || !app() || !app().ck) return; tdHooked = true; app().ck.on('touchdown', function (t) { if (R) onTouch(t); }); }
+
   /* accès tests */
   T.answer = function (v) { if (R) answer(v); };
   T.rotate = function () { if (R) rotate(false); };
@@ -11158,6 +11658,8 @@ body.immersion #immExit{display:block}
   T.lineup = function () { if (R && R.ph === 'lineup') { R.lu = { t: 0 }; draw(); } };
   T.express = function () { if (R) doExpressChecks(); };
   T.speed = function (k) { if (R) R.speed = k; };
+  T.forceK = function (k) { if (R) R.forceK = k; }; // tests : accélération imposée
+  T.flags = function () { return R && R.fl ? R.fl.flags : null; };
 })(this);
 
 </script>
@@ -11451,6 +11953,75 @@ body.immersion #immExit{display:block}
 })(this);
 
 </script>
+<script>/* js/ui/avatars.js */
+/* Photos de profil : dessins ORIGINAUX (silhouettes vues de dessus, vectorielles), aucune photo ni logo reproduit.
+ * Nicolas et Jayson : Alpha Jet aux couleurs tricolores avec fumigènes bleu-blanc-rouge (clin d'œil à la Patrouille de France).
+ * Julien : Rafale. Cyril et Olivier : Transall C-160. Invité : pilote avec casque.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  var A = TF.Avatars = {};
+  var MAP = { nicolas: 'alphajet', jayson: 'alphajet', julien: 'rafale', cyril: 'transall', olivier: 'transall', invite: 'guest' };
+  var LABEL = { alphajet: 'Alpha Jet — Patrouille de France', rafale: 'Rafale', transall: 'Transall C-160', guest: 'Invité' };
+  function bg(id, c1, c2) {
+    return '<defs><radialGradient id="' + id + '" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></radialGradient></defs><circle cx="50" cy="50" r="49" fill="url(#' + id + ')"/>';
+  }
+  var DRAW = {
+    alphajet: function (u) {
+      var s = bg('avA' + u, '#8fd0ff', '#1d5fa8');
+      // fumigènes bleu / blanc / rouge
+      s += '<path d="M40,66 C38,80 34,90 30,99" stroke="#1f4fd8" stroke-width="7" fill="none" opacity=".8" stroke-linecap="round"/>';
+      s += '<path d="M50,70 L50,99" stroke="#ffffff" stroke-width="7" fill="none" opacity=".9" stroke-linecap="round"/>';
+      s += '<path d="M60,66 C62,80 66,90 70,99" stroke="#e8283a" stroke-width="7" fill="none" opacity=".8" stroke-linecap="round"/>';
+      // avion (vue de dessus) : aile en flèche haute, empennage en flèche, deux réacteurs
+      s += '<path d="M50,8 C53,12 54,20 54,28 L55,40 L80,55 L80,59 L55,52 L54,64 L64,72 L64,75 L52,72 L50,74 L48,72 L36,75 L36,72 L46,64 L45,52 L20,59 L20,55 L45,40 L46,28 C46,20 47,12 50,8Z" fill="#1d3fa0" stroke="#0b1d4d" stroke-width="1.2"/>';
+      s += '<path d="M45,40 L20,55 L20,59 L45,52Z" fill="#ffffff" opacity=".9"/><path d="M55,40 L80,55 L80,59 L55,52Z" fill="#e8283a" opacity=".9"/>';
+      s += '<ellipse cx="50" cy="24" rx="2.6" ry="7" fill="#bfe8ff" stroke="#0b1d4d" stroke-width=".8"/>';
+      return s;
+    },
+    rafale: function (u) {
+      var s = bg('avR' + u, '#c9d6e6', '#4d5d70');
+      // aile delta, plans canard, deux tuyères
+      s += '<path d="M50,6 C52.5,10 53.5,18 53.5,26 L54,36 L84,72 L84,76 L56,74 L55,82 L45,82 L44,74 L16,76 L16,72 L46,36 L46.5,26 C46.5,18 47.5,10 50,6Z" fill="#6f7c8c" stroke="#2a323d" stroke-width="1.2"/>';
+      s += '<path d="M47,30 L33,40 L33,42 L47,38Z M53,30 L67,40 L67,42 L53,38Z" fill="#5b6776" stroke="#2a323d" stroke-width=".9"/>';
+      s += '<path d="M46,82 L46,88 L49,88 L49,82Z M51,82 L51,88 L54,88 L54,82Z" fill="#3a434e"/>';
+      s += '<ellipse cx="50" cy="20" rx="2.6" ry="7.5" fill="#d8f0ff" stroke="#2a323d" stroke-width=".8"/>';
+      s += '<path d="M50,40 L50,78" stroke="#55606e" stroke-width="1.2"/>';
+      return s;
+    },
+    transall: function (u) {
+      var s = bg('avT' + u, '#cfe6c4', '#4f6b45');
+      // aile haute droite, deux turbopropulseurs, long fuselage, empennage classique
+      s += '<path d="M45.5,12 C46,6 54,6 54.5,12 L55.5,84 L50,92 L44.5,84Z" fill="#7d8a6a" stroke="#2f3a26" stroke-width="1.2"/>';
+      s += '<path d="M8,38 L92,38 L92,45 L8,45Z" fill="#6e7b5c" stroke="#2f3a26" stroke-width="1.2"/>';
+      s += '<path d="M32,80 L68,80 L68,85 L32,85Z" fill="#6e7b5c" stroke="#2f3a26" stroke-width="1"/>';
+      [28, 72].forEach(function (x) {
+        s += '<rect x="' + (x - 3.5) + '" y="31" width="7" height="22" rx="3" fill="#5c684b" stroke="#2f3a26" stroke-width="1"/>';
+        s += '<ellipse cx="' + x + '" cy="30" rx="11" ry="2" fill="#2b2b2b" opacity=".55"/>';
+      });
+      s += '<ellipse cx="50" cy="15" rx="2.6" ry="3.5" fill="#d8f0ff" stroke="#2f3a26" stroke-width=".7"/>';
+      return s;
+    },
+    guest: function (u) {
+      var s = bg('avG' + u, '#3a4a66', '#151d2e');
+      s += '<circle cx="50" cy="40" r="15" fill="#c8d4e4"/><path d="M22,86 C24,66 36,58 50,58 C64,58 76,66 78,86Z" fill="#c8d4e4"/>';
+      s += '<path d="M33,40 C33,26 67,26 67,40" stroke="#17a6b3" stroke-width="4" fill="none"/><rect x="29" y="37" width="7" height="11" rx="3" fill="#17a6b3"/><rect x="64" y="37" width="7" height="11" rx="3" fill="#17a6b3"/>';
+      s += '<path d="M68,46 C68,54 60,56 56,56" stroke="#17a6b3" stroke-width="2" fill="none"/>';
+      return s;
+    }
+  };
+  var n = 0;
+  A.kind = function (pid) { return MAP[pid] || 'guest'; };
+  A.label = function (pid) { return LABEL[A.kind(pid)]; };
+  A.svg = function (pid, size) {
+    var k = A.kind(pid);
+    var u = ++n;
+    return '<svg class="avatar" viewBox="0 0 100 100" width="' + (size || 46) + '" height="' + (size || 46) + '" role="img" aria-label="' + LABEL[k] + '"><clipPath id="avc' + u + '"><circle cx="50" cy="50" r="49"/></clipPath><g clip-path="url(#avc' + u + ')">' + DRAW[k](u) + '</g></svg>';
+  };
+})(this);
+
+</script>
 <script>/* js/ui/screens.js */
 /* Interface — écrans : accueil, bibliothèque d'entraînement, débriefing, briefing, profil, prochain vol, base documentaire. */
 (function (root) {
@@ -11468,13 +12039,14 @@ body.immersion #immExit{display:block}
   S.splash = function (onPick) {
     var el = K.$('splash'), h = '<div class="sp-in"><img class="sp-logo" src="assets/logo-512.png" alt="TIFFAN\'IR (ME)">';
     h += '<div class="sp-slogan">5 pilotes. 2 moteurs. 6 vols. Zéro flow oublié.</div><div class="sp-sub">Les Casseurs Flowteurs · DA42 VI Cockpit & Procedure Trainer · Airbus Flight Academy Angoulême</div><div class="sp-pilots">';
-    TF.Profiles.list().forEach(function (p) {
+    TF.Profiles.all().forEach(function (p) {
       var n = p.history.filter(function (x) { return x.kind === 'flow'; }).length;
-      h += '<button class="sp-pilot" data-act="pick" data-id="' + p.id + '"><div class="sp-av">' + esc(p.name[0]) + '</div><b>' + esc(p.name) + '</b><small>' + (n ? n + ' flow' + (n > 1 ? 's' : '') + ' travaillé' + (n > 1 ? 's' : '') : 'Nouveau') + '</small></button>';
+      var sub = p.guest ? 'Essai sans sauvegarde' : (n ? n + ' flow' + (n > 1 ? 's' : '') + ' travaillé' + (n > 1 ? 's' : '') : 'Nouveau');
+      h += '<button class="sp-pilot' + (p.guest ? ' guest' : '') + '" data-act="pick" data-id="' + p.id + '" title="' + esc(TF.Avatars.label(p.id)) + '"><div class="sp-av">' + TF.Avatars.svg(p.id, 58) + '</div><b>' + esc(p.name) + '</b><small>' + sub + '</small></button>';
     });
     h += '</div><div class="sp-warn">Outil pédagogique d\'entraînement au sol. Ne remplace jamais l\'AFM, l\'OM-B, la documentation approuvée ni les instructions de l\'ATO.<br>Sources : OM-B DA42 VI Issue C (nov. 2023) · C/L DA42-VI Issue C · PDP V1.2 · Garmin G1000 NXi Pilot\'s Guide.' + (TF.Profiles.isPersistent() ? '' : '<br><b style="color:#ffc93c">Stockage local indisponible : la progression ne sera pas conservée (exporte tes résultats).</b>') + '</div></div>';
     el.innerHTML = h; el.classList.remove('gone');
-    K.bindActs(el, { pick: function (b) { TF.Profiles.select(b.getAttribute('data-id')); el.classList.add('gone'); if (onPick) onPick(); } });
+    K.bindActs(el, { pick: function (b) { var id = b.getAttribute('data-id'); if (id === TF.Profiles.GUEST) TF.Profiles.resetGuest(); TF.Profiles.select(id); el.classList.add('gone'); if (onPick) onPick(); if (id === TF.Profiles.GUEST) K.toast('👤 Session invité : tout est disponible, rien n\'est sauvegardé dans le cloud ni compté au classement.', 'info', 3500); } });
   };
 
   /* ---------------- Bibliothèque d'entraînement ---------------- */
@@ -11957,6 +12529,7 @@ body.immersion #immExit{display:block}
   app.onProfile = function () {
     var p = TF.Profiles.current(); if (!p) return;
     K.$('profileName').textContent = p.name;
+    var ico = K.$('btnProfile') && K.$('btnProfile').querySelector('.ico'); if (ico && TF.Avatars) ico.innerHTML = TF.Avatars.svg(p.id, 22);
     app.view.setLabels(!!p.settings.showLabels); K.$('btnLabels').classList.toggle('on', !!p.settings.showLabels);
     K.sound.setEnabled(p.settings.sound !== false); K.$('btnSound').classList.toggle('on', p.settings.sound !== false);
     TF.Voice.setEnabled(p.settings.voice !== false);
