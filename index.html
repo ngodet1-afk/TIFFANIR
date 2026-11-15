@@ -449,7 +449,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   .clc-list { max-height: none; }
   .omb-list { max-height: 160px; }
   /* Accueil, L'essentiel : plein écran sous la barre du haut */
-  #home, #ess, #ifr { position: fixed; top: 46px; top: calc(46px + env(safe-area-inset-top)); z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
+  #home, #ess, #ifr, #mep { position: fixed; top: 46px; top: calc(46px + env(safe-area-inset-top)); z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
   #toolbar { left: 6px; bottom: 30px; padding: 4px; max-width: calc(100% - 12px); overflow-x: auto; -webkit-overflow-scrolling: touch; }
   #toolbar button { min-width: 38px; height: 38px; padding: 0 8px; font-size: 13px; margin-right: 4px; }
   #toolbar .sep { margin: 0 5px 0 2px; }
@@ -665,6 +665,63 @@ body.immersion #immExit{display:block}
 .ifr-fict { display: block; color: #8796ad; font-size: 11px; margin-bottom: 6px; }
 .ifr-cls { width: 100%; border-collapse: collapse; font-size: 12.5px; background: #0d1a2c; border-radius: 10px; } .ifr-cls th { color: #9fb3cc; text-align: left; padding: 5px; border-bottom: 1px solid #2a4a78; } .ifr-cls td { padding: 5px; border-bottom: 1px solid #1d2c44; } .ifr-cls tr.hi td { background: #3b2f6e; color: #fff; }
 .ifr-fpl { background: #f4f1e6; color: #222; border-radius: 10px; padding: 12px; } .ifr-fpl .box { font-family: Menlo, monospace; font-size: 22px; font-weight: 900; border: 2px solid #222; display: inline-block; padding: 4px 12px; margin: 8px 0; } .ifr-fpl small { display: block; color: #444; }
+/* ===== Sauvegarde cloud ===== */
+#tbCloud.cloud-ok { color: #2fe35a; } #tbCloud.cloud-error { background: #5c1a1a; } #tbCloud.cloud-pending, #tbCloud.cloud-syncing { color: #f2c21b; }
+#cloudPanel { display: none; position: fixed; z-index: 80; left: 0; top: 0; right: 0; bottom: 0; background: rgba(0,0,0,.55); }
+#cloudPanel.show { display: block; }
+.cp-box { position: absolute; left: 50%; top: 60px; width: 92%; max-width: 480px; -webkit-transform: translateX(-50%); transform: translateX(-50%); background: #0f1a2c; border: 1px solid #2f5585; border-radius: 16px; padding: 14px; color: #e8eef6; max-height: 80%; overflow-y: auto; }
+.cp-h { display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; margin-bottom: 8px; }
+.cp-h button { background: none; border: 0; color: #fff; font-size: 20px; }
+.cp-st { font-weight: 900; padding: 8px 10px; border-radius: 10px; background: #13233a; margin-bottom: 8px; } .cp-ok { color: #2fe35a; } .cp-error { color: #ff8a8a; } .cp-pending, .cp-syncing { color: #f2c21b; }
+.cp-err { color: #ffb3b3; font-size: 13px; margin-bottom: 8px; } .cp-info { font-size: 13px; color: #c8d4e4; background: #13233a; border-radius: 10px; padding: 8px; margin: 8px 0; }
+.cp-row { margin: 6px 0 10px; } .cp-sec { border-top: 1px solid #23395a; padding: 10px 0; } .cp-sec .btn, .cp-sec label.btn { margin: 4px 6px 4px 0; display: inline-block; }
+.cp-g { margin: 8px 0; min-height: 44px; } .cp-pair { font-size: 13px; margin: 8px 0; } .cp-pair input { font-size: 18px; width: 140px; padding: 8px; border-radius: 8px; border: 1px solid #3a5a88; background: #06121f; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+.cp-code { margin-top: 8px; font-size: 15px; } .cp-code b { font-size: 22px; letter-spacing: 3px; color: #3fe0e8; } .cp-foot { text-align: right; }
+/* ======================= MES VOLS MEP ======================= */
+#mep { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 13; overflow-y: auto; -webkit-overflow-scrolling: touch; background: radial-gradient(ellipse at 70% 0%, rgba(10, 52, 72, .97), rgba(6, 8, 18, .985) 70%); color: #e8eef6; }
+.mep-in { max-width: 1000px; margin: 0 auto; padding: 16px 16px 40px; }
+.mep-top { display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: flex-start; align-items: flex-start; margin-bottom: 10px; } .mep-top .btn { margin-left: 10px; white-space: nowrap; }
+.mep-title { font-size: 22px; font-weight: 900; letter-spacing: .4px; } .mep-sub { color: #b9c6dc; font-size: 13.5px; margin-top: 4px; }
+.mep-me { background: rgba(15, 26, 44, .85); border: 1px solid #2a4a78; border-radius: 12px; padding: 8px 12px; margin-bottom: 10px; font-size: 14px; }
+.mep-row { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -4px 12px; }
+.mep-s { -webkit-flex: 1 1 150px; flex: 1 1 150px; margin: 4px; padding: 10px; border-radius: 12px; background: #13233a; border: 1px solid #2f5585; color: #fff; text-align: left; font-size: 15px; }
+.mep-s b { font-size: 13px; letter-spacing: .3px; } .mep-s small { display: block; color: #9fb3cc; font-size: 11.5px; margin-top: 3px; } .mep-s.go { background: linear-gradient(135deg, #0f7c88, #17a6b3); } .mep-s[disabled] { opacity: .45; }
+.mep-map { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px 12px; }
+.mep-lvl { -webkit-flex: 1 1 290px; flex: 1 1 290px; margin: 5px; padding: 12px; border-radius: 14px; background: #0f1c30; border: 1px solid #2f5585; }
+.mep-lvl.cur { border-color: #3fe0e8; box-shadow: 0 0 0 1px #3fe0e8 inset; }
+.ml-h { margin-bottom: 6px; } .ml-n { display: inline-block; background: #f2c21b; color: #1a1300; font-weight: 900; border-radius: 8px; padding: 3px 8px; margin-right: 8px; } .ml-h small { display: block; color: #8796ad; margin-top: 3px; }
+.mep-lvl small { color: #9fb3cc; } .ml-w { font-size: 12px; color: #ffcf6b; margin-top: 4px; }
+.mep-acts { margin-top: 8px; } .mep-acts .btn { margin: 4px 8px 4px 0; }
+.mep-disc { font-size: 11.5px; color: #8796ad; margin-top: 10px; line-height: 1.4; }
+.mep-fctp { background: #0f1c30; border: 1px solid #2a4a78; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; font-size: 13px; } .mep-fctp summary { font-weight: 800; cursor: pointer; }
+.mep-cols { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px; } .mep-col { -webkit-flex: 1 1 260px; flex: 1 1 260px; margin: 5px; background: #0f1c30; border: 1px solid #23395a; border-radius: 10px; padding: 8px 10px; font-size: 13px; } .mep-col b { color: #b6a3ff; } .mep-col ul { padding-left: 18px; margin: 6px 0; }
+.mep-q { font-weight: 900; margin: 12px 0 6px; }
+.mep-mis { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; background: #0f1c30; border: 1px solid #23395a; border-radius: 12px; padding: 10px; margin-bottom: 8px; }
+.mep-mis > div:first-child { -webkit-flex: 1 1 280px; flex: 1 1 280px; } .mep-mis small { color: #9fb3cc; } .mep-modes .btn { margin: 3px; padding: 7px 9px; font-size: 13px; }
+.mt { font-size: 10.5px; font-weight: 800; border-radius: 6px; padding: 2px 6px; background: #23395a; color: #c8d4e4; } .mt-cockpit, .mt-flow { background: #0f6e7c; color: #fff; } .mt-decision { background: #5a4210; color: #ffe9a0; } .mt-chain { background: #6d46c9; color: #fff; }
+.mep-tab { width: 100%; border-collapse: collapse; font-size: 13.5px; background: #0f1c30; border-radius: 10px; } .mep-tab th { text-align: left; color: #9fb3cc; padding: 6px; border-bottom: 1px solid #2a4a78; } .mep-tab td { padding: 7px 6px; border-bottom: 1px solid #1d2c44; vertical-align: top; }
+.mep-tab td.s0 { color: #9fb3cc; } .mep-tab td.s1 { color: #ff8a8a; } .mep-tab td.s2 { color: #f2c21b; } .mep-tab td.s3 { color: #2fe35a; } .mep-tab td.na { color: #8796ad; font-style: italic; }
+.mep-card { background: rgba(14, 24, 40, .94); border: 1px solid #2f5585; border-radius: 16px; padding: 14px; } .mep-end.ok { border-color: #2fe35a; } .mep-end.ko { border-color: #f2c21b; }
+.mep-big { font-size: 18px; font-weight: 900; margin: 8px 0; } .mep-errs { color: #ffd7d7; font-size: 13.5px; } .mep-comp span { display: inline-block; background: #23395a; border-radius: 8px; padding: 3px 8px; margin: 3px; font-size: 12px; }
+.mep-refs { font-size: 12px; color: #8fd8ff; margin-top: 8px; } .mep-sync { margin-top: 8px; font-size: 13px; color: #c8d4e4; }
+.mep-gh { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 8px; } .mep-gh b { margin: 0 10px; -webkit-flex: 1; flex: 1; } .mep-tag { font-size: 12px; color: #ffcf6b; margin-bottom: 8px; }
+.mep-ch button, .mep-pool button { display: block; width: 100%; text-align: left; margin: 6px 0; padding: 12px; border-radius: 12px; background: #1b2f4d; border: 1px solid #3a5a88; color: #fff; font-weight: 700; font-size: 14.5px; }
+.mep-ord { background: #06121f; border: 2px dashed #3a5a88; border-radius: 12px; padding: 8px 8px 8px 28px; min-height: 40px; } .mep-ord li { margin: 4px 0; font-weight: 700; }
+.mep-svg { display: block; width: 100%; max-width: 300px; margin: 0 auto 8px; border-radius: 12px; border: 1px solid #2a4a78; }
+/* bandeau de mission dans le cockpit */
+#mxBar { display: none; padding: 4px 2px 10px; color: #fff; }
+#mxBar.show { display: block; }
+.mx-h { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; } .mx-h b { -webkit-flex: 1; flex: 1; letter-spacing: .3px; } .mx-k { color: #9fb3cc; font-size: 12px; margin-right: 8px; } .mx-h button { background: none; border: 0; color: #fff; font-size: 18px; }
+.mx-lab { font-size: 11px; color: #ffcf6b; margin: 2px 0 6px; } .mx-t { font-size: 15px; font-weight: 800; line-height: 1.35; } .mx-note { font-size: 12.5px; color: #b9c6dc; margin-top: 4px; }
+.mx-hint { margin-top: 6px; font-size: 13px; color: #ffe9a0; } .mx-msg { font-size: 13px; margin-top: 4px; } .mx-msg.warn { color: #ffcf6b; } .mx-msg.crit { color: #ff8a8a; font-weight: 800; }
+.mx-ch button, .mx-a button { margin: 6px 8px 0 0; padding: 9px 12px; border-radius: 10px; border: 1px solid #3a5a88; background: #1b2f4d; color: #fff; font-weight: 800; font-size: 14px; } .mx-ch button.pri { background: #17a6b3; border-color: #3fe0e8; }
+/* accueil simplifié */
+.mep-hero { margin-bottom: 12px; } .mh-st { font-size: 13.5px; color: #c8d4e4; margin-bottom: 8px; } .mh-st small { color: #9fb3cc; }
+.mh-b { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px; }
+.mh-b button { -webkit-flex: 1 1 220px; flex: 1 1 220px; margin: 5px; padding: 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,.15); color: #fff; font-weight: 900; font-size: 15.5px; letter-spacing: .4px; text-align: left; }
+.mh-b button small { display: block; font-weight: 400; font-size: 12px; color: #e2e8f5; letter-spacing: 0; margin-top: 4px; }
+.mh-go { background: linear-gradient(135deg, #0f7c88, #17a6b3); } .mh-mep { background: linear-gradient(135deg, #8a4b08, #d9891a); } .mh-free { background: #1b2f4d; } .mh-ifr { background: linear-gradient(110deg, #3b1f6e, #1b3f7a); }
+.ml-o { font-size: 12px; color: #c8d4e4; margin: 4px 0 6px; line-height: 1.35; } .ml-c span { display: inline-block; font-size: 10.5px; font-weight: 800; background: #23395a; color: #b6c9e6; border-radius: 6px; padding: 2px 5px; margin: 0 4px 6px 0; }
 
 </style>
 </head>
@@ -680,6 +737,7 @@ body.immersion #immExit{display:block}
     <button class="tb primary" id="btnHome"><span class="ico">✈︎</span><span class="lbl">Mon vol</span></button>
     <button class="tb" id="btnEss" title="Procédures complètes (OM-B, check-lists, PDP)"><span class="ico">📚</span><span class="lbl">Procédures complètes</span></button>
     <button class="tb" id="btnProfile"><span class="ico">●</span><span class="lbl" id="profileName">Pilote</span></button>
+    <button class="tb icon" id="tbCloud" title="Ma sauvegarde">💾</button>
     <button class="tb icon" id="btnLabels" title="Afficher le nom des commandes">Aa</button>
     <button class="tb icon" id="btnSound" title="Son et voix">🔊</button>
     <button class="tb icon" id="btnFull" title="Plein écran">⤢</button>
@@ -692,6 +750,7 @@ body.immersion #immExit{display:block}
       <div id="toolbar">
         <button id="tbHome" title="Vue générale">⌂</button>
         <button id="tbViews" title="Vues mémorisées et vue précédente">👁</button>
+        <button id="tbAudio" title="Panneau audio COM / NAV (zoom)">🎧</button>
         <button id="tbImm" title="Mode immersion : le cockpit plein écran">⛶</button>
         <button id="tbTime" class="act" title="Vitesse du temps simulé pendant les phases passives : Express / Normal / Réaliste">⏩ Express</button>
         <span class="sep"></span>
@@ -705,6 +764,7 @@ body.immersion #immExit{display:block}
       <div id="home" class="hidden"></div>
       <div id="ess" class="hidden"></div>
       <div id="ifr" class="hidden"></div>
+      <div id="mep" class="hidden"></div>
       <div id="sysNote" class="sysnote hidden"></div>
       <div id="toast"></div>
       <div id="timeBadge" class="hidden"></div>
@@ -728,7 +788,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '5.3.1';
+  TF.VERSION = '6.0';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -928,6 +988,7 @@ body.immersion #immExit{display:block}
     { id: 'yoke', label: 'Manche gauche (AP DISC / TRIM)', x: 315, y: 700, w: 130, h: 90 },
     { id: 'console', label: 'Console centrale (+ roue de trim)', x: 650, y: 700, w: 230, h: 424 },
     { id: 'fuelsel', label: 'Sélecteurs carburant', x: 700, y: 1010, w: 160, h: 114 },
+    { id: 'audio', label: 'Panneau audio Garmin GMA 1347 (entre PFD et MFD)', x: 688, y: 398, w: 54, h: 250 },
     { id: 'underL', label: 'Sous le tableau à gauche (alternate static)', x: 215, y: 690, w: 170, h: 120 }
   ];
 
@@ -974,6 +1035,16 @@ body.immersion #immExit{display:block}
   add({ id: 'flaps', label: 'FLAPS (sélecteur)', short: 'FLAPS', type: 'lever', positions: ['UP', 'APP', 'LDG'], region: 'botR', x: 1041, y: 671, w: 38, h: 44, initial: 'UP', ref: CABIN });
 
   /* ---------------- Audio panel / G1000 (rep. 23-27) ---------------- */
+  /* Panneau audio Garmin GMA 1347 (Garmin G1000 NXi DA42NG p.102-103, Figure 4-2) : positions mesurées sur la photo.
+   * 2 colonnes (x 705 / 723), un triangle s'allume au-dessus de la touche sélectionnée. COM3 MIC, COM3, PA et AUX : « Not used in DA42NG ». */
+  var AUD = { doc: 'Garmin G1000 NXi DA42NG 190-02237-00 Rev. A', sec: 'Audio Panel Controls (GMA 1347)', page: 102 };
+  [['com1mic', 'COM1 MIC', 705, 414], ['com1', 'COM1', 723, 414], ['com2mic', 'COM2 MIC', 705, 430], ['com2', 'COM2', 723, 430], ['com3mic', 'COM3 MIC', 705, 446.5], ['com3', 'COM3', 723, 446.5],
+    ['com12', 'COM 1/2', 705, 462.5], ['tel', 'TEL', 723, 462.5], ['pa', 'PA', 705, 479], ['spkr', 'SPKR', 723, 479], ['mkr', 'MKR MUTE', 705, 495], ['hisens', 'HI SENS', 723, 495],
+    ['dme', 'DME', 705, 510.5], ['nav1', 'NAV1', 723, 510.5], ['adf', 'ADF', 705, 526.5], ['nav2', 'NAV2', 723, 526.5], ['aux', 'AUX', 705, 542.5],
+    ['mansq', 'MAN SQ', 705, 558], ['play', 'PLAY', 723, 558], ['pilot', 'PILOT', 705, 574], ['coplt', 'COPLT', 723, 574]].forEach(function (k) {
+    add({ id: 'aud_' + k[0], label: 'Audio — ' + k[1], short: k[1], type: 'push', region: 'audio', x: k[2], y: k[3], w: 15, h: 11, ref: AUD,
+      note: /com3|^pa$|aux/.test(k[0]) ? 'Not used in Diamond DA42NG aircraft (Garmin p.103).' : '' });
+  });
   add({ id: 'display_backup', label: 'DISPLAY BACKUP (audio panel)', short: 'DISP BKUP', type: 'pushlatch', positions: ['OUT', 'IN'], region: 'mfd', x: 715, y: 622, w: 13, h: 13, initial: 'OUT',
     ref: { doc: 'OMB', sec: 'B03 Display failure (DISPLAY BACKUP)', page: 128 } });
   var mfdX = [803.75, 825, 846.25, 867.5, 888.75, 910, 931.25, 952.5, 973.75, 995, 1016.25, 1037.5];
@@ -1495,6 +1566,10 @@ body.immersion #immExit{display:block}
         apState: 'off', apPftUntil: 0, apEngaged: false, apDiscAlert: 0,
         annunTestSince: null,
         crossfeedMs: 0,
+        // Pannes PÉDAGOGIQUES (missions MEP) : moteur L/R qui s'arrête, pompe de train inopérante. Pas de modèle aérodynamique asymétrique.
+        fail: { L: false, R: false, gearPump: false, gearPulledAt: null },
+        // Panneau audio GMA 1347 — état de départ du simulateur (COM1 MIC + écoute COM1) ; non documenté comme état à la mise sous tension
+        audio: { mic: 'COM1', com1: true, com2: false, split: false, tel: false, spkr: false, mkr: false, hisens: false, dme: false, nav1: false, adf: false, nav2: false, mansq: false, pilot: false, coplt: false, playAt: 0 },
         history: { cooldownMs: 0, flapsCycled: false, mastersOffAt: null, elecOffAt: null, ecuTestL: false, ecuTestR: false, voterL: [], voterR: [], stdSet: false, fireTest: false, fireTestMs: 0, gearTest: false, annunTest: false, dbChecked: false, crossfeed: false, apEngaged: false, apDisc: false, trimInhibited: false, pitotTested: false }
       },
       eng: { L: newEngine(), R: newEngine() },
@@ -1685,6 +1760,7 @@ body.immersion #immExit{display:block}
       }
       if (id === 'trim_hat' && s.pressed.ap_disc) sys.history.trimInhibited = true;
       if (id === 'ga_btn' && sys.avionics) TF.G1000.goAround(this);
+      if (/^aud_/.test(id) && sys.avionics) this.audioKey(id.slice(4));
       if (id === 'cws_btn' && sys.apEngaged) sys.history.cws = true;
       // GEAR / FIRE TEST : un simple appui suffit dans l'appli (le test reste affiché 3 s, alarme comprise)
       if (id === 'gear_fire_test' && sys.power) { sys.fireTestUntil = s.t + 3000; sys.history.fireTest = true; sys.history.gearTest = true; }
@@ -1741,6 +1817,7 @@ body.immersion #immExit{display:block}
       var fuelSel = c[k === 'L' ? 'fuel_sel_l' : 'fuel_sel_r'];
       var key = c.start_key === (k === 'L' ? 'START L' : 'START R');
       if (!master) { if (e.state !== 'off') { e.state = 'off'; } return; }
+      if (sys.fail && sys.fail[k] && e.state === 'run') { e.state = 'ready'; e.failedAt = s.t; }
       if (e.state === 'crank') {
         if (!key) { e.state = 'ready'; }
         else if (sys.power && fuelSel !== 'OFF' && s.t - e.crankStart >= T.crank) { e.state = 'run'; e.runSince = s.t; }
@@ -1768,6 +1845,16 @@ body.immersion #immExit{display:block}
   };
 
   /* ----- Indications dérivées (ce que montrent les instruments) ----- */
+  /* GMA 1347 (Garmin p.102-103) : MIC = émetteur (et écoute du même COM) ; COM1/COM2/NAV… = écoute seulement */
+  Cockpit.prototype.audioKey = function (k) {
+    var a = this.s.sys.audio || (this.s.sys.audio = {}), h = this.s.sys.history;
+    if (k === 'com1mic') { a.mic = 'COM1'; a.com1 = true; }
+    else if (k === 'com2mic') { a.mic = 'COM2'; a.com2 = true; }
+    else if (k === 'com12') a.split = !a.split;
+    else if (k === 'play') a.playAt = this.s.t;
+    else if (/^(com1|com2|tel|spkr|mkr|hisens|dme|nav1|adf|nav2|mansq|pilot|coplt)$/.test(k)) a[k] = !a[k];
+    h.audio = (h.audio || 0) + 1; h.audioLast = k;
+  };
   Cockpit.prototype.indications = function () {
     var s = this.s, sys = s.sys, c = s.controls, sc = s.scenario, T = TF.DATA.timing;
     var I = { power: sys.power, avionics: sys.avionics };
@@ -1801,6 +1888,7 @@ body.immersion #immExit{display:block}
 
     // AFCS
     I.ap = { state: sys.avionics ? sys.apState : 'off', engaged: sys.apEngaged, cws: sys.apEngaged && !!s.pressed.cws_btn, discFlash: sys.apDiscAlert && (s.t - sys.apDiscAlert) < 5000 };
+    I.audio = sys.audio ? { mic: sys.audio.mic, com1: sys.audio.com1, com2: sys.audio.com2, split: sys.audio.split, tel: sys.audio.tel, spkr: sys.audio.spkr, mkr: sys.audio.mkr, hisens: sys.audio.hisens, dme: sys.audio.dme, nav1: sys.audio.nav1, adf: sys.audio.adf, nav2: sys.audio.nav2, mansq: sys.audio.mansq, pilot: sys.audio.pilot, coplt: sys.audio.coplt, lit: !!sys.avionics } : null;
     I.lastSk = sys.lastSk && s.t - sys.lastSk.t < 450 ? sys.lastSk.k : 0; // softkey MFD qui vient d'être pressée (retour visuel)
     I.ui = s.ui || null; // aides visuelles pédagogiques (L'essentiel) : encadrés PFD / MFD
 
@@ -1832,7 +1920,10 @@ body.immersion #immExit{display:block}
     I.elec = sys.power ? { volts: altsOn ? idle.volts : off.volts, amps: altsOn ? idle.amps : (anyRun ? -2 : 0) } : null;
     I.fuelCalc = { remain: sys.fmsFuel, used: sys.fmsUsed, gauge: sc.fuelMain[0] + sc.fuelMain[1] };
     I.deiceLiters = sc.deiceLiters;
-    I.gearLights = sys.power ? (sys.gearCollapsed ? { unsafe: true, l: false, n: false, r: false } : { unsafe: c.gear_lever === 'UP', l: c.gear_lever === 'DOWN', n: c.gear_lever === 'DOWN', r: c.gear_lever === 'DOWN' }) : null;
+    var gf = sys.fail && sys.fail.gearPump, pulled = c.gear_emerg === 'PULLED';
+    if (gf && pulled && !sys.fail.gearPulledAt) sys.fail.gearPulledAt = s.t;
+    var gDown = c.gear_lever === 'DOWN' && (!gf || (pulled && s.t - sys.fail.gearPulledAt >= 8000)); // extension manuelle : « may take up to 20 seconds » (OM-B p.132) — 8 s simulées
+    I.gearLights = sys.power ? (sys.gearCollapsed ? { unsafe: true, l: false, n: false, r: false } : (gf && !gDown ? { unsafe: true, l: false, n: false, r: false } : { unsafe: c.gear_lever === 'UP', l: gDown, n: gDown, r: gDown })) : null;
     I.flapLights = sys.power ? { up: sys.flapPos === 'UP', app: sys.flapPos === 'APP', ldg: sys.flapPos === 'LDG' } : null;
     I.stby = { caged: c.stby_cage === 'CAGED', powered: sys.power || c.emergency_sw === 'ON' };
     I.flight = s.flight; I.g = s.g; I.stick = s.sys.stick || { r: 0, p: 0 };
@@ -2716,6 +2807,7 @@ body.immersion #immExit{display:block}
     bugSynced: function (S) { var d = Math.abs(((S.g.hdg - S.flight.hdg + 540) % 360) - 180); return d <= 1; },
     dbAcked: function (S) { return !!S.sys.dbAcked; },
     altSel2500c: function (S) { return S.g.altSel === 2500; },
+    audMic1: function (S) { return !!(S.sys.audio && S.sys.audio.mic === 'COM1'); },
     ifrCdiVor1: function (S) { return S.g.cdi === 'VOR1'; },
     ifrHdg330: function (S) { return S.g.lat === 'HDG' && S.g.hdg === 330; },
     ifrAltHold: function (S) { return S.g.vert === 'ALT'; },
@@ -4472,6 +4564,8 @@ body.immersion #immExit{display:block}
   ].forEach(function (c) { D.cards.push(c); });
 
   /* Essais cockpit supplémentaires */
+  D.tries.com1mic = { state: 'ess-cruise', view: 'audio', setup: { audio: { mic: 'COM2', com1: false, com2: true } }, txt: 'L\'instructeur : « Sélectionne COM1 pour émettre » (panneau audio entre le PFD et le MFD).', cond: 'audMic1', hint: 'Émettre = touche COM1 MIC (colonne de gauche). La touche COM1 (à droite) ne fait qu\'écouter.', refs: ['garmin-audio'] };
+  D.sources['garmin-audio'] = { t: 'Panneau audio GMA 1347 : COM1 MIC = émetteur n°1 (+ écoute COM1) ; COM1, COM2, NAV1… = écoute', pub: 'Garmin G1000 NXi DA42NG 190-02237-00 Rev. A, p.102-103', url: '', cat: 'avion', date: 'Rev. A' };
   D.tries.cdi = { state: 'ess-cruise', setup: { g: { cdi: 'GPS', pfdLevel: 'top' } }, txt: 'Passe le CDI sur VOR1 / LOC1 : softkey CDI (6e sous le PFD).', cond: 'ifrCdiVor1', hint: 'La softkey CDI fait défiler GPS → VOR1 → VOR2. Une pression suffit.', refs: ['garmin-cdi'] };
   D.tries.hdg = { state: 'ess-cruise', setup: { g: { lat: 'ROL', hdg: 276, pfdLevel: 'top' } }, txt: 'ATC : « turn right heading 330 ». Bug de cap sur 330 et mode HDG.', cond: 'ifrHdg330', hint: 'Bouton HDG (à gauche du PFD) pour le bug, puis touche HDG du contrôleur AFCS sur le MFD.', refs: ['garmin-fma'] };
   D.tries.alt = { state: 'ess-cruise', setup: { g: { vert: 'PIT', refAlt: null, pfdLevel: 'top' } }, txt: 'Mode vertical PIT : passe en tenue d\'altitude (ALT).', cond: 'ifrAltHold', hint: 'Touche ALT du contrôleur AFCS (MFD).', refs: ['garmin-fma'] };
@@ -4485,6 +4579,256 @@ body.immersion #immExit{display:block}
     { step: '6 · L\'arrivée', ref: 'r-qnh' }, { step: '6 · L\'arrivée', ref: 'a-desc-tl' },
     { step: '7 · L\'approche', ref: 'p-mda' }, { step: '8 · La décision', ref: 'p-da-novis' }, { step: '8 · La décision', ref: 'p-susp' }
   ];
+})(this);
+
+</script>
+<script>/* js/data/mep.js */
+/* MES VOLS MEP — données (programme Airbus FCTP MEP Issue 1, 16 juin 2019) et missions.
+ * Règles :
+ *  - Intitulés et contenus des séances = FCTP Partie IV § 1 (p.15) et § 5 « Trainee progress » (p.18-25).
+ *  - Compétences = FCTP § 7 « Progress assessment » (p.25-27). N/A pour l'automatisation en MEP 01 (FCTP p.26).
+ *  - Actions et valeurs des procédures = OM-B DA42 VI Issue C et C/L DA42-VI Issue C (pages citées). Rien n'est inventé ;
+ *    ce qui n'est pas simulé est présenté comme une vérification ou une décision, jamais comme un pilotage.
+ *  - Le FCTP date de 2019 : base pédagogique, pas une référence réglementaire actuelle. Le tableau « Air Exercise Reference List »
+ *    (FCTP p.16) porte la mention « A mettre à jour » : il n'est pas utilisé.
+ * Types de mission : flow (bloc du flow « Mon vol », validé sur l'état réel des commandes), cockpit (étapes validées sur l'état
+ * réel du simulateur), decision (exercice de décision / lecture d'instruments, étiqueté comme tel).
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  var FCTP = { doc: 'FCTP MEP Airbus, Issue 1, 16 juin 2019' };
+  function fc(p, s) { return { doc: 'FCTP', page: p, sec: s }; }
+  function om(p, s) { return { doc: 'OM-B DA42 VI Issue C', page: p, sec: s }; }
+  function cl(s) { return { doc: 'C/L DA42-VI Issue C', sec: s }; }
+
+  /* Compétences (FCTP § 7). obs:false = non observable dans l'application → jamais de score */
+  var COMP = [
+    { id: 'APK', t: 'Application des procédures', en: 'Application of procedures', obs: true },
+    { id: 'COM', t: 'Communication', en: 'Communication', obs: true },
+    { id: 'FPA', t: 'Gestion de trajectoire — automatisation', en: 'Aircraft flight path management, automation', obs: true },
+    { id: 'FPM', t: 'Gestion de trajectoire — pilotage manuel', en: 'Aircraft flight path management, manual control', obs: false, why: 'Le pilotage manuel n\'est pas simulé dans un cockpit 2D.' },
+    { id: 'KNO', t: 'Connaissances', en: 'Knowledge', obs: true },
+    { id: 'LTW', t: 'Leadership et travail en équipe', en: 'Leadership and teamwork', obs: false, why: 'Pas d\'équipage à observer dans l\'application.' },
+    { id: 'PSD', t: 'Résolution de problèmes et décision', en: 'Problem solving and decision making', obs: true },
+    { id: 'SAW', t: 'Conscience de la situation', en: 'Situation awareness', obs: true },
+    { id: 'WLM', t: 'Gestion de la charge de travail', en: 'Workload management', obs: true }
+  ];
+  var STATES = ['À découvrir', 'En apprentissage', 'À consolider', 'Maîtrisé dans les exercices simulés'];
+
+  /* ---------------- Séances (FCTP Partie IV § 1, p.15 ; § 5 p.18-25) ---------------- */
+  var sessions = [
+    { id: 'mep01', n: 'MEP 01', title: 'Découverte et prise en main', dur: '1 h 15', ref: fc(15, 'Session MEP 01'),
+      fctp: 'Before take-off procedure/briefing, Pre-flight check and cockpit preparation, Engine start Normal, Taxi out, Engine check, Take off, Climb to safety altitude VFR, VFR straight and level flight, VFR turns, VFR climbing, Pre-settings, stall in clean configuration, approach to stall (descending turn, approach and landing configurations), Crosswind landing, Stall in straight flight, slow flight, Handling using the auto-pilot and flight director, VFR Arrival procedure, Visual pattern, Go-around, Taxi in, Post flight actions, Secure aircraft and debriefing.',
+      understands: ['Pre-flight operations / briefing', 'Pre-flight check and cockpit preparation', 'Engine start', 'Climb to safety altitude — pre-settings', 'Straight and level flight, change configurations', 'Turns (≤ 30°, landing configuration)', 'Approach to stall, stall, low speed', 'Visual pattern, go-around', 'Handling using FD and auto-pilot', 'Post flight actions, secure aircraft and debriefing'],
+      expertise: [], proficient: ['ATC procedures'], na: ['FPA'],
+      missions: ['m01-cockpit', 'm01-start', 'm01-taxi', 'm01-bto', 'm01-fd', 'm00-audio', 'm01-ga', 'm01-park', 'm01-stall'] },
+    { id: 'mep02', n: 'MEP 02', title: 'Maîtrise et situations anormales', dur: '1 h 15', ref: fc(15, 'Session MEP 02'),
+      fctp: 'Before take-off procedure/briefing, Pre-flight check and cockpit preparation, Engine start Normal & malfunctions, Engine tests, Taxi out, Take off with and without crosswind, stalls, slow flight, Handling using the auto-pilot and flight director, Steep turn, VFR Arrival procedure, Visual pattern in different configurations, especially flapless landing, crosswind landing, Go around, Taxi in, Rejected take-off, Systems\' malfunctions, especially Manual extension landing gear, Post flight actions, Secure aircraft and debriefing.',
+      understands: ['Engine start — abnormal & malfunction', 'Taxi out (ATC, asymmetric power), pre-take-off checks', 'Take-off — rejected take-off', 'Steep turns (45°)', 'Landing — flapless landing', 'Behaviour of the auto-pilot at low speed and extreme attitudes', 'Abnormal situation management', 'Manual landing gear extension, electrical failure'],
+      expertise: ['Pre-flight operations / briefing', 'Pre-flight check and cockpit preparation', 'Engine start', 'Climb to safety altitude', 'Straight and level flight, turns', 'Visual pattern', 'Post flight actions, secure aircraft'], proficient: ['ATC procedures'],
+      missions: ['m01-start', 'm02-post', 'm02-rto', 'm02-flaps', 'm02-gear', 'm00-audio', 'm01-fd'] },
+    { id: 'mep03', n: 'MEP 03', title: 'La grande mission monomoteur', dur: '1 h 15', ref: fc(15, 'Session MEP 03'),
+      fctp: 'Engine trouble during start, Engine failure in flight (straight and level flight, during turn, in descent), critical engine, engine failure procedures, engine shut down in flight, evolutions one engine inoperative, restart in flight with wind milling and with starter, go around with one engine inoperative, Identification and recovery of the VMCA, VFR Arrival procedure, Arrival procedure at VNO, Visual pattern with and without simulated engine failure, management of the normal, abnormal and emergency situations, Taxi in, Post flight actions, Secure aircraft and debriefing.',
+      understands: ['Performances N & N-1, climb gradient, landing distance OEI', 'Engine failure in flight: identification (level flight, turn, descent), critical engine', 'Management of an engine failure: immediate actions, delayed actions, checklist', 'Flight management with engine failure — FLY / NAVIGATE / COMMUNICATE', 'Engine shut down in flight, fly OEI', 'Restart engine in flight (windmilling, starter)', 'VMCA: identification and recovery', 'Go-around with one engine inoperative'],
+      expertise: ['Handling using FD and auto-pilot (low speed, extreme attitudes)', 'Circuit pattern in different configurations', 'Go around', 'Abnormal situation: manual extension of the landing gear'], proficient: ['Pre-flight operations / briefing', 'Engine start — abnormal & malfunction', 'Taxi out, take-off, rejected take-off', 'Climb to safety altitude, turns & steep turns'],
+      missions: ['m03-which', 'm03-prio', 'm03-oei', 'm03-vmca', 'm03-restart', 'm02-gear'] },
+    { id: 'mep04', n: 'MEP 04', title: 'Gestion des situations critiques', dur: '1 h 15', ref: fc(15, 'Session MEP 04'),
+      fctp: 'Engine trouble during start, Engine failure during climb, Climbing with one engine inoperative, Engine failure in flight in landing configuration, Identification and recovery of the VMCA, Engine shut down in flight, evolutions one engine inoperative, Go Around one engine inoperative, restart in flight with wind milling and with starter, VFR Arrival, Visual pattern with and without simulated engine failure, Abnormal and emergency procedures, manual extension of the landing gear, Taxi in, Post flight actions, management of the normal, abnormal and emergency situations, Secure aircraft and debriefing.',
+      understands: ['Engine failure during climb (review VMCA recovery)', 'Go-around with OEI during circuit pattern', 'Engine failure during approach in landing configuration', 'Manage priority of the actions', 'Decision making (continue the approach or go around)'],
+      expertise: ['VMCA identification and recovery', 'Circuit pattern with engine failure', 'Abnormal situation management'], proficient: ['Pre-flight, engine start, ATC procedures', 'Taxi out and take-off', 'Circuit pattern with both engines at different configuration', 'Post flight actions'],
+      missions: ['m04-climb', 'm04-cga', 'm04-surprise', 'm03-vmca', 'm02-gear'] },
+    { id: 'mep05', n: 'MEP 05', title: 'Mission de synthèse', dur: '1 h 00', ref: fc(15, 'Session MEP 05'),
+      fctp: 'Before take-off procedure/briefing, Pre-flight check and cockpit preparation, Engine start Normal and abnormal, Taxi out, Take off, Aborted take-off, Visual pattern, with and without engine failure, landing in different configurations, go around with one engine inoperative, Taxi in, Post flight actions, Secure aircraft and debriefing.',
+      understands: [], expertise: ['Go around with OEI during circuit pattern', 'Engine failure during approach in landing configuration — manage priority of the actions'],
+      proficient: ['Pre-flight operations / briefing, cockpit preparation', 'Engine start, taxi out', 'Climb to safety altitude', 'Straight and level flight, turns', 'Visual pattern N & N-1', 'Go around N & N-1', 'ATC procedure — normal, abnormal and emergency', 'Flight management with engine failure (FLY / NAVIGATE / COMMUNICATE)', 'Use of FD and auto-pilot', 'Post flight actions, secure aircraft and debriefing'],
+      missions: ['m05-ready', 'm01-start', 'm02-rto', 'm04-cga', 'm03-which', 'm01-park'] },
+    { id: 'skill', n: 'SKILL TEST', title: 'Class Rating Skill Test MEP', dur: '1 h 00 (examinateur)', ref: fc(14, 'Flight Instruction MEP — Class Rating Skill test'),
+      fctp: 'Class Rating Skill test, 1 h 00, examinateur (EC). L\'application ne prépare qu\'aux savoir-faire travaillés en MEP 01 à 05 : aucune évaluation officielle.',
+      understands: [], expertise: [], proficient: [], missions: ['m05-ready'] }
+  ];
+
+  /* ---------------- Missions ---------------- */
+  var M = {};
+  function add(o) { M[o.id] = o; }
+  var FL = function (id, block, title, comp, fctpTxt, ref) { add({ id: id, type: 'flow', block: block, title: title, comp: comp, fctp: fctpTxt, refs: [ref], dur: 'flow complet' }); };
+  FL('m01-cockpit', 'ret', 'Cockpit Ready', ['APK', 'KNO', 'SAW'], 'Pre-flight check and cockpit preparation', { doc: 'OM-B + préparation cabine équipage', sec: 'Cabin preparation' });
+  FL('m01-start', 'start', 'Engine Start', ['APK', 'KNO', 'SAW'], 'Engine start Normal', om(0, 'Engine start-up (flow)'));
+  FL('m01-taxi', 'taxi', 'Taxi Out', ['APK', 'COM', 'SAW'], 'Taxi out', om(0, 'Taxiing'));
+  FL('m01-bto', 'run', 'Before Takeoff', ['APK', 'KNO', 'SAW'], 'Engine check / Before take-off procedure', om(0, 'Before take-off'));
+  FL('m01-ga', 'ga', 'Final et remise de gaz', ['APK', 'FPA', 'WLM'], 'Visual pattern, Go-around', om(78, '11. Go-Around'));
+  FL('m01-park', 'park', 'Parking et arrêt', ['APK', 'SAW'], 'Taxi in, Post flight actions, Secure aircraft', om(0, 'Shut-down'));
+  FL('m02-post', 'post', 'Contrôles moteurs après mise en route', ['APK', 'KNO'], 'Engine tests', om(0, 'After start-up'));
+
+  add({ id: 'm01-fd', type: 'cockpit', title: 'FD Challenge', comp: ['FPA', 'APK', 'SAW'], fctp: 'Handling using the auto-pilot and flight director', dur: '≈ 1 min',
+    refs: [{ doc: 'Garmin G1000 NXi DA42NG', page: 390, sec: 'AFCS — bandeau des modes' }, om(0, 'GFC 700')],
+    intro: 'Croisière, PA déconnecté, FD éteint. Configure les automatismes réellement simulés.', label: 'Automatismes simulés (FD / AP / modes)',
+    state: 'ess-cruise', setup: { sys: { apEngaged: false }, g: { fd: false, pfdLevel: 'top' }, history: { apDisc: false } },
+    steps: [
+      { t: 'Allume le directeur de vol : touche FD.', cond: function (S) { return !!S.g.fd; }, hint: 'Contrôleur AFCS à gauche du MFD : touche FD.', show: ['ap_fd'] },
+      { t: 'L\'ATC demande le cap 330 : bug de cap sur 330 et mode HDG.', cond: function (S) { return S.g.lat === 'HDG' && S.g.hdg === 330; }, hint: 'Bouton HDG (à droite du PFD) pour le bug, puis touche HDG du contrôleur AFCS.', show: ['k_hdg', 'ap_hdg'] },
+      { t: 'Tiens l\'altitude actuelle : mode ALT.', cond: function (S) { return S.g.vert === 'ALT'; }, hint: 'Touche ALT du contrôleur AFCS.', show: ['ap_alt'] },
+      { t: 'Engage le pilote automatique : touche AP.', cond: function (S) { return !!S.sys.apEngaged; }, hint: 'Touche AP (en haut à gauche du contrôleur). Le voyant vert s\'allume.', show: ['ap_ap'] },
+      { t: 'Déconnecte le PA avec le bouton AP DISC du manche.', cond: function (S) { return !S.sys.apEngaged && !!S.sys.history.apDisc; }, hint: 'Bouton rouge AP DISC sur le manche gauche.', show: ['ap_disc'],
+        wrong: [{ cond: function (S, X) { return !S.sys.apEngaged && !S.sys.history.apDisc && X.was.ap; }, msg: 'Le PA est coupé, mais pas avec AP DISC : la consigne demande le bouton du manche.' }] }
+    ] });
+
+  add({ id: 'm00-audio', type: 'cockpit', title: 'COM / NAV : le panneau audio', comp: ['COM', 'KNO', 'SAW'], fctp: 'ATC procedures', dur: '≈ 1 min',
+    refs: [{ doc: 'Garmin G1000 NXi DA42NG', page: 102, sec: 'Audio Panel Controls (GMA 1347)' }],
+    intro: 'Le panneau audio GMA 1347 est entre le PFD et le MFD. MIC = émettre ; COM1 / COM2 / NAV1… = écouter. Bouton 🎧 pour zoomer dessus.', label: 'Sélections audio réellement simulées',
+    state: 'ess-cruise', setup: { audio: { mic: 'COM2', com1: false, com2: true, nav1: false, nav2: false }, view: 'audio' },
+    steps: [
+      { t: 'Instructeur : « Sélectionne COM1 pour émettre. »', cond: function (S) { return S.sys.audio.mic === 'COM1'; }, hint: 'Pour ÉMETTRE : touche COM1 MIC (colonne de gauche, en haut).', show: ['aud_com1mic'],
+        wrong: [{ cond: function (S) { return S.sys.audio.mic !== 'COM1' && S.sys.audio.com1; }, msg: 'COM1 (colonne de droite) = écoute seulement. Pour émettre sur COM1 : COM1 MIC.' }] },
+      { t: 'Tu n\'as plus besoin de la fréquence COM2 : coupe son écoute, émission toujours sur COM1.', cond: function (S) { return S.sys.audio.mic === 'COM1' && !S.sys.audio.com2 && S.sys.audio.com1; }, hint: 'Touche COM2 (colonne de droite) : le triangle vert au-dessus s\'éteint.', show: ['aud_com2'],
+        wrong: [{ cond: function (S) { return S.sys.audio.mic === 'COM2'; }, msg: 'COM2 MIC fait émettre sur COM2 : ce n\'est pas ce qui est demandé.' }, { cond: function (S) { return !S.sys.audio.com1; }, msg: 'Tu as coupé l\'écoute de COM1 : tu n\'entendrais plus le contrôleur.' }] },
+      { t: 'Identifie le VOR réglé en NAV1 : active l\'écoute NAV1.', cond: function (S) { return !!S.sys.audio.nav1; }, hint: 'Touche NAV1 (colonne de droite).', show: ['aud_nav1'] },
+      { t: 'Identification faite : coupe l\'écoute NAV1, émission toujours sur COM1.', cond: function (S) { return !S.sys.audio.nav1 && S.sys.audio.mic === 'COM1'; }, hint: 'Appuie de nouveau sur NAV1.', show: ['aud_nav1'] }
+    ] });
+
+  add({ id: 'm01-stall', type: 'decision', title: 'Basses vitesses et décrochages : les limites', comp: ['KNO', 'SAW'], fctp: 'Stall, approach to stall, slow flight', dur: '≈ 1 min',
+    label: 'Exercice de connaissances — le pilotage n\'est pas simulé', refs: [om(20, 'Approved maneuvers'), om(23, 'Airspeed limitations — VMCA')],
+    steps: [
+      { ask: 'Décrochage avec puissance dissymétrique ou un moteur inopérant :', ch: ['Interdit', 'Autorisé en catégorie Normale', 'Autorisé au-dessus de 3 000 ft'], ans: 0, why: 'OM-B p.20 : « Stalling with asymmetric power or one engine inoperative is not permitted. »' },
+      { ask: 'Le décrochage dynamique est…', ch: ['Exclu des manœuvres approuvées', 'Approuvé', 'Approuvé avec volets LDG'], ans: 0, why: 'OM-B p.20 : stalling « with the exception of dynamic stalling ».' },
+      { ask: 'Inclinaison maximale en catégorie Normale :', ch: ['60°', '45°', '75°'], ans: 0, why: 'OM-B p.20 : manœuvres au-delà de 60° d\'inclinaison non permises.' }
+    ] });
+
+  add({ id: 'm02-rto', type: 'cockpit', title: 'REJECTED TAKEOFF', comp: ['APK', 'PSD', 'SAW', 'WLM'], fctp: 'Rejected take-off', dur: '≈ 1 min',
+    refs: [om(99, 'Engine failure during ground roll')], label: 'Actions sur commandes réelles + vérifications (contrôle directionnel non simulé)',
+    intro: 'Course au décollage piste 28. Pleine puissance… un moteur s\'arrête pendant le roulage.', state: 'ess-lined-28', setup: { controls: { power_l: 100, power_r: 100 }, flight: { ias: 45 } },
+    events: [{ at: 1500, failRandom: true, toast: '⚠️ Panne moteur pendant la course au décollage !' }],
+    steps: [
+      { wait: 'Pleine puissance, accélération… surveille tes paramètres.' },
+      { t: 'Abort take-off : Power lever (BOTH) … IDLE.', cond: function (S) { return S.controls.power_l <= 2 && S.controls.power_r <= 2; }, hint: 'Les DEUX manettes de puissance en arrière (IDLE).', show: ['power_l', 'power_r'] },
+      { check: 'Rudder … MAINTAIN directional control.', note: 'Non simulé dans le cockpit 2D.' },
+      { check: 'Brakes … AS REQUIRED.', note: 'Non simulé dans le cockpit 2D.' },
+      { t: 'S\'il reste assez de temps (risque d\'incendie) : Engine Master (BOTH) … OFF.', cond: function (S) { return S.controls.eng_master_l === 'OFF' && S.controls.eng_master_r === 'OFF'; }, hint: 'Engine masters gauche et droit, en bas à gauche du tableau.', show: ['eng_master_l', 'eng_master_r'] },
+      { t: 'Fuel Selector (BOTH) … OFF.', cond: function (S) { return S.controls.fuel_sel_l === 'OFF' && S.controls.fuel_sel_r === 'OFF'; }, hint: 'Sélecteurs carburant sur la console centrale.', show: ['fuel_sel_l', 'fuel_sel_r'] },
+      { t: 'Elect. Master … OFF.', cond: function (S) { return S.controls.elec_master === 'OFF'; }, hint: 'ELECT. MASTER (rouge), en bas à gauche.', show: ['elec_master'] }
+    ] });
+
+  add({ id: 'm02-flaps', type: 'decision', title: 'FLAPS PROBLEM', comp: ['KNO', 'PSD', 'APK'], fctp: 'Visual pattern in different configurations, especially flapless landing', dur: '≈ 1 min',
+    label: 'Exercice de décision — panne non simulée techniquement', refs: [om(167, 'Failures in flap operating system')],
+    steps: [
+      { ask: 'Indication des volets incohérente. Premier item de la procédure :', ch: ['Flaps position … CHECK VISUALLY', 'Flaps switch … LDG', 'Atterrir immédiatement'], ans: 0, why: 'OM-B p.167 : 1. Flaps position CHECK VISUALLY, 2. Airspeed MAX 113 KIAS, 3. Flaps switch RE-CHECK ALL POSITIONS.' },
+      { ask: 'Vitesse maximale pendant la vérification :', ch: ['113 KIAS', '152 KIAS', '85 KIAS'], ans: 0, why: 'OM-B p.167 : Airspeed (MAX. 113 KIAS).' },
+      { ask: 'Seuls les volets UP sont disponibles. Vitesse d\'approche minimale :', ch: ['86 KIAS', '84 KIAS', '71 KIAS'], ans: 0, why: 'OM-B p.167 : only UP available → MIN. 86 KIAS, approche à pente faible, vitesse et taux de descente à la puissance.' },
+      { ask: 'Seuls les volets APP sont disponibles :', ch: ['MIN. 84 KIAS, approche à pente faible', 'Atterrissage normal', 'MIN. 113 KIAS'], ans: 0, why: 'OM-B p.167 : only APP available → MIN. 84 KIAS.' },
+      { ask: 'Seuls les volets LDG sont disponibles :', ch: ['Atterrissage normal', 'MIN. 86 KIAS', 'Remise de gaz obligatoire'], ans: 0, why: 'OM-B p.167 : only LDG available → PERFORM NORMAL LANDING.' }
+    ] });
+
+  add({ id: 'm02-gear', type: 'cockpit', title: 'GEAR CHALLENGE', comp: ['APK', 'KNO', 'PSD'], fctp: 'Systems\' malfunctions, especially manual extension landing gear', dur: '≈ 2 min',
+    refs: [om(131, 'Landing gear caution'), om(132, 'Manual extension of the landing gear')], label: 'Panne pédagogique de la pompe de train + commandes réelles',
+    intro: 'En vol, train rentré. La pompe électrique du train est en panne (scénario).', state: 'ess-cruise', setup: { controls: { gear_lever: 'UP', gear_emerg: 'PUSHED IN' }, fail: { gearPump: true }, history: { gearTest: false } },
+    steps: [
+      { t: 'Sors le train : sélecteur sur DOWN.', cond: function (S) { return S.controls.gear_lever === 'DOWN'; }, hint: 'Sélecteur de train, sous le PFD, à droite.', show: ['gear_lever'] },
+      { check: 'Le voyant rouge reste allumé et pas de 3 vertes : procédure MANUAL EXTENSION OF THE LANDING GEAR (OM-B p.132), à moins de 152 KIAS.', note: 'Extension manuelle possible jusqu\'à 152 KIAS ; elle peut durer jusqu\'à 20 s.' },
+      { t: '1. Gear Indicator Lights … TEST.', cond: function (S) { return !!S.sys.history.gearTest; }, hint: 'Bouton GEAR / FIRE TEST.', show: ['gear_fire_test'] },
+      { check: '2. Elect. Master … CHECK ON.', verify: function (S) { return S.controls.elec_master === 'ON'; } },
+      { check: '3. Bus Voltage … CHECK IN NORMAL RANGE.', note: 'Lecture sur la page moteur du MFD.' },
+      { check: '4. Circuit Breaker … CHECK IN.', note: 'Non modélisé dans l\'application.' },
+      { t: '5. Gear Selector … SELECT DOWN.', cond: function (S) { return S.controls.gear_lever === 'DOWN'; }, hint: 'Le sélecteur doit être sur DOWN.', show: ['gear_lever'] },
+      { t: '6. Manual Gear Extension Handle … PULL OUT.', cond: function (S) { return S.controls.gear_emerg === 'PULLED'; }, hint: 'Levier ROUGE sous le tableau, à gauche de la console centrale.', show: ['gear_emerg'],
+        wrong: [{ cond: function (S) { return S.controls.alt_air === 'OPEN'; }, msg: 'Ça, c\'est l\'ALTERNATE AIR (levier noir, à droite). Le train de secours est le levier ROUGE à gauche.' }] },
+      { check: '7. Gear Indicator Lights … CHECK 3 GREEN LIGHTS.', verify: function (S, X, I) { return !!(I.gearLights && I.gearLights.l && I.gearLights.n && I.gearLights.r); }, note: 'Attends l\'extension (8 s simulées).' }
+    ] });
+
+  /* ---- MEP 03 / 04 : panne moteur ---- */
+  function securing(prefix) {
+    var P = prefix || '';
+    return [
+      { t: P + 'Operative Engine … INCREASE power as required.', cond: function (S, X) { return S.controls['power_' + X.good] > X.p0; }, hint: 'Avance la manette du moteur QUI FONCTIONNE.', show: function (X) { return ['power_' + X.good]; } },
+      { t: P + 'Power lever (AFFECTED ENGINE) … REDUCED.', cond: function (S, X) { return S.controls['power_' + X.bad] < X.p0; }, hint: 'Réduis la manette du moteur EN PANNE.', show: function (X) { return ['power_' + X.bad]; } },
+      { t: P + 'Engine Master (AFFECTED ENGINE) … OFF.', cond: function (S, X) { return S.controls['eng_master_' + X.bad] === 'OFF'; }, hint: 'ENGINE MASTER du côté en panne (en bas à gauche).', show: function (X) { return ['eng_master_' + X.bad]; } },
+      { check: 'Propeller (AFFECTED ENGINE) … FEATHER CHECKED.', note: 'L\'hélice se met en drapeau quand l\'Engine Master est coupé (OM-B p.108 / ECU test) — non représenté graphiquement.' },
+      { t: 'Securing — Alternator (AFFECTED ENGINE) … OFF.', cond: function (S, X) { return S.controls['alt_' + X.bad] === 'OFF'; }, hint: 'ALTERNATOR du côté en panne, sous-panneau gauche.', show: function (X) { return ['alt_' + X.bad]; } },
+      { t: 'Fuel Pump (AFFECTED ENGINE) … CHECK OFF.', cond: function (S, X) { return S.controls['fuel_pump_' + X.bad] === 'OFF'; }, hint: 'FUEL PUMP du côté en panne.', show: function (X) { return ['fuel_pump_' + X.bad]; } },
+      { t: 'Fuel Selector (AFFECTED ENGINE) … OFF.', cond: function (S, X) { return S.controls['fuel_sel_' + X.bad] === 'OFF'; }, hint: 'Sélecteur carburant du côté en panne (console).', show: function (X) { return ['fuel_sel_' + X.bad]; } },
+      { check: 'Air Conditioning (RACC) … OFF.', note: 'Commande non modélisée dans l\'application.' },
+      { check: 'Établir un dérapage nul (≈ ½ bille côté moteur vif, 3° à 5° d\'inclinaison). Atterrir dès que possible.', note: 'OM-B p.102 / p.108 — non simulé.' }
+    ];
+  }
+  var ENGCRIT = [
+    { cond: function (S, X) { return S.controls['eng_master_' + X.good] === 'OFF'; }, msg: '⛔ Tu as coupé le moteur QUI FONCTIONNAIT : plus aucune poussée.', crit: true },
+    { cond: function (S, X) { return S.controls['power_' + X.good] < X.p0; }, msg: '⛔ Tu réduis le moteur qui fonctionne.', crit: true },
+    { cond: function (S, X) { return S.controls['fuel_sel_' + X.bad] === 'OFF' && S.controls['eng_master_' + X.bad] === 'ON'; }, msg: '⛔ OM-B p.108 : ne jamais couper un moteur avec le FUEL SELECTOR (pompe haute pression).', crit: true },
+    { cond: function (S, X) { return S.controls['fuel_sel_' + X.good] === 'OFF'; }, msg: '⛔ Sélecteur carburant du moteur vif sur OFF.', crit: true }
+  ];
+  function identify() {
+    return { ask: function (X) { return 'L\'avion embarde et s\'incline vers la ' + (X.bad === 'L' ? 'GAUCHE' : 'DROITE') + '. Symétrie rétablie, ton pied ' + (X.bad === 'L' ? 'DROIT' : 'GAUCHE') + ' pousse fort, l\'autre est sans effort. Les paramètres du moteur en panne chutent sur la page moteur. Moteur en panne ?'; },
+      ch: ['Moteur GAUCHE', 'Moteur DROIT'], ans: function (X) { return X.bad === 'L' ? 0 : 1; }, why: 'OM-B p.98 : « Dead foot — dead engine ». Le pied sans effort est du côté du moteur en panne ; les instruments moteur confirment.', crit: true };
+  }
+  add({ id: 'm03-which', type: 'cockpit', title: 'WHICH ENGINE?', comp: ['APK', 'PSD', 'SAW', 'KNO'], fctp: 'Engine failure in flight — identification, engine failure procedures, engine shut down', dur: '≈ 3 min',
+    refs: [om(98, 'Detecting the inoperative engine'), om(102, 'Engine failure during flight'), om(108, 'Engine securing (feathering) procedure'), cl('ENGINE FAILURE IN FLIGHT')],
+    label: 'Lecture d\'instruments + procédure sur commandes réelles (dissymétrie de vol non simulée)',
+    intro: 'Croisière, PA déconnecté. Un moteur va tomber en panne (côté tiré au hasard).', state: 'ess-cruise', setup: { sys: { apEngaged: false }, view: 'mfd' },
+    events: [{ at: 1200, failRandom: true, toast: '⚠️ Panne moteur !' }],
+    crit: ENGCRIT, steps: [{ wait: 'Croisière stable… surveille tes paramètres moteur.' }, identify(), { check: '1. Rudder … MAINTAIN directional control.', note: 'Non simulé.' }, { check: '2. Airspeed … AS REQUIRED.', note: 'OM-B p.102.' }].concat(securing('')) });
+  add({ id: 'm03-prio', type: 'decision', title: 'PRIORITIES FIRST', comp: ['APK', 'PSD', 'WLM'], fctp: 'Management of an engine failure, immediate actions, delayed actions, check-list', dur: '≈ 1 min',
+    label: 'Exercice d\'ordre des actions (procédure OM-B)', refs: [om(102, 'Engine failure during flight'), om(108, 'Engine securing (feathering) procedure')],
+    steps: [
+      { order: 'Remets dans l\'ordre de l\'OM-B « Engine failure during flight » :', items: ['Rudder … MAINTAIN directional control', 'Airspeed … AS REQUIRED', 'Operative engine … INCREASE power as required', 'Inoperative engine … FEATHERING (securing procedure)', 'Land as soon as possible'], why: 'OM-B p.102 : 1 Rudder, 2 Airspeed, 3 Operative engine, 4 Inoperative engine FEATHERING, puis atterrir dès que possible. FCTP : FLY / NAVIGATE / COMMUNICATE.' },
+      { order: 'Engine securing (feathering) procedure — shut down et feathering :', items: ['Power lever (affected engine) … REDUCED', 'Engine Master … OFF', 'Propeller (affected engine) … FEATHER CHECKED', 'Power lever (good engine) … AS REQUIRED'], why: 'OM-B p.108, étapes 1 à 4.' },
+      { order: 'Securing the feathered engine :', items: ['RACC … OFF', 'Alternator affected engine … OFF', 'Fuel pump … CHECK OFF', 'Fuel selector affected engine … OFF'], why: 'OM-B p.108, étapes 5 à 8. Ne jamais couper un moteur avec le fuel selector.' }
+    ] });
+  add({ id: 'm03-oei', type: 'decision', title: 'ONE ENGINE INOPERATIVE', comp: ['KNO', 'PSD', 'SAW'], fctp: 'Evolutions one engine inoperative, fly with one engine inoperative', dur: '≈ 1 min',
+    label: 'Exercice de décision — le vol asymétrique n\'est pas simulé', refs: [om(102, 'Engine failure during flight'), om(107, 'Flight with one engine inoperative'), om(103, 'Landing with one engine inoperative')],
+    steps: [
+      { ask: 'Moteur sécurisé. Condition de dérapage minimal :', ch: ['≈ ½ bille côté moteur vif, 3° à 5° d\'inclinaison', 'Bille centrée, ailes à plat', '15° d\'inclinaison côté moteur en panne'], ans: 0, why: 'OM-B p.102 : « Approx. half ball towards good engine; 3° to 5° bank ».' },
+      { ask: 'Vitesse minimale en vol monomoteur (volets UP) :', ch: ['VMCA 71 KIAS', 'VMCA 68 KIAS', 'Vyse 85 KIAS'], ans: 0, why: 'OM-B p.107 : VMCA = 71 KIAS (flaps UP) ou 68 KIAS (flaps APP).' },
+      { ask: 'Dérapage prolongé et alarme LOW FUEL :', ch: ['Revenir en vol coordonné ou CROSSFEED sur le moteur concerné', 'Couper le moteur restant', 'Augmenter le dérapage'], ans: 0, why: 'OM-B p.107 : un dérapage prolongé peut désamorcer l\'alimentation : revenir en vol coordonné ou utiliser CROSSFEED.' },
+      { ask: 'Même si l\'avion monte correctement en monomoteur :', ch: ['Atterrir dès que possible au prochain terrain approprié', 'Poursuivre la navigation prévue', 'Redémarrer le moteur à tout prix'], ans: 0, why: 'OM-B p.107 : land as soon as possible at the next suitable airfield.' }
+    ] });
+  add({ id: 'm03-vmca', type: 'decision', title: 'VMCA KNOWLEDGE', comp: ['KNO', 'SAW', 'PSD'], fctp: 'Identification and recovery of the VMCA', dur: '≈ 1 min', ill: 'vmca',
+    label: 'Exercice conceptuel — la perte de contrôle n\'est pas simulée', refs: [om(23, 'Airspeed limitations'), om(101, 'Engine failure during initial climb — WARNING')],
+    steps: [
+      { ask: 'VMCA volets UP :', ch: ['71 KIAS', '68 KIAS', '85 KIAS'], ans: 0, why: 'OM-B p.23 : VMCA 71 KIAS (UP), 68 KIAS (APP).' },
+      { ask: 'Vyse (meilleur taux de montée monomoteur) :', ch: ['85 KIAS', '71 KIAS', '92 KIAS'], ans: 0, why: 'OM-B p.100-101 : Vyse = 85 KIAS.' },
+      { ask: 'Forte puissance, vitesse sous VMCA, un moteur lâche : pour reprendre le contrôle directionnel…', ch: ['Réduire la dissymétrie de poussée', 'Mettre plein gaz sur le moteur vif', 'Cabrer pour ralentir'], ans: 0, why: 'OM-B p.101 : « it is very important to reduce the asymmetry in thrust to regain directional control ».', crit: [1] },
+      { ask: 'Pourquoi éviter les vitesses sous VMCA en montée ?', ch: ['Une panne soudaine peut entraîner une perte de contrôle', 'Pour économiser du carburant', 'Pour respecter le bruit'], ans: 0, why: 'OM-B p.101 : en montée (forte puissance) une panne soudaine sous VMCA peut entraîner une perte de contrôle.' }
+    ] });
+  add({ id: 'm03-restart', type: 'decision', title: 'Redémarrage en vol', comp: ['KNO', 'APK'], fctp: 'Restart in flight with wind milling and with starter', dur: '≈ 1 min',
+    label: 'Exercice de connaissances (C/L)', refs: [om(109, 'Unfeathering & restarting the engine in flight'), cl('RESTARTING')],
+    steps: [
+      { ask: 'Redémarrage au démarreur : vitesse', ch: ['IAS < 100 KIAS', '125 < IAS < 145 KIAS', 'IAS > 150 KIAS'], ans: 0, why: 'C/L DA42-VI : RESTARTING with starter : IAS < 100 KIAS.' },
+      { ask: 'Redémarrage en autorotation (windmilling) : vitesse', ch: ['125 < IAS < 145 KIAS', 'IAS < 100 KIAS', 'VMCA'], ans: 0, why: 'C/L DA42-VI : RESTARTING by windmilling : 125 < IAS < 145 KIAS.' },
+      { ask: 'Premier item du redémarrage au démarreur :', ch: ['Power lever (affected engine) … IDLE', 'Starter … ENGAGE', 'Engine Master … ON'], ans: 0, why: 'C/L : Power lever IDLE, Fuel selector ON, Alternate air AS REQUIRED, Alternator ON, Speed CHECK, Engine Master ON, Starter ENGAGE.' }
+    ] });
+  add({ id: 'm04-climb', type: 'cockpit', title: 'ENGINE FAILURE IN CLIMB', comp: ['APK', 'PSD', 'SAW', 'WLM'], fctp: 'Engine failure during climb, climbing with one engine inoperative', dur: '≈ 3 min',
+    refs: [om(101, 'Engine failure during initial climb'), om(108, 'Engine securing (feathering) procedure')], label: 'Procédure sur commandes réelles (vol asymétrique non simulé)',
+    intro: 'Montée initiale, train et volets rentrés, puissance de montée.', state: 'ess-climb', setup: { sys: { apEngaged: false } },
+    events: [{ at: 1500, failRandom: true, toast: '⚠️ Panne moteur en montée !' }], crit: ENGCRIT,
+    steps: [{ wait: 'Montée initiale… surveille tes paramètres moteur.' }, identify(), { check: '1. Rudder … MAINTAIN directional control.', note: 'Non simulé.' },
+      { ask: '2. Airspeed :', ch: ['Vyse = 85 KIAS', 'VMCA = 71 KIAS', 'Vy bimoteur'], ans: 0, why: 'OM-B p.101 : Airspeed Vyse = 85 KIAS.' }].concat(securing('')) });
+  add({ id: 'm04-cga', type: 'decision', title: 'CONTINUE OR GO AROUND?', comp: ['PSD', 'SAW', 'KNO'], fctp: 'Decision making (continue the approach or go around)', dur: '≈ 1 min',
+    label: 'Exercice de décision (OM-B)', refs: [om(103, 'Landing with one engine inoperative'), om(104, 'Go-around / balked landing with one engine inoperative')],
+    steps: [
+      { ask: 'Approche monomoteur. Quand sortir les volets APP et le train ?', ch: ['Pas avant d\'être certain d\'atteindre la piste (« making the field »)', 'Dès l\'IAF', 'À 1 000 ft systématiquement'], ans: 0, why: 'OM-B p.103 : « Not before being certain of making the field » : flaps APP, landing gear DOWN.' },
+      { ask: 'Remise de gaz monomoteur : hauteur minimale recommandée pour l\'initier', ch: ['800 ft au-dessus du sol', '200 ft', '1 500 ft'], ans: 0, why: 'OM-B p.104 (CAUTION) : pas recommandée en dessous de 800 ft au-dessus du sol.' },
+      { ask: 'Remise de gaz monomoteur : items', ch: ['Power MAX, rudder, Vyse 85 KIAS, gear UP, flaps UP', 'Gear DOWN, flaps LDG, idle', 'Flaps UP d\'abord puis power'], ans: 0, why: 'OM-B p.104 : Power lever MAX, Rudder MAINTAIN, Airspeed Vyse 85 KIAS, Landing gear UP, Flaps UP.' },
+      { ask: 'Volets plus que UP en approche monomoteur sans être sûr de la piste :', ch: ['Non recommandé : plus de hauteur perdue en cas de remise de gaz', 'Recommandé pour ralentir', 'Obligatoire'], ans: 0, why: 'OM-B p.103 (WARNING).', crit: [2] }
+    ] });
+  add({ id: 'm04-surprise', type: 'cockpit', title: 'SURPRISE FAILURE', comp: ['PSD', 'SAW', 'WLM', 'APK', 'FPA'], fctp: 'Management of the normal, abnormal and emergency situations', dur: '≈ 3 min',
+    refs: [om(102, 'Engine failure during flight'), om(108, 'Engine securing (feathering) procedure')], label: 'Tâche normale puis panne sans préavis (commandes réelles)',
+    intro: 'Croisière, PA déconnecté. Une tâche de routine… et peut-être plus.', state: 'ess-cruise', setup: { sys: { apEngaged: false }, g: { fd: false } },
+    events: [{ afterStep: 0, delay: [3000, 9000], failRandom: true, toast: '⚠️ Quelque chose ne va pas…' }], crit: ENGCRIT,
+    steps: [{ t: 'Routine : allume le FD et passe en mode HDG.', cond: function (S) { return S.g.fd && S.g.lat === 'HDG'; }, hint: 'Touches FD puis HDG du contrôleur AFCS.', show: ['ap_fd', 'ap_hdg'] },
+      { wait: 'Surveille tes paramètres…' }, identify()].concat(securing('')) });
+
+  add({ id: 'm05-ready', type: 'chain', title: 'READY FOR THE SKILL TEST?', comp: ['APK', 'PSD', 'SAW', 'WLM', 'KNO', 'COM'], fctp: 'MEP 05 — mission de synthèse', dur: '≈ 10 min',
+    refs: [fc(15, 'Session MEP 05')], label: 'Autoévaluation pédagogique — jamais une décision d\'aptitude ni une validation de qualification',
+    chain: ['m01-start', 'm02-rto', 'm04-climb', 'm04-cga', 'm03-prio', 'm01-park'], level: 'exam' });
+
+  /* Défis de l'équipe (récompensent la conformité, jamais la vitesse) */
+  var challenges = [
+    { id: 'c-mep01', t: 'Qui sera le premier à terminer MEP 01 sans aide ?', session: 'mep01' },
+    { id: 'c-engine', t: 'Qui identifie correctement les anomalies moteur ?', missions: ['m03-which', 'm04-climb', 'm04-surprise'] },
+    { id: 'c-audio', t: 'Qui maîtrise le mieux le panneau audio ?', missions: ['m00-audio'] }
+  ];
+
+  TF.DATA.mep = { FCTP: FCTP, COMP: COMP, STATES: STATES, sessions: sessions, missions: M, challenges: challenges,
+    caveat: 'Le FCTP (Issue 1, juin 2019) sert de base pédagogique ; ce n\'est pas une référence réglementaire actuelle. Le tableau « Air Exercise Reference List » (FCTP p.16) porte « A mettre à jour » : non utilisé. Les procédures viennent de l\'OM-B DA42 VI Issue C et de la C/L DA42-VI Issue C. Résultats = autoévaluation, jamais une évaluation officielle.' };
 })(this);
 
 </script>
@@ -4664,10 +5008,10 @@ body.immersion #immExit{display:block}
     ['phases', 'xp', 'badges', 'days', 'bestStreak'].forEach(function (k) { if (p[k] == null) p[k] = d[k]; });
     for (var k in d.settings) if (p.settings[k] == null) p.settings[k] = d.settings[k];
   }
-  function save() {
+  function save(quiet) {
     var st = storage();
     try { if (st) st.setItem(KEY, JSON.stringify(data)); } catch (e) { memoryOnly = true; }
-    TF.bus.emit('profiles:saved');
+    TF.bus.emit('profiles:saved', quiet === true);
   }
   load();
 
@@ -4898,6 +5242,7 @@ body.immersion #immExit{display:block}
     var r = Math.min(def.w, def.h) / 2, p = ex.pressed, cx = def.x, cy = def.y;
     var s = '';
     if (/^ap_(?!disc)|^mfd_ent$|^mfd_clr$/.test(def.id)) return D.bezelKey(def, p);
+    if (/^aud_/.test(def.id)) return p ? D.audioKeyFace(def, true) : '';
     if (def.id === 'cws_btn') // gâchette invisible de face : repère pointillé, plein quand on appuie
       return '<rect x="' + (cx - 9) + '" y="' + (cy - 7) + '" width="18" height="14" rx="4" fill="' + (p ? '#3fe0e8' : 'none') + '" fill-opacity=".35" stroke="#3fe0e8" stroke-width=".8" stroke-dasharray="' + (p ? '0' : '2 1.5') + '" opacity="' + (p ? 1 : 0.55) + '"/>';
     if (!p) return '';
@@ -4927,6 +5272,30 @@ body.immersion #immExit{display:block}
       s += '<text x="' + cx + '" y="' + (def.y - 0.6 + dy) + '" font-size="2.9" fill="#f2f2f4" font-family="Arial" font-weight="700" text-anchor="middle">' + parts[0] + '</text>';
       s += '<text x="' + cx + '" y="' + (def.y + 2.6 + dy) + '" font-size="2.9" fill="#f2f2f4" font-family="Arial" font-weight="700" text-anchor="middle">' + parts[1] + '</text>';
     } else s += '<text x="' + cx + '" y="' + (def.y + 1.6 + dy) + '" font-size="' + (lab.length > 3 ? 3.3 : 4.3) + '" fill="#f2f2f4" font-family="Arial" font-weight="700" text-anchor="middle">' + TF.util.esc(lab) + '</text>';
+    return s;
+  };
+  /* Panneau audio GMA 1347 redessiné en vectoriel (lisible au zoom) : touche, légende, triangle de sélection */
+  var AUDLIT = { com1mic: function (a) { return a.mic === 'COM1'; }, com2mic: function (a) { return a.mic === 'COM2'; }, com12: function (a) { return a.split; } };
+  D.audioKeyFace = function (def, p) {
+    var w = 12.5, h = 7.6, x = def.x - w / 2, y = def.y - h / 2 + 0.6, dy = p ? 0.5 : 0, lab = def.short, two = lab.indexOf(' ') > 0 && lab !== 'COM 1/2' ? lab.split(' ') : (lab === 'COM 1/2' ? ['COM', '1/2'] : [lab]);
+    var s = '<rect x="' + (x - 0.9) + '" y="' + (y - 0.9) + '" width="' + (w + 1.8) + '" height="' + (h + 1.8) + '" rx="1.8" fill="#060607"/>';
+    s += '<rect x="' + x + '" y="' + (y + dy) + '" width="' + w + '" height="' + (h - dy) + '" rx="1.5" fill="' + (p ? '#121215' : 'url(#gKey)') + '" stroke="' + (p ? '#3fe0e8' : '#5d5d66') + '" stroke-width="' + (p ? '.7' : '.3') + '"/>';
+    if (two.length === 2) s += '<text x="' + def.x + '" y="' + (def.y + 0.1 + dy) + '" font-size="2.45" fill="#f4f4f6" font-family="Arial" font-weight="700" text-anchor="middle">' + two[0] + '</text><text x="' + def.x + '" y="' + (def.y + 2.9 + dy) + '" font-size="2.45" fill="#f4f4f6" font-family="Arial" font-weight="700" text-anchor="middle">' + two[1] + '</text>';
+    else s += '<text x="' + def.x + '" y="' + (def.y + 1.9 + dy) + '" font-size="' + (lab.length > 4 ? 2.6 : 3) + '" fill="#f4f4f6" font-family="Arial" font-weight="700" text-anchor="middle">' + TF.util.esc(lab) + '</text>';
+    return s;
+  };
+  D.audioPanel = function (A) {
+    var s = '<rect x="696" y="405" width="36" height="52" rx="2" fill="none" stroke="#9a9aa4" stroke-width=".45" opacity=".8"/>';           // cadre COM1..COM3 / TEL
+    s += '<rect x="697.5" y="567" width="33" height="15" rx="2" fill="none" stroke="#9a9aa4" stroke-width=".45" opacity=".8"/>';        // cadre ICS ISOLATION
+    s += '<text x="714" y="567.6" font-size="2.2" fill="#d8d8de" font-family="Arial" font-weight="700" text-anchor="middle">CREW</text><text x="714" y="584.6" font-size="2" fill="#d8d8de" font-family="Arial" font-weight="700" text-anchor="middle">ICS  ISOLATION</text>';
+    TF.DATA.controls.forEach(function (d) {
+      if (!/^aud_/.test(d.id)) return;
+      var k = d.id.slice(4), on = !!(A && A.lit && (AUDLIT[k] ? AUDLIT[k](A) : A[k]));
+      s += D.audioKeyFace(d, false);
+      var tx = d.x, ty = d.y - 5.6;                                   // triangle au-dessus de la touche (Garmin : « triangular annunciator above the key »)
+      s += '<path d="M' + (tx - 1.9) + ',' + (ty - 1) + ' L' + (tx + 1.9) + ',' + (ty - 1) + ' L' + tx + ',' + (ty + 1.1) + 'Z" fill="' + (on ? '#3dff6a' : '#3a3a40') + '"/>';
+      if (on) s += '<circle cx="' + tx + '" cy="' + ty + '" r="2.6" fill="#3dff6a" opacity=".28"/>';
+    });
     return s;
   };
   /* Voyants du contrôleur AFCS : AP et YD s'allument quand engagés (Garmin p.414) */
@@ -5758,6 +6127,7 @@ body.immersion #immExit{display:block}
     this.gStby = el('g', {}, svg);
     this.gScreens = el('g', {}, svg);
     this.gPfd = el('g', {}, this.gScreens); this.gMfd = el('g', {}, this.gScreens);
+    this.gAud = el('g', { 'class': 'aud-layer' }, svg);
     this.gCtl = el('g', {}, svg);
     this.gLights = el('g', {}, svg);
     this.gGear = el('g', {}, this.gLights); this.gFlap = el('g', {}, this.gLights); this.gAfcs = el('g', {}, this.gLights);
@@ -5813,11 +6183,13 @@ body.immersion #immExit{display:block}
     var fl = I.flight, kp = JSON.stringify([Math.round(TF.Displays.pitchOf(fl) * 2), Math.round((fl.mx || 0) / 8), Math.round((fl.my || 0) / 8), I.ui, I.pfdStage, I.alerts, I.ap, I.avionics, I.reversion, I.ap.discFlash ? blink : 0, I.g, Math.round(fl.ias), I.altitude, Math.round(fl.vs / 50), Math.round(fl.hdg), fl.onGround, TF.G1000.afcsBlink(I)]);
     var km = JSON.stringify([I.lastSk, Math.round((I.flight.mx || 0) / 8), Math.round((I.flight.my || 0) / 8), Math.round(I.flight.hdg), I.g.hdg, I.mfdStage, I.mfdPage, I.eng, I.elec, I.fuelCalc, I.avionics, I.reversion, I.g.com, I.g.nav, I.g.comSel, I.g.navSel, I.ui]);
     var ks = JSON.stringify([I.stby, this.c.get('stby_cage'), I.altStby, Math.round(I.flight.ias), Math.round(TF.Displays.pitchOf(I.flight) * 2)]);
-    var kl = JSON.stringify([I.gearLights, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
+    var kl = JSON.stringify([I.gearLights, I.gearLights && I.gearLights.l, I.flapLights, I.ap && I.ap.engaged, I.g && I.g.yd, I.ap && I.ap.state]);
     if (force || kp !== this.lastDisp.p) { parseInto(this.gPfd, TF.Displays.pfd(I, sc)); this.lastDisp.p = kp; }
     if (force || km !== this.lastDisp.m) { parseInto(this.gMfd, TF.Displays.mfd(I, sc)); this.lastDisp.m = km; }
     if (force || ks !== this.lastDisp.s) { parseInto(this.gStby, TF.Displays.standby(I, this.c.get('stby_cage') === 'CAGED')); this.lastDisp.s = ks; }
     if (force || kl !== this.lastDisp.l) { parseInto(this.gGear, TF.Draw.gearLights(I.gearLights)); parseInto(this.gFlap, TF.Draw.flapLights(I.flapLights)); parseInto(this.gAfcs, TF.Draw.afcsLeds(I)); this.lastDisp.l = kl; }
+    var ka = JSON.stringify(I.audio);
+    if (force || ka !== this.lastDisp.a) { parseInto(this.gAud, TF.Draw.audioPanel(I.audio)); this.lastDisp.a = ka; }
     if (force) parseInto(this.gReg, TF.Draw.regPlate(sc.reg));
     var stk = I.stick || { r: 0, p: 0 }, kk2 = Math.round(stk.r * 40) + ',' + Math.round(stk.p * 40);
     if (force || kk2 !== this.lastDisp.k) {
@@ -7292,7 +7664,7 @@ body.immersion #immExit{display:block}
     phasesForChallenge().forEach(function (ph) { var s = (p.phases[ph.id] || {}).stars || 0; stars[ph.id] = s; tot += s; });
     keys.forEach(function (k) { ch[k] = p.challenges[k]; });
     return { name: p.name, xp: p.xp || 0, level: TF.Profiles.level(p).name, stars: stars, totalStars: tot, day: p.day || '', dayXp: p.dayXp || 0,
-      challenges: ch, streak: streak(p), badges: (p.badges || []).length, feat: p.lastFeat || null };
+      challenges: ch, streak: streak(p), badges: (p.badges || []).length, feat: p.lastFeat || null, ext: B.extraRow ? B.extraRow(p) : null };
   }
   function localPilots() { var o = {}; TF.Profiles.list().forEach(function (p) { if ((p.xp || 0) > 0) o[p.id] = pilotRow(p); }); return o; }
 
@@ -7406,7 +7778,7 @@ body.immersion #immExit{display:block}
     function row(key, isMe, x) {
       var ch = x.challenges || {}, n = 0; for (var k in ch) if (ch[k]) n++;
       return { key: key, me: isMe, name: String(x.name || key).slice(0, 24), xp: +x.xp || 0, level: String(x.level || ''), totalStars: +x.totalStars || 0,
-        stars: x.stars || {}, dayXp: x.day === day ? (+x.dayXp || 0) : 0, chalToday: +ch[day] || 0, trophies: n, streak: +x.streak || 0, badges: +x.badges || 0, feat: x.feat || null };
+        stars: x.stars || {}, mep: +(x.ext && x.ext.mep || x.mep) || 0, perfect: +(x.ext && x.ext.perfect || x.perfect) || 0, mepc: (x.ext && x.ext.mepc) || x.mepc || {}, dayXp: x.day === day ? (+x.dayXp || 0) : 0, chalToday: +ch[day] || 0, trophies: n, streak: +x.streak || 0, badges: +x.badges || 0, feat: x.feat || null };
     }
     B.entries.forEach(function (e) { if (e.data && typeof e.data === 'object') rows.push(row(e.key, e.me, e.data)); });
     // ma ligne locale est plus fraîche que la dernière synchronisation
@@ -7469,6 +7841,285 @@ body.immersion #immExit{display:block}
 })(this);
 
 </script>
+<script>/* js/social/cloud.js */
+/* SAUVEGARDE CLOUD DES PILOTES — client (même Google Apps Script que le classement, API v2 : voir apps-script/Code.gs).
+ * Principe « local d'abord » :
+ *  1. tout est enregistré tout de suite sur l'appareil (localStorage, comme avant) ;
+ *  2. chaque gain d'XP devient un événement à identifiant unique, mis en file d'attente ;
+ *  3. la synchronisation envoie la file + un instantané de la progression ; le serveur confirme ;
+ *  4. « Synchronisé » n'est affiché qu'après confirmation du serveur.
+ * Identité : connexion Google (jeton vérifié par le serveur) ou code d'appairage généré depuis un appareil déjà connecté.
+ * Une session par pilote local (un iPad partagé par les cinq pilotes reste possible).
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, K = TF.UI, esc = TF.util.esc;
+  var C = TF.Cloud = { status: 'local', lastError: '', busy: false };
+  var EXT_KEYS = ['tiffanir.ess.stats', 'tiffanir.ess.best', 'tiffanir.mem'];
+  var timer = null, inflight = null, origAddXp = null;
+
+  function ls() { try { return root.localStorage; } catch (e) { return null; } }
+  function getJ(k, d) { try { var v = ls().getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function setJ(k, v) { try { ls().setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function uid8() { var s = ''; for (var i = 0; i < 12; i++) s += 'abcdefghijkmnpqrstuvwxyz23456789'.charAt(Math.floor(Math.random() * 32)); return s; }
+  function cfg() { var c = TF.CONFIG || {}; return { url: c.boardUrl || '', client: c.googleClientId || '' }; }
+  function team() { var q = /[?&]equipe=([^&#]+)/.exec(root.location.search || ''); if (q) return decodeURIComponent(q[1]); try { return ls().getItem('tiffanir.team') || (TF.CONFIG || {}).teamCode || ''; } catch (e) { return ''; } }
+  C.available = function () { return !!cfg().url; };
+
+  /* --- état par pilote local : session, file d'événements, dernière synchro --- */
+  function key(pid) { return 'tiffanir.cloud.' + pid; }
+  C.acct = function (pid) { var p = pid || (TF.Profiles.current() || {}).id; return p ? getJ(key(p), { queue: [] }) : { queue: [] }; };
+  function saveAcct(pid, a) { setJ(key(pid), a); }
+  C.linked = function (pid) { return !!C.acct(pid).session; };
+  C.pending = function (pid) { var a = C.acct(pid); return (a.queue || []).length + (a.dirty ? 1 : 0); };
+
+  /* --- 1. chaque gain d'XP → événement idempotent --- */
+  function hookXp() {
+    if (origAddXp) return;
+    origAddXp = TF.Profiles.addXp;
+    TF.Profiles.addXp = function (n) {
+      var p = TF.Profiles.current();
+      origAddXp.apply(TF.Profiles, arguments);
+      if (!p || !(n > 0)) return;
+      var a = C.acct(p.id); if (!a.session) return;           // non connecté : les XP restent locaux et seront repris comme « base » à la connexion
+      a.queue = a.queue || []; a.queue.push({ id: 'x' + Date.now().toString(36) + '-' + uid8(), xp: Math.round(n), ts: Date.now(), type: 'xp' });
+      saveAcct(p.id, a); setStatus('pending'); C.schedule(3000);
+    };
+  }
+
+  /* --- instantané de progression (sans XP : le total vient du registre serveur) --- */
+  function snapshot(p) {
+    var s = JSON.parse(JSON.stringify(p)); delete s.xp;
+    if (s.history && s.history.length > 150) s.history = s.history.slice(-150);
+    s.updated = Date.now(); s.ext = {};
+    EXT_KEYS.forEach(function (k) { var v = getJ(k, null); if (v) s.ext[k] = v; });
+    return s;
+  }
+  /* Même fusion que le serveur (apps-script/Code.gs, mrg_) : jamais de perte, jamais d'écrasement par plus ancien */
+  function mrg(a, b, newer, k) {
+    if (b === undefined || b === null) return a; if (a === undefined || a === null) return b;
+    if (k === 'settings' || k === 'pref') return newer ? b : a;
+    if (k === 'history') { if (!(a instanceof Array && b instanceof Array)) return newer ? b : a; var sn = {}, o1 = []; a.concat(b).forEach(function (h) { var q = JSON.stringify(h); if (!sn[q]) { sn[q] = 1; o1.push(h); } }); o1.sort(function (x, y) { return (x.t || 0) - (y.t || 0); }); return o1.slice(-400); }
+    if (typeof a === 'number' && typeof b === 'number') return Math.max(a, b);
+    if (typeof a === 'boolean' || typeof b === 'boolean') return !!a || !!b;
+    if (a instanceof Array && b instanceof Array) { var s = {}, r = []; a.concat(b).forEach(function (x) { var q = JSON.stringify(x); if (!s[q]) { s[q] = 1; r.push(x); } }); return r.slice(-500); }
+    if (typeof a === 'object' && typeof b === 'object' && !(a instanceof Array) && !(b instanceof Array)) { var o = {}; Object.keys(a).concat(Object.keys(b)).forEach(function (q) { if (!(q in o)) o[q] = mrg(a[q], b[q], newer, q); }); return o; }
+    return newer ? b : a;
+  }
+  C.merge = function (a, b) { return mrg(a, b, (+(b && b.updated) || 0) >= (+(a && a.updated) || 0), ''); };
+  /* applique la version fusionnée au profil local, en gardant ce qui a pu changer pendant l'aller-retour */
+  function applySnap(p, snap, xpTotal, pendingXp) {
+    if (snap && typeof snap === 'object') {
+      var loc = snapshot(p), m = C.merge(snap, loc), ext = m.ext || {};
+      Object.keys(m).forEach(function (k) { if (k !== 'ext' && k !== 'id' && k !== 'name' && k !== 'updated') p[k] = m[k]; });
+      EXT_KEYS.forEach(function (k) { if (ext[k]) setJ(k, C.merge(getJ(k, {}), ext[k])); });
+    }
+    if (typeof xpTotal === 'number') p.xp = xpTotal + (pendingXp || 0);
+  }
+
+  /* --- transport --- */
+  function call(body) {
+    var c = cfg(); body.code = team();
+    return new Promise(function (res, rej) {
+      if (!c.url) return rej({ code: 'noconfig' });
+      if (root.navigator && root.navigator.onLine === false) return rej({ code: 'offline' });
+      var done = false, to = setTimeout(function () { if (!done) { done = true; rej({ code: 'offline' }); } }, 20000);
+      root.fetch(c.url, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { if (done) return; done = true; clearTimeout(to); if (j && j.ok) res(j); else rej({ code: (j && j.error) || 'server' }); },
+          function () { if (!done) { done = true; clearTimeout(to); rej({ code: 'offline' }); } });
+    });
+  }
+
+  /* --- états affichés --- */
+  var LABEL = { local: '💾 Sauvegarde locale seulement', pending: '⏳ Synchronisation en attente', syncing: '🔄 Synchronisation…', ok: '☁️ Synchronisé', offline: '📴 Hors connexion, sauvegarde locale', error: '⚠️ Erreur de sauvegarde — action requise' };
+  C.label = function () { return LABEL[C.status] || ''; };
+  function setStatus(s, err) { C.status = s; if (err != null) C.lastError = err; renderBadge(); if (C.panelOpen) C.renderPanel(); }
+  function renderBadge() {
+    var b = K.$('tbCloud'); if (!b) return;
+    var p = TF.Profiles.current(), a = p ? C.acct(p.id) : {};
+    var ico = { local: '💾', pending: '⏳', syncing: '🔄', ok: '☁️', offline: '📴', error: '⚠️' }[C.status] || '💾';
+    b.textContent = ico; b.title = C.label() + (a.lastSync ? ' — ' + new Date(a.lastSync).toLocaleString('fr-FR') : '');
+    b.className = 'tbtn cloud-' + C.status;
+  }
+
+  /* --- 2-5. synchronisation --- */
+  C.schedule = function (ms) { clearTimeout(timer); timer = setTimeout(function () { C.sync(); }, ms == null ? 2500 : ms); };
+  C.sync = function () {
+    var p = TF.Profiles.current(); if (!p || !C.available()) { setStatus('local'); return Promise.resolve(false); }
+    var a = C.acct(p.id); if (!a.session) { setStatus('local'); return Promise.resolve(false); }
+    if (inflight) { C.schedule(1500); return inflight; }
+    var events = (a.queue || []).slice(0, 300), sent = {}; events.forEach(function (e) { sent[e.id] = 1; });
+    setStatus('syncing');
+    inflight = call({ action: 'sync', session: a.session, events: events, snap: snapshot(p), pid: p.id, pseudo: p.name }).then(function (j) {
+      inflight = null;
+      var acc = {}; (j.accepted || []).forEach(function (id) { acc[id] = 1; });
+      var b = C.acct(p.id);                                              // relire : des XP ont pu arriver pendant l'envoi
+      var rej = j.rejected || [];
+      b.queue = (b.queue || []).filter(function (e) { return !acc[e.id] && !(sent[e.id] && rej.some(function (r) { return r.id === e.id; })); });
+      b.rejected = (b.rejected || []).concat(rej).slice(-20);
+      var pend = 0; b.queue.forEach(function (e) { pend += e.type === 'xp' ? e.xp : 0; });
+      applySnap(p, j.snap, j.xpTotal, pend);
+      b.lastSync = Date.now(); b.rev = j.rev; b.dirty = false; saveAcct(p.id, b);
+      TF.Profiles.save(true);
+      setStatus(b.queue.length ? 'pending' : 'ok', '');
+      TF.bus.emit('cloud:synced', { pid: p.id, xp: p.xp });
+      if (b.queue.length) C.schedule(1500);
+      return true;
+    }, function (e) {
+      inflight = null;
+      if (e.code === 'auth') { var b = C.acct(p.id); b.expired = true; saveAcct(p.id, b); setStatus('error', 'Session expirée : reconnecte-toi (tes données locales sont conservées).'); }
+      else if (e.code === 'offline') { setStatus('offline'); C.schedule(30000); }
+      else if (e.code === 'code') setStatus('error', 'Code d\'équipe manquant : ouvre le lien avec « ?equipe=… ».');
+      else { setStatus('error', 'Le serveur a refusé la sauvegarde (' + e.code + '). Tes données restent sur cet appareil.'); C.schedule(60000); }
+      return false;
+    });
+    return inflight;
+  };
+
+  /* --- connexion : Google / code d'appairage --- */
+  function linked(p, j) {
+    if (!j.session) { setStatus('error', 'Le serveur n\'est pas encore à jour : déploie apps-script/Code.gs v2 (voir PUBLIER.md § F).'); return Promise.reject({ code: 'oldserver' }); }
+    var a = C.acct(p.id);
+    a.session = j.session; a.uid = j.uid; a.exp = j.exp; a.expired = false; a.queue = a.queue || [];
+    // anciennes données : les XP déjà sur l'appareil deviennent la « base » du compte (une ligne par compte côté serveur, maximum gardé)
+    if ((p.xp || 0) > 0) a.queue.unshift({ id: 'base-' + p.id + '-' + uid8(), type: 'base', xp: Math.round(p.xp), ts: Date.now() });
+    saveAcct(p.id, a);
+    var cloudXp = j.xpTotal || 0, local = p.xp || 0;
+    if (!j.isNew && j.snap && cloudXp > 0 && local > 0 && Math.abs(cloudXp - local) > 0) {
+      C.conflict = { pid: p.id, cloud: cloudXp, local: local };    // affiché dans le panneau : fusion automatique sans perte, info au pilote
+    }
+    return C.sync();
+  }
+  C.loginGoogle = function (idToken) {
+    var p = TF.Profiles.current(); if (!p) return Promise.reject({ code: 'noprofile' });
+    setStatus('syncing');
+    return call({ action: 'login', idToken: idToken, pid: p.id, pseudo: p.name }).then(function (j) { return linked(p, j); }, function (e) { setStatus('error', loginErr(e.code)); throw e; });
+  };
+  C.redeem = function (code) {
+    var p = TF.Profiles.current(); if (!p) return Promise.reject({ code: 'noprofile' });
+    setStatus('syncing');
+    return call({ action: 'redeem', pairCode: code }).then(function (j) { return linked(p, j); }, function (e) { setStatus('error', loginErr(e.code)); throw e; });
+  };
+  C.pair = function () { var a = C.acct(); return call({ action: 'pair', session: a.session }); };
+  C.logout = function () { var p = TF.Profiles.current(); if (!p) return; var a = C.acct(p.id); delete a.session; delete a.uid; saveAcct(p.id, a); setStatus('local'); };
+  function loginErr(c) {
+    return { badtoken: 'Connexion Google refusée par le serveur.', noclient: 'Connexion Google pas encore configurée sur le serveur (GOOGLE_CLIENT_ID).', badcode: 'Code d\'appairage inconnu ou expiré.', busy: 'Trop d\'essais : réessaie dans 10 minutes.',
+      offline: 'Pas de réseau : réessaie plus tard.', code: 'Code d\'équipe manquant (lien « ?equipe=… »).', noconfig: 'Sauvegarde cloud non configurée (config.js).' }[c] || ('Erreur : ' + c);
+  }
+
+  /* --- Google Identity Services, chargé seulement si un ID client est configuré --- */
+  var gisState = 'idle';
+  function loadGis(cb) {
+    if (root.google && root.google.accounts && root.google.accounts.id) return cb(true);
+    if (gisState === 'loading') return setTimeout(function () { loadGis(cb); }, 300);
+    if (gisState === 'failed') return cb(false);
+    gisState = 'loading';
+    var s = root.document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+    s.onload = function () { gisState = 'ok'; cb(true); }; s.onerror = function () { gisState = 'failed'; cb(false); };
+    root.document.head.appendChild(s);
+    setTimeout(function () { if (gisState === 'loading') { gisState = 'failed'; cb(false); } }, 12000);
+  }
+  function mountGoogle(el) {
+    var id = cfg().client;
+    if (!id) { el.innerHTML = '<small>Connexion Google : ID client à renseigner dans config.js (googleClientId) — voir PUBLIER.md.</small>'; return; }
+    el.innerHTML = '<small>Chargement de la connexion Google…</small>';
+    loadGis(function (okk) {
+      if (!okk || !root.google) { el.innerHTML = '<small>La connexion Google ne se charge pas sur ce navigateur. Utilise un code d\'appairage créé depuis un autre appareil connecté.</small>'; return; }
+      el.innerHTML = '';
+      try {
+        root.google.accounts.id.initialize({ client_id: id, callback: function (r) { C.loginGoogle(r.credential).then(function () { K.toast('☁️ Compte relié', 'ok'); }, function () { }); }, auto_select: false });
+        root.google.accounts.id.renderButton(el, { theme: 'filled_blue', size: 'large', text: 'signin_with', locale: 'fr' });
+      } catch (e) { el.innerHTML = '<small>Connexion Google indisponible ici : utilise un code d\'appairage.</small>'; }
+    });
+  }
+
+  /* --- Export / restauration d'un pilote --- */
+  C.exportPilot = function () {
+    var p = TF.Profiles.current(); if (!p) return null;
+    var a = C.acct(p.id), ext = {}; EXT_KEYS.forEach(function (k) { var v = getJ(k, null); if (v) ext[k] = v; });
+    return JSON.stringify({ app: 'tiffanir', kind: 'pilot', version: 2, pid: p.id, name: p.name, uid: a.uid || null, exported: new Date().toISOString(), xp: p.xp || 0, profile: p, ext: ext }, null, 1);
+  };
+  function hash(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  C.restorePilot = function (str, force) {
+    var o; try { o = JSON.parse(str); } catch (e) { return { ok: false, reason: 'Fichier illisible (JSON invalide).' }; }
+    if (!o || o.app !== 'tiffanir' || o.kind !== 'pilot' || !o.profile || typeof o.profile !== 'object') return { ok: false, reason: 'Ce fichier n\'est pas une sauvegarde de pilote TIFFAN\'IR.' };
+    var p = TF.Profiles.current(); if (!p) return { ok: false, reason: 'Choisis d\'abord ton pilote.' };
+    var a = C.acct(p.id);
+    if (o.pid !== p.id && !force) return { ok: false, confirm: true, reason: 'Ce fichier appartient au pilote « ' + o.name + ' » et non à « ' + p.name + ' ». Restaurer quand même ?' };
+    if (o.uid && a.uid && o.uid !== a.uid && !force) return { ok: false, confirm: true, reason: 'Ce fichier vient d\'un autre compte cloud. Restaurer quand même ?' };
+    var h = 'rst-' + hash(str), done = a.restored || [];
+    if (done.indexOf(h) >= 0) return { ok: false, reason: 'Cette sauvegarde a déjà été restaurée (doublon évité).' };
+    var fileXp = Math.round(+o.xp || 0), cur = p.xp || 0;
+    var snap = JSON.parse(JSON.stringify(o.profile)); delete snap.xp; delete snap.id; delete snap.name; snap.updated = 0; // un fichier ne remplace jamais des réglages plus récents
+    applySnap(p, C.merge(snapshot(p), snap), null);
+    EXT_KEYS.forEach(function (k) { if (o.ext && o.ext[k]) setJ(k, C.merge(getJ(k, {}), o.ext[k])); });
+    if (fileXp > cur) { // seulement la différence, une seule fois par fichier
+      p.xp = fileXp;
+      if (a.session) { a.queue = a.queue || []; a.queue.push({ id: h, type: 'restore', xp: fileXp - cur, ts: Date.now() }); }
+    }
+    a.restored = done.concat([h]).slice(-30); saveAcct(p.id, a);
+    TF.Profiles.save(); C.schedule(500);
+    return { ok: true, xp: p.xp };
+  };
+
+  /* --- Panneau « Ma sauvegarde » --- */
+  C.openPanel = function () { C.panelOpen = true; C.renderPanel(); };
+  C.renderPanel = function () {
+    var p = TF.Profiles.current(); if (!p) return;
+    var el = K.$('cloudPanel'); if (!el) { el = root.document.createElement('div'); el.id = 'cloudPanel'; root.document.body.appendChild(el); }
+    var a = C.acct(p.id), on = !!a.session, c = cfg();
+    var h = '<div class="cp-box"><div class="cp-h"><b>☁️ Ma sauvegarde — ' + esc(p.name) + '</b><button data-act="x">✕</button></div>';
+    h += '<div class="cp-st cp-' + C.status + '">' + C.label() + (a.lastSync && C.status === 'ok' ? ' <small>(' + new Date(a.lastSync).toLocaleString('fr-FR') + ')</small>' : '') + '</div>';
+    if (C.lastError) h += '<div class="cp-err">' + esc(C.lastError) + '</div>';
+    h += '<div class="cp-row"><b>' + (p.xp || 0) + ' XP</b> · ' + esc(TF.Profiles.level(p).name) + (on ? ' · compte relié' : '') + (C.pending(p.id) ? ' · ' + C.pending(p.id) + ' envoi(s) en attente' : '') + '</div>';
+    if (C.conflict && C.conflict.pid === p.id) h += '<div class="cp-info">Ton compte cloud avait ' + C.conflict.cloud + ' XP et cet appareil ' + C.conflict.local + ' XP. Les deux ont été fusionnés sans perte (meilleur résultat gardé pour chaque élément, les XP antérieurs ne sont pas comptés deux fois).</div>';
+    if (!c.url) h += '<div class="cp-info">Sauvegarde cloud non configurée sur ce site : tes progrès restent sur cet appareil. Utilise l\'export ci-dessous.</div>';
+    else if (!on) {
+      h += '<div class="cp-sec"><b>Relier mon compte</b><div id="cpGoogle" class="cp-g"></div>';
+      h += '<div class="cp-pair">Ou, avec un code créé sur un appareil déjà connecté :<br><input id="cpCode" maxlength="9" placeholder="CODE" autocapitalize="characters" autocomplete="off"> <button data-act="redeem" class="btn primary">Relier</button></div>';
+      h += '<small>Tes XP actuels sur cet appareil seront ajoutés à ton compte (jamais comptés deux fois).</small></div>';
+    } else {
+      h += '<div class="cp-sec"><button data-act="sync" class="btn primary">🔄 Synchroniser maintenant</button> <button data-act="pair" class="btn">📱 Relier un autre appareil</button>' + (C.pairCode ? '<div class="cp-code">Code : <b>' + esc(C.pairCode) + '</b><small> — valable 10 min, à saisir dans « Ma sauvegarde » sur l\'autre appareil</small></div>' : '') + '</div>';
+    }
+    h += '<div class="cp-sec"><b>Sauvegarde de secours</b><br><button data-act="exp" class="btn">⬇ Exporter ma progression</button> <label class="btn">⬆ Restaurer une sauvegarde<input type="file" id="cpFile" accept=".json,application/json" style="display:none"></label></div>';
+    if (on) h += '<div class="cp-foot"><button data-act="logout" class="lnk">Déconnecter cet appareil</button></div>';
+    el.innerHTML = h + '</div>'; el.className = 'show';
+    var g = K.$('cpGoogle'); if (g) mountGoogle(g);
+    var f = K.$('cpFile'); if (f) f.onchange = function () {
+      var file = f.files && f.files[0]; if (!file) return; var rd = new FileReader();
+      rd.onload = function () { var r = C.restorePilot(String(rd.result)); if (r.confirm && root.confirm(r.reason)) r = C.restorePilot(String(rd.result), true); K.toast(r.ok ? '✅ Sauvegarde restaurée (' + r.xp + ' XP)' : (r.reason || 'Restauration annulée'), r.ok ? 'ok' : 'info', 3500); C.renderPanel(); };
+      rd.readAsText(file);
+    };
+    K.bindActs(el, {
+      x: function () { C.panelOpen = false; el.className = ''; },
+      sync: function () { C.sync(); },
+      pair: function () { C.pair().then(function (j) { C.pairCode = j.pairCode; C.renderPanel(); setTimeout(function () { C.pairCode = null; if (C.panelOpen) C.renderPanel(); }, 600000); }, function (e) { K.toast(loginErr(e.code), 'info'); }); },
+      redeem: function () { var v = (K.$('cpCode') || {}).value || ''; C.redeem(v).then(function () { K.toast('☁️ Appareil relié', 'ok'); C.renderPanel(); }, function () { C.renderPanel(); }); },
+      exp: function () { var s = C.exportPilot(); if (!s) return; var bl = new Blob([s], { type: 'application/json' }), u = URL.createObjectURL(bl), aa = root.document.createElement('a');
+        aa.href = u; aa.download = 'tiffanir-' + p.id + '-' + TF.Profiles.dayId() + '.json'; root.document.body.appendChild(aa); aa.click(); setTimeout(function () { URL.revokeObjectURL(u); aa.remove(); }, 500); },
+      logout: function () { C.logout(); C.renderPanel(); }
+    });
+  };
+
+  /* --- démarrage --- */
+  C.init = function () {
+    hookXp();
+    var p = TF.Profiles.current();
+    setStatus(p && C.linked(p.id) ? (C.pending(p.id) ? 'pending' : 'ok') : 'local');
+    if (p && C.linked(p.id)) { var a0 = C.acct(p.id); a0.dirty = true; saveAcct(p.id, a0); }
+    TF.bus.on('profiles:saved', function (quiet) { var q = TF.Profiles.current(); if (quiet === true || !q || !C.linked(q.id)) return; var a = C.acct(q.id); if (!a.dirty) { a.dirty = true; saveAcct(q.id, a); } if (C.status === 'ok') setStatus('pending'); C.schedule(4000); });
+    TF.bus.on('profile:changed', function () { var q = TF.Profiles.current(); setStatus(q && C.linked(q.id) ? 'pending' : 'local'); if (q && C.linked(q.id)) C.schedule(300); });
+    root.addEventListener('online', function () { C.schedule(500); });
+    root.document.addEventListener('visibilitychange', function () { if (!root.document.hidden) C.schedule(800); });
+    // demander au navigateur de ne pas effacer les données de l'appli (réduit les pertes ; sans effet sur les vieux Safari)
+    try { if (root.navigator.storage && root.navigator.storage.persist) root.navigator.storage.persist(); } catch (e) { }
+    if (p && C.linked(p.id)) C.schedule(1200);
+    renderBadge();
+  };
+})(this);
+
+</script>
 <script>/* js/ui/home.js */
 /* Interface — accueil « Mon vol » : les phases du vol dans l'ordre, 3 niveaux, étoiles, XP, badges, bilans. */
 (function (root) {
@@ -7513,7 +8164,7 @@ body.immersion #immExit{display:block}
     return '<span class="ladder"><i class="' + c(ph.discover) + '" title="Découvrir">👀</i><i class="' + c(ph.practice >= 90, ph.practice > 0) + '" title="S\'entraîner">✋</i><i class="' + c(ph.memory >= 100, ph.memory > 0) + '" title="De mémoire">🧠</i></span>';
   }
   H.show = function () {
-    if (TF.Ess) TF.Ess.close(); if (TF.Ifr) TF.Ifr.close();
+    if (TF.Ess) TF.Ess.close(); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort();
     var p = TF.Profiles.current(); if (!p) return;
     var el = K.$('home'), L = TF.Profiles.level(p);
     var pct = L.next ? Math.round((p.xp - L.min) / (L.next - L.min) * 100) : 100;
@@ -7643,12 +8294,12 @@ body.immersion #immExit{display:block}
   /* ------------------------------------------------------------ Page ------------------------------------------------------------ */
   E.show = function (tab) {
     if (tab) E.tab = tab;
-    TF.Home.hide(); if (TF.Ifr) TF.Ifr.close();
+    TF.Home.hide(); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort();
     var el = K.$('ess'), h = '<div class="hm-in">';
     var pr = TF.Profiles.current();
     h += '<div class="ess-top"><div><div class="hm-hello">' + (pr ? 'Bonjour ' + esc(pr.name) + ' 👋 · ' : '') + 'Mon vol</div><div class="hm-sub">L\'essentiel : le flow et les procédures essentielles, l\'avion en chiffres, le tour avion. Le détail exhaustif est dans 📚 Procédures complètes.</div></div>' +
       '<button class="btn" data-act="home">📚 Procédures complètes</button></div>';
-    h += '<button class="ifr-entry" data-act="ifr"><span class="ie-i">📚</span><span><b>L\'IFR POUR LES NULS</b><small>Toute la réglementation utile et les bons réflexes IFR, sans prise de tête.</small></span><span class="ie-go">GO</span></button>';
+    h += TF.Mep ? TF.Mep.heroHtml() : '';
     h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['mem', '🧠 Mémoire cockpit'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['brief', '🗣 Briefings'], ['test', '📝 Class test']].map(function (t) {
       return '<button data-act="tab" data-v="' + t[0] + '" class="' + (E.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>'; }).join('') + '</div>';
     h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
@@ -7659,6 +8310,9 @@ body.immersion #immExit{display:block}
     K.bindActs(el, {
       home: function () { E.close(); TF.Home.show(); },
       ifr: function () { E.close(); TF.Ifr.show('home'); },
+      mepresume: function () { E.close(); TF.Mep.resume(); },
+      mepmap: function () { E.close(); TF.Mep.show('map'); },
+      cloud: function () { if (TF.Cloud) TF.Cloud.openPanel(); },
       tab: function (b) { E.show(b.getAttribute('data-v')); },
       voices: function () { TF.Screens.voices(); },
       // briefings
@@ -8050,7 +8704,7 @@ body.immersion #immExit{display:block}
     var h = '<button class="play3" data-act="play3">▶ JOUER 3 MINUTES<small>Mission du jour : flash flow, mémoire spatiale, question, revanche sur tes erreurs, défi final' + (mb ? ' · dernière : ' + '★★★'.slice(0, mb.stars) + '☆☆☆'.slice(0, 3 - mb.stars) : '') + '</small></button>' +
       '<div class="row2" style="margin-bottom:10px"><button class="btn" data-act="flashgo">⚡ Flash Flow (15-60 s)</button><button class="btn" data-act="memgo">🎯 Trouve la commande</button></div>' +
       '<div class="dash"><div class="dash-main"><div class="dash-k">Prochain entraînement conseillé</div><div class="dash-v">' + r.b.icon + ' ' + esc(r.b.title) + ' — ' + LV[r.level] + '</div><small>' + esc(r.why) + '</small>' +
-      '<button class="btn primary big" data-act="resume">▶ Reprendre mon entraînement</button></div>' +
+      '<button class="btn primary big" data-act="resume">▶ Continuer le flow</button></div>' +
       '<div class="dash-nums"><div><b>' + mast + '</b><span>maîtrisés</span></div><div><b>' + rev + '</b><span>à réviser</span></div><div><b>' + todo + '</b><span>à découvrir</span></div><div><b>' + acts + '</b><span>actions justes</span></div></div>';
     if (errs.length) h += '<div class="dash-err"><b>Erreurs les plus fréquentes</b>' + errs.slice(0, 3).map(function (e) { return '<div>✗ ' + esc(e.t) + ' <small>(' + e.n + '×)</small></div>'; }).join('') + '</div>';
     return h + '</div>';
@@ -8327,7 +8981,7 @@ body.immersion #immExit{display:block}
   function alive(g) { return function () { return S && S.g === g; }; }
   function demoStep() {
     var g = S.g, al = alive(g), b = S.b, v = app().view;
-    if (S.i >= b.chips.length) { S.finished = true; TF.Time.demo = false; E.renderPanel(); return; }
+    if (S.i >= b.chips.length) { S.finished = true; TF.Time.demo = false; E.renderPanel(); TF.bus.emit('ess:done', { block: b.id, level: 'demo', mode: 'demo', n: b.chips.length, err: 0, hints: 0, ms: 0, stars: 0 }); return; }
     var c = b.chips[S.i];
     setUi(c);
     E.renderPanel();
@@ -8378,6 +9032,7 @@ body.immersion #immExit{display:block}
     S.b.chips.forEach(function (c2, k) { if (!S.log[k] && x.miss[k] && S.done.indexOf(k) >= 0) { x.miss[k]--; if (x.miss[k] <= 0) delete x.miss[k]; } });
     all2[S.b.id] = x; statsSave(all2);
     S.finished = true; S.result = { n: n, err: err, ms: ms, stars: stars, rec: rec, real: S.real || 0, hints: hints }; E.renderPanel();
+    TF.bus.emit('ess:done', { block: S.b.id, level: S.level, mode: S.mode, n: n, err: err, hints: hints, ms: ms, stars: stars });
   }
   E.best = bestAll;
   function fmtMs(ms) { var t = Math.round(ms / 1000); return (t >= 60 ? Math.floor(t / 60) + ' min ' : '') + (t % 60) + ' s'; }
@@ -8992,11 +9647,14 @@ body.immersion #immExit{display:block}
   I.tryCockpit = function (key) {
     var T = D().tries[key]; if (!T) return;
     var A = app(), ck = A.ck, sc = A.scenario(), PE = TF.ProcEngine, back = !!G;
-    I.hide(); if (TF.Ess) TF.Ess.close(); TF.Home.hide(); A.modes.idle();
+    I.hide(); if (TF.Ess) { if (TF.Ess.active()) TF.Ess.stop(true); TF.Ess.close(); } TF.Home.hide(); A.modes.idle();
     ck.reset(sc); ck.restore(PE.buildInitial(T.state, sc));
     var g = (T.setup || {}).g || {}; for (var k in g) ck.s.g[k] = g[k];
+    var au = (T.setup || {}).audio || {}; ck.s.sys.audio = ck.s.sys.audio || {}; for (var k2 in au) ck.s.sys.audio[k2] = au[k2];
     if (T.ops) new PE.Runner(ck, null, PE.Runner.instantClock(ck)).run(T.ops);
-    A.view.renderAll(); if (A.view.home) A.view.home(true);
+    A.view.renderAll();
+    var rv = T.view && TF.DATA.regions.filter(function (q) { return q.id === T.view; })[0];
+    if (rv) A.view.setView({ x: rv.x - 28, y: rv.y, w: rv.w + 56, h: rv.h }, true); else if (A.view.home) A.view.home(true);
     var b = K.$('ifrTry'); if (!b) { b = document.createElement('div'); b.id = 'ifrTry'; document.body.appendChild(b); }
     function draw(done) {
       b.innerHTML = '<div class="it-h">' + (done ? '✅ Réussi dans le cockpit !' : '🎯 Essayer dans le cockpit') + '</div><div class="it-t">' + esc(T.txt) + '</div>' + (b._hint && !done ? '<div class="it-hint">💡 ' + esc(T.hint) + '</div>' : '') +
@@ -9054,6 +9712,7 @@ body.immersion #immExit{display:block}
     h += '<div class="ifr-big3"><button class="ifr-b dose" data-act="game" data-v="' + c.game + '"><span>🎮</span><b>' + esc(c.gameTitle).toUpperCase() + '</b><small>Mini-jeu · indices disponibles</small></button>';
     h += '<button class="ifr-b defi" data-act="exam" data-v="' + c.game + '"><span>📝</span><b>EXAMEN DU CHAPITRE</b><small>Sans indice' + (c.game === 'radio' ? ', audio d\'abord' : '') + (f.exams[id] != null ? ' · meilleur ' + f.exams[id] + ' %' : '') + '</small></button></div>';
     if (id === 'alti') h += '<div class="ifr-card"><div class="ifr-tag">🎚 Joue avec le QNH — altitude ou niveau ?</div><div class="ifr-two"><div class="ifr-ill" id="ifrQnhSvg">' + qnhToy(1013) + '</div><div class="ifr-side"><input type="range" min="975" max="1045" value="1013" id="ifrQnh" class="ifr-range"><div class="ifr-sub" id="ifrQnhTxt"></div><button class="btn try" data-act="try" data-v="qnh">🛩 ESSAYER : régler 1008 au G1000</button> <button class="btn try" data-act="try" data-v="std">🛩 ESSAYER : STD Baro</button></div></div></div>';
+    if (id === 'atc') h += '<div class="ifr-acts"><button class="btn try" data-act="try" data-v="com1mic">🛩 ESSAYER : sélectionner COM1 pour émettre (panneau audio)</button></div>';
     if (id === 'appr') h += '<div class="ifr-acts"><button class="btn try" data-act="try" data-v="susp">🛩 ESSAYER DANS LE COCKPIT : remise de gaz → SUSP → NAV</button></div>';
     if (id === 'g1000') h += '<div class="ifr-acts"><button class="btn try" data-act="try" data-v="cdi">🛩 ESSAYER : CDI → VOR1</button><button class="btn try" data-act="try" data-v="hdg">🛩 ESSAYER : cap 330 en HDG</button><button class="btn try" data-act="try" data-v="alt">🛩 ESSAYER : tenue d\'altitude</button></div>';
     h += '<div class="ifr-q">Fiches anti-sèche</div><div class="ifr-cards">' + d.cards.filter(function (x) { return x.ch === id; }).map(function (x) {
@@ -9123,6 +9782,452 @@ body.immersion #immExit{display:block}
   function bindDefi() { var day = TF.Profiles.dayId(), p = day.split('-'); start('mission', 'exam', { seed: +p[0] * 400 + +p[1] * 32 + +p[2], day: day }); }
   I.init = function () { if (el()) bind(); };
   I._judgeRadio = judgeRadio; I._altOfFl = altOfFl; I._approachSeq = approachSeq;
+})(this);
+
+</script>
+<script>/* js/ui/mep.js */
+/* MES VOLS MEP — carte de progression, missions jouables, compétences, « Préparer mon vol de demain ».
+ * Données : js/data/mep.js. Les missions « cockpit » sont validées sur l'état RÉEL du simulateur (pas sur un simple toucher).
+ * Compatible Safari 12 : ES5, pas de ?. / ??, pas de flex gap.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, K = TF.UI, esc = TF.util.esc;
+  var D = function () { return TF.DATA.mep; };
+  var MP = TF.Mep = { view: 'map' };
+  var MODES = { discover: '👀 Découvrir', learn: '🎯 S\'entraîner', memo: '🧠 De mémoire', challenge: '🏆 Challenge' };
+  var R = null;        // mission cockpit / décision en cours
+  var CH = null;       // enchaînement (mission de synthèse, préparation de vol)
+  var pollT = null;
+
+  function app() { return TF.app; }
+  function el() { return K.$('mep'); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function mis(id) { return D().missions[id]; }
+  function ses(id) { return D().sessions.filter(function (s) { return s.id === id; })[0]; }
+  function refTxt(r) { return esc(r.doc) + (r.page ? ' p.' + r.page : '') + (r.sec ? ' — ' + esc(r.sec) : ''); }
+
+  /* ---------------- Progression ---------------- */
+  function prof(p) {
+    p = p || TF.Profiles.current(); if (!p) return null;
+    if (!p.mep) p.mep = { res: {}, errs: [], runs: 0 };
+    if (!p.mep.res) p.mep.res = {};
+    if (!p.mep.errs) p.mep.errs = [];
+    return p.mep;
+  }
+  MP.prof = prof;
+  /* score d'un passage : actions correctes sans indice / total, 0 si erreur critique */
+  function record(mid, r) {
+    var f = prof(); if (!f) return 0;
+    var x = f.res[mid] = f.res[mid] || { runs: 0, best: 0, perfect: 0, crit: 0, last: 0, lastScore: 0, ok: 0, tot: 0, noHelp: 0 };
+    var score = r.total ? Math.round(100 * Math.max(0, r.ok - r.hints) / r.total) : 0; if (r.crit) score = Math.min(score, 40);
+    x.runs++; x.last = Date.now(); x.lastScore = score; x.best = Math.max(x.best, score); x.ok += r.ok; x.tot += r.total;
+    if (r.crit) x.crit++;
+    var perfect = !r.crit && !r.errs && !r.hints && r.ok === r.total && r.total > 0;
+    if (perfect) { x.perfect++; if (r.mode !== 'discover') x.noHelp++; }
+    var i = f.errs.indexOf(mid); if (score < 80 || r.crit) { if (i < 0) f.errs.push(mid); } else if (i >= 0) f.errs.splice(i, 1);
+    f.runs++;
+    var xp = 0; if (r.mode !== 'discover' && mis(mid).type !== 'flow') { xp = score >= 80 && !r.crit ? (perfect ? 15 : 10) : 3; TF.Profiles.addXp(xp); }
+    if (perfect && /m0[0-9]-/.test(mid)) TF.Profiles.feat('🎖 ' + mis(mid).title + ' sans faute');
+    TF.Profiles.save();
+    return xp;
+  }
+  MP.score = function (mid, p) { var f = prof(p), x = f && f.res[mid]; return x ? x.best : null; };
+  function done(mid, p) { var f = prof(p), x = f && f.res[mid]; return !!(x && x.best >= 80); }
+  MP.sessionMastery = function (sid, p) {
+    var s = ses(sid), t = 0, n = 0; if (!s) return 0;
+    s.missions.forEach(function (m) { n++; t += MP.score(m, p) || 0; });
+    return n ? Math.round(t / n) : 0;
+  };
+  MP.totalMastery = function (p) { var t = 0, n = 0; D().sessions.forEach(function (s) { if (s.id === 'skill') return; n++; t += MP.sessionMastery(s.id, p); }); return n ? Math.round(t / n) : 0; };
+  /* compétences : uniquement à partir des missions qui les observent ; non observables = non évaluées */
+  MP.compState = function (cid, p) {
+    var c = D().COMP.filter(function (x) { return x.id === cid; })[0]; if (!c || !c.obs) return { label: 'Non évalué', n: 0, cls: 'na', why: c && c.why };
+    var f = prof(p), n = 0, s = 0, runs = 0;
+    Object.keys(D().missions).forEach(function (mid) { var m = mis(mid), x = f && f.res[mid]; if (!x || m.comp.indexOf(cid) < 0) return; n++; s += x.best; runs += x.runs; });
+    if (!n) return { label: D().STATES[0], n: 0, cls: 's0' };
+    var avg = s / n;
+    var st = avg < 50 ? 1 : (avg < 85 || runs < 3) ? 2 : 3;
+    return { label: D().STATES[st], n: n, cls: 's' + st, avg: Math.round(avg) };
+  };
+  MP.nextMission = function () {
+    var f = prof(); if (!f) return null;
+    var ss = D().sessions.filter(function (s) { return s.id !== 'skill'; });
+    for (var i = 0; i < ss.length; i++) {
+      if (MP.sessionMastery(ss[i].id) >= 80) continue;
+      var todo = ss[i].missions.filter(function (m) { return !done(m) && mis(m).type !== 'chain'; });
+      var err = todo.filter(function (m) { return f.errs.indexOf(m) >= 0; });
+      var m = err[0] || todo[0] || ss[i].missions[0];
+      return { sid: ss[i].id, mid: m };
+    }
+    return { sid: 'mep05', mid: 'm05-ready' };
+  };
+  /* trois éléments les plus utiles à réviser pour le prochain vol */
+  MP.toReview = function (sid) {
+    var s = ses(sid), f = prof(); if (!s || !f) return [];
+    return s.missions.filter(function (m) { return mis(m).type !== 'chain'; }).map(function (m) { var x = f.res[m]; return { mid: m, sc: x ? x.best - (x.crit ? 30 : 0) : -1, seen: !!x }; })
+      .sort(function (a, b) { return a.sc - b.sc; }).slice(0, 3);
+  };
+
+  /* ---------------- Lancement d'une mission ---------------- */
+  MP.run = function (mid, mode, chainCtx) {
+    var m = mis(mid); if (!m) return;
+    mode = mode || 'learn';
+    if (m.type === 'chain') return MP.chain(m.chain.slice(), m.level === 'exam' ? 'memo' : 'learn', { title: m.title, mid: mid, label: m.label, synth: true });
+    MP.hide(); stopRun();
+    if (m.type === 'flow') {
+      var lvl = { learn: 'learn', memo: 'memo', challenge: 'exam' }[mode] || 'learn';
+      MP.pending = { mid: mid, mode: mode, t0: Date.now() };
+      TF.Ess.sweep(m.block, mode === 'discover' ? 'demo' : 'try', 0, { level: lvl });
+      return;
+    }
+    R = { mid: mid, m: m, mode: mode, i: 0, ok: 0, total: 0, hints: 0, errs: 0, crit: 0, msgs: [], seenWrong: {}, seenCrit: {}, X: { was: {} }, t0: Date.now(), chain: chainCtx || null, hintOn: mode === 'discover' };
+    R.total = m.steps.filter(function (s) { return !s.wait; }).length;
+    if (m.type === 'decision') return renderDecision();
+    startCockpit();
+  };
+
+  /* ---------------- Missions « cockpit » ---------------- */
+  function startCockpit() {
+    var A = app(), ck = A.ck, sc = A.scenario(), PE = TF.ProcEngine, m = R.m, su = m.setup || {};
+    if (TF.Ess) { if (TF.Ess.active()) TF.Ess.stop(true); TF.Ess.close(); } TF.Home.hide(); if (TF.Ifr) TF.Ifr.close(); A.modes.idle();
+    ck.reset(sc); ck.restore(PE.buildInitial(m.state, sc));
+    var k;
+    for (k in su.controls || {}) ck.setControl(k, su.controls[k]);
+    for (k in su.sys || {}) ck.s.sys[k] = su.sys[k];
+    for (k in su.g || {}) ck.s.g[k] = su.g[k];
+    for (k in su.flight || {}) ck.s.flight[k] = su.flight[k];
+    for (k in su.history || {}) ck.s.sys.history[k] = su.history[k];
+    ck.s.sys.audio = ck.s.sys.audio || {}; for (k in su.audio || {}) ck.s.sys.audio[k] = su.audio[k];
+    ck.s.sys.fail = { L: false, R: false, gearPump: false, gearPulledAt: null }; for (k in su.fail || {}) ck.s.sys.fail[k] = su.fail[k];
+    R.X.was.ap = !!ck.s.sys.apEngaged;
+    A.view.renderAll();
+    if (su.view) { var rg = TF.DATA.regions.filter(function (q) { return q.id === su.view; })[0]; if (rg) A.view.setView(su.view === 'audio' ? { x: rg.x - 28, y: rg.y, w: rg.w + 56, h: rg.h } : rg, true); } else if (A.view.home) A.view.home(true);
+    R.fired = {}; R.armed = {}; var run = R;
+    (m.events || []).forEach(function (ev, j) { if (ev.at != null) setTimeout(function () { if (R === run) fire(ev, j); }, ev.at); });
+    drawBar(); clearInterval(pollT); pollT = setInterval(tick, 250);
+  }
+  function fire(ev, j) {
+    if (!R || R.fired[j]) return; R.fired[j] = true;
+    var ck = app().ck;
+    if (ev.failRandom) {
+      var bad = Math.random() < 0.5 ? 'l' : 'r', good = bad === 'l' ? 'r' : 'l';
+      R.X.bad = bad; R.X.good = good; R.X.p0 = ck.s.controls['power_' + good];
+      ck.s.sys.fail[bad === 'l' ? 'L' : 'R'] = true; R.X.failed = true;
+      if (ev.toast) { K.sound.err(); K.toast(ev.toast, 'info', 2600); }
+    }
+    drawBar();
+  }
+  function cur() { return R && R.m.steps[R.i]; }
+  function needsX(st) { return st && (typeof st.ask === 'function' || typeof st.show === 'function' || st.wait || /AFFECTED|Operative|affected/i.test(st.t || st.check || '')) && !R.X.failed && (R.m.events || []).some(function (e) { return e.failRandom; }); }
+  function tick() {
+    if (!R) return;
+    if (!K.$('mxBar')) drawBar();
+    var ck = app().ck, S = ck.s, I = ck.indications(), st = cur();
+    (R.m.events || []).forEach(function (ev, j) {   // événement après une étape (panne surprise)
+      if (ev.afterStep != null && !R.armed[j] && R.i > ev.afterStep) { R.armed[j] = true; var run = R, d = ev.delay || [3000, 3000]; setTimeout(function () { if (R === run) fire(ev, j); }, d[0] + Math.random() * (d[1] - d[0])); }
+    });
+    if (R.X.failed) (R.m.crit || []).forEach(function (c, j) { if (!R.seenCrit[j] && c.cond(S, R.X)) { R.seenCrit[j] = 1; R.crit++; R.msgs.push(c.msg); K.sound.err(); flash(c.msg, 'crit'); } });
+    if (!st) return finishRun();
+    if (st.wait) { if (R.X.failed) { R.i++; drawBar(); } return; }
+    if (needsX(st)) return;
+    (st.wrong || []).forEach(function (w, j) { var key = R.i + ':' + j; if (!R.seenWrong[key] && w.cond(S, R.X)) { R.seenWrong[key] = 1; R.errs++; R.msgs.push(w.msg); K.sound.err(); flash(w.msg, 'warn'); } });
+    if (st.cond && st.cond(S, R.X, I)) { R.ok++; K.sound.ok(); app().view.clearHighlight(); R.i++; R.hintShown = false; drawBar(); }
+  }
+  function flash(msg, cls) { var b = K.$('mxMsg'); if (b) { b.innerHTML = esc(msg); b.className = 'mx-msg ' + (cls || ''); } }
+  function showList(st) { var s = st.show; return typeof s === 'function' ? s(R.X) : (s || []); }
+  function drawBar() {
+    if (!R) return;
+    // la mission s'affiche dans le panneau instructeur : le cockpit reste entièrement visible
+    var host = K.$('instrBody'), ins = K.$('instructor'), b = K.$('mxBar');
+    if (ins && ins.classList.contains('collapsed')) { ins.classList.remove('collapsed'); setTimeout(function () { app().view.resize(); }, 280); }
+    if (!b) { b = root.document.createElement('div'); b.id = 'mxBar'; if (host) { host.innerHTML = ''; host.appendChild(b); } else root.document.body.appendChild(b); }
+    var st = cur(), m = R.m, n = m.steps.length, h = '<div class="mx-h"><b>' + esc(m.title) + '</b><span class="mx-k">' + Math.min(R.i + 1, n) + ' / ' + n + ' · ' + esc(MODES[R.mode] || '') + '</span><button data-act="quit" title="Quitter">✕</button></div>';
+    h += '<div class="mx-lab">' + esc(m.label || '') + '</div>';
+    if (st) {
+      if (needsX(st) || st.wait) h += '<div class="mx-t">' + esc(st.wait || 'Surveille tes paramètres…') + '</div>';
+      else if (st.ask) {
+        var q = typeof st.ask === 'function' ? st.ask(R.X) : st.ask;
+        h += '<div class="mx-t">' + esc(q) + '</div><div class="mx-ch">' + st.ch.map(function (c, i) { return '<button data-act="ans" data-v="' + i + '">' + esc(c) + '</button>'; }).join('') + '</div>';
+        if (R.askFb) h += R.askFb;
+      } else if (st.check) {
+        h += '<div class="mx-t">☑︎ ' + esc(st.check) + '</div>' + (st.note ? '<div class="mx-note">' + esc(st.note) + '</div>' : '') + '<div class="mx-ch"><button data-act="chk" class="pri">✓ Vérifié</button></div>';
+      } else {
+        h += '<div class="mx-t">🎯 ' + esc(st.t) + '</div>';
+        if (R.hintShown || R.hintOn) { h += '<div class="mx-hint">💡 ' + esc(st.hint || '') + '</div>'; showList(st).forEach(function (id) { app().view.highlight(id); }); }
+      }
+      h += '<div class="mx-msg" id="mxMsg"></div><div class="mx-a">' + ((R.mode === 'learn' && st.t && !st.ask && !R.hintShown && !needsX(st)) ? '<button data-act="hint">💡 Indice</button>' : '') + '<button data-act="view">🎧 Audio</button><button data-act="home">⌂ Vue générale</button></div>';
+    }
+    b.innerHTML = h; b.className = 'show';
+    K.bindActs(b, {
+      quit: function () { finishRun(true); },
+      hint: function () { R.hints++; R.hintShown = true; drawBar(); },
+      view: function () { var rg = TF.DATA.regions.filter(function (q) { return q.id === 'audio'; })[0]; app().view.setView({ x: rg.x - 28, y: rg.y, w: rg.w + 56, h: rg.h }, true); },
+      home: function () { if (app().view.home) app().view.home(true); },
+      chk: function () {
+        var s2 = cur(), I = app().ck.indications();
+        if (s2.verify && !s2.verify(app().ck.s, R.X, I)) { R.errs++; R.msgs.push('Vérification « ' + s2.check + ' » : pas conforme quand tu l\'as validée.'); K.sound.err(); flash('Pas encore conforme : regarde le cockpit avant de valider.', 'warn'); return; }
+        R.ok++; R.i++; K.sound.ok(); drawBar();
+      },
+      ans: function (bt) { answerAsk(+bt.getAttribute('data-v'), drawBar); }
+    });
+  }
+  function answerAsk(v, redraw) {
+    var st = cur(), ans = typeof st.ans === 'function' ? st.ans(R.X) : st.ans;
+    if (v === ans) { if (!R.askWrong) R.ok++; R.askWrong = false; R.askFb = ''; K.sound.ok(); K.toast('✓ ' + st.why, 'ok', 2600); R.i++; redraw(); return; }
+    var crit = st.crit === true || (st.crit && st.crit.indexOf && st.crit.indexOf(v) >= 0);
+    if (crit) { R.crit++; R.msgs.push('⛔ ' + st.ch[v] + ' — ' + st.why); } else { R.errs++; R.msgs.push(st.ch[v] + ' — ' + st.why); }
+    R.askWrong = true; K.sound.err();
+    R.askFb = '<div class="mx-msg ' + (crit ? 'crit' : 'warn') + '">' + (crit ? '⛔ ' : '✗ ') + esc(st.why) + '</div>';
+    redraw();
+  }
+  function stopRun() { clearInterval(pollT); pollT = null; var b = K.$('mxBar'); if (b && b.parentNode) b.parentNode.removeChild(b); if (app() && app().view) app().view.clearHighlight(); if (app() && app().modes) app().modes.idle(); }
+  function finishRun(quit) {
+    if (!R) return;
+    var r = R; R = null; stopRun();
+    if (quit && r.i === 0) { if (r.chain) { CH = null; } return MP.show(); }
+    var res = { ok: r.ok, total: r.total, hints: r.hints, errs: r.errs, crit: r.crit, mode: r.mode };
+    if (quit) res.total = Math.max(res.total, r.ok + 1);
+    var xp = record(r.mid, res);
+    if (r.chain) return chainNext({ mid: r.mid, res: res, xp: xp, msgs: r.msgs });
+    showResult(r.mid, res, xp, r.msgs);
+  }
+
+  /* ---------------- Missions « décision » (panneau) ---------------- */
+  function renderDecision() {
+    var e = el(), m = R.m, st = cur(), n = m.steps.length;
+    if (!st) return finishRun();
+    var h = '<div class="mep-in"><div class="mep-gh"><button class="btn" data-act="quitd">✕</button><b>' + esc(m.title) + '</b><span>' + (R.i + 1) + ' / ' + n + '</span></div>';
+    h += '<div class="mep-tag">' + esc(m.label) + '</div>';
+    if (m.ill === 'vmca') h += vmcaSvg();
+    if (st.order) {
+      if (!R.ord) R.ord = { pool: shuffle(st.items.map(function (x, i) { return i; })), pick: [] };
+      h += '<div class="mep-q">' + esc(st.order) + '</div><ol class="mep-ord">' + R.ord.pick.map(function (i) { return '<li>' + esc(st.items[i]) + '</li>'; }).join('') + '</ol>';
+      h += '<div class="mep-pool">' + R.ord.pool.filter(function (i) { return R.ord.pick.indexOf(i) < 0; }).map(function (i) { return '<button data-act="pick" data-v="' + i + '">' + esc(st.items[i]) + '</button>'; }).join('') + '</div>';
+      h += '<div class="mep-acts"><button class="btn" data-act="clr">Effacer</button></div>';
+    } else {
+      h += '<div class="mep-q">' + esc(st.ask) + '</div><div class="mep-ch">' + st.ch.map(function (c, i) { return '<button data-act="ans" data-v="' + i + '">' + esc(c) + '</button>'; }).join('') + '</div>';
+      if (R.askFb) h += R.askFb;
+    }
+    h += '<div class="mep-refs">Sources : ' + m.refs.map(refTxt).join(' · ') + '</div></div>';
+    e.innerHTML = h; e.classList.remove('hidden'); e.scrollTop = 0;
+    K.bindActs(e, {
+      quitd: function () { finishRun(true); },
+      ans: function (bt) { answerAsk(+bt.getAttribute('data-v'), renderDecision); },
+      clr: function () { R.ord.pick = []; renderDecision(); },
+      pick: function (bt) {
+        var i = +bt.getAttribute('data-v'), s2 = cur(); R.ord.pick.push(i);
+        if (R.ord.pick.length === s2.items.length) {
+          var good = R.ord.pick.every(function (x, k) { return x === k; });
+          if (good) { R.ok++; K.sound.ok(); K.toast('✓ ' + s2.why, 'ok', 3000); }
+          else { R.errs++; R.msgs.push('Ordre incorrect — ' + s2.why); K.sound.err(); K.toast('✗ Ordre attendu : ' + s2.items.join(' → '), 'info', 5000); }
+          R.ord = null; R.i++;
+        }
+        renderDecision();
+      }
+    });
+  }
+  function vmcaSvg() {
+    var y = function (v) { return 190 - (v - 50) * 2; };
+    var s = '<svg class="mep-svg" viewBox="0 0 220 200"><rect width="220" height="200" fill="#0c1a2b"/><rect x="70" y="10" width="60" height="180" fill="#1b2533" stroke="#3a5a88"/>';
+    [60, 70, 80, 90, 100, 110, 120, 130, 140].forEach(function (v) { s += '<line x1="118" x2="130" y1="' + y(v) + '" y2="' + y(v) + '" stroke="#fff"/><text x="114" y="' + (y(v) + 4) + '" font-size="10" fill="#fff" text-anchor="end">' + v + '</text>'; });
+    s += '<rect x="130" y="' + y(71) + '" width="8" height="' + (y(50) - y(71)) + '" fill="#e04646"/><text x="142" y="' + (y(71) + 4) + '" font-size="10" fill="#ff8a8a">VMCA 71 (UP)</text>';
+    s += '<line x1="130" x2="146" y1="' + y(68) + '" y2="' + y(68) + '" stroke="#ff8a8a" stroke-dasharray="3 2"/><text x="148" y="' + (y(68) + 12) + '" font-size="9" fill="#ff8a8a">68 (APP)</text>';
+    s += '<line x1="130" x2="146" y1="' + y(85) + '" y2="' + y(85) + '" stroke="#3fa9ff" stroke-width="2"/><text x="148" y="' + (y(85) + 4) + '" font-size="10" fill="#3fa9ff">Vyse 85</text>';
+    return s + '<text x="6" y="196" font-size="8" fill="#9fb3cc">OM-B p.23 / p.101 — schéma pédagogique</text></svg>';
+  }
+
+  /* ---------------- Missions « flow » : résultat via l'événement du flow ---------------- */
+  TF.bus.on('ess:done', function (o) {
+    var p = MP.pending; if (!p || mis(p.mid).block !== o.block) return;
+    MP.pending = null;
+    var res = { ok: Math.max(0, o.n - o.err), total: o.n, hints: o.hints || 0, errs: o.err, crit: 0, mode: p.mode };
+    if (o.mode === 'demo') res = { ok: 0, total: o.n, hints: 0, errs: 0, crit: 0, mode: 'discover' };
+    var xp = record(p.mid, res);
+    setTimeout(function () { if (p.chain) chainNext({ mid: p.mid, res: res, xp: xp, msgs: [] }); else showResult(p.mid, res, xp, []); }, 900);
+  });
+
+  /* ---------------- Enchaînements : synthèse, préparation de vol ---------------- */
+  MP.chain = function (list, mode, meta) {
+    CH = { list: list, mode: mode, meta: meta || {}, i: 0, out: [] };
+    runChainItem();
+  };
+  function runChainItem() {
+    if (!CH) return;
+    var mid = CH.list[CH.i]; if (!mid) return chainEnd();
+    var m = mis(mid);
+    K.toast('▶ ' + (CH.i + 1) + ' / ' + CH.list.length + ' — ' + m.title, '', 1800);
+    if (m.type === 'flow') { MP.run(mid, CH.mode); MP.pending.chain = true; }
+    else MP.run(mid, CH.mode, true);
+  }
+  function chainNext(o) { if (!CH) return showResult(o.mid, o.res, o.xp, o.msgs); CH.out.push(o); CH.i++; runChainItem(); }
+  function chainEnd() {
+    var c = CH; CH = null; if (TF.Ess) TF.Ess.close();
+    var ok = 0, tot = 0, xp = 0, msgs = [], weak = [];
+    c.out.forEach(function (o) { ok += o.res.ok; tot += o.res.total; xp += o.xp; msgs = msgs.concat(o.msgs.map(function (x) { return mis(o.mid).title + ' : ' + x; })); var sc = o.res.total ? (o.res.ok - o.res.hints) / o.res.total : 0; weak.push({ mid: o.mid, sc: o.res.crit ? -1 : sc }); });
+    weak.sort(function (a, b) { return a.sc - b.sc; });
+    if (c.meta.mid) record(c.meta.mid, { ok: ok, total: tot, hints: 0, errs: msgs.length, crit: c.out.some(function (o) { return o.res.crit; }) ? 1 : 0, mode: c.mode });
+    var s = c.meta.sid ? ses(c.meta.sid) : null, e = el();
+    var h = '<div class="mep-in"><div class="mep-card mep-end"><h2>' + esc(c.meta.title || 'Bilan') + '</h2><div class="mep-tag">' + esc(c.meta.label || 'Autoévaluation pédagogique — jamais une validation d\'aptitude.') + '</div>';
+    h += '<div class="mep-big">' + ok + ' / ' + tot + ' actions correctes · +' + xp + ' XP</div>';
+    if (s) h += '<div class="mep-q">Tu as révisé les objectifs suivants…</div><ul>' + s.missions.filter(function (m) { return c.list.indexOf(m) >= 0; }).map(function (m) { return '<li>' + esc(mis(m).title) + ' — <i>' + esc(mis(m).fctp) + '</i></li>'; }).join('') + '</ul>';
+    h += '<div class="mep-q">Voici les deux points à retravailler…</div><ul>' + weak.slice(0, 2).map(function (w) { return '<li><b>' + esc(mis(w.mid).title) + '</b> <button class="lnk" data-act="go" data-v="' + w.mid + '">rejouer</button></li>'; }).join('') + '</ul>';
+    var docs = {}; c.list.forEach(function (m) { mis(m).refs.forEach(function (r) { docs[refTxt(r)] = 1; }); });
+    h += '<div class="mep-q">Voici les procédures et documents à revoir avec ton instructeur…</div><ul>' + Object.keys(docs).slice(0, 8).map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>';
+    if (msgs.length) h += '<details><summary>Détail des erreurs (' + msgs.length + ')</summary><ul>' + msgs.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></details>';
+    h += '<div class="mep-sync">' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</div><div class="mep-acts"><button class="btn" data-act="map">✈ Mes vols MEP</button><button class="btn primary" data-act="again">🔁 REJOUER</button></div></div></div>';
+    e.innerHTML = h; e.classList.remove('hidden');
+    K.bindActs(e, { map: function () { MP.show('map'); }, again: function () { MP.chain(c.list, c.mode, c.meta); }, go: function (b) { MP.run(b.getAttribute('data-v'), 'learn'); } });
+  }
+  MP.prepare = function (sid, dur) {
+    var s = ses(sid), f = prof(); if (!s) return;
+    var list = s.missions.filter(function (m) { return mis(m).type !== 'chain'; });
+    if (dur !== 'full') {
+      var short = list.filter(function (m) { return mis(m).type !== 'flow'; });
+      var pool = dur === 'express' ? short : list;
+      pool = pool.slice().sort(function (a, b) { var x = (f.res[a] || {}).best || 0, y = (f.res[b] || {}).best || 0; return x - y; });
+      list = pool.slice(0, dur === 'express' ? 2 : 4);
+    }
+    MP.chain(list, 'learn', { title: 'Préparation ' + s.n + ' — ' + { express: 'Express 3 min', review: 'Révision 10 min', full: 'Préparation complète' }[dur], sid: sid, label: 'Briefing personnel — autoévaluation, jamais « aptitude au vol validée ».' });
+  };
+
+  /* ---------------- Résultat d'une mission ---------------- */
+  function showResult(mid, res, xp, msgs) {
+    var m = mis(mid), e = el(), okk = !res.crit && res.total && (res.ok - res.hints) / res.total >= 0.8;
+    if (TF.Ess && m.type === 'flow') TF.Ess.close();
+    var next = MP.nextAfter(mid);
+    var h = '<div class="mep-in"><div class="mep-card mep-end ' + (okk ? 'ok' : 'ko') + '"><h2>' + (res.mode === 'discover' ? '👀 Démonstration terminée' : okk ? '✅ Mission réussie' : '🔁 À retravailler') + '</h2><div class="mep-sub">' + esc(m.title) + ' · ' + esc(MODES[res.mode] || '') + '</div>';
+    h += '<div class="mep-big">' + res.ok + ' / ' + res.total + ' actions correctes' + (xp ? ' · +' + xp + ' XP' : '') + '</div>';
+    if (res.hints) h += '<div>💡 ' + res.hints + ' indice(s)</div>';
+    if (msgs.length) h += '<ul class="mep-errs">' + msgs.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    h += '<div class="mep-comp">Compétences travaillées : ' + m.comp.map(function (c) { var cc = D().COMP.filter(function (x) { return x.id === c; })[0]; return '<span>' + esc(cc.t) + '</span>'; }).join('') + '</div>';
+    h += '<div class="mep-refs">Traçabilité : FCTP — ' + esc(m.fctp) + ' · ' + m.refs.map(refTxt).join(' · ') + '</div>';
+    h += '<div class="mep-sync" id="mepSync">' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</div>';
+    h += '<div class="mep-acts"><button class="btn" data-act="map">✈ Mes vols</button><button class="btn" data-act="again">🔁 REJOUER</button>' + (next ? '<button class="btn primary" data-act="next">MISSION SUIVANTE ›</button>' : '') + '</div></div></div>';
+    e.innerHTML = h; e.classList.remove('hidden'); e.scrollTop = 0;
+    K.bindActs(e, { map: function () { MP.show('map'); }, again: function () { MP.run(mid, res.mode); }, next: function () { MP.run(next, res.mode === 'discover' ? 'learn' : res.mode); } });
+  }
+  MP.nextAfter = function (mid) {
+    var s = D().sessions.filter(function (x) { return x.missions.indexOf(mid) >= 0 && x.id !== 'skill'; })[0]; if (!s) return null;
+    var i = s.missions.indexOf(mid); return s.missions[i + 1] || null;
+  };
+  TF.bus.on('cloud:synced', function () { var s = K.$('mepSync'); if (s && TF.Cloud) s.textContent = TF.Cloud.label(); });
+
+  /* ---------------- Écrans ---------------- */
+  MP.heroHtml = function () {
+    var p = TF.Profiles.current(); if (!p) return '';
+    var L = TF.Profiles.level(p), nx = MP.nextMission(), nm = nx ? mis(nx.mid) : null;
+    var h = '<div class="mep-hero"><div class="mh-st"><b>' + esc(p.name) + '</b> · ' + (p.xp || 0) + ' XP · ' + esc(L.name) + ' · <button class="lnk" data-act="cloud">' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</button>' + (nm ? '<br><small>Prochaine mission : ' + esc(ses(nx.sid).n) + ' — ' + esc(nm.title) + '</small>' : '') + '</div>';
+    h += '<div class="mh-b"><button class="mh-go" data-act="mepresume">▶ REPRENDRE MON ENTRAÎNEMENT</button><button class="mh-mep" data-act="mepmap">✈ MES VOLS MEP<small>Prépare chaque vol, réussis les missions et arrive prêt devant ton instructeur.</small></button>';
+    h += '<button class="mh-free" data-act="free">🎮 COCKPIT LIBRE</button><button class="mh-ifr" data-act="ifr">📚 L\'IFR POUR LES NULS</button></div></div>';
+    return h;
+  };
+  MP.resume = function () { var nx = MP.nextMission(); if (nx) MP.run(nx.mid, 'learn'); };
+  function mapHtml() {
+    var p = TF.Profiles.current(), f = prof(), nx = MP.nextMission();
+    var h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">✈ MES VOLS D\'ENTRAÎNEMENT</div><div class="mep-sub">Prépare chaque vol, réussis les missions et arrive prêt devant ton instructeur.</div></div><button class="btn" data-act="close">✈︎ Retour</button></div>';
+    h += '<div class="mep-me"><b>' + esc(p.name) + '</b> · ' + (p.xp || 0) + ' XP · ' + esc(TF.Profiles.level(p).name) + ' · progression MEP ' + MP.totalMastery() + ' % · ' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</div>';
+    h += '<div class="mep-row"><button class="mep-s go" data-act="resume">▶ <b>REPRENDRE</b><small>' + (nx ? esc(ses(nx.sid).n + ' — ' + mis(nx.mid).title) : '') + '</small></button><button class="mep-s" data-act="prepv">📋 <b>PRÉPARER MON VOL DE DEMAIN</b><small>Express · Révision · Complète</small></button>';
+    h += '<button class="mep-s" data-act="ready">🎯 <b>PRÊT POUR MON PROCHAIN VOL</b><small>Les 3 points à revoir</small></button><button class="mep-s" data-act="errs"' + (f.errs.length ? '' : ' disabled') + '>🔁 <b>REJOUER MES ERREURS</b><small>' + f.errs.length + ' mission(s)</small></button>';
+    h += '<button class="mep-s" data-act="comp">📊 <b>MES COMPÉTENCES</b><small>Tableau de maîtrise</small></button><button class="mep-s" data-act="team">👥 <b>DÉFIS TIFFANY</b><small>Classement et défis</small></button></div>';
+    h += '<div class="mep-map">' + D().sessions.map(function (s, k) {
+      var mm = s.id === 'skill' ? null : MP.sessionMastery(s.id), dn = s.missions.filter(function (m) { return done(m); }).length, best = 0;
+      s.missions.forEach(function (m) { best = Math.max(best, MP.score(m) || 0); });
+      var weak = []; (s.id === 'skill' ? [] : s.missions).forEach(function (m) { mis(m).comp.forEach(function (c) { var st = MP.compState(c); if ((st.cls === 's1' || st.cls === 's2') && weak.indexOf(c) < 0) weak.push(c); }); });
+      var obj = s.understands.concat(s.expertise, s.proficient).slice(0, 3), comps = [];
+      s.missions.forEach(function (m) { mis(m).comp.forEach(function (c) { if (comps.indexOf(c) < 0) comps.push(c); }); });
+      return '<div class="mep-lvl' + (nx && nx.sid === s.id ? ' cur' : '') + '"><div class="ml-h"><span class="ml-n">' + esc(s.n) + '</span><b>' + esc(s.title) + '</b><small>' + esc(s.dur) + '</small></div>' +
+        (obj.length ? '<div class="ml-o">🎯 ' + obj.map(esc).join(' · ') + '</div>' : '') +
+        (s.id !== 'skill' ? '<div class="ml-c">' + comps.map(function (c) { return '<span title="' + esc(D().COMP.filter(function (x) { return x.id === c; })[0].t) + '">' + c + '</span>'; }).join('') + '</div>' : '') +
+        (mm != null ? '<div class="gauge"><i style="width:' + mm + '%"></i></div><small>Maîtrise ' + mm + ' % · missions terminées ' + dn + ' / ' + s.missions.length + ' · meilleur score ' + best + '</small>' : '<small>' + esc(s.fctp) + '</small>') +
+        (weak.length ? '<div class="ml-w">À renforcer : ' + weak.slice(0, 3).map(function (c) { return esc(D().COMP.filter(function (x) { return x.id === c; })[0].t); }).join(', ') + '</div>' : '') +
+        '<div class="mep-acts"><button class="btn" data-act="ses" data-v="' + s.id + '">Ouvrir</button>' + (s.id !== 'skill' ? '<button class="btn primary" data-act="prep" data-v="' + s.id + '">Préparer mon vol</button>' : '<button class="btn primary" data-act="go" data-v="m05-ready">READY FOR THE SKILL TEST?</button>') + '</div></div>';
+    }).join('') + '</div>';
+    h += '<div class="mep-disc">' + esc(D().caveat) + '</div></div>';
+    return h;
+  }
+  function sesHtml(sid) {
+    var s = ses(sid), h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">' + esc(s.n) + ' — ' + esc(s.title) + '</div><div class="mep-sub">Durée réelle documentée : ' + esc(s.dur) + ' · ' + refTxt(s.ref) + '</div></div><button class="btn" data-act="map">↩</button></div>';
+    h += '<details class="mep-fctp"><summary>Contenu du vol (FCTP, texte d\'origine)</summary><p>' + esc(s.fctp) + '</p></details>';
+    function col(t, a) { return a.length ? '<div class="mep-col"><b>' + t + '</b><ul>' + a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : ''; }
+    h += '<div class="mep-cols">' + col('Comprend (UNDERSTANDS)', s.understands) + col('Développe (DEVELOPS EXPERTISE)', s.expertise) + col('Maîtrise (IS PROFICIENT)', s.proficient) + '</div>';
+    if (s.id !== 'skill') h += '<div class="mep-acts"><button class="btn primary" data-act="prep" data-v="' + s.id + '">📋 Préparer mon vol</button><button class="btn" data-act="exam" data-v="' + s.id + '">📝 Examen blanc</button></div>';
+    h += '<div class="mep-q">Missions</div>' + s.missions.map(function (mid) {
+      var m = mis(mid), x = prof().res[mid];
+      return '<div class="mep-mis"><div><b>' + esc(m.title) + '</b> <span class="mt mt-' + m.type + '">' + { flow: 'flow cockpit', cockpit: 'cockpit', decision: 'décision', chain: 'synthèse' }[m.type] + '</span><br><small>' + esc(m.fctp) + ' · ' + esc(m.dur || '') + (x ? ' · meilleur ' + x.best + ' %' + (x.perfect ? ' · ' + x.perfect + ' parfait(s)' : '') : ' · jamais jouée') + '</small></div>' +
+        '<div class="mep-modes">' + (m.type === 'chain' ? '<button class="btn primary" data-act="go" data-v="' + mid + '">Lancer</button>' : Object.keys(MODES).filter(function (k) { return !(m.type === 'decision' && k === 'discover'); }).map(function (k) { return '<button class="btn" data-act="run" data-m="' + mid + '" data-v="' + k + '">' + MODES[k] + '</button>'; }).join('')) + '</div></div>';
+    }).join('');
+    return h + '<div class="mep-disc">' + esc(D().caveat) + '</div></div>';
+  }
+  function compHtml() {
+    var h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">📊 Mes compétences</div><div class="mep-sub">Compétences du FCTP (§ 7). État calculé sur les exercices simulés uniquement — jamais une évaluation officielle.</div></div><button class="btn" data-act="map">↩</button></div><table class="mep-tab"><tr><th>Compétence</th><th>État</th><th>Missions</th></tr>';
+    D().COMP.forEach(function (c) { var st = MP.compState(c.id); h += '<tr><td><b>' + esc(c.t) + '</b><br><small>' + esc(c.en) + '</small></td><td class="' + st.cls + '">' + esc(st.label) + (st.why ? '<br><small>' + esc(st.why) + '</small>' : '') + '</td><td>' + (st.n || '—') + '</td></tr>'; });
+    return h + '</table></div>';
+  }
+  function readyHtml() {
+    var nx = MP.nextMission(), sid = nx ? nx.sid : 'mep01', s = ses(sid), items = MP.toReview(sid);
+    var h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">🎯 Prêt pour mon prochain vol : ' + esc(s.n) + '</div><div class="mep-sub">Les trois éléments les plus utiles à réviser.</div></div><button class="btn" data-act="map">↩</button></div>';
+    h += items.map(function (it, k) { var m = mis(it.mid); return '<div class="mep-mis"><div><b>' + (k + 1) + '. ' + esc(m.title) + '</b><br><small>' + (it.seen ? 'meilleur ' + Math.max(0, it.sc) + ' %' : 'jamais jouée') + ' · ' + esc(m.fctp) + '</small></div><div class="mep-modes"><button class="btn primary" data-act="run" data-m="' + it.mid + '" data-v="learn">🎯 S\'entraîner</button></div></div>'; }).join('');
+    return h + '</div>';
+  }
+  function prepHtml() {
+    var h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">📋 Préparer mon vol de demain</div><div class="mep-sub">Choisis ton vol et ta durée : les exercices les moins maîtrisés passent en premier.</div></div><button class="btn" data-act="map">↩</button></div>';
+    D().sessions.filter(function (s) { return s.id !== 'skill'; }).forEach(function (s) {
+      h += '<div class="mep-mis"><div><b>' + esc(s.n) + ' — ' + esc(s.title) + '</b><br><small>' + esc((s.understands.concat(s.expertise)).slice(0, 4).join(' · ')) + '</small></div><div class="mep-modes"><button class="btn" data-act="prepgo" data-v="' + s.id + '" data-d="express">⚡ EXPRESS — 3 MIN</button><button class="btn" data-act="prepgo" data-v="' + s.id + '" data-d="review">📖 RÉVISION — 10 MIN</button><button class="btn primary" data-act="prepgo" data-v="' + s.id + '" data-d="full">🧭 PRÉPARATION COMPLÈTE</button></div></div>';
+    });
+    return h + '</div>';
+  }
+  function teamHtml() {
+    var rows = TF.Board && TF.Board.mode ? TF.Board.rows() : [], local = TF.Profiles.list().filter(function (p) { return (p.xp || 0) > 0; });
+    var h = '<div class="mep-in"><div class="mep-top"><div><div class="mep-title">👥 Défis TIFFANY</div><div class="mep-sub">La conformité et la bonne décision d\'abord : aucun bonus de vitesse.</div></div><button class="btn" data-act="map">↩</button></div>';
+    var src = rows.length ? rows.map(function (r) { return { name: r.name, xp: r.xp, mep: r.mep || 0, perfect: r.perfect || 0, mc: r.mepc || {} }; }) : local.map(function (p) { return { name: p.name, xp: p.xp, mep: MP.totalMastery(p), perfect: MP.perfectCount(p), mc: MP.challengeData(p) }; });
+    h += '<table class="mep-tab"><tr><th>Pilote</th><th>XP</th><th>MEP</th><th>Missions parfaites</th><th>Moteur</th><th>Audio</th></tr>' + src.sort(function (a, b) { return b.mep - a.mep || b.xp - a.xp; }).map(function (r) {
+      return '<tr><td><b>' + esc(r.name) + '</b></td><td>' + r.xp + '</td><td>' + r.mep + ' %</td><td>' + r.perfect + '</td><td>' + (r.mc.engine || 0) + '</td><td>' + (r.mc.audio || 0) + ' %</td></tr>'; }).join('') + '</table>';
+    h += '<div class="mep-q">Défis de la semaine</div><ul>' + D().challenges.map(function (c) {
+      var lead = '';
+      if (c.id === 'c-mep01') { var w = src.filter(function (r) { return r.mc.mep01At; }).sort(function (a, b) { return a.mc.mep01At - b.mc.mep01At; })[0]; lead = w ? '🏅 ' + esc(w.name) : 'personne pour l\'instant'; }
+      if (c.id === 'c-engine') { var w2 = src.slice().sort(function (a, b) { return (b.mc.engine || 0) - (a.mc.engine || 0); })[0]; lead = w2 && w2.mc.engine ? '🏅 ' + esc(w2.name) + ' (' + w2.mc.engine + ' identification(s) parfaite(s))' : 'personne pour l\'instant'; }
+      if (c.id === 'c-audio') { var w3 = src.slice().sort(function (a, b) { return (b.mc.audio || 0) - (a.mc.audio || 0); })[0]; lead = w3 && w3.mc.audio ? '🏅 ' + esc(w3.name) + ' (' + w3.mc.audio + ' %)' : 'personne pour l\'instant'; }
+      return '<li><b>' + esc(c.t) + '</b> — ' + lead + '</li>';
+    }).join('') + '</ul><div class="mep-disc">' + (rows.length ? 'Classement partagé de l\'équipe.' : 'Classement partagé indisponible : pilotes de cet appareil seulement.') + '</div></div>';
+    return h;
+  }
+  MP.perfectCount = function (p) { var f = prof(p), n = 0; Object.keys(f.res).forEach(function (k) { n += f.res[k].perfect ? 1 : 0; }); return n; };
+  MP.challengeData = function (p) {
+    var f = prof(p), s1 = ses('mep01'), at = 0;
+    if (s1.missions.every(function (m) { return f.res[m] && f.res[m].noHelp; })) at = Math.max.apply(null, s1.missions.map(function (m) { return f.res[m].last; }));
+    var eng = 0; ['m03-which', 'm04-climb', 'm04-surprise'].forEach(function (m) { eng += f.res[m] ? f.res[m].perfect : 0; });
+    return { mep01At: at, engine: eng, audio: f.res['m00-audio'] ? f.res['m00-audio'].best : 0 };
+  };
+
+  MP.show = function (v) {
+    if (v) MP.view = v;
+    if (TF.Ess) TF.Ess.close(); TF.Home.hide(); if (TF.Ifr) TF.Ifr.close();
+    var e = el(), w = MP.view;
+    e.innerHTML = K.plain(w === 'comp' ? compHtml() : w === 'ready' ? readyHtml() : w === 'prep' ? prepHtml() : w === 'team' ? teamHtml() : /^s:/.test(w) ? sesHtml(w.slice(2)) : mapHtml());
+    e.classList.remove('hidden'); e.scrollTop = 0;
+    K.bindActs(e, {
+      close: function () { MP.hide(); TF.Ess.show(); }, map: function () { MP.show('map'); },
+      resume: function () { MP.resume(); }, ses: function (b) { MP.show('s:' + b.getAttribute('data-v')); },
+      prep: function (b) { MP.view = 'prep'; MP.show('prep'); var t = b.getAttribute('data-v'); setTimeout(function () { var x = e.querySelector('[data-v="' + t + '"][data-d="express"]'); if (x && x.scrollIntoView) x.scrollIntoView(); }, 50); },
+      prepv: function () { MP.show('prep'); }, prepgo: function (b) { MP.prepare(b.getAttribute('data-v'), b.getAttribute('data-d')); },
+      ready: function () { MP.show('ready'); }, comp: function () { MP.show('comp'); }, team: function () { MP.show('team'); },
+      errs: function () { var f = prof(); if (f.errs.length) MP.chain(f.errs.slice(0, 5), 'learn', { title: 'Rejouer mes erreurs' }); },
+      run: function (b) { MP.run(b.getAttribute('data-m'), b.getAttribute('data-v')); },
+      go: function (b) { MP.run(b.getAttribute('data-v'), 'memo'); },
+      exam: function (b) { var s = ses(b.getAttribute('data-v')); MP.chain(s.missions.filter(function (m) { return mis(m).type !== 'chain'; }), 'memo', { title: 'Examen blanc ' + s.n, sid: s.id, label: 'Examen blanc : sans indice — autoévaluation, jamais une validation officielle.' }); }
+    });
+  };
+  MP.abort = function () { if (R) { R = null; stopRun(); } CH = null; if (MP.pending && TF.Ess && TF.Ess.active()) TF.Ess.stop(true); MP.pending = null; MP.hide(); };
+  MP.hide = function () { var e = el(); if (e) e.classList.add('hidden'); };
+  MP.state = function () { return R; };
+  MP.chainState = function () { return CH; };
+  MP.answer = function (v) { if (R) answerAsk(v, R.m.type === 'decision' ? renderDecision : drawBar); };
+  MP.check = function () { var b = K.$('mxBar'); var x = b && b.querySelector('[data-act="chk"]'); if (x) x.click(); };
+  MP.init = function () {
+    // les pilotes ayant terminé une mission apparaissent dans le classement partagé
+    if (TF.Board && TF.Board.extraRow === undefined) TF.Board.extraRow = function (p) { return { mep: MP.totalMastery(p), perfect: MP.perfectCount(p), mepc: MP.challengeData(p) }; };
+  };
 })(this);
 
 </script>
@@ -9573,10 +10678,12 @@ body.immersion #immExit{display:block}
       h += '<tr><td>' + TF.util.fmtDate(x.t) + '</td><td>' + esc(name) + '</td><td>' + esc(x.mode) + '</td><td class="st ' + (x.perfect ? 's-ok' : 's-om') + '">' + x.okNoAid + '/' + x.total + (x.perfect ? ' ✓' : '') + '</td></tr>';
     });
     h += '</table><div class="sh-sec">Sauvegarde</div><p class="explain">Sauvegarde automatique sur cet appareil' + (TF.Profiles.isPersistent() ? '' : ' <b class="s-err">indisponible</b>') + '. Exporte régulièrement pour ne rien perdre (ou pour passer du Mac à l\'iPad).</p>';
-    h += '<button class="btn primary" data-act="export">Exporter les résultats (5 pilotes)</button><label class="btn">Importer…<input type="file" accept=".json,application/json" id="impFile" style="display:none"></label><button class="btn" data-act="switch">Changer de pilote</button><button class="btn danger" data-act="reset">Réinitialiser ' + esc(p.name) + '</button>';
+    h += '<button class="btn primary" data-act="cloud">☁️ Ma sauvegarde : exporter ma progression / restaurer une sauvegarde / compte cloud</button>';
+    h += '<button class="btn" data-act="export">Exporter les résultats (5 pilotes)</button><label class="btn">Importer…<input type="file" accept=".json,application/json" id="impFile" style="display:none"></label><button class="btn" data-act="switch">Changer de pilote</button><button class="btn danger" data-act="reset">Réinitialiser ' + esc(p.name) + '</button>';
     K.sheet(h, function (s) {
       K.bindActs(s, {
         export: function () { S.exportFile(); },
+        cloud: function () { K.closeSheet(); if (TF.Cloud) TF.Cloud.openPanel(); },
         switch: function () { K.closeSheet(); S.splash(function () { app.onProfile(); }); },
         reset: function (b) { if (b.getAttribute('data-sure') !== '1') { b.setAttribute('data-sure', '1'); b.textContent = 'Confirmer : tout effacer pour ' + p.name; return; } TF.Profiles.resetProfile(p.id); K.closeSheet(); K.toast('Profil réinitialisé', 'ok'); }
       });
@@ -9738,7 +10845,8 @@ body.immersion #immExit{display:block}
     var v = app.view, hist = [], orig = v.setView, back = false;
     v.setView = function (t, a) { if (!back && this.vb) { hist.push(TF.util.clone(this.vb)); if (hist.length > 15) hist.shift(); } return orig.call(this, t, a); };
     v.backView = function () { var p = hist.pop(); if (!p) return false; back = true; orig.call(v, p, true); back = false; return true; };
-    var VIEWS = [['Vue générale', null], ['Panneau gauche', 'leftSub'], ['PFD', 'pfd'], ['MFD + pilote automatique', 'mfd'], ['Partie supérieure', { x: 300, y: 285, w: 960, h: 115 }], ['Partie inférieure', { x: 300, y: 630, w: 1060, h: 90 }], ['Console centrale', 'console'], ['Commandes moteurs', { x: 640, y: 880, w: 260, h: 250 }], ['Sélecteurs carburant', 'fuelsel']];
+    var VIEWS = [['Vue générale', null], ['🎧 Panneau audio', 'audio'], ['Panneau gauche', 'leftSub'], ['PFD', 'pfd'], ['MFD + pilote automatique', 'mfd'], ['Partie supérieure', { x: 300, y: 285, w: 960, h: 115 }], ['Partie inférieure', { x: 300, y: 630, w: 1060, h: 90 }], ['Console centrale', 'console'], ['Commandes moteurs', { x: 640, y: 880, w: 260, h: 250 }], ['Sélecteurs carburant', 'fuelsel']];
+    K.$('tbAudio').onclick = function () { var r = TF.DATA.regions.filter(function (q) { return q.id === 'audio'; })[0]; v.setView({ x: r.x - 28, y: r.y, w: r.w + 56, h: r.h }, true); };
     K.$('tbViews').onclick = function (e) {
       var h = '<div class="viewpop"><b>Vues</b>' + VIEWS.map(function (x, i) { return '<button class="btn" data-act="vw" data-i="' + i + '">' + x[0] + '</button>'; }).join('') + '<button class="btn" data-act="vback">↶ Vue précédente</button></div>';
       K.popover(h, { x: e.clientX, y: e.clientY }, function (p) {
@@ -9803,6 +10911,8 @@ body.immersion #immExit{display:block}
   /* Accueil */
   TF.Board.init();
   if (TF.Ifr) TF.Ifr.init();
+  if (TF.Mep) TF.Mep.init();
+  if (TF.Cloud) { TF.Cloud.init(); var cb = document.getElementById('tbCloud'); if (cb) cb.onclick = function () { TF.Cloud.openPanel(); }; }
   TF.MiniMap.init(); setInterval(function () { TF.MiniMap.update(); }, 250);
   TF.Screens.splash(function () { app.onProfile(); app.view.resize(); app.view.home(false); });
   app.modes.render();
