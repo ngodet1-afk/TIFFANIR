@@ -770,6 +770,21 @@ body.immersion #immExit{display:block}
 .os-i small { display: block; color: #c9d3e3; font-size: 12px; margin-top: 2px; } .os-i small.os-ref { color: #8fa1b8; font-style: italic; }
 .obs-acts .btn { display: block; width: 100%; margin-top: 6px; }
 
+/* v6.3 — poste ECU TEST : EIS déporté à côté du zoom */
+#ecuPanel { display: none; position: absolute; right: 10px; top: 10px; width: 320px; max-height: calc(100% - 96px); overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 9; background: rgba(8, 13, 24, .95); border: 1px solid #3a5a88; border-radius: 14px; padding: 8px 10px 10px; color: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.55); }
+#ecuPanel.show { display: block; }
+.ecu-h { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 6px; } .ecu-h b { -webkit-flex: 1; flex: 1; letter-spacing: .6px; }
+.ecu-tabs button, .ecu-v button { padding: 6px 10px; margin-left: 5px; border-radius: 8px; border: 1px solid #3a5a88; background: #13213a; color: #cfe; font-weight: 800; font-size: 13px; }
+.ecu-tabs button.on, .ecu-v button.on { background: #0f3a44; border-color: #3fe0e8; color: #c8fbff; }
+.ecu-x { margin-left: 8px; background: none; border: 0; color: #fff; font-size: 18px; }
+.ecu-eis { width: 100%; display: block; }
+.ecu-c { list-style: none; margin: 6px 0; padding: 0; font-size: 12px; } .ecu-c li { color: #ffcf6b; padding: 1px 0; } .ecu-c li.ok { color: #8ff0a0; }
+.ecu-ph { font-size: 13px; font-weight: 800; padding: 6px 8px; border-radius: 8px; background: #102a3a; margin: 4px 0; } .ecu-ph.ok { background: #12462a; color: #9ff0b0; } .ecu-ph.ko { background: #4a2210; color: #ffb48a; } .ecu-ph { min-height: 34px; } .ecu-ph.empty { background: transparent; }
+.ecu-hold { display: block; width: 100%; margin: 6px 0; padding: 16px 8px; border-radius: 14px; border: 2px solid #7a5a22; background: linear-gradient(#3a2a14, #22180c); color: #ffd98a; font-weight: 900; font-size: 15px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.ecu-hold.on { background: linear-gradient(#7a4a10, #4a2c08); border-color: #ffb02e; color: #fff; box-shadow: 0 0 16px rgba(255,176,46,.45); }
+.ecu-v { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; } .ecu-v span { -webkit-flex: 1; flex: 1; font-size: 12px; font-weight: 800; color: #b9c6dc; }
+.ecu-ref { font-size: 10.5px; color: #8fa1b8; margin-top: 6px; }
+
 </style>
 </head>
 <body>
@@ -836,7 +851,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '6.2';
+  TF.VERSION = '6.3';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -1290,6 +1305,8 @@ body.immersion #immExit{display:block}
   G.fmtNav = function (k) { return fmtFreq(k, 2); };
   function wrap(v, lo, hi) { var r = hi - lo + 1; while (v < lo) v += r; while (v > hi) v -= r; return v; }
 
+  var CH833 = []; (function () { for (var h = 0; h < 10; h++) [0, 5, 10, 15, 25, 30, 35, 40, 50, 55, 60, 65, 75, 80, 85, 90].forEach(function (e) { CH833.push(h * 100 + e); }); })();
+  G.CH833 = CH833;
   /* Action sur un bouton rotatif : act = 'L+','L-','S+','S-','push' */
   G.knob = function (ck, id, act) {
     var g = ck.s.g, f = ck.s.flight;
@@ -1300,7 +1317,9 @@ body.immersion #immExit{display:block}
       var c = g.com[g.comSel];
       if (act === 'push') { g.comSel = 1 - g.comSel; return { ok: true, msg: 'Boîte de réglage cyan sur COM' + (g.comSel + 1) }; }
       var mhz = Math.floor(c.s / 1000), khz = c.s % 1000;
-      if (big) mhz = wrap(mhz + dir, 118, 136); else khz = wrap(khz + dir * 25, 0, 975);
+      // Espacement 8,33 kHz (canaux affichés : .000 .005 .010 .015 .025 .030 .035 .040 .050 … .090) — Garmin G1000 NXi p.108 (3040 canaux)
+      if (big) mhz = wrap(mhz + dir, 118, 136);
+      else { var ki = CH833.indexOf(khz); if (ki < 0) { ki = 0; while (ki < CH833.length - 1 && CH833[ki + 1] <= khz) ki++; } khz = CH833[wrap(ki + dir, 0, CH833.length - 1)]; }
       c.s = mhz * 1000 + khz;
     } else if (k === 'nav') {
       var n = g.nav[g.navSel];
@@ -2147,11 +2166,12 @@ body.immersion #immExit{display:block}
   /* Séquence de test ECU (OM-B p.62) : 2 × (montée > 1800 / descente) par canal, ~12 s au total (durée pédagogique) */
   function ecuRpm(e, t) {
     if (!e.ecu || e.ecu.start == null || e.ecu.done) return 0;
-    var x = (t - e.ecu.start) / 1500, ph = Math.floor(x) % 2;
+    var x = (t - e.ecu.start) / (ecuDur() / 8), ph = Math.floor(x) % 2;
     return ph === 0 ? Math.round(710 + 1150 * Math.sin((x % 1) * Math.PI)) : 710 + Math.round(200 * (1 - (x % 1)));
   }
 
   TF.Cockpit = Cockpit;
+  Cockpit.ecuDur = ecuDur;
 })(this);
 
 </script>
@@ -3558,8 +3578,8 @@ body.immersion #immExit{display:block}
   P.push({ id: 'g-com', title: 'COM & 121.5', fullTitle: 'Fréquences COM : réglage, transfert, fréquence de détresse', phase: 'Atelier G1000', lab: true, initial: 'g1000-lab', ref: G('COM tuning', 5),
     trigger: 'Affiche 120.350 en attente sur COM1, active-la, puis sélectionne la fréquence de détresse.',
     steps: [
-      { id: '1', n: '1', label: 'COM1 attente (bouton COM, grand = MHz, petit = kHz)', response: '120.350', kind: 'achieve', ctls: ['k_com'], cond: k('com1s', function (S) { return S.g.com[0].s === 120350; }), group: 0, region: 'pfd', ref: G('COM knob', 5),
-        explain: 'La fréquence en attente est dans la boîte cyan. Grand anneau : MHz ; petit bouton : kHz (pas de 25 kHz dans le simulateur).', ideal: [{ knob: 'k_com', act: 'L-', n: 4 }, { knob: 'k_com', act: 'S+', n: 12 }] },
+      { id: '1', n: '1', label: 'COM1 attente (bouton COM, grand = MHz, petit = canal 8,33 kHz)', response: '120.350', kind: 'achieve', ctls: ['k_com'], cond: k('com1s', function (S) { return S.g.com[0].s === 120350; }), group: 0, region: 'pfd', ref: G('COM knob', 5),
+        explain: 'La fréquence en attente est dans la boîte cyan. Grand anneau : MHz ; petit bouton : canaux espacés de 8,33 kHz (.000 .005 .010 .015 .025 …, Garmin p.108).', ideal: [{ knob: 'k_com', act: 'L-', n: 4 }, { knob: 'k_com', act: 'S+', n: 48 }] },
       { id: '2', n: '2', label: 'Transfert ↔', response: '120.350 ACTIVE', kind: 'achieve', ctls: ['xfer_com'], cond: k('com1a', function (S) { return S.g.com[0].a === 120350; }), group: 1, region: 'pfd', ref: G('COM frequency transfer key', 5), ideal: [{ press: 'xfer_com', ms: 300 }] },
       { id: '3', n: '3', label: 'Fréquence de détresse : maintenir ↔ 2 s', response: '121.500 ACTIVE', kind: 'achieve', ctls: ['xfer_com'], cond: k('com121', function (S) { return S.g.com[0].a === 121500; }), group: 2, region: 'pfd', ref: { doc: 'PDP', sec: 'Selecting emergency frequency', page: 111 },
         explain: 'Garmin p.5 et PDP : appui maintenu 2 secondes sur la touche de transfert COM.', ideal: [{ press: 'xfer_com', ms: 2300 }] }
@@ -5376,6 +5396,12 @@ body.immersion #immExit{display:block}
     var i = posIndex(def, v), n = def.positions.length, cx = def.x, cy = def.y;
     var r = Math.min(def.w, def.h) * 0.36;
     var s = '';
+    if (/^voter_/.test(def.id)) { // VOTER : levier 3 positions (haut ECU A · centre AUTO · bas ECU B) + pastille si hors AUTO
+      var inner = def.id === 'voter_l' ? 1 : -1;
+      s += D.toggle({ id: '_v', x: cx, y: cy, w: def.w, h: def.h, positions: def.positions }, v);
+      if (v !== 'AUTO') s += '<rect x="' + (cx + inner * 9 - (inner > 0 ? 0 : 16)) + '" y="' + (cy - 4) + '" width="16" height="8" rx="2.5" fill="#d9822b" stroke="#fff" stroke-width=".4"/><text x="' + (cx + inner * 9 + (inner > 0 ? 8 : -8)) + '" y="' + (cy + 1.6) + '" font-size="4" fill="#fff" font-family="Arial" font-weight="700" text-anchor="middle">' + v + '</text>';
+      return s;
+    }
     s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 1.12) + '" fill="#0d0d0f"/>';
     s += '<polygon points="' + hex(cx, cy, r) + '" fill="url(#gNut)" stroke="#333" stroke-width=".3"/>';
     var dir = n === 2 ? (i === 0 ? -1 : 1) : (i === 0 ? -1 : (i === n - 1 ? 1 : 0));
@@ -5432,6 +5458,15 @@ body.immersion #immExit{display:block}
     var s = '';
     if (/^ap_(?!disc)|^mfd_ent$|^mfd_clr$|^pfd_ent$|^pfd_clr$/.test(def.id)) return D.bezelKey(def, p);
     if (/^aud_/.test(def.id)) return p ? D.audioKeyFace(def, true) : '';
+    if (/^ecu_test_/.test(def.id)) { // bouton-poussoir ECU TEST redessiné : collerette noire, tête grise, halo ambre quand il est maintenu
+      s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 1.6) + '" fill="#2a292f"/>';
+      s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 0.6) + '" fill="#0a0a0c" stroke="#55555d" stroke-width=".4"/>';
+      if (p) s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 2.6) + '" fill="none" stroke="#ffb02e" stroke-width="1.1" opacity=".9"/>';
+      s += '<circle cx="' + cx + '" cy="' + (cy + (p ? 0.5 : 0)) + '" r="' + (r * (p ? 0.62 : 0.72)) + '" fill="url(#' + (p ? 'gBtnP' : 'gBtn') + ')" stroke="#8a8a92" stroke-width=".4"/>';
+      if (!p) s += '<ellipse cx="' + (cx - r * 0.22) + '" cy="' + (cy - r * 0.28) + '" rx="' + (r * 0.3) + '" ry="' + (r * 0.16) + '" fill="#fff" opacity=".35"/>';
+      s += '<text x="' + cx + '" y="' + (cy + 1.1 + (p ? 0.5 : 0)) + '" font-size="2.9" fill="#1b1b1f" font-family="Arial" font-weight="700" text-anchor="middle">PUSH</text>';
+      return s;
+    }
     if (def.id === 'cws_btn') // gâchette invisible de face : repère pointillé, plein quand on appuie
       return '<rect x="' + (cx - 9) + '" y="' + (cy - 7) + '" width="18" height="14" rx="4" fill="' + (p ? '#3fe0e8' : 'none') + '" fill-opacity=".35" stroke="#3fe0e8" stroke-width=".8" stroke-dasharray="' + (p ? '0' : '2 1.5') + '" opacity="' + (p ? 1 : 0.55) + '"/>';
     if (!p) return '';
@@ -6552,7 +6587,7 @@ body.immersion #immExit{display:block}
       st = { x0: x, y0: y, x: x, y: y, moved: false, info: info, t0: Date.now(), p: p, pressing: null, dragPower: null };
       if (info && info.ctl) {
         var d = self.defs[info.ctl];
-        if (MOMENTARY[d.type] && self.preciseEnough(d) && !self.opts.locked) {
+        if (MOMENTARY[d.type] && !/^ecu_test_/.test(d.id) && self.preciseEnough(d) && !self.opts.locked) {
           st.pressing = d.id;
           var part = p.y < d.y ? 'upper' : 'lower';
           self.emit('pressStart', d.id, part);
@@ -6583,7 +6618,7 @@ body.immersion #immExit{display:block}
       var info = s.info;
       if (info && info.ctl) {
         var d = self.defs[info.ctl];
-        if (!self.preciseEnough(d)) {
+        if (!self.preciseEnough(d) && !/^ecu_test_/.test(d.id)) {
           // petit écran : si la zone est déjà affichée, on zoome autour de la commande elle-même
           if (self.regionShown === d.region) { self.zoomAround(d); self.emit('precisionZoom', d.region); return; }
           self.focusRegion(d.region); self.emit('precisionZoom', d.region); return;
@@ -7066,6 +7101,7 @@ body.immersion #immExit{display:block}
   /* ----- Manipulation d'une commande ----- */
   function tapControl(id, info) {
     var ck = app.ck, d = ck.defs[id], v = ck.get(id), res;
+    if (/^ecu_test_/.test(id)) { TF.EcuTest.open(id === 'ecu_test_r' ? 'R' : 'L'); return; } // poste ECU TEST : zoom + EIS déporté + bouton à maintenir
     var at = info.screen;
     switch (d.type) {
       case 'rocker': case 'pushlatch':
@@ -7122,7 +7158,7 @@ body.immersion #immExit{display:block}
   }
   /* Boutons rotatifs doubles G1000 (Garmin p.5-6) */
   var KN = {
-    com: { big: 'MHz', small: 'kHz', push: 'COM1 ⇄ COM2', val: function (g) { return 'COM' + (g.comSel + 1) + ' attente : ' + TF.G1000.fmtCom(g.com[g.comSel].s) + ' · active ' + TF.G1000.fmtCom(g.com[g.comSel].a); } },
+    com: { big: 'MHz', small: 'canal 8,33 kHz', push: 'COM1 ⇄ COM2', val: function (g) { return 'COM' + (g.comSel + 1) + ' attente : ' + TF.G1000.fmtCom(g.com[g.comSel].s) + ' · active ' + TF.G1000.fmtCom(g.com[g.comSel].a); } },
     nav: { big: 'MHz', small: 'kHz', push: 'NAV1 ⇄ NAV2', val: function (g) { return 'NAV' + (g.navSel + 1) + ' attente : ' + TF.G1000.fmtNav(g.nav[g.navSel].s); } },
     hdg: { big: '±10°', small: '±1°', push: 'HDG SYNC', val: function (g) { return 'Heading bug : ' + ('00' + g.hdg).slice(-3) + '°'; } },
     alt: { big: '±1000 ft', small: '±100 ft', push: null, val: function (g) { return 'Altitude sélectée : ' + g.altSel + ' ft'; } },
@@ -8758,7 +8794,7 @@ body.immersion #immExit{display:block}
   /* ----------------------------------------------- Balayage dans le cockpit (démo / à toi) ----------------------------------------------- */
   E.active = function () { return !!S; };
   E.sweep = function (id, mode, from, opt) {
-    opt = opt || {}; MG = null; obsCleanup();
+    opt = opt || {}; MG = null; obsCleanup(); if (TF.EcuTest) TF.EcuTest.close();
     var b = TF.DATA.essFlow.filter(function (x) { return x.id === id; })[0]; if (!b) return;
     E.close(); ses().idle(); TF.Home.hide();
     var ck = app().ck, sc = app().scenario();
@@ -9676,7 +9712,7 @@ body.immersion #immExit{display:block}
       oback: function () { E.stop(true); ses().render(); E.show('flow'); }
     });
   }
-  function obsCleanup() { if (S && S.obs) { clearInterval(S.obs.timer); S.obs.end = true; } var el = K.$('obsCard'); if (el && el.parentNode) el.parentNode.removeChild(el); }
+  function obsCleanup() { Array.prototype.forEach.call(document.querySelectorAll('.obs-ban'), function (n) { n.parentNode.removeChild(n); }); if (S && S.obs) { clearInterval(S.obs.timer); S.obs.end = true; } var el = K.$('obsCard'); if (el && el.parentNode) el.parentNode.removeChild(el); }
   E.obs = function () { return S && S.obs ? S.obs : null; };
   E.obsFinish = function () { if (obsOn()) obsFinish(true); };
   E.obsCall = function () { if (obsOn()) obsCall(); };
@@ -10822,26 +10858,32 @@ body.immersion #immExit{display:block}
   function note(txt, cls) { R.flash = { t: txt, cls: cls || 'warn', until: Date.now() + 5000 }; drawMsg(); }
 
   /* ---------------- Radio AFIS ---------------- */
-  function cs() { return ck().s.scenario.reg || 'F-HKDA'; }
+  /* Indicatif lu en alphabet aéronautique OACI (Annexe 10 : orthographe officielle « Alfa », « Juliett ») : F-HKDA → Foxtrot Hotel Kilo Delta Alfa */
+  var ICAO = { A: 'Alfa', B: 'Bravo', C: 'Charlie', D: 'Delta', E: 'Echo', F: 'Foxtrot', G: 'Golf', H: 'Hotel', I: 'India', J: 'Juliett', K: 'Kilo', L: 'Lima', M: 'Mike', N: 'November', O: 'Oscar', P: 'Papa', Q: 'Quebec', R: 'Romeo', S: 'Sierra', T: 'Tango', U: 'Uniform', V: 'Victor', W: 'Whiskey', X: 'X-ray', Y: 'Yankee', Z: 'Zulu',
+    '0': 'Zero', '1': 'One', '2': 'Two', '3': 'Tree', '4': 'Four', '5': 'Fife', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Niner' };
+  T.phonetic = function (reg) { return String(reg || '').toUpperCase().replace(/[^A-Z0-9]/g, '').split('').map(function (c) { return ICAO[c]; }).join(' '); };
+  function cs() { return T.phonetic(ck().s.scenario.reg || 'F-HKDA'); }
   function comOk() { var g = ck().s.g, a = ck().s.sys.audio || {}; return ck().s.sys.avionics && g.com[0].a === AFIS && (a.mic || 'COM1') === 'COM1'; }
   function windTxt() { return pad3(R.wind[0]) + '° ' + R.wind[1] + ' kt'; }
+  function windEn() { return 'wind ' + pad3(R.wind[0]) + ' degrees, ' + R.wind[1] + ' knots'; }
+  /* Phraséologie d'exercice en anglais (aérodrome AFIS : l'AFIS informe, il n'autorise pas). Explications en français. */
   function radioStep(which) {
     var C = cs(), q = R.qnh;
     if (which === 'taxi') return {
-      ask: 'Annonce ton roulage à l\'AFIS (Angoulême Info, 123.155) :',
-      ch: [C + ', Angoulême Tour, demande autorisation de roulage.', 'Angoulême Info, ' + C + ', DA42 au parking Airbus, IFR à destination de Limoges, je roule pour le point d\'arrêt E piste 28.', C + ', je roule.'],
-      good: 1, why: ['LFBU est un aérodrome AFIS : pas de tour, pas d\'« autorisation » de roulage — l\'AFIS informe.', '', 'Message incomplet : qui appelle-t-on, où es-tu, où vas-tu ?'],
-      reply: C + ', Angoulême Info, piste en service 28, vent ' + windTxt() + ', QNH ' + q + ', rappelez au point d\'arrêt E.',
-      rb: { ask: 'Collationne :', ch: ['Piste 28, QNH ' + q + ', je rappelle au point d\'arrêt E, ' + C + '.', 'Piste 10, QNH ' + q + ', ' + C + '.', 'Reçu, ' + C + '.'], good: 0,
-        why: ['', 'La piste en service est la 28.', '« Reçu » ne suffit pas : piste et calage se collationnent.'] }
+      ask: 'Annonce ton roulage à l\'AFIS (Angoulême Information, 123.155) :',
+      ch: ['Angouleme Tower, ' + C + ', request taxi clearance.', 'Angouleme Information, ' + C + ', DA42 at Airbus parking, IFR to Limoges, taxiing to holding point Echo, runway 28.', C + ', taxiing.'],
+      good: 1, why: ['LFBU est un aérodrome AFIS : ce n\'est pas une tour (« Tower ») et il n\'y a pas de « clearance » de roulage — l\'AFIS informe.', '', 'Message incomplet : qui appelle-t-on, où es-tu, où vas-tu ?'],
+      reply: C + ', Angouleme Information, runway in use 28, ' + windEn() + ', QNH ' + q + ', report holding point Echo.',
+      rb: { ask: 'Collationne :', ch: ['Runway 28, QNH ' + q + ', will report holding point Echo, ' + C + '.', 'Runway 10, QNH ' + q + ', ' + C + '.', 'Roger, ' + C + '.'], good: 0,
+        why: ['', 'La piste en service est la 28.', '« Roger » ne suffit pas : piste et calage se collationnent.'] }
     };
     return {
       ask: 'Au point d\'arrêt E, vérifications faites. Ton message :',
-      ch: [C + ', prêt au décollage, demande autorisation.', C + ', au point d\'arrêt E, prêt, je m\'aligne et décolle piste 28.', 'Angoulême, ' + C + ', on y va.'],
+      ch: [C + ', ready for departure, request take-off clearance.', C + ', holding point Echo, ready, lining up and taking off runway 28.', 'Angouleme, ' + C + ', let\'s go.'],
       good: 1, why: ['L\'AFIS ne délivre pas d\'autorisation de décollage : tu annonces tes intentions.', '', 'Phraséologie non standard.'],
-      reply: C + ', vent ' + windTxt() + ', pas de trafic signalé.',
-      rb: { ask: 'Ta réponse :', ch: ['Je m\'aligne et décolle piste 28, ' + C + '.', 'Autorisé décollage 28, ' + C + '.', 'Je décolle piste 10, ' + C + '.'], good: 0,
-        why: ['', 'Pas d\'« autorisé » en AFIS : tu annonces que tu t\'alignes et décolles.', 'Mauvaise piste : 28.'] }
+      reply: C + ', ' + windEn() + ', no reported traffic.',
+      rb: { ask: 'Ta réponse :', ch: ['Lining up and taking off runway 28, ' + C + '.', 'Cleared for take-off runway 28, ' + C + '.', 'Taking off runway 10, ' + C + '.'], good: 0,
+        why: ['', 'Pas de « cleared » en AFIS : tu annonces que tu t\'alignes et décolles.', 'Mauvaise piste : 28.'] }
     };
   }
   function answer(v) {
@@ -10851,7 +10893,7 @@ body.immersion #immExit{display:block}
       K.sound.ok();
       if (!st.rbMode) {
         st.rbMode = true; R.afis = st.data.reply; R.fb = null;
-        if (TF.Voice && TF.Voice.enabled && TF.Voice.enabled()) TF.Voice.say(st.data.reply, 'fr');
+        if (TF.Voice && TF.Voice.enabled && TF.Voice.enabled()) TF.Voice.say(st.data.reply, 'en');
       } else {
         mark('radio_' + st.which, true, st.which === 'taxi' ? 'Radio AFIS : annonce de roulage et collationnement' : 'Radio AFIS : prêt, alignement et décollage');
         R.ask = null; R.afis = null; R.fb = null; R.ph = st.which === 'taxi' ? 'taxi' : 'lineup';
@@ -10869,6 +10911,7 @@ body.immersion #immExit{display:block}
     return [
       { k: 'pb', t: 'Parking brake … ON', ok: c.parking_brake === 'ON', id: 'parking_brake', ref: 'Taxiing h p.60' },
       { k: 'tx', t: 'Taxi light … OFF', ok: c.taxi_light === 'OFF', id: 'taxi_light', ref: 'Taxiing i p.60' },
+      { k: 'idle', t: 'Power levers … IDLE (avant l\'ECU test)', ok: c.power_l < 3 && c.power_r < 3, id: 'power_l', ref: 'Before take-off 3.g p.62' },
       { k: 'ecuL', t: 'ECU test gauche … complet', ok: !!h.ecuTestL, id: 'ecu_test_l', ref: 'Before take-off 3.m p.62' },
       { k: 'ecuR', t: 'ECU test droite … complet', ok: !!h.ecuTestR, id: 'ecu_test_r', ref: 'Before take-off 3.m p.62' },
       { k: 'vot', t: 'Voters ECU A / AUTO / ECU B / AUTO (L et R)', ok: h.voterL.indexOf('ECU A') >= 0 && h.voterL.indexOf('ECU B') >= 0 && h.voterR.indexOf('ECU A') >= 0 && h.voterR.indexOf('ECU B') >= 0 && c.voter_l === 'AUTO' && c.voter_r === 'AUTO', id: 'voter_l', ref: '3.o-r p.62' },
@@ -11076,7 +11119,7 @@ body.immersion #immExit{display:block}
       if (R.afis) h += '<div class="tr-afis">📻 <b>AFIS :</b> « ' + esc(R.afis) + ' »</div>';
       h += '<div class="mx-t">' + esc(q.ask) + '</div><div class="mx-ch tr-ch">' + q.ch.map(function (x, i) { return '<button data-act="ans" data-v="' + i + '">' + esc(x) + '</button>'; }).join('') + '</div>';
       if (R.fb) h += '<div class="mx-msg warn">' + esc(R.fb) + '</div>';
-      h += '<div class="mx-note">Le simulateur ne reconnaît pas la voix : choisis le message que tu dirais. Phraséologie d\'exercice, à valider avec ton instructeur.</div>';
+      h += '<div class="mx-note">Le simulateur ne reconnaît pas la voix : choisis le message que tu dirais. Phraséologie d\'exercice en anglais, indicatif en alphabet OACI ; à valider avec ton instructeur.</div>';
     } else h += '<div class="mx-t">🎯 ' + esc(tk.t) + '</div>';
     if (tk.hint && R.mode !== 'imm') h += '<div class="mx-hint">💡 ' + esc(tk.hint) + '</div>';
     if (tk.checks) h += '<ul class="tr-chk">' + tk.checks.map(function (x) { return '<li class="' + (x.ok ? 'ok' : '') + '">' + (x.ok ? '✓ ' : '○ ') + esc(x.t) + '</li>'; }).join('') + '</ul>';
@@ -11115,6 +11158,130 @@ body.immersion #immExit{display:block}
   T.lineup = function () { if (R && R.ph === 'lineup') { R.lu = { t: 0 }; draw(); } };
   T.express = function () { if (R) doExpressChecks(); };
   T.speed = function (k) { if (R) R.speed = k; };
+})(this);
+
+</script>
+<script>/* js/ui/ecutest.js */
+/* TIFFAN'IR 6.3 — Poste « ECU TEST » (OM-B B02 §4 3. ECU / Fuel Pumps Test Sequence, p.61-63).
+ * Un toucher sur ECU TEST L ou R : le cockpit zoome sur le bloc VOTER / ECU TEST et un cartouche reproduit la page
+ * EIS ENGINE du MFD (RPM, LOAD, annonces L/R ECU A/B FAIL) pour suivre la séquence sans quitter le zoom.
+ * Le bouton « maintenir » appuie vraiment sur ECU TEST (moteur de simulation) ; les voters se règlent ici aussi.
+ * En mode « sans aide » (Mémoriser / Examen) : ni conditions, ni commentaire de phase — seulement les indications du cockpit.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, K = TF.UI, esc = TF.util.esc;
+  var X = TF.EcuTest = {};
+  var side = 'L', timer = null, el = null, holding = false;
+  function app() { return TF.app; }
+  function ck() { return app().ck; }
+  function quiet() { return !!(TF.Ess && TF.Ess.obs && TF.Ess.obs() && !TF.Ess.obs().end); }
+  var PH = ['ECU A / B FAIL ON — RPM monte au-dessus de 1 800', 'RPM redescend', 'RPM monte au-dessus de 1 800', 'RPM redescend au ralenti — transfert vers l\'autre canal ECU',
+    'RPM monte au-dessus de 1 800', 'RPM redescend', 'RPM monte au-dessus de 1 800', 'RPM redescend au ralenti — retour au canal initial (léger à-coup possible)'];
+
+  X.open = function (s) {
+    side = s === 'R' ? 'R' : 'L';
+    var st = K.$('stage'); if (!st) return;
+    if (!el) { el = root.document.createElement('div'); el.id = 'ecuPanel'; st.appendChild(el); }
+    el.className = 'show'; built = '';
+    app().view.setView({ x: 200, y: 540, w: 290, h: 118 }, true);
+    clearInterval(timer); timer = setInterval(render, 200);
+    render(true);
+  };
+  X.close = function () { release(); clearInterval(timer); timer = null; if (el) el.className = ''; };
+  X.isOpen = function () { return !!(el && el.className === 'show'); };
+  X.hold = function (on) { if (on) press(); else release(); };
+  X.side = function () { return side; };
+
+  function id() { return side === 'L' ? 'ecu_test_l' : 'ecu_test_r'; }
+  function press() {
+    if (holding) return; holding = true;
+    var c = ck(); c.press(id()); K.sound.click();
+    var e = c.s.eng[side];
+    if (!(e.ecu && e.ecu.start != null) && !quiet()) {
+      var why = !c.s.sys.power ? 'pas d\'alimentation (ELECT. MASTER)' : e.state !== 'run' ? 'moteur ' + (side === 'L' ? 'gauche' : 'droit') + ' arrêté : le test se fait moteur tournant' : c.s.controls[side === 'L' ? 'power_l' : 'power_r'] >= 3 ? 'manette ' + (side === 'L' ? 'gauche' : 'droite') + ' pas sur IDLE (OM-B 3.g)' : '';
+      if (why) K.toast('Le test ne démarre pas : ' + esc(why), 'warn', 2600);
+    }
+    render(true);
+  }
+  function release() { if (!holding) return; holding = false; ck().release(id()); render(true); }
+
+  function bar(x, y, w, v, max, lo, hi, col) {
+    var f = Math.max(0, Math.min(1, (v || 0) / max)), s = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="9" rx="2" fill="#1a1d24" stroke="#4a4f5a" stroke-width=".6"/>';
+    if (lo != null) s += '<rect x="' + (x + w * lo / max) + '" y="' + (y + 9) + '" width="' + (w * (hi - lo) / max) + '" height="2.5" fill="#25c25a"/>';
+    return s + '<rect x="' + x + '" y="' + y + '" width="' + (w * f) + '" height="9" rx="2" fill="' + col + '"/>';
+  }
+  function eis(I) {
+    var s = '<svg viewBox="0 0 300 150" class="ecu-eis">';
+    s += '<rect width="300" height="150" rx="8" fill="#05070b" stroke="#3a4250" stroke-width="1.2"/>';
+    s += '<text x="10" y="16" font-size="10.5" fill="#3fe0e8" font-family="Arial" font-weight="700">EIS — ENGINE (MFD)</text><text x="290" y="16" font-size="8.5" fill="#7d8796" font-family="Arial" text-anchor="end">reproduction simplifiée</text>';
+    ['L', 'R'].forEach(function (k, j) {
+      var e = I.eng[k] || {}, x = 12 + j * 144, tested = k === side, run = e.running;
+      s += '<rect x="' + (x - 4) + '" y="24" width="136" height="78" rx="6" fill="' + (tested ? '#0d1f2a' : 'none') + '" stroke="' + (tested ? '#3fe0e8' : '#2a303a') + '" stroke-width="1"/>';
+      s += '<text x="' + x + '" y="38" font-size="10" fill="#fff" font-family="Arial" font-weight="700">' + (k === 'L' ? 'LH ENGINE' : 'RH ENGINE') + '</text>';
+      s += '<text x="' + x + '" y="56" font-size="9" fill="#cfd6e2" font-family="Arial">LOAD %</text><text x="' + (x + 126) + '" y="56" font-size="12" fill="#fff" font-family="Arial" font-weight="700" text-anchor="end">' + (run ? e.load : '---') + '</text>';
+      s += bar(x, 59, 126, run ? e.load : 0, 100, 0, 92, '#e8e8ec');
+      s += '<text x="' + x + '" y="84" font-size="9" fill="#cfd6e2" font-family="Arial">RPM</text><text x="' + (x + 126) + '" y="84" font-size="12" fill="' + (run && e.rpm > 1800 ? '#7dffa0' : '#fff') + '" font-family="Arial" font-weight="700" text-anchor="end">' + (run ? e.rpm : '---') + '</text>';
+      s += bar(x, 87, 126, run ? e.rpm : 0, 2600, 600, 2300, run && e.rpm > 1800 ? '#7dffa0' : '#e8e8ec');
+      s += '<line x1="' + (x + 126 * 1800 / 2600) + '" y1="85" x2="' + (x + 126 * 1800 / 2600) + '" y2="99" stroke="#ffcf6b" stroke-width="1" stroke-dasharray="2 1.5"/>';
+    });
+    // fenêtre d'alertes du PFD : annonces ECU
+    var ca = (I.alerts && I.alerts.cautions || []).filter(function (c) { return /ECU/.test(c); });
+    s += '<rect x="8" y="108" width="284" height="36" rx="5" fill="#000" stroke="#555" stroke-width=".8"/><text x="14" y="120" font-size="8" fill="#7d8796" font-family="Arial">ANNONCES (fenêtre d\'alertes PFD)</text>';
+    if (ca.length) ca.slice(0, 4).forEach(function (c, i) { s += '<text x="' + (14 + (i % 2) * 140) + '" y="' + (131 + Math.floor(i / 2) * 11) + '" font-size="10" fill="#f2e23a" font-family="Arial" font-weight="700">' + esc(c) + '</text>'; });
+    else s += '<text x="14" y="135" font-size="10" fill="#5f6875" font-family="Arial">— aucune annonce ECU —</text>';
+    return s + '</svg>';
+  }
+  function conds(c, I) {
+    var s = c.s, ct = s.controls, e = I.eng[side] || {}, pk = side === 'L' ? 'power_l' : 'power_r';
+    return [
+      ['Moteur tournant', e.running], ['Power lever IDLE (3.g)', ct[pk] < 3], ['RPM < 1 000 (3.h)', e.running && e.rpm < 1000],
+      ['Fuel pumps OFF (3.i)', ct.fuel_pump_l === 'OFF' && ct.fuel_pump_r === 'OFF'], ['Voter AUTO (3.j)', ct[side === 'L' ? 'voter_l' : 'voter_r'] === 'AUTO'],
+      ['Huile moteur / boîte : vert, boîte > 40 °C (3.k)', e.running && e.gearbox >= 40], ['Parking brake ON (3.l)', ct.parking_brake === 'ON']
+    ];
+  }
+  var lastKey = '', built = '';
+  function build(q) {
+    var h = '<div class="ecu-h"><b>ECU TEST</b><span class="ecu-tabs"><button data-s="L">LH</button><button data-s="R">RH</button></span><button class="ecu-x" data-x="1">✕</button></div>';
+    h += '<div id="ecuEis"></div>' + (q ? '' : '<ul class="ecu-c" id="ecuC"></ul><div class="ecu-ph" id="ecuPh"></div>');
+    h += '<button class="ecu-hold" id="ecuHold"></button><div class="ecu-v" id="ecuV"><span></span><button data-v="ECU A">ECU A</button><button data-v="AUTO">AUTO</button><button data-v="ECU B">ECU B</button></div><div class="ecu-ref" id="ecuRef"></div>';
+    el.innerHTML = h; built = q ? 'q' : 'n';
+    var hb = el.querySelector('#ecuHold');
+    function on(ev) { ev.preventDefault(); press(); }
+    function off(ev) { if (ev) ev.preventDefault(); release(); }
+    hb.addEventListener('touchstart', on, { passive: false }); hb.addEventListener('mousedown', on);
+    ['touchend', 'touchcancel'].forEach(function (n) { hb.addEventListener(n, off, { passive: false }); });
+    hb.addEventListener('mouseup', off); // pas de « mouseleave » : un léger glissement du doigt ne doit pas interrompre le test
+    Array.prototype.forEach.call(el.querySelectorAll('[data-s]'), function (b) { b.onclick = function () { if (holding) return; side = b.getAttribute('data-s'); render(true); }; });
+    Array.prototype.forEach.call(el.querySelectorAll('[data-v]'), function (b) { b.onclick = function () { ck().setControl(side === 'L' ? 'voter_l' : 'voter_r', b.getAttribute('data-v')); K.sound.click(); render(true); }; });
+    el.querySelector('[data-x]').onclick = function () { X.close(); };
+  }
+  // sécurité : doigt ou souris relâché n'importe où = bouton relâché
+  root.addEventListener('mouseup', function () { if (holding) release(); });
+  root.addEventListener('touchend', function (e) { if (holding && (!e.touches || !e.touches.length)) release(); });
+  function render(force) {
+    if (!el || el.className !== 'show') return;
+    var c = ck(), I = c.indications(), e = c.s.eng[side], q = quiet(), vk = side === 'L' ? 'voter_l' : 'voter_r', vv = c.get(vk);
+    var E = TF.Cockpit.ecuDur ? TF.Cockpit.ecuDur() : 12000, run = e.ecu && e.ecu.start != null && !e.ecu.done, done = e.ecu && e.ecu.done, ab = e.ecu && e.ecu.aborted;
+    var phase = '';
+    if (run) { var k = Math.min(7, Math.floor((c.s.t - e.ecu.start) / (E / 8))); phase = (k + 1) + '/8 · ' + PH[k]; }
+    else if (done) phase = holding ? '✓ ECU A / B FAIL éteints : test terminé — RELÂCHE le bouton (3.n)' : '✓ Test terminé sans erreur. Ensuite : voter ECU A → AUTO → ECU B → AUTO (3.o-r).';
+    else if (ab) phase = '✗ Test interrompu (bouton relâché ou manette touchée avant la fin) : recommence (OM-B p.62).';
+    var key = [side, holding, I.eng.L.rpm, I.eng.R.rpm, I.eng.L.load, I.eng.R.load, JSON.stringify(I.alerts.cautions), phase, vv, c.get('parking_brake'), c.get('power_l'), c.get('power_r'), c.get('fuel_pump_l'), c.get('fuel_pump_r'), q].join('|');
+    if (!force && key === lastKey) return; lastKey = key;
+    if (built !== (q ? 'q' : 'n') || !el.querySelector('#ecuHold')) build(q);
+    Array.prototype.forEach.call(el.querySelectorAll('[data-s]'), function (b) { b.className = b.getAttribute('data-s') === side ? 'on' : ''; });
+    el.querySelector('#ecuEis').innerHTML = eis(I);
+    if (!q) {
+      el.querySelector('#ecuC').innerHTML = conds(c, I).map(function (x) { return '<li class="' + (x[1] ? 'ok' : '') + '">' + (x[1] ? '✓ ' : '○ ') + esc(x[0]) + '</li>'; }).join('');
+      var ph = el.querySelector('#ecuPh'); ph.textContent = phase; ph.className = 'ecu-ph' + (done ? ' ok' : ab ? ' ko' : '') + (phase ? '' : ' empty');
+    }
+    var hb = el.querySelector('#ecuHold'); hb.className = 'ecu-hold' + (holding ? ' on' : '');
+    hb.textContent = holding ? '● ECU TEST ' + (side === 'L' ? 'LH' : 'RH') + ' — maintenu' : '◉ MAINTENIR ECU TEST ' + (side === 'L' ? 'LH' : 'RH');
+    el.querySelector('#ecuV span').textContent = 'VOTER ' + (side === 'L' ? 'LH' : 'RH');
+    Array.prototype.forEach.call(el.querySelectorAll('[data-v]'), function (b) { b.className = b.getAttribute('data-v') === vv ? 'on' : ''; });
+    el.querySelector('#ecuRef').textContent = 'OM-B B02 §4 3. ECU / Fuel pumps test (p.61-63)' + (TF.DATA.timing.ecuExpress ? ' · séquence raccourcie (mode Express)' : ' · séquence ≈ ' + Math.round(E / 1000) + ' s simulées (durée réelle à confirmer)');
+  }
 })(this);
 
 </script>
