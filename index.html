@@ -657,6 +657,14 @@ body.immersion #immExit{display:block}
 #ifrTry.done { border-color: #2fe35a; background: rgba(8, 40, 22, .95); }
 #ifrTry .it-h { font-weight: 900; } #ifrTry .it-t { font-size: 14px; margin: 4px 0 6px; } #ifrTry .it-hint { font-size: 13px; color: #ffe9a0; margin-bottom: 6px; }
 #ifrTry button { margin: 4px 8px 0 0; padding: 8px 12px; border-radius: 10px; border: 1px solid #3a5a88; background: #1b2f4d; color: #fff; font-weight: 800; } #ifrTry button.pri { background: #7b5cd6; border-color: #a58cff; }
+.ifr-row3 { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px 12px; }
+.ifr-s { -webkit-flex: 1 1 200px; flex: 1 1 200px; margin: 5px; padding: 10px 12px; border-radius: 14px; text-align: left; background: #13233a; border: 1px solid #7b5cd6; color: #fff; font-size: 15px; }
+.ifr-s b { letter-spacing: .4px; } .ifr-s small { display: block; color: #b9c6dc; font-size: 12px; margin-top: 3px; }
+.ifr-story { font-weight: 900; color: #f2c21b; margin-bottom: 8px; font-size: 13px; } .ifr-story small { color: #9fb3cc; font-weight: 400; }
+.ifr-metar { white-space: pre-wrap; background: #06121f; color: #b8ffcf; border: 1px solid #1f7d4a; border-radius: 10px; padding: 12px; font-size: 15px; line-height: 1.5; font-family: Menlo, Consolas, monospace; margin: 0 0 4px; }
+.ifr-fict { display: block; color: #8796ad; font-size: 11px; margin-bottom: 6px; }
+.ifr-cls { width: 100%; border-collapse: collapse; font-size: 12.5px; background: #0d1a2c; border-radius: 10px; } .ifr-cls th { color: #9fb3cc; text-align: left; padding: 5px; border-bottom: 1px solid #2a4a78; } .ifr-cls td { padding: 5px; border-bottom: 1px solid #1d2c44; } .ifr-cls tr.hi td { background: #3b2f6e; color: #fff; }
+.ifr-fpl { background: #f4f1e6; color: #222; border-radius: 10px; padding: 12px; } .ifr-fpl .box { font-family: Menlo, monospace; font-size: 22px; font-weight: 900; border: 2px solid #222; display: inline-block; padding: 4px 12px; margin: 8px 0; } .ifr-fpl small { display: block; color: #444; }
 
 </style>
 </head>
@@ -720,7 +728,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '5.2.1';
+  TF.VERSION = '5.3.1';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -2708,6 +2716,9 @@ body.immersion #immExit{display:block}
     bugSynced: function (S) { var d = Math.abs(((S.g.hdg - S.flight.hdg + 540) % 360) - 180); return d <= 1; },
     dbAcked: function (S) { return !!S.sys.dbAcked; },
     altSel2500c: function (S) { return S.g.altSel === 2500; },
+    ifrCdiVor1: function (S) { return S.g.cdi === 'VOR1'; },
+    ifrHdg330: function (S) { return S.g.lat === 'HDG' && S.g.hdg === 330; },
+    ifrAltHold: function (S) { return S.g.vert === 'ALT'; },
     ifrStd: function (S) { return !!S.g.std; },
     ifrQnh1008: function (S) { return !S.g.std && S.g.baro === 1008; },
     suspNavDone: function (S) { return !S.g.susp && !!S.sys.history.suspRel && (S.g.lat === 'GPS' || S.g.lat === 'HDG' || /VOR|GPS/.test(S.g.latArm || '')); },
@@ -4317,6 +4328,163 @@ body.immersion #immExit{display:block}
 
   TF.DATA.ifr = { checked: CHECKED, sources: sources, CAT: CAT, chapters: chapters, cards: cards, radio: radio, calage: calage, profile: profile, approach: approach, tries: tries, levels: levels,
     disclaimer: 'Outil d\'entraînement : ce n\'est ni une formation ni une qualification IFR. Scénarios fictifs sauf mention. Les valeurs réglementaires dépendent du contexte : référez-vous aux textes en vigueur et à votre instructeur.' };
+})(this);
+
+</script>
+<script>/* js/data/ifr-chapters.js */
+/* L'IFR POUR LES NULS — chapitres 1, 4, 5, 6, 8, 9, 10 (données seulement).
+ * Même structure que js/data/ifr.js. Questions « quiz » : id, lvl, obj, ctx, ill (illustration), q, ch, ans, why, errs, refs, cat, crit (choix dangereux), try.
+ * Scénarios FICTIFS (aérodrome « LFXX », points ALPHA / BRAVO…) sauf mention. Aucune valeur réglementaire inventée :
+ * quand une règle dépend du contexte (exploitation, opérateur, équipement), la question le dit et renvoie à la source.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, D = TF.DATA.ifr, CHK = D.checked;
+  var EURSERA = 'https://eur-lex.europa.eu/eli/reg_impl/2012/923/oj', EAROPS = 'https://www.easa.europa.eu/en/document-library/easy-access-rules/easy-access-rules-air-operations';
+  D.CAT.icao = '🌐 Norme / document OACI';
+
+  var S = {
+    'sera-6001': { t: 'SERA.6001 + Appendice 4 — Classes d\'espace A à G (vols admis, séparation, services, clairance)', pub: 'Règlement d\'exécution (UE) n° 923/2012 (SERA)', url: EURSERA, cat: 'eu', date: CHK },
+    'sera-2005': { t: 'SERA.2005 — Le pilote peut choisir de voler IFR en VMC (ou y être obligé par l\'autorité)', pub: 'Règlement (UE) n° 923/2012 (SERA) — Easy Access Rules EASA', url: D.sources['sera-ear'].url, cat: 'eu', date: CHK },
+    'sera-2010': { t: 'SERA.2010 — Responsabilité du commandant de bord, actions avant le vol (informations disponibles, solution si le vol ne peut se dérouler comme prévu)', pub: 'Règlement (UE) n° 923/2012 (SERA)', url: EURSERA, cat: 'eu', date: CHK },
+    'sera-2015': { t: 'SERA.2015 — Autorité finale du commandant de bord sur la conduite de l\'aéronef', pub: 'Règlement (UE) n° 923/2012 (SERA)', url: EURSERA, cat: 'eu', date: CHK },
+    'sera-14083': { t: 'SERA.14083 — Panne de radiocommunication (applicable depuis le 1er mai 2025 : 20 minutes au lieu de 7)', pub: 'Règlement (UE) n° 923/2012 (SERA) modifié', url: EURSERA, cat: 'eu', date: CHK,
+      verify: 'Texte complet (points de départ du délai, cas SID/STAR, guidage radar) à relire dans la version consolidée et l\'AIP France ENR 1.1.' },
+    'sera-11012': { t: 'SERA.11012 — Carburant minimum (« MINIMUM FUEL ») et urgence carburant (« MAYDAY FUEL »)', pub: 'Règlement (UE) n° 923/2012 (SERA)', url: EURSERA, cat: 'eu', date: CHK, verify: 'Formulation exacte à relire dans le texte consolidé.' },
+    'sera-8015-amend': { t: 'SERA.8015 — Clairance non satisfaisante : le pilote peut demander une clairance modifiée', pub: 'Règlement (UE) n° 923/2012 (SERA)', url: EURSERA, cat: 'eu', date: CHK, verify: 'Alinéa exact à vérifier.' },
+    'aip-enr14': { t: 'AIP France ENR 1.4 — Classes d\'espace utilisées en France', pub: 'SIA — eAIP France (AIRAC en vigueur)', url: 'https://www.sia.aviation-civile.gouv.fr/', cat: 'fr', date: CHK },
+    'miam': { t: 'CAG / CAM : la circulation aérienne militaire a ses propres règles (MIAM / MILAIP France)', pub: 'DIRCAM — Manuel d\'information aéronautique militaire', url: 'https://www.dircam.dsae.defense.gouv.fr/images/Stories/Doc/MIAM_OACI/MIAM_OACI_ENR%201.7.pdf', cat: 'fr', date: CHK },
+    'nco-op125': { t: 'NCO.OP.125 — Carburant : destination (+ dégagement si exigé) + réserve finale protégée', pub: 'Règlement (UE) n° 965/2012 Part-NCO (modifié par 2021/1296) — Easy Access Rules', url: EAROPS, cat: 'ops', date: CHK, verify: 'Cadre d\'exploitation école à confirmer (NCO ?) et politique carburant de l\'ATO.' },
+    'amc-nco125': { t: 'AMC1 NCO.OP.125(b) — Réserve finale avion : 45 min à vitesse d\'attente à 1 500 ft (IFR et VFR de nuit)', pub: 'EASA — AMC & GM Part-NCO', url: EAROPS, cat: 'ops', date: CHK },
+    'mf-taf': { t: 'Comprendre le TAF / CAVOK (Météo-France) — CAVOK : visibilité ≥ 10 km, pas de nuage sous 5 000 ft ou l\'altitude minimale de secteur la plus haute, pas de CB/TCU, pas de temps significatif', pub: 'Météo-France aviation (d\'après OACI Annexe 3 / OMM)', url: 'https://aviation.meteo.fr/documentation/comprendre_letaf.pdf', cat: 'icao', date: CHK },
+    'doc4444-fpl': { t: 'Plan de vol OACI, case 8 « règles de vol » : I, V, Y, Z', pub: 'OACI Doc 4444 PANS-ATM, Appendice 2', url: '', cat: 'icao', date: CHK, verify: 'Édition en vigueur à vérifier.' },
+    'pansops-hold': { t: 'Attente standard : virages à droite, 1 min en éloignement jusqu\'à 14 000 ft ; entrées parallèle / décalée / directe (secteurs 110° / 70° / 180°)', pub: 'OACI Doc 8168 PANS-OPS — synthèse SKYbrary', url: 'https://skybrary.aero/index.php/Holding_Pattern', cat: 'icao', date: CHK },
+    'icao-sid': { t: 'SID / STAR : routes de départ et d\'arrivée normalisées aux instruments, publiées', pub: 'OACI Annexe 11 / PANS-OPS — cartes SIA', url: '', cat: 'icao', date: CHK },
+    'garmin-cdi': { t: 'Softkey CDI : GPS → VOR1/LOC1 → VOR2/LOC2', pub: 'Garmin G1000 NXi DA42NG 190-02237-00 Rev. A, p.61', url: '', cat: 'avion', date: 'Rev. A' },
+    'garmin-fma': { t: 'Bandeau AFCS : modes armés en blanc, actifs en vert ; passage armé → actif : clignote 10 s', pub: 'Garmin G1000 NXi DA42NG, p.390', url: '', cat: 'avion', date: 'Rev. A' },
+    'garmin-rol': { t: 'Changement manuel de source NAV au CDI : retour en ROL (ailes à plat)', pub: 'Garmin G1000 NXi DA42NG, p.399', url: '', cat: 'avion', date: 'Rev. A' },
+    'garmin-proc': { t: 'PROC → Activate Approach / Activate Vector-to-Final (rend active la route vers le FAF) ; « NOT APPROVED FOR GPS » : passer le HSI sur un récepteur NAV pour la finale', pub: 'Garmin G1000 NXi DA42NG, p.241', url: '', cat: 'avion', date: 'Rev. A' },
+    'garmin-dto': { t: 'Touche Direct-to : direct vers un point', pub: 'Garmin G1000 NXi DA42NG, p.184', url: '', cat: 'avion', date: 'Rev. A' },
+    'afm-ice': { t: 'Vol en conditions givrantes : selon l\'AFM et l\'équipement de TON avion (DA42 VI, dégivrage TKS) et les consignes ATO', pub: 'AFM / OM-B DA42 VI', url: '', cat: 'avion', date: 'Issue C', verify: 'Autorisation exacte (FIKI ou non) de nos avions à confirmer avec l\'instructeur.' }
+  };
+  for (var k in S) D.sources[k] = S[k];
+
+  /* Chapitres : tous jouables désormais */
+  var INTRO = {
+    base: { game: 'quiz', gameTitle: 'IFR ou pas IFR ?', intro: 'IFR = des règles de vol. IMC = une météo. On peut voler IFR en plein soleil. Ce que l\'ATC te doit dépend de la classe d\'espace — pas de ton plan de vol.' },
+    meteo: { game: 'quiz', gameTitle: 'Tu pars ou tu restes ?', intro: 'METAR = ce qui est. TAF = ce qui est prévu. Avant de partir : météo départ, destination, dégagement, givrage, orages, NOTAM, carburant. La décision dépend de TON avion, de TES minima et du cadre de l\'exploitation.' },
+    prep: { game: 'quiz', gameTitle: 'Prépare ton vol', intro: 'Un vol IFR se prépare : route, plan de vol ATS, départ et arrivée probables, altitudes minimales, météo, NOTAM, carburant et dégagement. Le reste, c\'est de l\'exécution.' },
+    sidstar: { game: 'quiz', gameTitle: 'Lis ta carte !', intro: 'SID = le départ publié. STAR = l\'arrivée publiée. Chaque point a ses contraintes (altitude, vitesse). La clairance ATC dit lesquelles tu suis : au moindre doute, tu demandes.' },
+    g1000: { game: 'quiz', gameTitle: 'Configure ton G1000', intro: 'Trois questions à te poser en permanence : quelle source au CDI ? Quels modes sont ACTIFS (vert) et ARMÉS (blanc) ? Qu\'est-ce que l\'avion va faire ensuite ?' },
+    imprevus: { game: 'quiz', gameTitle: 'Le plan change !', intro: 'Attente, nouvelle clairance, dégagement : on analyse (carburant, météo), on communique, on reconfigure. Dans cet ordre, sans se presser.' },
+    pieges: { game: 'quiz', gameTitle: 'Qu\'est-ce que tu fais ?', intro: 'Aviate, navigate, communicate. Les pièges IFR : calage, position incertaine, approche non stabilisée, givrage, carburant, panne radio. Chaque cas se traite dans SON contexte.' }
+  };
+  D.chapters.forEach(function (c) { var x = INTRO[c.id]; if (x) { c.on = true; c.game = 'quiz:' + c.id; c.gameTitle = x.gameTitle; c.intro = x.intro; } });
+
+  function Q(o) { return o; }
+  var quiz = {
+    base: [
+      Q({ id: 'b-ifr-vmc', lvl: 1, obj: 'IFR n\'est pas IMC', ctx: 'Grand beau temps, CAVOK. Tu as déposé un plan de vol IFR.', q: 'Tu voles…', ch: ['IFR en VMC : règles IFR, conditions visuelles', 'VFR, puisqu\'il fait beau', 'En IMC'], ans: 0, why: 'IFR / VFR = règles de vol choisies. VMC / IMC = conditions météo. Le pilote peut choisir de voler IFR en VMC.', errs: ['Confondre règles de vol et météo'], refs: ['sera-2005'], cat: 'eu' }),
+      Q({ id: 'b-vmc-see', lvl: 2, obj: 'IFR en VMC : voir et éviter', ctx: 'IFR en VMC, espace de classe E. Un VFR non déclaré croise ta route.', q: 'Qui assure l\'anticollision avec ce VFR ?', ch: ['Toi aussi : l\'ATC ne sépare pas IFR et VFR en classe E', 'L\'ATC, puisque tu es IFR', 'Personne, le VFR n\'a pas le droit d\'être là'], ans: 0, why: 'En classe E, l\'ATC ne fournit pas de séparation entre IFR et VFR ; les VFR y sont admis sans clairance. En VMC, tu restes responsable de voir et éviter.', errs: ['Croire qu\'un plan de vol IFR protège de tout'], refs: ['sera-6001'], cat: 'eu', crit: [2] }),
+      Q({ id: 'b-class-a', lvl: 1, obj: 'Classes d\'espace', ill: { type: 'classes', hi: 'A' }, ctx: 'Tableau des classes (SERA).', q: 'En classe A…', ch: ['Seuls les vols IFR sont admis', 'IFR et VFR sont admis avec clairance', 'Les VFR sont admis sans contact radio'], ans: 0, why: 'Classe A : IFR uniquement, tous sous clairance et séparés.', refs: ['sera-6001'], cat: 'eu' }),
+      Q({ id: 'b-class-d', lvl: 2, obj: 'Classe D', ill: { type: 'classes', hi: 'D' }, ctx: 'Tu es IFR dans une CTR de classe D.', q: 'L\'ATC te sépare…', ch: ['Des autres IFR ; tu reçois l\'information de trafic sur les VFR', 'De tous les vols, IFR et VFR', 'De personne'], ans: 0, why: 'Classe D : IFR séparés des IFR, information de trafic sur les VFR.', errs: ['Croire être séparé des VFR'], refs: ['sera-6001'], cat: 'eu' }),
+      Q({ id: 'b-class-g', lvl: 2, obj: 'Classe G', ill: { type: 'classes', hi: 'G' }, ctx: 'Tu voles IFR en classe G.', q: 'Quel service peux-tu attendre ?', ch: ['Service d\'information de vol (et alerte), sans séparation', 'Contrôle avec séparation IFR/IFR', 'Rien du tout, l\'IFR y est interdit'], ans: 0, why: 'Classe G : IFR et VFR admis, aucune séparation, information de vol sur demande.', refs: ['sera-6001'], cat: 'eu' }),
+      Q({ id: 'b-fl195', lvl: 2, obj: 'Au-dessus du FL 195', ctx: 'Espace européen.', q: 'Au-dessus du FL 195, l\'espace est…', ch: ['Classé C', 'Classé A partout', 'Classé G'], ans: 0, why: 'SERA : tout l\'espace au-dessus du FL 195 est de classe C.', refs: ['sera-6001'], cat: 'eu' }),
+      Q({ id: 'b-france', lvl: 1, obj: 'Classes en France', ctx: 'Tu prépares un vol en France.', q: 'Où vérifier la classe d\'un espace et ses particularités ?', ch: ['AIP France (ENR 1.4, cartes) et NOTAM', 'Les classes sont les mêmes partout, inutile de vérifier', 'Le contrôleur te le dira en vol'], ans: 0, why: 'Chaque État désigne ses espaces : en France, la référence est l\'AIP (ENR 1.4, cartes) et les NOTAM.', refs: ['aip-enr14'], cat: 'fr' }),
+      Q({ id: 'b-cag', lvl: 2, obj: 'Civil ou militaire', ctx: 'Ancien pilote militaire, tu voles en IFR sur un DA42 civil.', q: 'Quelles règles appliques-tu ?', ch: ['CAG : règles de l\'air européennes (SERA) et AIP France', 'CAM : règles de la circulation aérienne militaire', 'Un mélange des deux, selon l\'habitude'], ans: 0, why: 'La circulation aérienne militaire (CAM) a ses propres règles (MIAM). Un vol civil IFR est de la circulation aérienne générale (CAG) : SERA + AIP France.', errs: ['Appliquer des usages CAM en CAG'], refs: ['miam', 'sera-6001'], cat: 'fr' })
+    ],
+    meteo: [
+      Q({ id: 'm-ceil', lvl: 1, obj: 'Lire un METAR : plafond', ill: { type: 'metar', txt: 'METAR LFXX 151030Z 24012G25KT 4000 -RA BKN008 OVC015 08/07 Q1008 NOSIG=' }, ctx: 'Aérodrome fictif LFXX.', q: 'Le plafond (première couche BKN ou OVC) est à…', ch: ['800 ft', '1 500 ft', '4 000 ft'], ans: 0, why: 'BKN008 = 5 à 7 octas à 800 ft : c\'est la première couche qui fait plafond.', errs: ['Lire 008 comme 8 000 ft'], refs: ['mf-taf'], cat: 'icao' }),
+      Q({ id: 'm-gust', lvl: 1, obj: 'Lire un METAR : vent', ill: { type: 'metar', txt: 'METAR LFXX 151030Z 24012G25KT 4000 -RA BKN008 OVC015 08/07 Q1008 NOSIG=' }, ctx: 'Aérodrome fictif LFXX.', q: 'Le vent…', ch: ['240° 12 kt, rafales 25 kt', '120° 24 kt', '240° 25 kt constant'], ans: 0, why: 'dddffGfmfm : direction, vitesse moyenne, G = rafales.', refs: ['mf-taf'], cat: 'icao' }),
+      Q({ id: 'm-vis', lvl: 1, obj: 'Lire un METAR : visibilité', ill: { type: 'metar', txt: 'METAR LFXX 151030Z 24012G25KT 4000 -RA BKN008 OVC015 08/07 Q1008 NOSIG=' }, ctx: 'Aérodrome fictif LFXX.', q: '« 4000 -RA » signifie…', ch: ['Visibilité 4 000 m, pluie faible', 'Visibilité 4 km, forte pluie', 'Plafond 4 000 ft, pluie'], ans: 0, why: 'Visibilité en mètres (9999 = 10 km ou plus). « - » = faible, RA = pluie.', refs: ['mf-taf'], cat: 'icao' }),
+      Q({ id: 'm-cavok', lvl: 2, obj: 'CAVOK', ctx: 'L\'ATIS annonce CAVOK.', q: 'CAVOK garantit…', ch: ['Visibilité ≥ 10 km, pas de nuage sous 5 000 ft (ou la plus haute MSA), pas de CB/TCU, pas de temps significatif', 'Ciel totalement dégagé', 'Plus aucun nuage à aucune altitude'], ans: 0, why: 'CAVOK n\'est pas « ciel clair » : il peut y avoir une couche au-dessus de 5 000 ft / MSA.', errs: ['CAVOK = grand bleu'], refs: ['mf-taf'], cat: 'icao' }),
+      Q({ id: 'm-dest', lvl: 2, obj: 'Décision de départ', ill: { type: 'metar', txt: 'TAF LFYY 150500Z 1506/1515 22015KT 6000 BKN010\n  BECMG 1510/1512 0800 FG OVC001=' }, ctx: 'Scénario fictif : arrivée prévue à LFYY vers 13 h UTC. Minima de la seule approche : DA 600 ft / visibilité 1 500 m (fictifs, terrain 400 ft).', q: 'Tu…', ch: ['Ne pars pas avec ce plan : la prévision à l\'arrivée (0800 FG OVC001) est sous les minima — autre destination, report, ou plan revu selon les règles de l\'exploitation', 'Pars : tu verras sur place', 'Pars : la visibilité 1 500 m suffit'], ans: 0, why: 'À l\'arrivée : visibilité 800 m (< 1 500 m) et plafond 100 ft au-dessus du terrain (< DH 200 ft, DA 600 ft − terrain 400 ft). Partir vers une destination prévue sous les minima sans plan B solide n\'est pas une option. Les règles exactes de planification (dégagement, marges) dépendent du cadre d\'exploitation.', errs: ['Lire seulement la visibilité', 'Ignorer le BECMG'], refs: ['sera-2010', 'nco-op125'], cat: 'ops', crit: [1], note: 'Exercice de raisonnement : les règles de planification météo (marges, dégagement) sont à prendre dans le cadre d\'exploitation et la politique ATO.' }),
+      Q({ id: 'm-ice', lvl: 2, obj: 'Givrage', ctx: 'Croisière prévue dans les nuages, température autour de 0 °C, givrage modéré annoncé.', q: 'Ce qui décide si tu peux y aller…', ch: ['L\'AFM et l\'équipement de TON avion, et les consignes de l\'ATO', 'Le fait que le DA42 a des bords d\'attaque', 'L\'expérience du pilote'], ans: 0, why: 'L\'autorisation de voler en conditions givrantes est une limitation avion / équipement, pas une question de courage.', refs: ['afm-ice'], cat: 'avion', crit: [2] }),
+      Q({ id: 'm-fuel', lvl: 2, obj: 'Réserve finale', ctx: 'Vol IFR, avion à moteurs à pistons, exploitation non commerciale (Part-NCO).', q: 'La réserve finale planifiée « par défaut » (moyen acceptable EASA) est…', ch: ['45 min à vitesse d\'attente à 1 500 ft au-dessus de la destination ou du dégagement', '15 min', '30 min de croisière'], ans: 0, why: 'AMC1 NCO.OP.125(b) : 45 min à vitesse d\'attente à 1 500 ft (IFR et VFR de nuit). Elle se planifie en plus du carburant pour la destination et le dégagement s\'il est exigé, et elle est protégée.', errs: ['Compter la réserve finale comme carburant d\'attente'], refs: ['nco-op125', 'amc-nco125'], cat: 'ops' }),
+      Q({ id: 'm-notam', lvl: 1, obj: 'NOTAM', ctx: 'Préparation : un NOTAM annonce l\'ILS de destination hors service.', q: 'Conséquence ?', ch: ['Revoir l\'approche utilisable et ses minima (souvent plus élevés), donc la décision météo et le dégagement', 'Aucune, le GPS remplace tout', 'Aucune, les NOTAM sont pour les liners'], ans: 0, why: 'Les minima dépendent de l\'approche réellement disponible : un NOTAM peut changer toute la décision.', refs: ['sera-2010'], cat: 'eu' })
+    ],
+    prep: [
+      Q({ id: 'pr-fpl', lvl: 1, obj: 'Plan de vol : règles de vol', ill: { type: 'fpl' }, ctx: 'Plan de vol OACI, case 8.', q: 'Tu pars IFR et finis VFR. Quelle lettre ?', ch: ['Y', 'Z', 'I'], ans: 0, why: 'I = IFR, V = VFR, Y = IFR d\'abord puis VFR, Z = VFR d\'abord puis IFR.', errs: ['Inverser Y et Z'], refs: ['doc4444-fpl'], cat: 'icao' }),
+      Q({ id: 'pr-info', lvl: 1, obj: 'Actions avant le vol', ctx: 'Vol IFR vers un terrain que tu ne connais pas.', q: 'Avant le vol, la règle te demande…', ch: ['Prendre connaissance de toutes les informations disponibles utiles, dont météo, carburant et une solution de repli', 'Seulement le plan de vol', 'Seulement la météo du départ'], ans: 0, why: 'SERA.2010 : informations disponibles appropriées au vol, avec, pour un vol IFR, la météo, le carburant et une solution si le vol ne peut se dérouler comme prévu.', refs: ['sera-2010'], cat: 'eu' }),
+      Q({ id: 'pr-brief', lvl: 2, obj: 'Briefing pertinent', ctx: 'Tu as 10 min pour finir ta préparation.', q: 'Qu\'est-ce qui manque le plus souvent ?', ch: ['NOTAM destination et dégagement', 'La couleur des feux de piste', 'L\'heure du coucher du soleil au départ'], ans: 0, why: 'Un NOTAM (approche, balisage, piste) peut invalider ta destination ou ton dégagement.', refs: ['sera-2010'], cat: 'pedago' }),
+      Q({ id: 'pr-alt', lvl: 2, obj: 'Altitudes minimales', ill: { type: 'route' }, ctx: 'Route fictive ALPHA → BRAVO, altitude minimale publiée 3 500 ft. On te propose 3 000 ft.', q: 'Tu…', ch: ['Refuses 3 000 ft hors guidage radar / clairance explicite : tu demandes une altitude ≥ 3 500 ft', 'Acceptes, c\'est plus court', 'Descends à 2 500 ft pour rester VMC'], ans: 0, why: 'Les altitudes minimales publiées protègent du relief. Une clairance qui paraît incompatible se fait confirmer ou modifier.', refs: ['sera-8015-amend', 'sera-2010'], cat: 'eu', crit: [2] }),
+      Q({ id: 'pr-fuel', lvl: 2, obj: 'Carburant', ctx: 'Destination + dégagement + réserve finale = 90 min. Tu as 95 min de carburant utilisable. Vent de face plus fort que prévu.', q: 'Tu…', ch: ['Recalcules avant de partir (vent réel) et emportes plus, ou changes de plan', 'Pars : 5 min de marge suffisent', 'Pars et utiliseras la réserve finale si besoin'], ans: 0, why: 'La réserve finale est protégée : elle n\'est pas un carburant de manœuvre. Un vent plus fort mange la marge.', refs: ['nco-op125'], cat: 'ops', crit: [2] })
+    ],
+    sidstar: [
+      Q({ id: 's-next', lvl: 1, obj: 'Lire une SID', ill: { type: 'sid' }, ctx: 'SID fictive « ALPHA 1E » piste 28, aérodrome LFXX (pédagogique).', q: 'Après le décollage, quel point vient en premier ?', ch: ['ALPHA', 'BRAVO', 'CHARLY'], ans: 0, why: 'On suit l\'ordre de la carte : piste → ALPHA → BRAVO.', refs: ['icao-sid'], cat: 'pedago' }),
+      Q({ id: 's-alt', lvl: 1, obj: 'Contrainte d\'altitude', ill: { type: 'sid' }, ctx: 'SID fictive « ALPHA 1E ».', q: 'À ALPHA, tu dois être…', ch: ['À 2 500 ft ou au-dessus', 'À 2 500 ft ou au-dessous', 'Exactement à 4 000 ft'], ans: 0, why: 'La carte indique « ≥ 2 500 » (« at or above ») à ALPHA.', errs: ['Inverser « at or above » / « at or below »'], refs: ['icao-sid'], cat: 'pedago' }),
+      Q({ id: 's-spd', lvl: 2, obj: 'Contrainte de vitesse', ill: { type: 'sid' }, ctx: 'SID fictive « ALPHA 1E ».', q: 'Avant ALPHA, la vitesse maximale est…', ch: ['160 kt', '250 kt', 'Aucune'], ans: 0, why: 'La carte indique « MAX 160 KT » jusqu\'à ALPHA.', refs: ['icao-sid'], cat: 'pedago' }),
+      Q({ id: 's-star', lvl: 1, obj: 'SID ou STAR', ctx: 'Tu arrives vers LFXX par une procédure publiée qui se termine à l\'IAF.', q: 'C\'est…', ch: ['Une STAR', 'Une SID', 'Une approche finale'], ans: 0, why: 'STAR = arrivée normalisée, de la route vers le début de l\'approche.', refs: ['icao-sid'], cat: 'icao' }),
+      Q({ id: 's-conflict', lvl: 2, obj: 'Clairance et contrainte', ill: { type: 'sid' }, ctx: 'En montée sur la SID, l\'ATC : « Tiffany 1, climb flight level 70 ». Tu doutes : faut-il encore respecter la contrainte d\'ALPHA ?', q: 'Tu…', ch: ['Demandes confirmation au contrôleur avant d\'agir', 'Supposes qu\'elle est annulée', 'Supposes qu\'elle s\'applique et ne dis rien'], ans: 0, why: 'Dans le doute sur une clairance, on demande. On ne suppose jamais une annulation de contrainte.', refs: ['sera-8015e', 'sera-8015-amend'], cat: 'eu', crit: [1] }),
+      Q({ id: 's-missing', lvl: 2, obj: 'Info manquante', ill: { type: 'sid' }, ctx: 'Tu as la SID, la piste, la clairance de route.', q: 'Pour la suivre en montée, quelle info dois-tu encore avoir ?', ch: ['Le niveau / l\'altitude autorisé(e) initial(e)', 'La couleur du balisage', 'Le nom du contrôleur'], ans: 0, why: 'Une clairance de départ contient la limite verticale initiale : sans elle, tu ne sais pas où t\'arrêter.', refs: ['sera-8015e'], cat: 'eu' })
+    ],
+    g1000: [
+      Q({ id: 'g-fma', lvl: 1, obj: 'Lire le bandeau AFCS', ill: { type: 'fma', latArm: 'LOC', lat: 'HDG', vert: 'ALT', vertArm: 'GS' }, ctx: 'Bandeau AFCS du PFD.', q: 'Quel mode latéral guide l\'avion MAINTENANT ?', ch: ['HDG (vert)', 'LOC (blanc)', 'GS'], ans: 0, why: 'Vert = actif, blanc = armé. Ici : HDG actif, LOC armé ; ALT actif, GS armé.', errs: ['Lire le mode armé comme actif'], refs: ['garmin-fma'], cat: 'avion' }),
+      Q({ id: 'g-fma2', lvl: 2, obj: 'Transition armé → actif', ill: { type: 'fma', lat: 'LOC', vert: 'GS', latArm: '', vertArm: '' }, ctx: 'LOC et GS viennent de passer en vert et clignotent.', q: 'Que s\'est-il passé ?', ch: ['Capture : les modes armés sont devenus actifs (clignotement 10 s)', 'Panne du pilote automatique', 'Les modes ont été désarmés'], ans: 0, why: 'Passage automatique armé → actif : l\'annonce passe du blanc au vert et clignote 10 s.', refs: ['garmin-fma'], cat: 'avion' }),
+      Q({ id: 'g-cdi', lvl: 1, obj: 'Source de navigation', ctx: 'Approche ILS. Le CDI affiche « GPS » en magenta.', q: 'Pour suivre le LOC…', ch: ['Softkey CDI jusqu\'à LOC1 (aiguille verte)', 'Rien : le GPS suit le LOC', 'Bouton NAV du PA seulement'], ans: 0, why: 'La softkey CDI fait défiler GPS → VOR1/LOC1 → VOR2/LOC2.', refs: ['garmin-cdi'], cat: 'avion', try: 'cdi' }),
+      Q({ id: 'g-rol', lvl: 2, obj: 'Changer de source en mode NAV', ctx: 'AP en NAV (GPS). Tu changes la source au CDI vers VOR1.', q: 'Que fait le mode latéral ?', ch: ['Retour en ROL (ailes à plat) : à réengager', 'Il suit le VOR automatiquement', 'L\'AP se déconnecte'], ans: 0, why: 'Changement manuel de source NAV au CDI : le mode latéral repasse en ROL.', refs: ['garmin-rol'], cat: 'avion' }),
+      Q({ id: 'g-hdg', lvl: 1, obj: 'Instruction de cap', ctx: 'ATC : « Tiffany 1, turn right heading 330 ».', q: 'Sur le G1000…', ch: ['Bug de cap sur 330 et mode HDG actif', 'Direct-to vers 330', 'CRS sur 330'], ans: 0, why: 'Un cap ATC se vole en HDG avec le bug sur la valeur ; le CRS sert à la radiale / l\'axe.', refs: ['garmin-fma'], cat: 'avion', try: 'hdg' }),
+      Q({ id: 'g-vtf', lvl: 2, obj: 'Activer l\'approche', ctx: 'Approche chargée, l\'ATC te guide au radar vers l\'axe final.', q: 'Sur le G1000…', ch: ['PROC → Activate Vector-to-Final', 'Direct-to l\'aérodrome', 'Supprimer l\'approche'], ans: 0, why: '« Activate Vector-to-Final » rend active la route d\'approche finale vers le FAF.', refs: ['garmin-proc'], cat: 'avion' }),
+      Q({ id: 'g-notgps', lvl: 2, obj: 'NOT APPROVED FOR GPS', ctx: 'Message « NOT APPROVED FOR GPS » sur une approche VOR chargée.', q: 'Pour la finale…', ch: ['Passer le HSI sur le récepteur NAV (VOR)', 'Continuer en GPS', 'Ignorer le message'], ans: 0, why: 'Le GPS guide jusqu\'à l\'approche, mais la finale se vole sur le récepteur NAV.', refs: ['garmin-proc'], cat: 'avion', crit: [1] }),
+      Q({ id: 'g-alt', lvl: 1, obj: 'Tenir l\'altitude', ctx: 'L\'avion est stable à l\'altitude autorisée. Le mode vertical est PIT.', q: 'Pour la tenir au PA…', ch: ['Touche ALT', 'Touche VS', 'Touche FLC'], ans: 0, why: 'ALT tient l\'altitude présente.', refs: ['garmin-fma'], cat: 'avion', try: 'alt' })
+    ],
+    imprevus: [
+      Q({ id: 'i-std', lvl: 1, obj: 'Attente standard', ill: { type: 'hold', a: 0 }, ctx: 'Attente non publiée, aucune précision sur le sens.', q: 'Les virages sont…', ch: ['À droite (standard)', 'À gauche', 'Au choix du pilote'], ans: 0, why: 'Attente standard : virages à droite, sauf instruction contraire.', refs: ['pansops-hold'], cat: 'icao' }),
+      Q({ id: 'i-time', lvl: 1, obj: 'Temps', ill: { type: 'hold', a: 0 }, ctx: 'Attente à 4 000 ft.', q: 'Temps de base de la branche ?', ch: ['1 minute', '1 min 30', '2 minutes'], ans: 0, why: '1 min jusqu\'à 14 000 ft, 1 min 30 au-dessus.', refs: ['pansops-hold'], cat: 'icao' }),
+      Q({ id: 'i-direct', lvl: 2, obj: 'Entrée en attente', ill: { type: 'hold', a: 30 }, ctx: 'Attente standard, axe de rapprochement 360°. Tu arrives au point au cap 030°.', q: 'Quelle entrée ?', ch: ['Directe', 'Parallèle', 'Décalée (teardrop)'], ans: 0, why: 'Ton cap est à 30° de l\'axe de rapprochement : secteur direct (180°).', refs: ['pansops-hold'], cat: 'icao' }),
+      Q({ id: 'i-par', lvl: 2, obj: 'Entrée en attente', ill: { type: 'hold', a: 240 }, ctx: 'Attente standard, axe de rapprochement 360°. Tu arrives au point au cap 240° (depuis le côté de l\'attente).', q: 'Quelle entrée ?', ch: ['Parallèle', 'Directe', 'Décalée (teardrop)'], ans: 0, why: 'Arrivée du côté attente, en face : secteur parallèle (110°).', refs: ['pansops-hold'], cat: 'icao' }),
+      Q({ id: 'i-tear', lvl: 2, obj: 'Entrée en attente', ill: { type: 'hold', a: 150 }, ctx: 'Attente standard, axe de rapprochement 360°. Tu arrives au point au cap 150° (depuis le côté opposé).', q: 'Quelle entrée ?', ch: ['Décalée (teardrop)', 'Parallèle', 'Directe'], ans: 0, why: 'Arrivée côté non-attente, en face : secteur décalé (70°).', refs: ['pansops-hold'], cat: 'icao' }),
+      Q({ id: 'i-wx', lvl: 2, obj: 'Le plan change', ctx: 'En attente : la destination passe sous les minima, retour prévu dans 1 h. Carburant : 50 min au-delà du dégagement + réserve finale.', q: 'Tu…', ch: ['Annonces ta décision de dégager et demandes la clairance vers le dégagement', 'Attends 1 h, tu verras', 'Tentes l\'approche « pour voir »'], ans: 0, why: 'Le carburant ne permet pas d\'attendre 1 h sans entamer la marge : décision tôt, communication claire.', refs: ['sera-2010', 'nco-op125'], cat: 'ops', crit: [2] }),
+      Q({ id: 'i-mfuel', lvl: 2, obj: 'Carburant minimum', ctx: 'Tu es engagé vers une destination ; tout retard te ferait atterrir avec moins que la réserve finale prévue.', q: 'Tu annonces…', ch: ['« MINIMUM FUEL »', '« MAYDAY FUEL »', 'Rien, tout va bien'], ans: 0, why: 'MINIMUM FUEL : engagé vers un terrain, tout changement pourrait faire atterrir sous la réserve finale. MAYDAY FUEL : la réserve finale ne sera plus disponible à l\'atterrissage au terrain le plus proche.', refs: ['sera-11012'], cat: 'eu' }),
+      Q({ id: 'i-reclr', lvl: 1, obj: 'Nouvelle clairance', ctx: 'ATC : « Tiffany 1, cleared direct BRAVO, climb flight level 80 ».', q: 'Ordre des actions ?', ch: ['Collationner, puis configurer (Direct-to BRAVO, ALT SEL FL 80, mode vertical), puis vérifier le bandeau AFCS', 'Configurer d\'abord, collationner plus tard', 'Collationner seulement'], ans: 0, why: 'Collationner prouve que tu as compris ; ensuite tu configures et tu vérifies ce que l\'avion fait vraiment.', refs: ['sera-8015e', 'garmin-dto'], cat: 'pedago' })
+    ],
+    pieges: [
+      Q({ id: 't-rcf-imc', lvl: 2, obj: 'Panne radio en IMC', ctx: 'IMC, en route sous contrôle, plan de vol IFR. Plus aucun contact radio. Code 7600 affiché.', q: 'D\'après SERA.14083, tu maintiens d\'abord la vitesse et le niveau assignés (ou l\'altitude minimale si plus haute) pendant…', ch: ['20 minutes (depuis le 1er mai 2025), puis tu suis le plan de vol', '7 minutes, comme avant', '1 minute'], ans: 0, why: 'SERA.14083 (applicable au 1er mai 2025) : 20 min, puis niveau et vitesse du plan de vol. Le point de départ du délai et les cas particuliers (SID, guidage radar) sont dans le texte.', errs: ['Retenir l\'ancienne règle des 7 min'], refs: ['sera-14083'], cat: 'eu' }),
+      Q({ id: 't-rcf-vmc', lvl: 1, obj: 'Panne radio en VMC', ctx: 'Panne radio, tu es en VMC et peux y rester.', q: 'Tu…', ch: ['Continues en VMC, atterris au terrain approprié le plus proche, signales ton arrivée', 'Suis la procédure IMC quand même', 'Continues vers la destination en IMC'], ans: 0, why: 'En VMC : rester VMC, atterrir au terrain approprié le plus proche, signaler l\'arrivée à l\'ATC.', refs: ['sera-14083'], cat: 'eu' }),
+      Q({ id: 't-rcf-land', lvl: 2, obj: 'Panne radio : arrivée', ctx: 'Panne radio IMC, tu arrives sur l\'aide qui dessert la destination.', q: 'Tu essaies d\'atterrir…', ch: ['Si possible dans les 30 min après l\'heure d\'arrivée prévue (ou l\'heure d\'approche prévue acceptée, la plus tardive)', 'Immédiatement, sans approche', 'Après 1 h d\'attente'], ans: 0, why: 'Procédure SERA de panne radio : approche normale, atterrissage si possible dans les 30 min suivant l\'ETA ou l\'EAT acceptée.', refs: ['sera-14083'], cat: 'eu' }),
+      Q({ id: 't-pos', lvl: 1, obj: 'Position incertaine', ctx: 'IMC, tu n\'es plus sûr de ta position.', q: 'Premier réflexe ?', ch: ['Monter / rester au-dessus de l\'altitude de sécurité et le dire à l\'ATC', 'Descendre pour voir le sol', 'Ne rien dire pour ne pas déranger'], ans: 0, why: 'Le relief tue : altitude de sécurité d\'abord, puis aide de l\'ATC.', refs: ['sera-2010'], cat: 'pedago', crit: [1] }),
+      Q({ id: 't-pic', lvl: 2, obj: 'Instruction ATC et commandant de bord', ctx: 'L\'ATC te donne un cap qui t\'envoie dans un orage visible devant.', q: 'Tu…', ch: ['Annonces « unable » avec la raison et demandes une alternative', 'Obéis : l\'ATC décide', 'Changes de cap sans rien dire'], ans: 0, why: 'Le commandant de bord a l\'autorité finale sur la conduite de l\'avion ; il prévient et demande une clairance modifiée.', refs: ['sera-2015', 'sera-8015-amend'], cat: 'eu', crit: [1, 2] }),
+      Q({ id: 't-alti', lvl: 1, obj: 'Erreur de calage', ctx: 'Descente vers l\'approche : tu réalises que l\'altimètre est resté sur 1013, QNH 998.', q: 'Tu es…', ch: ['Plus bas que ce qu\'indique l\'altimètre : régler le QNH maintenant', 'Plus haut que ce qu\'indique l\'altimètre', 'Au bon endroit'], ans: 0, why: 'Calé trop haut (1013 > 998) : l\'altimètre surestime (≈ 400 ft ici). Réglage immédiat et contrôle des altitudes.', refs: ['sera-8015eb'], cat: 'pedago', crit: [1, 2] }),
+      Q({ id: 't-unstab', lvl: 1, obj: 'Approche non stabilisée', ctx: 'IMC, 800 ft AAL, 15 kt trop vite, en dessous du plan.', q: 'Tu…', ch: ['Remets les gaz', 'Corriges et continues', 'Plonges'], ans: 0, why: 'Consigne école : stabilisée à 1 000 ft AAL en IMC, sinon remise de gaz.', refs: ['pdp-stab'], cat: 'operateur', crit: [1, 2] }),
+      Q({ id: 't-ice', lvl: 2, obj: 'Givrage imprévu', ctx: 'Givre qui s\'accumule rapidement, vitesse qui baisse.', q: 'Priorité ?', ch: ['Sortir des conditions (niveau / cap), utiliser le dégivrage selon l\'AFM, prévenir l\'ATC', 'Continuer, ça va passer', 'Réduire la vitesse pour économiser'], ans: 0, why: 'On sort du givrage tôt, en coordonnant avec l\'ATC, selon l\'AFM.', refs: ['afm-ice', 'sera-2015'], cat: 'avion', crit: [1, 2] })
+    ]
+  };
+  D.quiz = quiz;
+
+  /* Fiches anti-sèche (À retenir → Exemple → Piège → Réf.) */
+  [
+    { id: 'c-ifr', ch: 'base', t: 'IFR, VFR, IMC, VMC', keep: 'IFR / VFR : les règles de vol. IMC / VMC : les conditions météo. On peut voler IFR en VMC.', ex: 'Plan de vol IFR par CAVOK : tu voles IFR en VMC — tu continues à regarder dehors.', trap: 'Croire qu\'en IFR, l\'ATC te sépare de tout le monde partout.', refs: ['sera-2005', 'sera-6001'] },
+    { id: 'c-class', ch: 'base', t: 'Les classes en 20 secondes', keep: 'A : IFR seuls. C : IFR séparés de tous. D : IFR séparés des IFR, info trafic sur VFR. E : IFR contrôlés, VFR sans clairance (pas de séparation IFR/VFR). G : pas de séparation, information de vol. Au-dessus du FL 195 : C.', ex: 'IFR en E par beau temps : tu vois et évites les VFR.', trap: 'Oublier de vérifier la classe dans l\'AIP du pays.', refs: ['sera-6001', 'aip-enr14'] },
+    { id: 'c-cag', ch: 'base', t: 'CAG ou CAM', keep: 'Vol civil IFR = circulation aérienne générale (CAG) : SERA + AIP France. La CAM a ses propres règles.', ex: 'Phraséologie, calages, niveaux : ceux de la CAG.', trap: 'Garder des automatismes militaires qui n\'existent pas en CAG.', refs: ['miam'] },
+    { id: 'c-metar', ch: 'meteo', t: 'Lire un METAR', keep: 'Lieu, heure, vent (G = rafales), visibilité (m), temps présent, nuages (FEW/SCT/BKN/OVC + hauteur en centaines de ft), T/Td, QNH, tendance.', ex: 'BKN008 = plafond 800 ft.', trap: 'Lire 008 comme 8 000 ft.', refs: ['mf-taf'] },
+    { id: 'c-cavok', ch: 'meteo', t: 'CAVOK ≠ ciel bleu', keep: 'Visibilité ≥ 10 km, pas de nuage sous 5 000 ft ou la plus haute MSA, pas de CB/TCU, pas de temps significatif.', ex: 'CAVOK avec OVC à 7 000 ft : possible.', trap: 'Planifier une montée VMC « parce que CAVOK ».', refs: ['mf-taf'] },
+    { id: 'c-frf', ch: 'meteo', t: 'Carburant IFR (Part-NCO)', keep: 'Destination, + dégagement si exigé, + réserve finale protégée. Réserve finale (AMC) : 45 min à vitesse d\'attente à 1 500 ft.', ex: 'Vent de face plus fort : on recalcule avant de partir.', trap: 'Considérer la réserve finale comme du carburant d\'attente.', refs: ['nco-op125', 'amc-nco125'] },
+    { id: 'c-fpl', ch: 'prep', t: 'Plan de vol, case 8', keep: 'I = IFR · V = VFR · Y = IFR puis VFR · Z = VFR puis IFR.', ex: 'Départ IFR, arrivée VFR : Y.', trap: 'Inverser Y et Z.', refs: ['doc4444-fpl'] },
+    { id: 'c-prep', ch: 'prep', t: 'Avant un vol IFR', keep: 'Météo départ / destination / dégagement, NOTAM, route et altitudes minimales, départ et arrivée probables, carburant, documents et équipement, plan B.', ex: 'ILS en NOTAM : minima plus hauts → décision revue.', trap: 'Préparer la route et oublier le dégagement.', refs: ['sera-2010'] },
+    { id: 'c-sid', ch: 'sidstar', t: 'Lire une SID', keep: 'Nom, piste, route point par point, contraintes d\'altitude (≥, ≤, =) et de vitesse, altitude initiale de la clairance.', ex: '« ALPHA ≥ 2500 » = à ALPHA, 2 500 ft ou plus.', trap: 'Confondre ≥ et ≤.', refs: ['icao-sid'] },
+    { id: 'c-doubt', ch: 'sidstar', t: 'Clairance qui paraît incompatible', keep: 'On demande confirmation ou une clairance modifiée. On ne suppose jamais.', ex: '« Confirm climb flight level 70 and ALPHA restriction cancelled? »', trap: 'Supposer l\'annulation d\'une contrainte.', refs: ['sera-8015-amend'] },
+    { id: 'c-fmaread', ch: 'g1000', t: 'Bandeau AFCS', keep: 'Vert = actif, blanc = armé. Armé → actif : clignote 10 s.', ex: 'HDG vert + LOC blanc : tu voles le cap, le LOC sera capturé.', trap: 'Croire que l\'avion suit un mode encore blanc.', refs: ['garmin-fma'] },
+    { id: 'c-cdisrc', ch: 'g1000', t: 'CDI et source', keep: 'Softkey CDI : GPS (magenta) → VOR1/LOC1 → VOR2/LOC2 (vert). Changer de source fait repasser le mode latéral en ROL.', ex: 'ILS : LOC1 au CDI avant l\'interception.', trap: 'Rester en GPS sur une approche « NOT APPROVED FOR GPS ».', refs: ['garmin-cdi', 'garmin-rol', 'garmin-proc'] },
+    { id: 'c-hold', ch: 'imprevus', t: 'Attentes', keep: 'Standard : virages à droite, 1 min (≤ 14 000 ft). Entrées : directe (180°), parallèle (110°, côté attente devant), décalée (70°, côté opposé devant).', ex: 'Axe 360°, arrivée cap 030° : directe.', trap: 'Faire une entrée parallèle « par habitude ».', refs: ['pansops-hold'] },
+    { id: 'c-fuelcall', ch: 'imprevus', t: 'MINIMUM FUEL / MAYDAY FUEL', keep: 'MINIMUM FUEL : plus de marge pour un retard. MAYDAY FUEL : la réserve finale ne sera plus disponible à l\'atterrissage.', ex: '« Tiffany 1, minimum fuel ».', trap: 'Attendre pour annoncer.', refs: ['sera-11012'] },
+    { id: 'c-rcf', ch: 'pieges', t: 'Panne radio (SERA.14083)', keep: '7600. VMC : rester VMC, atterrir au plus proche, signaler l\'arrivée. IMC : 20 min vitesse/niveau assignés (ou altitude minimale), puis plan de vol, approche, atterrissage si possible dans les 30 min après ETA/EAT.', ex: 'Depuis le 1er mai 2025 : 20 min (et non plus 7).', trap: 'Réciter une règle unique sans regarder VMC / IMC, SID, guidage radar.', refs: ['sera-14083'] },
+    { id: 'c-pic', ch: 'pieges', t: 'Le commandant de bord', keep: 'Autorité finale sur la conduite de l\'avion. Il annonce « unable » et demande une alternative.', ex: '« Unable heading 330 due to weather, request heading 300 ».', trap: 'Exécuter une instruction dangereuse ou s\'en écarter sans prévenir.', refs: ['sera-2015', 'sera-2010'] }
+  ].forEach(function (c) { D.cards.push(c); });
+
+  /* Essais cockpit supplémentaires */
+  D.tries.cdi = { state: 'ess-cruise', setup: { g: { cdi: 'GPS', pfdLevel: 'top' } }, txt: 'Passe le CDI sur VOR1 / LOC1 : softkey CDI (6e sous le PFD).', cond: 'ifrCdiVor1', hint: 'La softkey CDI fait défiler GPS → VOR1 → VOR2. Une pression suffit.', refs: ['garmin-cdi'] };
+  D.tries.hdg = { state: 'ess-cruise', setup: { g: { lat: 'ROL', hdg: 276, pfdLevel: 'top' } }, txt: 'ATC : « turn right heading 330 ». Bug de cap sur 330 et mode HDG.', cond: 'ifrHdg330', hint: 'Bouton HDG (à gauche du PFD) pour le bug, puis touche HDG du contrôleur AFCS sur le MFD.', refs: ['garmin-fma'] };
+  D.tries.alt = { state: 'ess-cruise', setup: { g: { vert: 'PIT', refAlt: null, pfdLevel: 'top' } }, txt: 'Mode vertical PIT : passe en tenue d\'altitude (ALT).', cond: 'ifrAltHold', hint: 'Touche ALT du contrôleur AFCS (MFD).', refs: ['garmin-fma'] };
+
+  /* « Mon premier vol IFR » : vol condensé (≈ 5 min), séquences dans l'ordre. Ce n'est pas un vol réaliste en durée. */
+  D.story = [
+    { step: '1 · Météo et préparation', ref: 'm-ceil' }, { step: '1 · Météo et préparation', ref: 'm-fuel' },
+    { step: '2 · La clairance', ref: 'r-sq' }, { step: '2 · La clairance', ref: 's-missing' },
+    { step: '3 · Le cockpit', ref: 'g-cdi' }, { step: '4 · Le départ', ref: 's-alt' }, { step: '4 · Le départ', ref: 'a-climb-ta' },
+    { step: '5 · L\'ATC change le plan', ref: 'r-lvlhdg' }, { step: '5 · L\'ATC change le plan', ref: 'g-hdg' },
+    { step: '6 · L\'arrivée', ref: 'r-qnh' }, { step: '6 · L\'arrivée', ref: 'a-desc-tl' },
+    { step: '7 · L\'approche', ref: 'p-mda' }, { step: '8 · La décision', ref: 'p-da-novis' }, { step: '8 · La décision', ref: 'p-susp' }
+  ];
 })(this);
 
 </script>
@@ -8477,7 +8645,15 @@ body.immersion #immExit{display:block}
     return p.ifr;
   }
   I.prof = prof;
-  function allItems() { var d = D(); return d.radio.map(function (x) { return { ch: 'atc', kind: 'radio', it: x }; }).concat(d.calage.map(function (x) { return { ch: 'alti', kind: 'calage', it: x }; }), d.approach.map(function (x) { return { ch: 'appr', kind: 'approche', it: x }; })); }
+  function allItems() {
+    var d = D(), a = d.radio.map(function (x) { return { ch: 'atc', kind: 'radio', it: x }; }).concat(d.calage.map(function (x) { return { ch: 'alti', kind: 'calage', it: x }; }), d.approach.map(function (x) { return { ch: 'appr', kind: 'approche', it: x }; }));
+    Object.keys(d.quiz || {}).forEach(function (ch) { d.quiz[ch].forEach(function (x) { a.push({ ch: ch, kind: 'quiz', it: x }); }); });
+    return a;
+  }
+  I.allItems = allItems;
+  function byId(id) { var r = null; allItems().forEach(function (a) { if (a.it.id === id) r = a; }); return r; }
+  function chOf(id) { var a = byId(id); return a ? a.ch : ''; }
+  function chTitle(ch) { var c = D().chapters.filter(function (x) { return x.id === ch; })[0]; return c ? c.ico + ' ' + c.title : ch; }
   function record(id, ok, hint, crit) {
     var f = prof(); if (!f) return;
     var x = f.items[id] = f.items[id] || { n: 0, ok: 0, fail: 0, hint: 0, crit: 0, box: 1, due: 0, last: 0 };
@@ -8493,9 +8669,22 @@ body.immersion #immExit{display:block}
     var s = 0; it.forEach(function (a) { var x = f.items[a.it.id]; if (x && x.ok) s += Math.min(5, x.box) / 5; });
     return Math.round(s / it.length * 100);
   };
+  I.masteryAll = function (p) { var cs = D().chapters.filter(function (c) { return c.on; }), t = 0; cs.forEach(function (c) { t += I.mastery(c.id, p); }); return cs.length ? Math.round(t / cs.length) : 0; };
   I.level = function (p) { var f = prof(p), L = D().levels, cur = L[0], nx = null; for (var i = 0; i < L.length; i++) if ((f ? f.xp : 0) >= L[i][0]) { cur = L[i]; nx = L[i + 1] || null; } return { name: cur[1], min: cur[0], next: nx ? nx[0] : null, nextName: nx ? nx[1] : null }; };
   /* Priorité de révision : erreurs d'abord, puis éléments arrivés à échéance, puis jamais vus */
-  function prio(a) { var f = prof(), x = f && f.items[a.it.id], now = Date.now(); if (!x) return 2; if (x.box === 1 && x.fail) return 0; if (x.due <= now) return 1; return 3 + x.box; }
+  /* éléments joués lors des dernières parties : repoussés en fin de liste pour éviter de revoir toujours la même chose */
+  function prio(a) { var f = prof(), x = f && f.items[a.it.id], now = Date.now(), rec = f && f.recent && f.recent.indexOf(a.it.id) >= 0 ? 10 : 0;
+    if (!x) return 2 + rec; if (x.box === 1 && x.fail) return 0 + rec; if (x.due <= now) return 1 + rec; return 3 + x.box + rec; }
+  /* UNE question d'approche, variée : jamais deux fois de suite la même famille (remise de gaz / SUSP comprises) */
+  function oneApproach(rnd, seeded) {
+    var pool = D().approach.map(function (x) { return { it: x }; });
+    var a = seeded ? shuffle(pool, rnd)[0] : pickBy(pool, 1)[0];
+    return a.it;
+  }
+  function apStart(it) { // position de départ cohérente avec la question choisie
+    G.vis = it.variant === 'vis' ? true : it.variant === 'novis' || it.variant === 'unstab' ? false : null;
+    if (it.at < 0) { G.apGa = true; G.gaFrom = { d: 0.63, a: 600 }; G.apD = 0.63; }
+  }
   function pickBy(list, n) { return shuffle(list).sort(function (a, b) { return prio(a) - prio(b); }).slice(0, n); }
 
   /* ---------------- Sources ---------------- */
@@ -8580,15 +8769,26 @@ body.immersion #immExit{display:block}
     if (kind === 'radio') list = (mode === 'exam' ? shuffle(d.radio).slice(0, 6) : pickBy(d.radio.map(function (x) { return { it: x }; }), 6).map(function (a) { return a.it; })).map(function (x) { return q('radio', x); });
     else if (kind === 'calage') list = (mode === 'exam' ? shuffle(d.calage).slice(0, 6) : pickBy(d.calage.map(function (x) { return { it: x }; }), 5).map(function (a) { return a.it; })).map(function (x) { return q('calage', x); });
     else if (kind === 'approche') { ap = approachSeq(rnd); list = ap.items.map(function (x) { return q('approche', x); }); }
+    else if (/^quiz:/.test(kind)) { var qs = d.quiz[kind.slice(5)] || []; list = (mode === 'exam' ? shuffle(qs).slice(0, 6) : pickBy(qs.map(function (x) { return { it: x }; }), 6).map(function (a) { return a.it; })).map(function (x) { return q('quiz', x); }); }
+    else if (kind === 'sixty') { list = pickBy(allItems().filter(function (a) { return a.kind !== 'approche'; }), 3).map(function (a) { return q(a.kind, a.it); }); }
+    else if (kind === 'final') { // examen final : un ou deux éléments de chaque chapitre
+      d.chapters.forEach(function (c) {
+        if (c.id === 'appr') return;
+        var pool = allItems().filter(function (a) { return a.ch === c.id; }); shuffle(pool).slice(0, c.id === 'atc' || c.id === 'alti' ? 2 : 1).forEach(function (a) { list.push(q(a.kind, a.it)); });
+      });
+      pickBy(D().approach.map(function (x) { return { it: x }; }), 2).forEach(function (a) { list.push(q('approche', a.it)); });
+    }
+    else if (kind === 'story') { d.story.forEach(function (st) { var a = byId(st.ref); if (a) list.push(q(a.kind, a.it, { step: st.step })); }); ap = { vis: false }; }
     else { // mission 3 min / défi : mélange
       var f = prof(), pref = f && f.pref, nr = pref === 'chasse' ? 3 : 2, na = 2;
       var R = opt.seed ? shuffle(d.radio, rnd).slice(0, nr) : pickBy(d.radio.map(function (x) { return { it: x }; }), nr).map(function (a) { return a.it; });
       var C = opt.seed ? shuffle(d.calage, rnd).slice(0, na) : pickBy(d.calage.map(function (x) { return { it: x }; }), na).map(function (a) { return a.it; });
-      ap = approachSeq(rnd, true);
       for (var i = 0; i < Math.max(R.length, C.length); i++) { if (R[i]) list.push(q('radio', R[i])); if (C[i]) list.push(q('calage', C[i])); }
-      list = list.concat(ap.items.map(function (x) { return q('approche', x); }));
+      var others = allItems().filter(function (a) { return a.kind === 'quiz'; });
+      (opt.seed ? shuffle(others, rnd).slice(0, 2) : pickBy(others, 2)).forEach(function (a) { list.push(q('quiz', a.it)); });
+      list.push(q('approche', oneApproach(rnd, !!opt.seed)));
     }
-    G = { kind: kind, mode: mode, list: list, i: 0, ok: 0, errs: [], crit: 0, hints: 0, t0: Date.now(), limit: kind === 'mission' ? 180000 : 0, day: opt.day || null,
+    G = { kind: kind, mode: mode, list: list, i: 0, ok: 0, errs: [], crit: 0, hints: 0, t0: Date.now(), limit: kind === 'mission' ? 180000 : kind === 'sixty' ? 60000 : 0, day: opt.day || null,
       vis: ap ? ap.vis : null, apD: 10.4, apGa: false, alt: null, picked: [], answered: false, hint: false, fr: mode !== 'exam', transcript: mode !== 'exam' };
     renderGame();
   }
@@ -8604,10 +8804,12 @@ body.immersion #immExit{display:block}
     var e = el(); if (!G) return;
     if (G.i >= G.list.length || (G.limit && Date.now() - G.t0 > G.limit && !G.answered && G.i > 0)) return finish();
     var Q = G.list[G.i], it = Q.it, h = '<div class="ifr-in">' + head();
-    var chName = { radio: '🎙 Tu es à la radio', calage: '📏 Le bon calage', approche: '🛬 Sauve ton approche' }[Q.kind];
+    var chName = Q.kind === 'quiz' ? chTitle(chOf(it.id)) : { radio: '🎙 Tu es à la radio', calage: '📏 Le bon calage', approche: '🛬 Sauve ton approche' }[Q.kind];
+    if (Q.step) h += '<div class="ifr-story">✈ MON PREMIER VOL IFR · ' + esc(Q.step) + ' <small>(vol condensé, durées non réalistes)</small></div>';
     h += '<div class="ifr-card"><div class="ifr-tag">' + chName + ' · ' + esc(it.obj) + (G.mode === 'exam' ? ' · <b>examen</b>' : '') + '</div>';
     if (Q.kind === 'radio') h += radioHtml(it);
     else if (Q.kind === 'calage') h += calageHtml(it);
+    else if (Q.kind === 'quiz') h += quizHtml(it);
     else h += approHtml(it);
     h += '</div></div>';
     e.innerHTML = h; e.scrollTop = 0;
@@ -8671,12 +8873,14 @@ body.immersion #immExit{display:block}
     return h;
   }
   function hintFor(it) {
-    var c = D().cards.filter(function (c) { return (it.refs || []).some(function (r) { return c.refs.indexOf(r) >= 0; }) && c.ch === (it.id.charAt(0) === 'a' ? 'alti' : 'appr'); })[0];
+    var ch = chOf(it.id), c = D().cards.filter(function (c) { return (it.refs || []).some(function (r) { return c.refs.indexOf(r) >= 0; }) && c.ch === ch; })[0];
     return c ? c.keep : it.obj;
   }
 
   /* --- approche --- */
   function approHtml(it) {
+    if (!G.answered && G.kind !== 'approche' && (G.i === 0 || G.list[G.i - 1].kind !== 'approche')) { G.apD = 10.4; G.apGa = false; G.gaFrom = null; apStart(it); }
+    else if (!G.answered && it.variant) G.vis = it.variant === 'vis' ? true : (it.variant === 'stab' ? G.vis : false);
     if (!G.answered && G.apD !== it.at && !G.apGa) { G.apAnim = [G.apD, it.at, false]; }
     else if (!G.answered && G.apD !== it.at) { G.apAnim = [G.apD, it.at, true]; }
     var st = { d: G.apAnim ? G.apAnim[0] : G.apD, ga: G.apGa, vis: G.vis, from: G.gaFrom };
@@ -8685,6 +8889,52 @@ body.immersion #immExit{display:block}
     h += '<div class="ifr-q">' + esc(it.q) + '</div>' + choicesHtml(it);
     return h;
   }
+  /* --- quiz (chapitres 1, 4, 5, 6, 8, 9, 10) --- */
+  function quizHtml(it) {
+    var h = '<div class="ifr-ctx">' + esc(it.ctx) + '</div>', ill = it.ill ? illHtml(it.ill) : '';
+    if (ill) h += '<div class="ifr-two"><div class="ifr-ill">' + ill + '</div><div class="ifr-side"><div class="ifr-q">' + esc(it.q) + '</div>' + choicesHtml(it) + '</div></div>';
+    else h += '<div class="ifr-q">' + esc(it.q) + '</div>' + choicesHtml(it);
+    return h;
+  }
+  I.illHtml = function (x) { return illHtml(x); };
+  function illHtml(x) {
+    if (x.type === 'metar') return '<pre class="ifr-metar">' + esc(x.txt) + '</pre><small class="ifr-fict">Message fictif (aérodrome fictif)</small>';
+    if (x.type === 'classes') {
+      var R = [['A', 'IFR seuls', 'Tous séparés', 'Oui'], ['B', 'IFR + VFR', 'Tous séparés', 'Oui'], ['C', 'IFR + VFR', 'IFR / tous ; VFR / IFR', 'Oui'], ['D', 'IFR + VFR', 'IFR / IFR ; info trafic', 'Oui'], ['E', 'IFR + VFR', 'IFR / IFR seulement', 'IFR oui · VFR non'], ['F', 'IFR + VFR', 'Avis aux IFR (si possible)', 'Non'], ['G', 'IFR + VFR', 'Aucune ; information de vol', 'Non']];
+      return '<table class="ifr-cls"><tr><th>Classe</th><th>Vols</th><th>Séparation</th><th>Clairance</th></tr>' + R.map(function (r) { return '<tr' + (r[0] === x.hi ? ' class="hi"' : '') + '><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td></tr>'; }).join('') + '</table><small class="ifr-fict">Résumé SERA.6001 / App. 4 — détails dans le texte</small>';
+    }
+    if (x.type === 'fpl') return '<div class="ifr-fpl"><div><b>8</b> RÈGLES DE VOL</div><div class="box">I · V · Y · Z</div><small>I = IFR · V = VFR · Y = IFR puis VFR · Z = VFR puis IFR</small></div>';
+    if (x.type === 'fma') {
+      var c = function (v, col) { return v ? '<tspan fill="' + col + '">' + esc(v) + '</tspan>' : ''; };
+      return '<svg class="ifr-svg" viewBox="0 0 320 70"><rect width="320" height="70" fill="#0b0f14"/><rect x="10" y="18" width="300" height="34" fill="#000" stroke="#555"/>' +
+        '<text x="22" y="41" font-size="15" font-weight="700" font-family="Arial">' + c(x.latArm, '#fff') + '</text><text x="92" y="41" font-size="15" font-weight="700" font-family="Arial">' + c(x.lat, '#2fe35a') + '</text>' +
+        '<text x="150" y="41" font-size="13" fill="#2fe35a" font-family="Arial" font-weight="700">AP</text><text x="196" y="41" font-size="15" font-weight="700" font-family="Arial">' + c(x.vert, '#2fe35a') + '</text><text x="256" y="41" font-size="15" font-weight="700" font-family="Arial">' + c(x.vertArm, '#fff') + '</text>' +
+        '<text x="160" y="64" font-size="9" fill="#9fb3cc" text-anchor="middle">blanc = armé · vert = actif</text></svg>';
+    }
+    if (x.type === 'route') return '<svg class="ifr-svg" viewBox="0 0 320 150"><rect width="320" height="150" fill="#0c1a2b"/><path d="M0,130 L60,110 L110,120 L160,70 L200,95 L260,100 L320,120 L320,150 L0,150Z" fill="#4a3a22"/><text x="160" y="64" font-size="10" fill="#f2c21b" text-anchor="middle">relief</text>' +
+      '<line x1="30" y1="40" x2="290" y2="40" stroke="#e04ad8" stroke-width="2.5"/><circle cx="30" cy="40" r="5" fill="#fff"/><circle cx="290" cy="40" r="5" fill="#fff"/><text x="30" y="28" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">ALPHA</text><text x="290" y="28" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">BRAVO</text>' +
+      '<rect x="120" y="46" width="80" height="18" rx="4" fill="#000" stroke="#3fe0e8"/><text x="160" y="59" font-size="11" fill="#3fe0e8" text-anchor="middle" font-weight="700">MIN 3500 ft</text><text x="314" y="146" font-size="9" fill="#9fb3cc" text-anchor="end">route fictive</text></svg>';
+    if (x.type === 'sid') return '<svg class="ifr-svg" viewBox="0 0 320 200"><rect width="320" height="200" fill="#f4f1e6"/><text x="8" y="16" font-size="11" font-weight="700" fill="#222">SID « ALPHA 1E » RWY 28 — LFXX (FICTIVE)</text>' +
+      '<rect x="230" y="160" width="60" height="7" fill="#333" transform="rotate(-8 260 163)"/><text x="262" y="182" font-size="9" fill="#222" text-anchor="middle">RWY 28</text>' +
+      '<path d="M228,166 L150,176 L95,110 L150,40" fill="none" stroke="#1b4fa0" stroke-width="2.4" marker-end=""/><text x="180" y="186" font-size="9" fill="#1b4fa0">1000 ft : virage à droite</text>' +
+      '<path d="M95,110 l-7,-7 l7,-7 l7,7Z" fill="#fff" stroke="#222"/><text x="60" y="126" font-size="11" font-weight="700" fill="#222">ALPHA</text><text x="40" y="140" font-size="10" fill="#222">≥ 2500</text><text x="40" y="153" font-size="9" fill="#a0201a">MAX 160 KT avant ALPHA</text>' +
+      '<path d="M150,40 l-7,-7 l7,-7 l7,7Z" fill="#fff" stroke="#222"/><text x="162" y="36" font-size="11" font-weight="700" fill="#222">BRAVO</text><text x="162" y="49" font-size="10" fill="#222">4000</text><text x="8" y="196" font-size="8" fill="#666">Carte pédagogique — ne pas utiliser pour la navigation</text></svg>';
+    if (x.type === 'hold') return holdSvg(x.a);
+    return '';
+  }
+  /* attente standard, axe de rapprochement 360° vers le point ; a = cap d'arrivée relatif à l'axe (secteurs PANS-OPS) */
+  function holdSvg(a) {
+    var cx = 150, cy = 70, s = '<svg class="ifr-svg" viewBox="0 0 300 240"><rect width="300" height="240" fill="#0c1a2b"/>';
+    function pt(b, r) { var t = (b - 90) * Math.PI / 180; return [cx + r * Math.cos(t), cy + r * Math.sin(t)]; }
+    function sector(b1, b2, col, lab) { var p1 = pt(b1, 95), p2 = pt(b2, 95), big = ((b2 - b1 + 360) % 360) > 180 ? 1 : 0, m = pt(b1 + ((b2 - b1 + 360) % 360) / 2, 70);
+      return '<path d="M' + cx + ',' + cy + ' L' + p1[0] + ',' + p1[1] + ' A95,95 0 ' + big + ' 1 ' + p2[0] + ',' + p2[1] + 'Z" fill="' + col + '" opacity=".22"/><text x="' + m[0] + '" y="' + m[1] + '" font-size="10" fill="#fff" text-anchor="middle">' + lab + '</text>'; }
+    s += sector(110, 290, '#2fe35a', 'DIRECTE') + sector(0, 110, '#f2c21b', 'PARALLÈLE') + sector(290, 360, '#e04ad8', 'DÉCALÉE');
+    s += '<path d="M' + cx + ',' + cy + ' L' + cx + ',' + (cy + 120) + ' A26,26 0 0 0 ' + (cx + 52) + ',' + (cy + 120) + ' L' + (cx + 52) + ',' + cy + ' A26,26 0 0 0 ' + cx + ',' + cy + '" fill="none" stroke="#3fe0e8" stroke-width="2.5"/>';
+    s += '<path d="M' + cx + ',' + (cy + 40) + ' l-5,10 l10,0Z" fill="#3fe0e8"/><circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#fff"/><text x="' + (cx - 10) + '" y="' + (cy - 8) + '" font-size="10" fill="#fff" text-anchor="end">point</text>';
+    if (a) { var P = pt(a + 180, 88); s += '<g transform="translate(' + P[0] + ',' + P[1] + ') rotate(' + a + ')"><path d="M0,-11 L4,4 L0,1 L-4,4Z" fill="#fff"/></g><text x="' + P[0] + '" y="' + (P[1] + 20) + '" font-size="10" fill="#fff" text-anchor="middle">cap ' + ('00' + a).slice(-3) + '°</text>'; }
+    return s + '<text x="294" y="234" font-size="9" fill="#9fb3cc" text-anchor="end">axe de rapprochement 360°, virages à droite</text></svg>';
+  }
+
   /* --- correction commune --- */
   function feedback(ok, crit, msgs, it) {
     var praise = ['Collationnement propre. Le contrôleur respire.', 'Exact. Calé, compris, appliqué.', 'Bonne décision.', 'Nickel — c\'est ça l\'IFR.'];
@@ -8719,16 +8969,19 @@ body.immersion #immExit{display:block}
     if (f) {
       f.runs++;
       if (G.kind === 'mission') { f.best = Math.max(f.best || 0, score); f.xp += 15; }
-      if (G.mode === 'exam') { var ch = chMap[G.kind]; f.exams[ch] = Math.max(f.exams[ch] || 0, pct); }
+      f.recent = G.list.slice(0, G.i).map(function (q) { return q.it.id; }).concat(f.recent || []).slice(0, 14);
+      if (G.mode === 'exam') { var ch = chMap[G.kind] || (/^quiz:/.test(G.kind) ? G.kind.slice(5) : null); if (ch) f.exams[ch] = Math.max(f.exams[ch] || 0, pct); }
+      if (G.kind === 'final') f.finalBest = Math.max(f.finalBest || 0, pct);
       if (G.day) { var prev = f.days[G.day]; if (!prev || score > prev) f.days[G.day] = score; var ks = Object.keys(f.days).sort(); if (ks.length > 30) delete f.days[ks[0]]; }
       TF.Profiles.save();
     }
     var h = '<div class="ifr-in"><div class="ifr-card ifr-end"><div class="ifr-big">' + (pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '📚') + '</div><h2>' + G.ok + ' / ' + n + ' · ' + pct + ' %</h2>';
-    h += '<div class="ifr-sub">' + (G.kind === 'mission' ? 'Mission IFR 3 min — score ' + score + ' (meilleur : ' + (f ? f.best : 0) + ')' : G.day ? 'Défi du jour — score ' + score : G.mode === 'exam' ? 'Examen du chapitre' : 'Entraînement') + (G.crit ? ' · ⛔ ' + G.crit + ' erreur(s) de sécurité' : '') + (G.hints ? ' · 💡 ' + G.hints + ' indice(s)' : '') + '</div>';
+    h += '<div class="ifr-sub">' + (G.kind === 'mission' ? (G.day ? 'Défi du jour — score ' + score : 'Mission IFR 3 min — score ' + score + ' (meilleur : ' + (f ? f.best : 0) + ')') : G.kind === 'final' ? 'MISSION IFR FINALE — meilleur ' + (f ? f.finalBest : pct) + ' %' : G.kind === 'story' ? 'Mon premier vol IFR' : G.kind === 'sixty' ? 'J\'ai 60 secondes' : G.mode === 'exam' ? 'Examen du chapitre' : 'Entraînement') + (G.crit ? ' · ⛔ ' + G.crit + ' erreur(s) de sécurité' : '') + (G.hints ? ' · 💡 ' + G.hints + ' indice(s)' : '') + '</div>';
     if (G.errs.length) {
       h += '<div class="ifr-q">À revoir (reviendra dans une prochaine dose, dans un autre contexte) :</div><ul class="ifr-rev">';
-      G.errs.forEach(function (e) { h += '<li><b>' + esc(e.it.obj) + '</b> — ' + esc(e.it.why) + '</li>'; });
-      h += '</ul>';
+      var chs = {};
+      G.errs.forEach(function (e) { var c = chOf(e.it.id); chs[c] = (chs[c] || 0) + 1; h += '<li><b>' + esc(e.it.obj) + '</b> — ' + esc(e.it.why) + '</li>'; });
+      h += '</ul><div class="ifr-q">Chapitres à réviser :</div><div class="ifr-acts">' + Object.keys(chs).map(function (c) { return '<button class="btn" data-act="chap" data-v="' + c + '">' + esc(chTitle(c)) + ' (' + chs[c] + ')</button>'; }).join('') + '</div>';
     } else h += '<div class="ifr-why">Sans faute. Le simulateur DA42 t\'attend pour mettre ça en pratique.</div>';
     h += '<div class="ifr-acts"><button class="btn" data-act="home">↩ Accueil IFR</button><button class="btn primary" data-act="again">🔁 Rejouer</button></div></div></div>';
     var last = { kind: G.kind, mode: G.mode, day: G.day }; G = null; I._last = last;
@@ -8765,7 +9018,7 @@ body.immersion #immExit{display:block}
 
   /* ---------------- Accueil du module ---------------- */
   function boardHtml() {
-    var rows = TF.Profiles.list().map(function (p) { var f = prof(p); return { p: p, f: f, m: Math.round((I.mastery('atc', p) + I.mastery('alti', p) + I.mastery('appr', p)) / 3), day: f.days[TF.Profiles.dayId()] }; })
+    var rows = TF.Profiles.list().map(function (p) { var f = prof(p); return { p: p, f: f, m: I.masteryAll(p), day: f.days[TF.Profiles.dayId()] }; })
       .filter(function (r) { return r.f.xp > 0; }).sort(function (a, b) { return b.m - a.m || b.f.xp - a.f.xp; });
     var h = '<div class="ifr-board"><div class="ifr-bh">🏆 Classement IFR de l\'équipe <small>(local, sur cet appareil — rien n\'est envoyé)</small></div>';
     if (!rows.length) return h + '<div class="ifr-sub">Personne n\'a encore joué : sois le premier !</div></div>';
@@ -8773,7 +9026,7 @@ body.immersion #immExit{display:block}
     rows.forEach(function (r) { h += '<tr><td><b>' + esc(r.p.name) + '</b><br><small>' + esc(I.level(r.p).name) + '</small></td><td>' + (PREF[r.f.pref] || '—') + '</td><td>' + r.m + ' %</td><td>' + (r.f.best || '—') + '</td><td>' + (r.day != null ? r.day : '—') + '</td></tr>'; });
     h += '</table>';
     var team = {}; rows.forEach(function (r) { if (r.f.pref === 'chasse' || r.f.pref === 'transport') { var t = team[r.f.pref] = team[r.f.pref] || { s: 0, n: 0 }; t.s += r.m; t.n++; } });
-    if (team.chasse && team.transport) h += '<div class="ifr-team">🎖 Chasseurs ' + Math.round(team.chasse.s / team.chasse.n) + ' % <span>vs</span> ' + Math.round(team.transport.s / team.transport.n) + ' % Transporteurs 🛫<br><small>Moyenne de la maîtrise des 3 chapitres par pilote ayant choisi son profil (équitable 3 contre 2). Les mêmes exercices pour tous.</small></div>';
+    if (team.chasse && team.transport) h += '<div class="ifr-team">🎖 Chasseurs ' + Math.round(team.chasse.s / team.chasse.n) + ' % <span>vs</span> ' + Math.round(team.transport.s / team.transport.n) + ' % Transporteurs 🛫<br><small>Moyenne de la maîtrise de tous les chapitres par pilote ayant choisi son profil (équitable 3 contre 2). Les mêmes exercices pour tous.</small></div>';
     return h + '</div>';
   }
   function homeHtml() {
@@ -8783,8 +9036,9 @@ body.immersion #immExit{display:block}
     h += '<div class="ifr-me"><b>' + esc(p ? p.name : '') + '</b> · ' + esc(L.name) + '<div class="xpbar"><i style="width:' + pct + '%"></i></div><small>' + f.xp + ' XP IFR' + (L.next ? ' · ' + (L.next - f.xp) + ' avant « ' + esc(L.nextName) + ' »' : '') + ' — récompense pédagogique, pas une qualification</small>';
     h += '<div class="ifr-pref">Mon profil : ' + Object.keys(PREF).map(function (k) { return '<button class="' + (f.pref === k ? 'on' : '') + '" data-act="pref" data-v="' + k + '">' + PREF[k] + '</button>'; }).join('') + '<small> (adapte la dose proposée, ne présume aucune compétence)</small></div></div>';
     h += '<div class="ifr-big3"><button class="ifr-b dose" data-act="dose"><span>▶</span><b>MA DOSE D\'IFR — 3 MIN</b><small>Radio, calages, une approche. Tes erreurs reviennent en priorité.</small></button>';
-    h += '<button class="ifr-b learn" data-act="learn"><span>🎯</span><b>APPRENDRE L\'IFR</b><small>10 chapitres · 3 jouables aujourd\'hui</small></button>';
+    h += '<button class="ifr-b learn" data-act="learn"><span>🎯</span><b>APPRENDRE L\'IFR</b><small>10 chapitres, leçons, mini-jeux, examens</small></button>';
     h += '<button class="ifr-b defi" data-act="defi"><span>🏆</span><b>DÉFIER LES COPAINS</b><small>Le défi du jour, identique pour les 5 pilotes</small></button></div>';
+    h += '<div class="ifr-row3"><button class="ifr-s" data-act="story">✈ <b>MON PREMIER VOL IFR</b><small>Un vol complet condensé (≈ 5 min)</small></button><button class="ifr-s" data-act="sixty">⏱ <b>J\'AI 60 SECONDES</b><small>3 questions, tout de suite</small></button><button class="ifr-s" data-act="final">🎓 <b>MISSION IFR FINALE</b><small>Tous les chapitres, sans indice' + (f.finalBest != null ? ' · meilleur ' + f.finalBest + ' %' : '') + '</small></button></div>';
     h += '<div class="ifr-map" id="ifrMap">' + d.chapters.map(function (c) {
       var m = c.on ? I.mastery(c.id) : 0, ex = f.exams[c.id];
       return '<button class="ifr-chp' + (c.on ? '' : ' lock') + '" data-act="chap" data-v="' + c.id + '"' + (c.on ? '' : ' disabled') + '><span class="n">' + c.n + '</span><span class="i">' + c.ico + '</span><b>' + esc(c.title) + '</b>' +
@@ -8801,6 +9055,7 @@ body.immersion #immExit{display:block}
     h += '<button class="ifr-b defi" data-act="exam" data-v="' + c.game + '"><span>📝</span><b>EXAMEN DU CHAPITRE</b><small>Sans indice' + (c.game === 'radio' ? ', audio d\'abord' : '') + (f.exams[id] != null ? ' · meilleur ' + f.exams[id] + ' %' : '') + '</small></button></div>';
     if (id === 'alti') h += '<div class="ifr-card"><div class="ifr-tag">🎚 Joue avec le QNH — altitude ou niveau ?</div><div class="ifr-two"><div class="ifr-ill" id="ifrQnhSvg">' + qnhToy(1013) + '</div><div class="ifr-side"><input type="range" min="975" max="1045" value="1013" id="ifrQnh" class="ifr-range"><div class="ifr-sub" id="ifrQnhTxt"></div><button class="btn try" data-act="try" data-v="qnh">🛩 ESSAYER : régler 1008 au G1000</button> <button class="btn try" data-act="try" data-v="std">🛩 ESSAYER : STD Baro</button></div></div></div>';
     if (id === 'appr') h += '<div class="ifr-acts"><button class="btn try" data-act="try" data-v="susp">🛩 ESSAYER DANS LE COCKPIT : remise de gaz → SUSP → NAV</button></div>';
+    if (id === 'g1000') h += '<div class="ifr-acts"><button class="btn try" data-act="try" data-v="cdi">🛩 ESSAYER : CDI → VOR1</button><button class="btn try" data-act="try" data-v="hdg">🛩 ESSAYER : cap 330 en HDG</button><button class="btn try" data-act="try" data-v="alt">🛩 ESSAYER : tenue d\'altitude</button></div>';
     h += '<div class="ifr-q">Fiches anti-sèche</div><div class="ifr-cards">' + d.cards.filter(function (x) { return x.ch === id; }).map(function (x) {
       return '<details class="ifr-memo"><summary>' + esc(x.t) + '</summary><div><b>À retenir</b><p>' + esc(x.keep) + '</p><b>Exemple</b><p>' + esc(x.ex) + '</p><b>Piège fréquent</b><p>' + esc(x.trap) + '</p>' + (x.note ? '<p class="ifr-verify">⚠ ' + esc(x.note) + '</p>' : '') + (x.verify ? '<p class="ifr-verify">⚠ À valider avec l\'instructeur / la source officielle.</p>' : '') + refsHtml(x.refs) + '<button class="btn" data-act="game" data-v="' + c.game + '">Tester mes connaissances</button></div></details>';
     }).join('') + '</div></div>';
@@ -8841,6 +9096,9 @@ body.immersion #immExit{display:block}
       home: function () { I.show('home'); },
       pref: function (b) { var f = prof(); f.pref = b.getAttribute('data-v'); TF.Profiles.save(); I.show('home'); },
       dose: function () { start('mission', 'learn'); },
+      story: function () { start('story', 'learn'); },
+      sixty: function () { start('sixty', 'learn'); },
+      final: function () { start('final', 'exam'); },
       learn: function () { var m = K.$('ifrMap'); if (m && m.scrollIntoView) m.scrollIntoView(); },
       defi: function () { var day = TF.Profiles.dayId(), p = day.split('-'); start('mission', 'exam', { seed: +p[0] * 400 + +p[1] * 32 + +p[2], day: day }); },
       chap: function (b) { I.show('ch:' + b.getAttribute('data-v')); },
