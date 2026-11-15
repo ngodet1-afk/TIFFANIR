@@ -449,7 +449,7 @@ canvas.confetti { position: fixed; left: 0; top: 0; z-index: 90; pointer-events:
   .clc-list { max-height: none; }
   .omb-list { max-height: 160px; }
   /* Accueil, L'essentiel : plein écran sous la barre du haut */
-  #home, #ess { position: fixed; top: 46px; top: calc(46px + env(safe-area-inset-top)); z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
+  #home, #ess, #ifr { position: fixed; top: 46px; top: calc(46px + env(safe-area-inset-top)); z-index: 30; padding-bottom: env(safe-area-inset-bottom); }
   #toolbar { left: 6px; bottom: 30px; padding: 4px; max-width: calc(100% - 12px); overflow-x: auto; -webkit-overflow-scrolling: touch; }
   #toolbar button { min-width: 38px; height: 38px; padding: 0 8px; font-size: 13px; margin-right: 4px; }
   #toolbar .sep { margin: 0 5px 0 2px; }
@@ -591,6 +591,72 @@ body.immersion #immExit{display:block}
 .mis-steps span{flex:1;height:6px;margin:0 2px;border-radius:3px;background:#243246}
 .mis-steps span.ok{background:#2fe35a}.mis-steps span.ko{background:#ff6b6b}.mis-steps span.cur{background:#f2c21b}
 .mis-q{font-size:15px;margin:8px 0}
+/* ======================= L'IFR pour les nuls ======================= */
+#ifr { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 13; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background: radial-gradient(ellipse at 30% 0%, rgba(40, 22, 70, .97), rgba(6, 8, 18, .985) 70%); color: #e8eef6; }
+.ifr-in { max-width: 980px; margin: 0 auto; padding: 16px 16px 40px; }
+.ifr-entry { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; width: 100%; margin: 0 0 12px; padding: 12px 14px; border-radius: 16px; text-align: left;
+  background: linear-gradient(110deg, #3b1f6e, #1b3f7a 60%, #0f6e7c); border: 1px solid #7b5cd6; color: #fff; box-shadow: 0 6px 22px rgba(80, 40, 160, .35); }
+.ifr-entry .ie-i { font-size: 30px; margin-right: 12px; } .ifr-entry b { display: block; font-size: 17px; letter-spacing: .5px; } .ifr-entry small { color: #d6dcff; }
+.ifr-entry > span:nth-child(2) { -webkit-flex: 1; flex: 1; } .ifr-entry .ie-go { font-weight: 900; background: #f2c21b; color: #1a1300; border-radius: 10px; padding: 8px 12px; margin-left: 10px; }
+.ifr-top { display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: flex-start; align-items: flex-start; margin-bottom: 12px; }
+.ifr-top .btn { margin-left: 10px; white-space: nowrap; }
+.ifr-title { font-size: 22px; font-weight: 900; letter-spacing: .5px; } .ifr-sub { color: #b9c6dc; font-size: 13.5px; line-height: 1.4; margin-top: 4px; }
+.ifr-me { background: rgba(15, 26, 44, .8); border: 1px solid #2a4a78; border-radius: 14px; padding: 10px 12px; margin-bottom: 12px; }
+.ifr-me .xpbar { margin: 6px 0 4px; } .ifr-me small { color: #9fb3cc; }
+.ifr-pref { margin-top: 8px; font-size: 13px; } .ifr-pref button { margin: 4px 6px 0 0; padding: 7px 10px; border-radius: 10px; background: #13233a; color: #c8d4e4; border: 1px solid #2a4a78; font-weight: 800; }
+.ifr-pref button.on { background: #7b5cd6; color: #fff; border-color: #a58cff; }
+.ifr-big3 { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px 12px; }
+.ifr-b { -webkit-flex: 1 1 220px; flex: 1 1 220px; margin: 5px; padding: 14px; border-radius: 16px; text-align: left; color: #fff; border: 1px solid rgba(255,255,255,.15); min-height: 96px; }
+.ifr-b span { font-size: 26px; display: block; } .ifr-b b { display: block; font-size: 16px; margin: 4px 0; letter-spacing: .4px; } .ifr-b small { color: #e2e8f5; font-size: 12.5px; }
+.ifr-b.dose { background: linear-gradient(135deg, #0f7c88, #17a6b3); } .ifr-b.learn { background: linear-gradient(135deg, #3b1f6e, #6d46c9); } .ifr-b.defi { background: linear-gradient(135deg, #8a4b08, #d9891a); }
+.ifr-map { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -4px 12px; }
+.ifr-chp { position: relative; -webkit-flex: 1 1 170px; flex: 1 1 170px; margin: 4px; padding: 10px 10px 10px 12px; border-radius: 14px; text-align: left; background: #13233a; border: 1px solid #2f5585; color: #fff; min-height: 104px; }
+.ifr-chp .n { position: absolute; right: 10px; top: 8px; font-weight: 900; color: #6d84a6; } .ifr-chp .i { font-size: 24px; display: block; } .ifr-chp b { display: block; font-size: 13.5px; margin: 4px 0 6px; line-height: 1.25; }
+.ifr-chp small { color: #9fb3cc; font-size: 11.5px; } .ifr-chp.lock { opacity: .45; background: #0d1626; }
+.gauge { display: block; height: 6px; border-radius: 3px; background: #26324a; overflow: hidden; margin-bottom: 4px; } .gauge i { display: block; height: 100%; background: linear-gradient(90deg, #17a6b3, #2fe35a); }
+.ifr-board { background: rgba(15, 26, 44, .85); border: 1px solid #5a4210; border-radius: 14px; padding: 10px 12px; margin-bottom: 12px; }
+.ifr-bh { font-weight: 900; margin-bottom: 6px; } .ifr-bh small { font-weight: 400; color: #9fb3cc; }
+.ifr-board table { width: 100%; border-collapse: collapse; font-size: 13px; } .ifr-board th { text-align: left; color: #9fb3cc; font-weight: 700; padding: 4px; border-bottom: 1px solid #2a4a78; } .ifr-board td { padding: 5px 4px; border-bottom: 1px solid #1d2c44; vertical-align: top; }
+.ifr-team { margin-top: 8px; text-align: center; font-weight: 900; } .ifr-team span { color: #f2c21b; margin: 0 8px; } .ifr-team small { display: block; font-weight: 400; color: #9fb3cc; }
+.ifr-foot { text-align: center; color: #9fb3cc; font-size: 12.5px; } .lnk { background: none; border: 0; color: #8fd8ff; text-decoration: underline; padding: 4px; font-size: inherit; }
+.ifr-disc { margin-top: 8px; font-size: 11.5px; color: #8796ad; line-height: 1.4; }
+.ifr-gh { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 10px; } .ifr-gh .btn { padding: 8px 12px; }
+.ifr-prog { -webkit-flex: 1; flex: 1; height: 10px; border-radius: 5px; background: #26324a; overflow: hidden; margin: 0 10px; } .ifr-prog i { display: block; height: 100%; background: linear-gradient(90deg, #7b5cd6, #17a6b3); -webkit-transition: width .3s; transition: width .3s; }
+.ifr-cnt { font-weight: 800; color: #9fb3cc; margin-right: 8px; } .ifr-timer { font-weight: 900; background: #13233a; border: 1px solid #2a4a78; border-radius: 10px; padding: 5px 9px; } .ifr-timer.over { color: #ff6b6b; }
+.ifr-card { background: rgba(14, 24, 40, .92); border: 1px solid #2f5585; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+.ifr-tag { font-size: 12px; font-weight: 800; color: #b6a3ff; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.ifr-ctx { color: #c8d4e4; font-size: 14px; margin-bottom: 10px; line-height: 1.4; } .ifr-ctx small { color: #8796ad; }
+.ifr-atc { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; background: #06121f; border: 1px solid #1f7d4a; border-radius: 12px; padding: 10px; margin-bottom: 12px; font-size: 15px; line-height: 1.45; color: #b8ffcf; font-family: Menlo, Consolas, monospace; }
+.ifr-atc small { color: #9fb3cc; font-family: -apple-system, sans-serif; } .ifr-play { font-size: 24px; background: #0f3a24; border: 1px solid #2fe35a; border-radius: 50%; width: 48px; height: 48px; margin-right: 10px; -webkit-flex: none; flex: none; color: #fff; }
+.ifr-q { font-weight: 900; font-size: 15px; margin: 8px 0 8px; }
+.ifr-rb { min-height: 52px; border: 2px dashed #3a5a88; border-radius: 12px; padding: 6px; margin-bottom: 10px; background: rgba(6, 18, 31, .7); }
+.ifr-ph { color: #6d84a6; font-size: 13px; display: inline-block; padding: 10px 6px; }
+.ifr-frags { margin-bottom: 8px; }
+.ifr-chip { display: inline-block; margin: 4px; padding: 11px 13px; border-radius: 12px; background: #1b2f4d; border: 1px solid #3a5a88; color: #fff; font-weight: 800; font-size: 14.5px; }
+.ifr-chip.on { background: #7b5cd6; border-color: #a58cff; } .ifr-chip.used { opacity: .3; }
+.ifr-acts { margin-top: 8px; } .ifr-acts .btn { margin: 4px 8px 4px 0; } .btn.try { background: linear-gradient(135deg, #0f6e7c, #1b3f7a); border-color: #3fe0e8; color: #fff; font-weight: 900; }
+.ifr-hint { margin-top: 8px; background: #2a2208; border: 1px solid #f2c21b; border-radius: 10px; padding: 8px 10px; color: #ffe9a0; font-size: 13.5px; }
+.ifr-two { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -6px; } .ifr-two > div { margin: 0 6px; }
+.ifr-ill { -webkit-flex: 1 1 280px; flex: 1 1 280px; max-width: 460px; } .ifr-side { -webkit-flex: 1 1 280px; flex: 1 1 280px; } .ifr-ill.wide { margin: 0 auto 6px; max-width: 620px; }
+.ifr-svg { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid #2a4a78; }
+.ifr-choices button { display: block; width: 100%; margin: 6px 0; padding: 13px 12px; border-radius: 12px; text-align: left; background: #1b2f4d; border: 1px solid #3a5a88; color: #fff; font-weight: 700; font-size: 14.5px; }
+.ifr-choices button.good { background: #135c2f; border-color: #2fe35a; } .ifr-choices button.bad { background: #5c1a1a; border-color: #ff6b6b; }
+.ifr-fb { margin-top: 10px; border-radius: 12px; padding: 10px 12px; border: 1px solid #2a4a78; background: #0b1626; }
+.ifr-fb.ok { border-color: #2fe35a; } .ifr-fb.ko { border-color: #f2c21b; } .ifr-fb.crit { border-color: #ff4d4d; background: #2a0d0d; }
+.ifr-fbh { font-weight: 900; font-size: 16px; margin-bottom: 6px; } .ifr-msgs { font-size: 13.5px; line-height: 1.5; margin-bottom: 6px; color: #ffd7d7; }
+.ifr-fb.ok .ifr-msgs { color: #c8f5d6; } .ifr-why { font-size: 13.5px; line-height: 1.45; color: #dbe5f2; } .ifr-why small { color: #9fb3cc; }
+.ifr-errs { font-size: 12.5px; color: #9fb3cc; margin-top: 6px; }
+.ifr-refs { margin-top: 8px; } .ifr-ref { display: block; font-size: 12px; line-height: 1.35; color: #8fd8ff; background: #0d1a2c; border: 1px solid #1f3a5e; border-radius: 9px; padding: 6px 8px; margin: 4px 0; text-decoration: none; }
+.ifr-ref small { color: #8796ad; } .ifr-verify { color: #ffcf6b; }
+.ifr-cards { margin-bottom: 12px; } .ifr-memo { background: #0f1c30; border: 1px solid #2a4a78; border-radius: 12px; margin-bottom: 8px; }
+.ifr-memo summary { padding: 12px; font-weight: 900; cursor: pointer; } .ifr-memo > div { padding: 0 12px 12px; font-size: 13.5px; line-height: 1.45; } .ifr-memo p { margin: 2px 0 8px; color: #dbe5f2; } .ifr-memo b { color: #b6a3ff; font-size: 12px; text-transform: uppercase; }
+.ifr-range { width: 100%; margin: 14px 0 8px; }
+.ifr-end { text-align: center; } .ifr-big { font-size: 54px; } .ifr-end h2 { margin: 4px 0; } .ifr-rev { text-align: left; font-size: 13.5px; line-height: 1.45; padding-left: 20px; }
+#ifrTry { position: fixed; z-index: 60; left: 50%; top: 56px; width: 92%; max-width: 560px; -webkit-transform: translateX(-50%); transform: translateX(-50%); background: rgba(16, 12, 40, .95); border: 2px solid #7b5cd6; border-radius: 16px; padding: 10px 12px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+#ifrTry.done { border-color: #2fe35a; background: rgba(8, 40, 22, .95); }
+#ifrTry .it-h { font-weight: 900; } #ifrTry .it-t { font-size: 14px; margin: 4px 0 6px; } #ifrTry .it-hint { font-size: 13px; color: #ffe9a0; margin-bottom: 6px; }
+#ifrTry button { margin: 4px 8px 0 0; padding: 8px 12px; border-radius: 10px; border: 1px solid #3a5a88; background: #1b2f4d; color: #fff; font-weight: 800; } #ifrTry button.pri { background: #7b5cd6; border-color: #a58cff; }
 
 </style>
 </head>
@@ -630,6 +696,7 @@ body.immersion #immExit{display:block}
       </div>
       <div id="home" class="hidden"></div>
       <div id="ess" class="hidden"></div>
+      <div id="ifr" class="hidden"></div>
       <div id="sysNote" class="sysnote hidden"></div>
       <div id="toast"></div>
       <div id="timeBadge" class="hidden"></div>
@@ -653,7 +720,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '5.1';
+  TF.VERSION = '5.2.1';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -978,8 +1045,8 @@ body.immersion #immExit{display:block}
     note: 'Levier vers l\'avant = fermé (CLOSED) ; tiré vers l\'arrière = ALTERNATE AIR ON (OM-B p.417). Commun aux deux moteurs.' });
   add({ id: 'gear_emerg', label: 'MANUAL GEAR EXTENSION (levier rouge, sous le tableau à gauche de la console)', short: 'GEAR EMERG', type: 'photolever', positions: ['PUSHED IN', 'PULLED'], region: 'console', x: 701, y: 737, w: 22, h: 60, initial: 'PUSHED IN', ref: FIG,
     note: 'Tirer libère la pression hydraulique : le train sort par gravité (OM-B p.403-404). Normalement enfoncé (PUSHED IN).' });
-  add({ id: 'alt_static', label: 'ALTERNATE STATIC VALVE (sous le tableau, à gauche)', short: 'ALT STATIC', type: 'photolever', positions: ['CLOSED', 'OPEN'], region: 'underL', x: 310, y: 767, w: 28, h: 30, initial: 'CLOSED', ref: FIG, toConfirm: 'C13',
-    note: 'Prise statique de secours (pression cabine) en cas de panne du circuit Pitot-statique (OM-B p.410). Emplacement d\'après la figure OM-B ; bouton identifié sur la photo à confirmer.' });
+  add({ id: 'alt_static', label: 'ALTERNATE STATIC VALVE (petit bouton vert, sous le tableau à gauche)', short: 'ALT STATIC', type: 'photolever', positions: ['CLOSED', 'OPEN'], region: 'underL', x: 253, y: 739, w: 30, h: 30, initial: 'CLOSED', ref: FIG,
+    note: 'Prise statique de secours (pression cabine) en cas de panne du circuit Pitot-statique (OM-B p.410). Petit bouton vert sous le tableau à gauche — position confirmée par l\'équipage.' });
 
   TF.DATA.controls = C;
 
@@ -1036,7 +1103,9 @@ body.immersion #immExit{display:block}
       xpdr: { code: '7000', mode: 'STBY', level: 0, entry: '' }, pfdLevel: 'top', inset: true, tmrRef: true, meters: false, baroUnit: 'HPA',
       fd: false, yd: false, lat: '', vert: '', latArm: '', vertArm: '', refVs: 0, refIas: 0, refAlt: null,
       // Clignotements AFCS (Garmin p.390, 393, 415) : instant de la dernière transition automatique
-      latAt: null, vertAt: null, latArmAt: null, ydDiscAt: null
+      latAt: null, vertAt: null, latArmAt: null, ydDiscAt: null,
+      // Séquencement GPS : obs = mode OBS (séquencement manuel) ; susp = séquencement suspendu (remise de gaz / MAP) — Garmin p.65-66
+      obs: false, susp: false, maSeq: false
     };
   };
   /* Position de l'avion pour la mini-carte (mètres, repère local : origine seuil 10 de LFBU, x vers l'est, y vers le nord).
@@ -1136,7 +1205,8 @@ body.immersion #immExit{display:block}
     code: ['0', '1', '2', '3', '4', '5', '6', '7', 'Ident', 'BKSP', 'Back', '']
   };
   var PARENT = { map: 'top', layout: 'map', opt: 'top', altu: 'opt', xpdr: 'top', code: 'xpdr' };
-  G.pfdSoftkeys = function (g) { return (LV[g.pfdLevel] || LV.top).slice(); };
+  /* Softkey 5 du niveau 1 : OBS, qui devient SUSP quand le séquencement automatique est suspendu (Garmin p.65-66, Figure 2-26 ; p.242 « press the SUSP Softkey on the PFD ») */
+  G.pfdSoftkeys = function (g) { var k = (LV[g.pfdLevel] || LV.top).slice(); if ((g.pfdLevel || 'top') === 'top' && g.susp) k[4] = 'SUSP'; return k; };
   /* Softkeys « actives » (annonciateur allumé) pour l'affichage */
   G.pfdSoftkeysOn = function (g) {
     var k = G.pfdSoftkeys(g), x = g.xpdr;
@@ -1145,7 +1215,7 @@ body.immersion #immExit{display:block}
       if (g.pfdLevel === 'layout') return (l === 'Map Off' && g.inset === false) || (l === 'Inset Map' && g.inset !== false);
       if (g.pfdLevel === 'altu') return (l === 'Meters' && g.meters) || (l === 'IN' && g.baroUnit === 'IN') || (l === 'HPA' && g.baroUnit !== 'IN');
       if (g.pfdLevel === 'opt') return l === 'STD Baro' && g.std;
-      if (g.pfdLevel === 'top') return l === 'Tmr/Ref' && g.tmrRef;
+      if (g.pfdLevel === 'top') return (l === 'Tmr/Ref' && g.tmrRef) || (l === 'OBS' && g.obs);
       return false;
     });
   };
@@ -1168,6 +1238,8 @@ body.immersion #immExit{display:block}
         }
         else if (lab === 'Ident') ident();
         else if (lab === 'Tmr/Ref') g.tmrRef = !g.tmrRef;
+        else if (lab === 'SUSP') { g.susp = false; g.maSeq = true; ck.s.sys.history.suspRel = true; } // reprise du séquencement : 1er point de la procédure de remise de gaz actif (Garmin p.66, FAQ « missed approach »)
+        else if (lab === 'OBS') { if (g.cdi === 'GPS') g.obs = !g.obs; }                                // OBS seulement en navigation GPS (tableau softkeys PFD)
         break;
       case 'map': if (lab === 'Layout') g.pfdLevel = 'layout'; break;
       case 'layout': if (lab === 'Map Off') g.inset = false; else if (lab === 'Inset Map') g.inset = true; break;
@@ -1265,6 +1337,9 @@ body.immersion #immExit{display:block}
     var g = ck.s.g, sys = ck.s.sys, gnd = ck.s.flight.onGround;
     g.fd = true; g.lat = gnd ? 'TO' : 'GA'; g.vert = gnd ? 'TO' : 'GA'; g.latArm = ''; g.vertArm = ''; g.latAt = g.vertAt = null;
     sys.history.ga = true;
+    // En vol : séquencement des points suspendu (annonce SUSP sur le HSI, softkey OBS → SUSP). L'élève relâche avec la softkey SUSP du PFD
+    // (consigne équipage ; Garmin p.65-66). Divergence possible : le PDP p.251 indique que le GA « release SUSP » — à confirmer en simulateur.
+    if (!gnd) { g.susp = true; g.obs = false; g.maSeq = false; sys.history.suspRel = false; }
   };
   G.afcsView = function (g, t) {
     function fl(at) { return at != null && t - at < G.FLASH_MS; }
@@ -2511,7 +2586,7 @@ body.immersion #immExit{display:block}
   IS['ess-lined-28'] = { label: 'Aligné piste 28 à l\'intersection E', build: [{ initial: 'lined-up' }, { flight: { hdg: 276, mx: 1300, my: -160, trail: [] } }, { g: { hdg: 276 } }] };
   IS['ess-climb'] = { label: 'Montée initiale piste 28, au-dessus de la TOSA', build: [{ initial: 'ess-lined-28' }, { proc: 'takeoff' }, { ops: [{ set: 'landing_light', to: 'OFF' }, { set: 'fuel_pump_l', to: 'OFF' }, { set: 'fuel_pump_r', to: 'OFF' }] }, { flight: { onGround: false, ias: 92, alt: 2000, vs: 300, hdg: 276, script: null, pitch: null } }, { g: { fd: false, lat: '', vert: '', latArm: '', vertArm: '', hdg: 276, altSel: 1400 } }] };
   IS['ess-cruise'] = { label: 'Croisière, AP engagé, avant la descente', build: [{ initial: 'cruise-done' }, { flight: { alt: 2600, vs: 0 } }, { g: { refAlt: 2600 } }, { ops: [{ waitFor: 'apReady', timeout: 15000 }, { press: 'ap_ap' }] }] };
-  IS['ess-final'] = { label: 'En finale piste 28, ≈ 2,4 NM', build: [{ initial: 'approach-done' }, { flight: { hdg: 276, mx: 5915, my: -726, trail: [], alt: 1500, ias: 100, vs: -500 } }, { g: { hdg: 276 } }] };
+  IS['ess-final'] = { label: 'En finale piste 28, ≈ 2,4 NM', build: [{ initial: 'approach-done' }, { flight: { hdg: 276, mx: 5915, my: -726, trail: [], alt: 1500, ias: 100, vs: -500 } }, { g: { hdg: 276, pfdLevel: 'top' } }] };
   IS['ess-park'] = { label: 'De retour au Pkg Airbus', build: [{ initial: 'after-landing-done' }, { flight: { onGround: true, ias: 0, alt: 420, vs: 0, hdg: 7, mx: 680, my: -366, trail: [], script: null } }, { ops: [{ set: 'taxi_light', to: 'OFF' }] }] };
   IS['ess-taxi'] = { label: 'Prêt à rouler (After start C/L faite)', build: [{ initial: 'after-start-cl' }] };
   IS['ess-ap'] = { label: 'Moteurs tournants, avionique ON, auto-test AFCS terminé', build: [{ initial: 'after-start-up' }, { ops: [{ set: 'av_master', to: 'ON' }, { waitFor: 'apReady', timeout: 15000 }] }] };
@@ -2544,7 +2619,6 @@ body.immersion #immExit{display:block}
   TF.DATA.toConfirm.push(
     { id: 'C10', what: 'Position exacte des softkeys de 2e niveau (PFD Opt, XPDR) sur le PFD', why: 'Le guide Garmin liste les fonctions sans position : ordre de la liste appliqué de gauche à droite.' },
     { id: 'C12', what: 'Seuil d\'animation de l\'anémomètre de secours (« two times »)', why: 'Fenêtre pédagogique retenue : à partir de 30 kt (graduation basse de l\'instrument à 40 kt). À confirmer en vol.' },
-    { id: 'C13', what: 'Bouton de l\'alternate static valve sur la photo F-HKDA', why: 'Emplacement déduit de la figure OM-B p.370 (rep. 14, sous le tableau à gauche, à droite du rep. 31) ; inscription illisible sur la photo. À confirmer dans l\'avion.' },
     { id: 'C11', what: 'Valeurs d\'exercice (QNH destination 1018, minima 650 ft, altitudes 2000/3000 ft)', why: 'Données d\'entraînement fictives, modifiables : jamais des données réelles.' }
   );
 })(this);
@@ -2634,6 +2708,10 @@ body.immersion #immExit{display:block}
     bugSynced: function (S) { var d = Math.abs(((S.g.hdg - S.flight.hdg + 540) % 360) - 180); return d <= 1; },
     dbAcked: function (S) { return !!S.sys.dbAcked; },
     altSel2500c: function (S) { return S.g.altSel === 2500; },
+    ifrStd: function (S) { return !!S.g.std; },
+    ifrQnh1008: function (S) { return !S.g.std && S.g.baro === 1008; },
+    suspNavDone: function (S) { return !S.g.susp && !!S.sys.history.suspRel && (S.g.lat === 'GPS' || S.g.lat === 'HDG' || /VOR|GPS/.test(S.g.latArm || '')); },
+    suspReleased: function (S) { return !S.g.susp && !!S.sys.history.suspRel; },
     gaMode: function (S) { return S.g.lat === 'TO' || S.g.lat === 'GA'; },
     cwsTested: function (S) { return !!S.sys.history.cws; },
     noseUpDnTested: function (S) { return !!(S.sys.history.noseUp && S.sys.history.noseDn); },
@@ -3514,7 +3592,7 @@ body.immersion #immExit{display:block}
       C('Power lever', 'Power levers', 'CHECK, SET IDLE', ['power_l', 'power_r'], { om: '12.h' }),
       C('Alternate air', 'Alternate air', 'CLOSED', ['alt_air'], { om: '12.i', note: 'Levier ALTERNATE AIR NOIR, sous le tableau à DROITE de la console (OM-B p.370 rep. 28 ; p.417) : commun aux deux moteurs ; CLOSED au sol.' }),
       C('Manual gear extension', 'Manual gear extension', 'PUSHED IN', ['gear_emerg'], { om: '12.j', note: 'Levier ROUGE d\'extension de secours du train, sous le tableau à GAUCHE de la console (OM-B p.370 rep. 29 ; p.403) : enfoncé (PUSHED IN). Le tirer libère la pression hydraulique.' }),
-      C('Alternate static', 'Alternate static source', 'CLOSED', ['alt_static'], { om: '12.k', note: 'Valve sous le tableau, à gauche, côté pilote (OM-B p.370, rep. 14 ; p.410).' }),
+      C('Alternate static', 'Alternate static source', 'CLOSED', ['alt_static'], { om: '12.k', note: 'Petit bouton vert sous le tableau, à gauche, côté pilote (OM-B p.370, rep. 14 ; p.410 — position confirmée par l\'équipage).' }),
       C('Gear', 'Gear selector', 'DOWN', ['gear_lever'], { om: '12.l' }),
       C('Avionic master', 'Avionic Master', 'OFF', ['av_master'], { om: '12.m' }),
       C('Elec master', 'Elect. Master', 'OFF', ['elec_master'], { om: '12.n' }),
@@ -3775,7 +3853,9 @@ body.immersion #immExit{display:block}
       C('Volets', 'Flaps', 'APP', ['flaps'], { om: '11.b', vals: ['Déjà APP en IFR ; depuis LDG → APP', 'Minimum 90 KIAS'] }),
       C('Vario positif', 'Landing gear', 'UP, CHECK UNSAFE LIGHT OFF', ['gear_lever'], { om: '11.d', sim: 'gaGearUp', vals: ['Vario positif établi'] }),
       C('Volets UP', 'Flaps', 'UP', ['flaps'], { om: '11.e', sim: 'gaFlapsUp', vals: ['IAS ≥ 86 kt (PDP) — OM-B : 90 KIAS mini'] }),
-      C('SUSP / NAV', 'Missed approach: release SUSP, NAV (published) or HDG (ATC)', 'SELECT', ['ap_nav', 'ap_hdg'], { om: 'OÄM 42-209 e', vals: ['Libérer SUSP pour suivre la procédure de remise de gaz (PDP)', 'NAV : procédure publiée — HDG : cap ATC'] }),
+      C('SUSP / NAV', 'Missed approach: release SUSP, NAV (published) or HDG (ATC)', 'SELECT', ['pfd_sk5', 'ap_nav', 'ap_hdg'], { om: 'OÄM 42-209 e', multi: true, sim: 'suspNav', done: 'suspNavDone',
+        vals: ['Softkey SUSP du PFD (5e en partant de la gauche, à la place d\'OBS) : l\'annonce SUSP disparaît du HSI, la remise de gaz publiée devient active', 'Puis NAV (procédure publiée, GPS en magenta) — ou HDG si l\'ATC donne un cap'],
+        note: 'Garmin G1000 NXi p.65-66 (Figure 2-26) et p.242 : « press the SUSP Softkey on the PFD ». Le PDP p.251 dit que le bouton GA libère SUSP : divergence signalée, consigne équipage retenue (SUSP à presser) — à confirmer au simulateur.' }),
       C('Montée sûre', 'Fuel pumps LH / RH', 'OFF', ['fuel_pump_l', 'fuel_pump_r'], { om: '11.f', sim: 'pumpsOff' }),
       C('« After takeoff climb C/L »', 'After takeoff / climb checklist', 'COMPLETE', null, { call: 'After takeoff climb checklist', lines: [['Gear and flaps', 'UP'], ['Fuel pumps', 'OFF'], ['Power', 'SET'], ['Pitot', 'AS REQUIRED'], ['Engines parameters', 'CHECK'], ['Altimeters', 'SET AND COMPARED']] })
     ] },
@@ -4057,6 +4137,186 @@ body.immersion #immExit{display:block}
       'OM-B p.101 — « it is very important to reduce the asymmetry in thrust to regain directional control »',
       'L\'OM-B donne le principe (réduire la dissymétrie) ; le « pitch down » relève du cours MEP.')
   ] };
+})(this);
+
+</script>
+<script>/* js/data/ifr.js */
+/* L'IFR POUR LES NULS — contenus (données seulement, aucune logique de jeu).
+ * Chaque exercice : id stable, thème, niveau, objectif, contexte, question/action, réponses acceptables, justification,
+ * erreurs fréquentes, références (ids de TF.DATA.ifr.sources), date de vérification des sources.
+ * Mise à jour réglementaire : modifier uniquement ce fichier (sources + exercices). Les scénarios sont FICTIFS sauf mention contraire.
+ * Catégories de règle (cat) : eu = règle européenne, fr = particularité française, local = procédure locale publiée,
+ *   ops = exigence liée au type d'exploitation, avion = limitation avion / équipement, operateur = consigne opérateur (ATO / OM-B / PDP),
+ *   pedago = pratique recommandée / astuce pédagogique.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  var CHECKED = '2026-11-15'; // date de consultation des sources en ligne
+
+  var sources = {
+    'sera-8015e': { t: 'SERA.8015 (e) — Collationnement des clairances et informations de sécurité', pub: 'Règlement d\'exécution (UE) n° 923/2012 (SERA), version consolidée', url: 'https://eur-lex.europa.eu/eli/reg_impl/2012/923/oj', cat: 'eu', date: CHECKED },
+    'sera-8015eb': { t: 'SERA.8015 (eb) — Calage altimétrique : altitude ≤ TA, niveau ≥ TL, couche de transition, QNH dans la clairance de descente', pub: 'Règlement d\'exécution (UE) n° 923/2012 (SERA)', url: 'https://eur-lex.europa.eu/eli/reg_impl/2012/923/oj', cat: 'eu', date: CHECKED },
+    'sera-ear': { t: 'Easy Access Rules for Standardised European Rules of the Air (SERA) — AMC / GM', pub: 'EASA', url: 'https://www.easa.europa.eu/en/document-library/easy-access-rules/easy-access-rules-standardised-european-rules-air-sera', cat: 'eu', date: CHECKED },
+    'aip-enr17': { t: 'AIP France ENR 1.7 — Procédures de calage altimétrique (TA par TMA, TL ≥ TA + 1 000 ft, changement de calage)', pub: 'SIA — eAIP France (vérifier l\'AIRAC en vigueur)', url: 'https://www.sia.aviation-civile.gouv.fr/', cat: 'fr', date: CHECKED },
+    'r2021-2237': { t: 'Définitions DA/DH (3D), MDA/MDH (2D), remise de gaz', pub: 'Règlement d\'exécution (UE) 2021/2237 modifiant le règlement Air OPS (UE) n° 965/2012, Annexe I', url: 'https://eur-lex.europa.eu/eli/reg_impl/2021/2237/oj', cat: 'eu', date: CHECKED },
+    'nco-op210': { t: 'NCO.OP.210 — Début et poursuite de l\'approche (poursuite sous DA/H ou MDA/H si références visuelles établies et maintenues)', pub: 'Règlement (UE) n° 965/2012 (Air OPS), Annexe VII Part-NCO — Easy Access Rules EASA', url: 'https://www.easa.europa.eu/en/document-library/easy-access-rules/easy-access-rules-air-operations', cat: 'ops', date: CHECKED,
+      verify: 'Cadre d\'exploitation de nos vols école (ATO, Part-NCO ?) à confirmer avec l\'instructeur.' },
+    'skybrary-rb': { t: 'Read-back or Hear-back — « Roger / Wilco » ne remplacent pas un collationnement', pub: 'SKYbrary (synthèse, non réglementaire)', url: 'https://skybrary.aero/articles/read-back-or-hear-back', cat: 'pedago', date: CHECKED },
+    'icao-cs': { t: 'Indicatif en fin de collationnement', pub: 'Usage OACI (phraséologie, Annexe 10 Vol. II / Doc 9432)', url: '', cat: 'pedago', date: CHECKED,
+      verify: 'Article exact et usage DGAC à vérifier dans le manuel de phraséologie en vigueur.' },
+    'garmin-susp': { t: 'Softkey SUSP / OBS et remise de gaz (séquencement suspendu au MAP)', pub: 'Garmin G1000 NXi Pilot\'s Guide DA42NG, 190-02237-00 Rev. A, p.65-66 et p.242', url: '', cat: 'avion', date: 'Rev. A' },
+    'garmin-baro': { t: 'Calage BARO (bouton CRS/BARO) et softkey STD Baro', pub: 'Garmin G1000 NXi Pilot\'s Guide DA42NG, 190-02237-00 Rev. A, p.52', url: '', cat: 'avion', date: 'Rev. A' },
+    'pdp-stab': { t: 'Approche stabilisée : 1 000 ft AAL en IMC (500 ft en VMC)', pub: 'PDP DA42 VI V1.2 (consigne opérateur école)', url: '', cat: 'operateur', date: 'V1.2' },
+    'omb-ga': { t: 'Remise de gaz — OM-B §11 + OÄM 42-209', pub: 'OM-B DA42 VI Issue C', url: '', cat: 'operateur', date: 'Issue C' }
+  };
+  var CAT = { eu: '🇪🇺 Règle européenne', fr: '🇫🇷 Particularité française', local: '📍 Procédure locale', ops: '📘 Type d\'exploitation', avion: '✈︎ Avion / équipement', operateur: '🏫 Consigne opérateur', pedago: '💡 Pratique / astuce' };
+
+  /* ---------- Chapitres (seuls les chapitres « on » sont jouables ; les autres sont affichés verrouillés) ---------- */
+  var chapters = [
+    { id: 'base', n: 1, ico: '🧭', title: 'L\'IFR, c\'est quoi exactement ?', on: false },
+    { id: 'atc', n: 2, ico: '🎙', title: 'Parler à l\'ATC sans stress', on: true, game: 'radio', gameTitle: 'Tu es à la radio',
+      intro: 'Le contrôleur parle vite, toi tu collationnes juste ce qui compte : niveaux, caps, vitesses, calages, codes, pistes, fréquences. Le reste, tu l\'accuses réception clairement.' },
+    { id: 'alti', n: 3, ico: '📏', title: 'Altitudes, QNH et niveaux de vol', on: true, game: 'calage', gameTitle: 'Le bon calage',
+      intro: 'Sous la TA tu parles en altitude (QNH), au-dessus de la TL en niveau (1013). Entre les deux : la couche de transition. La TA et la TL dépendent de l\'endroit et du jour — on ne les invente jamais.' },
+    { id: 'meteo', n: 4, ico: '🌦', title: 'Météo IFR et décision de départ', on: false },
+    { id: 'prep', n: 5, ico: '🗺', title: 'Préparer un vol IFR', on: false },
+    { id: 'sidstar', n: 6, ico: '🛣', title: 'SID, STAR et lecture des cartes', on: false },
+    { id: 'appr', n: 7, ico: '🛬', title: 'Les approches IFR expliquées simplement', on: true, game: 'approche', gameTitle: 'Sauve ton approche',
+      intro: 'IAF → IF → FAF/FAP → minima → atterrissage ou remise de gaz. Aux minima, la question est binaire : références visuelles requises ou pas.' },
+    { id: 'g1000', n: 8, ico: '🖥', title: 'G1000 et navigation IFR sur DA42', on: false },
+    { id: 'imprevus', n: 9, ico: '🔀', title: 'Attente, déroutement et imprévus', on: false },
+    { id: 'pieges', n: 10, ico: '⚠️', title: 'Les situations qui piègent en IFR', on: false }
+  ];
+
+  /* ---------- Fiches mémo (≤ 1 écran) : À retenir → Exemple → Piège → Référence ---------- */
+  var cards = [
+    { id: 'c-rb', ch: 'atc', t: 'Qu\'est-ce qu\'on collationne ?', keep: 'Toujours : clairances de route ; entrer, atterrir, décoller, attendre avant, traverser, rouler ou remonter sur une piste ; piste en service, calages, codes transpondeur, nouvelles fréquences, niveaux, caps, vitesses ; niveau de transition (ATC ou ATIS).',
+      ex: '« Climb flight level 70, turn right heading 180 » → « Climb flight level 70, right heading 180, Tiffany 1 ».', trap: '« Roger » ou « Wilco » seuls ne valent pas collationnement d\'un niveau ou d\'un cap.', refs: ['sera-8015e', 'skybrary-rb'] },
+    { id: 'c-ack', ch: 'atc', t: 'Collationner ou accuser réception ?', keep: 'Les autres clairances et instructions (dont conditionnelles et roulage) : collationnées OU acquittées de façon à montrer qu\'elles sont comprises et seront appliquées.', ex: 'Information de trafic : « Looking out, Tiffany 1 » ou « Traffic in sight, Tiffany 1 ».',
+      trap: 'Un « hold short » ou une piste dans l\'instruction de roulage : ça, on le collationne toujours.', refs: ['sera-8015e'] },
+    { id: 'c-say', ch: 'atc', t: 'Pas compris ? On demande.', keep: 'Un doute sur un niveau, un cap ou une piste : « Say again » (ou « Confirm … »). On n\'exécute jamais une instruction supposée.', ex: '« Tiffany 1, climb fli… —khhh— heading … » → « Say again, Tiffany 1 ».', trap: 'Collationner ce qu\'on croit avoir entendu en espérant que le contrôleur corrige.', refs: ['sera-8015e'] },
+    { id: 'c-cs', ch: 'atc', t: 'L\'indicatif', keep: 'Usage : l\'indicatif termine le collationnement — il dit au contrôleur QUI a compris.', ex: '« Squawk 4521, Tiffany 1 ».', trap: 'Collationner sans indicatif sur une fréquence chargée : le contrôleur ne sait pas qui a répondu.', refs: ['icao-cs'], verify: true },
+    { id: 'c-ta', ch: 'alti', t: 'QNH ou standard ?', keep: 'À la TA ou en dessous : altitude (QNH). Au TL ou au-dessus : niveau de vol (1013). Dans la couche de transition : niveaux en montée, altitudes en descente.', ex: 'Montée vers FL 80, TA 5 000 ft : 1013 au plus tard en passant 5 000 ft.',
+      trap: 'Croire que la TA vaut 5 000 ft partout : elle est publiée (TMA, cartes, ATIS/ATC).', refs: ['sera-8015eb', 'aip-enr17'] },
+    { id: 'c-tl', ch: 'alti', t: 'Le niveau de transition', keep: 'TL = premier niveau de vol utilisable au-dessus de la TA, au moins 1 000 ft au-dessus (France). Il bouge avec le QNH : c\'est l\'ATC / l\'ATIS qui le donne, et il se collationne.', ex: 'TA 5 000 ft, QNH 1008 : FL 60 ≈ 5 860 ft (trop bas), FL 70 ≈ 6 860 ft → TL FL 70.',
+      trap: 'Prendre le TL d\'hier : avec un QNH bas, le TL monte.', refs: ['aip-enr17', 'sera-8015e'] },
+    { id: 'c-hl', ch: 'alti', t: 'Hauteur, altitude, niveau', keep: 'Hauteur = au-dessus du sol / seuil. Altitude = au-dessus de la mer (QNH). Niveau = surface isobare 1013,25 hPa.', ex: 'Altimètre au QNH : 2 500 ft, terrain à 500 ft → hauteur 2 000 ft.', trap: 'Altimètre resté sur 1013 alors que le QNH est bas : tu es plus bas que ce qu\'il affiche.', refs: ['sera-8015eb'] },
+    { id: 'c-g1000baro', ch: 'alti', t: 'Le calage sur le G1000', keep: 'Gros bouton BARO (CRS/BARO, PFD) : calage en hPa, affiché en cyan sous l\'altimètre. STD : softkey PFD Opt → STD Baro.', ex: 'Passage TA en montée : PFD Opt → STD Baro → « STD BARO » sous l\'altimètre.', trap: 'Régler le calage du PFD et oublier l\'altimètre de secours.', refs: ['garmin-baro'] },
+    { id: 'c-seg', ch: 'appr', t: 'IAF, IF, FAF, minima : qui fait quoi ?', keep: 'IAF : début de l\'approche initiale. IF : début de l\'intermédiaire (on se configure, on s\'aligne). FAF/FAP : début du segment final. Minima : DA/H (3D) ou MDA/H (2D). MAPt / DA : point de remise de gaz.',
+      ex: 'Approche 3D : descente continue depuis le FAP jusqu\'à la DA.', trap: 'Commencer la descente finale avant le FAF/FAP « pour gagner du temps ».', refs: ['r2021-2237'] },
+    { id: 'c-da', ch: 'appr', t: 'DA ou MDA ?', keep: 'DA/DH (3D) : altitude à laquelle la remise de gaz doit être entamée si les références visuelles requises ne sont pas acquises. MDA/MDH (2D) : on ne descend pas en dessous sans références visuelles requises.',
+      ex: 'LPV / ILS : DA. LNAV seul : MDA.', trap: 'Traiter la DA comme une MDA (palier à la DA) ou « descendre un peu pour voir ».', refs: ['r2021-2237', 'nco-op210'] },
+    { id: 'c-cont', ch: 'appr', t: 'Continuer sous les minima ?', keep: 'Seulement si les références visuelles adaptées à l\'approche et à la piste sont établies aux minima et restent maintenues. Sinon : remise de gaz, immédiatement.', ex: 'À la DA, rampe d\'approche en vue : « Continue ». Rien en vue : « Go around ».',
+      trap: 'Des trouées vers le sol à la verticale ne sont pas les références requises.', refs: ['nco-op210'] },
+    { id: 'c-susp', ch: 'appr', t: 'Remise de gaz sur G1000 : SUSP', keep: 'Après le MAP / la remise de gaz, le séquencement GPS est suspendu (SUSP sur le HSI). La softkey 5 du PFD devient SUSP : la presser active la procédure de remise de gaz publiée, puis NAV.',
+      ex: 'GA → volets, train → SUSP → NAV (ou HDG si l\'ATC donne un cap).', trap: 'Engager NAV sans libérer SUSP : l\'avion ne suit pas la remise de gaz publiée.', refs: ['garmin-susp', 'omb-ga'],
+      note: 'Divergence : le PDP p.251 indique que le bouton GA libère SUSP ; consigne équipage retenue ici (softkey SUSP à presser) — à confirmer au simulateur.' }
+  ];
+
+  /* ---------- Chapitre 2 — « Tu es à la radio » (scénarios fictifs, indicatif fictif « Tiffany 1 », fréquences fictives) ----------
+   * frags : fragments proposés. k = élément requis (même k = formulations équivalentes acceptées) ; bad = erreur (message) ;
+   *         crit = erreur critique de sécurité ; neutral = accepté mais facultatif ; weak = « Roger / Wilco ».
+   * need : éléments obligatoires. Le moteur accepte toute combinaison qui contient tous les « need » sans « bad ». */
+  var radio = [
+    { id: 'r-lvlhdg', lvl: 1, obj: 'Collationner un niveau et un cap', ctx: 'Montée initiale, contrôle d\'approche.',
+      atc: 'Tiffany 1, climb flight level 70, turn right heading 180.', fr: 'Monte au niveau 70, vire à droite cap 180.',
+      frags: [{ t: 'Climb flight level 70', k: 'lvl' }, { t: 'Right heading 180', k: 'hdg' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Climb flight level 170', bad: 'Niveau 170 au lieu de 70 : erreur de niveau, la plus dangereuse.', crit: true },
+        { t: 'Left heading 180', bad: 'Sens de virage inversé.', crit: true }, { t: 'Heading 080', bad: 'Cap faux.', crit: true }, { t: 'Wilco', weak: true }],
+      need: ['lvl', 'hdg', 'cs'], why: 'Niveaux et caps font partie de la liste à collationner toujours.', errs: ['Niveau / cap inversés', '« Wilco » à la place du collationnement'], refs: ['sera-8015e', 'icao-cs'] },
+    { id: 'r-qnh', lvl: 1, obj: 'Altitude + QNH dans une clairance de descente', ctx: 'Descente vers l\'approche, sous le niveau de transition.',
+      atc: 'Tiffany 1, descend altitude 3000 feet, QNH 1008.', fr: 'Descends vers 3 000 ft au QNH 1008.',
+      frags: [{ t: 'Descend altitude 3000 feet', k: 'alt' }, { t: 'QNH 1008', k: 'qnh' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'QNH 1018', bad: 'QNH faux : 10 hPa ≈ 270 à 300 ft d\'erreur d\'altitude.', crit: true },
+        { t: 'Descend flight level 30', bad: 'Ce n\'est pas un niveau : une altitude au QNH.', crit: true }, { t: 'QFE 1008', bad: 'Le contrôleur a donné un QNH, pas un QFE.' }, { t: 'Roger', weak: true }],
+      need: ['alt', 'qnh', 'cs'], why: 'Altitude et calage se collationnent ; le QNH accompagne la 1re clairance sous le TL.', errs: ['Oublier le QNH', 'Confondre altitude et niveau'], refs: ['sera-8015e', 'sera-8015eb'] },
+    { id: 'r-freq', lvl: 1, obj: 'Changement de fréquence', ctx: 'Transfert vers un autre secteur (fréquence fictive).',
+      atc: 'Tiffany 1, contact Approach 120.375.', fr: 'Contacte l\'approche sur 120.375.',
+      frags: [{ t: '120.375', k: 'freq' }, { t: 'Approach 120.375', k: 'freq' }, { t: 'Tiffany 1', k: 'cs' }, { t: '120.735', bad: 'Chiffres inversés : tu quittes la bonne fréquence pour une mauvaise.', crit: true }, { t: 'Roger', weak: true }, { t: 'Good day', neutral: true }],
+      need: ['freq', 'cs'], why: 'Une nouvelle fréquence se collationne toujours.', errs: ['Chiffres inversés', '« Roger » seul'], refs: ['sera-8015e'] },
+    { id: 'r-sq', lvl: 1, obj: 'Code transpondeur', ctx: 'Au départ, clairance reçue.',
+      atc: 'Tiffany 1, squawk 4521.', fr: 'Affiche 4521 au transpondeur.',
+      frags: [{ t: 'Squawk 4521', k: 'sq' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Squawk 4512', bad: 'Code faux : le radar t\'identifie comme un autre.', crit: true }, { t: 'Wilco', weak: true }],
+      need: ['sq', 'cs'], why: 'Les codes SSR se collationnent toujours.', errs: ['Chiffres permutés'], refs: ['sera-8015e'] },
+    { id: 'r-to', lvl: 2, obj: 'Autorisation de décollage', ctx: 'Aligné ou au point d\'arrêt, piste 28 (exercice).',
+      atc: 'Tiffany 1, runway 28, wind 260 degrees 8 knots, cleared for take-off.', fr: 'Piste 28, vent 260° 8 kt, autorisé décollage.',
+      frags: [{ t: 'Runway 28', k: 'rwy' }, { t: 'Cleared for take-off', k: 'clr' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Wind 260 degrees 8 knots', neutral: true },
+        { t: 'Runway 10', bad: 'Mauvaise piste : erreur critique.', crit: true }, { t: 'Ready for departure', bad: 'Ce n\'est pas un collationnement : tu annonces que tu es prêt.' }],
+      need: ['rwy', 'clr', 'cs'], why: 'Toute autorisation de décoller d\'une piste se collationne, piste comprise. Le vent n\'est pas exigé.', errs: ['Oublier la piste', 'Collationner le vent mais pas l\'autorisation'], refs: ['sera-8015e'] },
+    { id: 'r-hs', lvl: 2, obj: 'Roulage avec « hold short »', ctx: 'Roulage vers le point d\'arrêt (exercice).',
+      atc: 'Tiffany 1, taxi holding point E runway 28 via F, hold short runway 28.', fr: 'Roule au point d\'arrêt E piste 28 via F, attends avant la piste 28.',
+      frags: [{ t: 'Holding point E runway 28 via F', k: 'hp' }, { t: 'Hold short runway 28', k: 'hs' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Line up runway 28', bad: 'Tu n\'es PAS autorisé à t\'aligner : risque d\'incursion.', crit: true },
+        { t: 'Cross runway 28', bad: 'Personne ne t\'a autorisé à traverser.', crit: true }, { t: 'Roger', weak: true }],
+      need: ['hp', 'hs', 'cs'], why: '« Hold short » d\'une piste : collationnement obligatoire. Le cheminement de roulage : collationné ou acquitté clairement.', errs: ['Oublier « hold short »', 'Supposer un alignement'], refs: ['sera-8015e'] },
+    { id: 'r-spd', lvl: 2, obj: 'Instruction de vitesse', ctx: 'Vecteurs radar en approche.',
+      atc: 'Tiffany 1, reduce speed 120 knots.', fr: 'Réduis à 120 kt.',
+      frags: [{ t: 'Reduce speed 120 knots', k: 'spd' }, { t: 'Speed 120 knots', k: 'spd' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Reduce speed 100 knots', bad: 'Vitesse fausse.', crit: true }, { t: 'Wilco', weak: true }],
+      need: ['spd', 'cs'], why: 'Les instructions de vitesse se collationnent.', errs: ['« Wilco » seul'], refs: ['sera-8015e'] },
+    { id: 'r-tl', lvl: 2, obj: 'Niveau + niveau de transition', ctx: 'Descente, le contrôleur donne le TL.',
+      atc: 'Tiffany 1, descend flight level 80, transition level 70.', fr: 'Descends niveau 80, niveau de transition 70.',
+      frags: [{ t: 'Descend flight level 80', k: 'lvl' }, { t: 'Transition level 70', k: 'tl' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Descend altitude 8000 feet', bad: 'Au-dessus du TL, on parle en niveau de vol.', crit: true }, { t: 'Transition level 80', bad: 'Tu mélanges le niveau autorisé et le TL.' }],
+      need: ['lvl', 'tl', 'cs'], why: 'Le niveau de transition se collationne, qu\'il vienne de l\'ATC ou de l\'ATIS.', errs: ['Oublier le TL'], refs: ['sera-8015e'] },
+    { id: 'r-say', lvl: 1, obj: 'Demander une répétition', ctx: 'Message brouillé.',
+      atc: 'Tiffany 1, climb fli… [brouillé] …ding one…', fr: 'Message incompréhensible : niveau et cap inconnus.',
+      frags: [{ t: 'Say again', k: 'sa' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Climb flight level 100', bad: 'Tu inventes un niveau : jamais d\'autorisation supposée.', crit: true }, { t: 'Heading 100', bad: 'Cap supposé.', crit: true }, { t: 'Roger', bad: '« Roger » dit au contrôleur que tu as compris… alors que non.' }],
+      need: ['sa', 'cs'], why: 'En cas de doute on fait répéter ou confirmer. On n\'exécute jamais une instruction supposée.', errs: ['Deviner la fin du message'], refs: ['sera-8015e'] },
+    { id: 'r-tfc', lvl: 1, obj: 'Information de trafic : accuser réception', ctx: 'Croisière, service radar.',
+      atc: 'Tiffany 1, traffic 2 o\'clock, 5 miles, opposite direction, 1000 feet below.', fr: 'Trafic à 2 h, 5 NM, sens opposé, 1 000 ft plus bas.',
+      frags: [{ t: 'Looking out', k: 'ack' }, { t: 'Traffic in sight', k: 'ack' }, { t: 'Tiffany 1', k: 'cs' }, { t: 'Descend 1000 feet', bad: 'Une information de trafic n\'est pas une instruction : on ne change pas de niveau sans clairance.', crit: true }],
+      need: ['ack', 'cs'], why: 'Pas dans la liste « à collationner toujours » : on accuse réception clairement, plusieurs formulations sont correctes.', errs: ['Manœuvrer sans clairance'], refs: ['sera-8015e'] }
+  ];
+
+  /* ---------- Chapitre 3 — « Le bon calage » (scénarios FICTIFS : TA / TL / QNH donnés dans l'énoncé) ----------
+   * vis : illustration (altitude avion, sens, TA, TL, QNH). try : action réelle dans le cockpit (validée sur l'état du G1000). */
+  var calage = [
+    { id: 'a-climb-low', lvl: 1, obj: 'Calage sous la TA en montée', ctx: 'Scénario fictif : TA 5 000 ft, TL FL 70, QNH 1008. Tu montes vers FL 80 et passes 4 000 ft.', vis: { alt: 4000, dir: 1, ta: 5000, tl: 70, qnh: 1008 },
+      q: 'Quel calage à l\'altimètre ?', ch: ['QNH 1008', 'STD 1013', 'QFE'], ans: 0, why: 'Sous la TA, la position verticale s\'exprime en altitude : QNH.', errs: ['Passer en STD dès le décollage'], refs: ['sera-8015eb', 'aip-enr17'], cat: 'eu' },
+    { id: 'a-climb-ta', lvl: 1, obj: 'Changement de calage en montée', ctx: 'Scénario fictif : TA 5 000 ft, TL FL 70. Tu montes vers FL 80.', vis: { alt: 5000, dir: 1, ta: 5000, tl: 70, qnh: 1008 },
+      q: 'Quand passes-tu en STD (1013) ?', ch: ['Au plus tard en passant la TA (5 000 ft)', 'En atteignant le TL (FL 70)', 'En palier à FL 80'], ans: 0, why: 'En montée, le calage standard est affiché au plus tard au passage de l\'altitude de transition ; dans la couche de transition on s\'exprime en niveau.', errs: ['Attendre le TL en montée'], refs: ['aip-enr17', 'sera-8015eb'],
+      try: 'std' },
+    { id: 'a-desc-tl', lvl: 1, obj: 'Changement de calage en descente', ctx: 'Scénario fictif : TL FL 70. Autorisé à descendre vers 3 000 ft, QNH 1008.', vis: { alt: 7000, dir: -1, ta: 5000, tl: 70, qnh: 1008 },
+      q: 'Quand affiches-tu le QNH ?', ch: ['Au plus tard en passant le niveau de transition', 'Seulement en passant la TA', 'En finale'], ans: 0, why: 'En descente, on passe au QNH au plus tard en traversant le TL ; dans la couche de transition on s\'exprime en altitude.', errs: ['Attendre la TA en descente'], refs: ['aip-enr17', 'sera-8015eb'],
+      note: 'Beaucoup d\'opérateurs affichent le QNH dès la clairance vers une altitude : consigne opérateur à vérifier.', try: 'qnh' },
+    { id: 'a-tl-calc', lvl: 2, obj: 'Le TL bouge avec le QNH', ctx: 'Scénario fictif : TA 5 000 ft, QNH 1008. Règle France : TL au moins 1 000 ft au-dessus de la TA.', vis: { alt: 6000, dir: 0, ta: 5000, tl: 70, qnh: 1008 },
+      q: 'Quel est le niveau de transition le plus bas possible ?', ch: ['FL 60', 'FL 70', 'FL 50'], ans: 1, why: 'Avec QNH 1008, FL 60 ≈ 5 860 ft d\'altitude : moins de TA + 1 000 ft (6 000 ft). FL 70 ≈ 6 860 ft convient. En vrai, le TL est donné par l\'ATC ou l\'ATIS.', errs: ['Oublier que QNH bas = niveaux plus bas'], refs: ['aip-enr17'],
+      note: 'Calcul pédagogique avec ≈ 27–30 ft/hPa près du niveau de la mer.' },
+    { id: 'a-height', lvl: 1, obj: 'Hauteur ou altitude', ctx: 'Altimètre au QNH : 2 500 ft. Terrain survolé : 500 ft.', vis: { alt: 2500, dir: 0, ta: 5000, tl: 70, qnh: 1013, gnd: 500 },
+      q: 'Ta hauteur au-dessus du sol ?', ch: ['2 000 ft', '2 500 ft', '3 000 ft'], ans: 0, why: 'Hauteur = altitude − altitude du terrain.', errs: ['Lire une hauteur sur un altimètre au QNH'], refs: ['sera-8015eb'], cat: 'pedago' },
+    { id: 'a-hilo', lvl: 2, obj: 'Erreur de calage', ctx: 'Tu as oublié de passer au QNH 993 : l\'altimètre est resté sur 1013 et indique 3 000 ft.', vis: { alt: 3000, dir: -1, ta: 5000, tl: 70, qnh: 993 },
+      q: 'Ton altitude réelle ?', ch: ['≈ 2 450 ft : plus bas qu\'affiché', '≈ 3 550 ft : plus haut qu\'affiché', '3 000 ft, ça ne change rien'], ans: 0, why: '20 hPa d\'écart ≈ 550 ft. Calé trop haut (1013 > 993), l\'altimètre surestime : tu es plus bas que ce qu\'il indique — danger relief.', errs: ['Inverser le sens de l\'erreur'], refs: ['sera-8015eb'], cat: 'pedago' },
+    { id: 'a-where-ta', lvl: 1, obj: 'Où trouver la TA ?', ctx: 'Vol IFR en France.', vis: { alt: 4000, dir: 0, ta: 5000, tl: 70, qnh: 1013 },
+      q: 'Où trouves-tu l\'altitude de transition applicable ?', ch: ['Dans l\'information aéronautique (AIP, cartes) et auprès de l\'ATC / ATIS', 'C\'est 5 000 ft partout en France, point', 'C\'est 18 000 ft comme aux États-Unis'], ans: 0,
+      why: 'L\'AIP France fixe une TA par région de contrôle terminale ; elle n\'est jamais inférieure à 1 500 ft au-dessus de l\'aérodrome. 5 000 ft est une valeur fréquente, pas une règle universelle.', errs: ['Généraliser 5 000 ft'], refs: ['aip-enr17'], cat: 'fr' },
+    { id: 'a-tl-rb', lvl: 1, obj: 'TL de l\'ATIS', ctx: 'L\'ATIS annonce « transition level 60 ».', vis: { alt: 8000, dir: -1, ta: 5000, tl: 60, qnh: 1018 },
+      q: 'Ce TL, tu dois…', ch: ['Le collationner au contrôleur', 'L\'ignorer, c\'est de l\'ATIS', 'Le régler à l\'altimètre'], ans: 0, why: 'Le niveau de transition se collationne, qu\'il vienne de l\'ATC ou de l\'ATIS.', errs: ['Croire que l\'ATIS dispense du collationnement'], refs: ['sera-8015e'] }
+  ];
+
+  /* ---------- Chapitre 7 — « Sauve ton approche » (approche PÉDAGOGIQUE FICTIVE, pas une procédure publiée) ----------
+   * Profil : IAF 10 NM 3 000 ft, IF 7 NM 2 000 ft, FAP 5,3 NM 2 000 ft, pente 3°, seuil 400 ft, DA 600 ft (DH 200 ft). */
+  var profile = { name: 'Approche fictive « ÉCOLE » RWY 28 — 3D (pente 3°)', thr: 400, da: 600, pts: [{ id: 'IAF', d: 10, a: 3000 }, { id: 'IF', d: 7, a: 2000 }, { id: 'FAP', d: 5.3, a: 2000 }, { id: 'DA', d: 0.63, a: 600 }, { id: 'THR', d: 0, a: 450 }],
+    miss: [{ d: 0.63, a: 600 }, { d: -2, a: 1500 }, { d: -4, a: 3000 }] };
+  var approach = [
+    { id: 'p-where', lvl: 1, obj: 'Se situer sur l\'approche', at: 9.6, q: 'L\'avion vient de passer le premier point de la procédure. Où es-tu ?', ch: ['IAF : début de l\'approche initiale', 'FAF : début de la finale', 'MAPt'], ans: 0, why: 'IAF = début de l\'approche initiale.', refs: ['r2021-2237'], cat: 'pedago' },
+    { id: 'p-next', lvl: 1, obj: 'Prochaine contrainte', at: 6.2, q: 'Palier à 2 000 ft après l\'IF. Prochaine contrainte ?', ch: ['FAP : interception du plan, début de la descente finale', 'La DA', 'Descendre tout de suite vers 1 000 ft'], ans: 0, why: 'On reste au palier publié jusqu\'au FAP, puis on suit le plan.', errs: ['Descente anticipée sous l\'altitude publiée'], refs: ['r2021-2237'], cat: 'pedago' },
+    { id: 'p-mda', lvl: 1, obj: 'DA ou MDA', at: 4.6, q: 'Les minima de cette approche 3D sont une DA. Qu\'est-ce que ça impose ?', ch: ['Entamer la remise de gaz à la DA si les références visuelles requises ne sont pas acquises', 'Faire un palier à la DA en attendant de voir', 'Descendre 50 ft sous la DA pour voir'], ans: 0,
+      why: 'DA/DH (3D) : la remise de gaz doit être entamée à la DA si les références requises ne sont pas établies. Pas de palier.', errs: ['Palier à la DA'], refs: ['r2021-2237'], crit: [2] },
+    { id: 'p-stab', lvl: 2, obj: 'Approche stabilisée', at: 2.9, variant: 'unstab', q: 'Passant 1 000 ft AAL en IMC : 20 kt trop vite, pas encore configuré. Tu…', ch: ['Remets les gaz', 'Continues, tu corrigeras plus bas', 'Plonges pour rattraper le plan'], ans: 0, why: 'Consigne école : approche stabilisée au plus tard à 1 000 ft AAL en IMC, sinon remise de gaz.', errs: ['Continuer non stabilisé'], refs: ['pdp-stab'], cat: 'operateur', crit: [2] },
+    { id: 'p-stab-ok', lvl: 2, obj: 'Approche stabilisée', at: 2.9, variant: 'stab', q: 'Passant 1 000 ft AAL en IMC : sur le plan, dans l\'axe, configuré, bonne vitesse, C/L FINAL faite. Tu…', ch: ['Continues vers la DA', 'Remets les gaz', 'Réduis pour descendre plus vite'], ans: 0, why: 'Tous les critères de stabilisation de l\'opérateur sont remplis : on poursuit vers les minima.', refs: ['pdp-stab'], cat: 'operateur' },
+    { id: 'p-da-novis', lvl: 1, obj: 'Décision aux minima', at: 0.66, variant: 'novis', q: '« Minimum » — rien en vue, ni rampe ni piste. Tu…', ch: ['Remise de gaz immédiate', 'Continues 100 ft pour voir', 'Palier à la DA'], ans: 0, why: 'Références visuelles requises non établies à la DA : remise de gaz.', errs: ['« Juste un peu plus bas »'], refs: ['nco-op210', 'r2021-2237'], crit: [1, 2] },
+    { id: 'p-da-vis', lvl: 1, obj: 'Décision aux minima', at: 0.66, variant: 'vis', q: '« Minimum » — rampe d\'approche et seuil nettement en vue, trajectoire correcte. Tu…', ch: ['Continues et atterris en gardant les références', 'Remets les gaz par principe', 'Restes au palier à la DA'], ans: 0, why: 'Références visuelles adaptées établies à la DA et maintenues : poursuite autorisée. Si elles disparaissent : remise de gaz.', refs: ['nco-op210'] },
+    { id: 'p-susp', lvl: 2, obj: 'Remise de gaz sur G1000', at: -1.2, variant: 'novis', q: 'Remise de gaz faite (GA, volets, train). Sur le HSI : « SUSP ». Pour suivre la remise de gaz publiée…', ch: ['Softkey SUSP du PFD, puis NAV', 'NAV seulement', 'Rien, le GPS suit tout seul'], ans: 0, why: 'Au MAP le séquencement est suspendu : la softkey SUSP (5e softkey du PFD) le relance et active la remise de gaz ; NAV suit ensuite la procédure (ou HDG si l\'ATC donne un cap).', errs: ['Oublier SUSP'], refs: ['garmin-susp', 'omb-ga'], try: 'susp' }
+  ];
+
+  /* ---------- « Essayer dans le cockpit » : état de départ + objectif vérifié sur l'état réel du G1000 simulé ---------- */
+  var tries = {
+    std: { state: 'ess-cruise', setup: { g: { std: false, baro: 1008, pfdLevel: 'top' } }, txt: 'Passe le calage en standard : softkey PFD Opt (4e), puis STD Baro.', cond: 'ifrStd', hint: 'Les softkeys sont sous le PFD (écran de gauche). PFD Opt est la 4e en partant de la gauche.', refs: ['garmin-baro'] },
+    qnh: { state: 'ess-cruise', setup: { g: { std: true, baro: 1013, pfdLevel: 'top' } }, txt: 'Affiche le QNH 1008 : gros bouton BARO (CRS/BARO, à droite du PFD) jusqu\'à 1008 hPa.', cond: 'ifrQnh1008', hint: 'Tourne la couronne extérieure du bouton CRS/BARO : 1 hPa par cran. Le calage s\'affiche en cyan sous l\'altimètre.', refs: ['garmin-baro'] },
+    susp: { state: 'ess-final', setup: { g: { pfdLevel: 'top' } }, ops: [{ set: 'power_l', to: 100 }, { set: 'power_r', to: 100 }, { press: 'ga_btn', ms: 200 }], txt: 'Remise de gaz faite : libère SUSP (softkey PFD n° 5) puis engage NAV.', cond: 'suspNavDone', hint: 'SUSP est en bas du PFD, à la place d\'OBS. Ensuite NAV sur le contrôleur AFCS du MFD.', refs: ['garmin-susp'] }
+  };
+
+  var levels = [[0, 'Recrue IFR'], [60, 'Navigateur'], [180, 'Pilote IFR en progression'], [400, 'Maître des procédures'], [800, 'As du quiz IFR']];
+
+  TF.DATA.ifr = { checked: CHECKED, sources: sources, CAT: CAT, chapters: chapters, cards: cards, radio: radio, calage: calage, profile: profile, approach: approach, tries: tries, levels: levels,
+    disclaimer: 'Outil d\'entraînement : ce n\'est ni une formation ni une qualification IFR. Scénarios fictifs sauf mention. Les valeurs réglementaires dépendent du contexte : référez-vous aux textes en vigueur et à votre instructeur.' };
 })(this);
 
 </script>
@@ -4877,6 +5137,8 @@ body.immersion #immExit{display:block}
     if (Math.abs(tr) > 0.05) { var a1 = -Math.PI / 2, a2 = a1 + tr * 18 * Math.PI / 180, rr = hr + 3;
       s += '<path d="M' + (hx + rr * Math.cos(a1)) + ',' + (hy + rr * Math.sin(a1)) + ' A' + rr + ',' + rr + ' 0 0 ' + (tr > 0 ? 1 : 0) + ' ' + (hx + rr * Math.cos(a2)) + ',' + (hy + rr * Math.sin(a2)) + '" fill="none" stroke="#e04ad8" stroke-width="4"/>'; }
     s += t(hx - 30, hy + 30, g.cdi, 11, ccol, 'middle', 700);
+    // Annonce de séquencement en bas à droite du symbole avion (Garmin Figure 2-26)
+    if (g.cdi === 'GPS' && (g.susp || g.obs)) s += t(hx + 30, hy + 30, g.susp ? 'SUSP' : 'OBS', 11, ccol, 'middle', 700);
     s += rect(176, 352, 64, 18, '#000') + t(208, 366, 'HDG ' + ('00' + g.hdg).slice(-3) + '°', 11, '#3fe0e8', 'middle', 700);
     s += rect(360, 352, 64, 18, '#000') + t(392, 366, 'CRS ' + ('00' + g.crs).slice(-3) + '°', 11, ccol, 'middle', 700);
     // Carte en incrustation (non simulée) + références
@@ -7083,7 +7345,7 @@ body.immersion #immExit{display:block}
     return '<span class="ladder"><i class="' + c(ph.discover) + '" title="Découvrir">👀</i><i class="' + c(ph.practice >= 90, ph.practice > 0) + '" title="S\'entraîner">✋</i><i class="' + c(ph.memory >= 100, ph.memory > 0) + '" title="De mémoire">🧠</i></span>';
   }
   H.show = function () {
-    if (TF.Ess) TF.Ess.close();
+    if (TF.Ess) TF.Ess.close(); if (TF.Ifr) TF.Ifr.close();
     var p = TF.Profiles.current(); if (!p) return;
     var el = K.$('home'), L = TF.Profiles.level(p);
     var pct = L.next ? Math.round((p.xp - L.min) / (L.next - L.min) * 100) : 100;
@@ -7109,7 +7371,7 @@ body.immersion #immExit{display:block}
     h += '<button class="wide-card full" data-act="full"><span class="wc-ico">✈︎</span><span><b>Vol complet</b><small>Les 6 phases enchaînées, de la mise en route au parking</small></span></button>';
     h += '</div>';
     h += '<div class="hm-badges">' + Object.keys(TF.Profiles.BADGES).map(function (k) { var b = TF.Profiles.BADGES[k], has = p.badges.indexOf(k) >= 0; return '<span class="badge-i' + (has ? ' on' : '') + '" title="' + esc(b[1] + ' — ' + b[2]) + '">' + b[0] + '<small>' + esc(b[1]) + '</small></span>'; }).join('') + '</div>';
-    h += '<div class="hm-foot"><button data-act="profile">📈 Ma progression</button><button data-act="next">📅 Prêt pour mon prochain vol</button><button data-act="docs">§ Sources & points à confirmer</button><button data-act="voices">🗣 Voix</button><button data-act="scenario">⚙︎ Scénario</button><button data-act="free">🛠 Cockpit libre</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
+    h += '<div class="hm-foot"><button data-act="profile">📈 Ma progression</button><button data-act="next">📅 Prêt pour mon prochain vol</button><button data-act="docs">§ Sources & points à confirmer</button><button data-act="voices">🗣 Voix</button><button data-act="scenario">⚙︎ Scénario</button><button data-act="free">🛠 Cockpit libre</button><button data-act="ifr">📚 L\'IFR pour les nuls</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     el.innerHTML = K.plain(h); el.classList.remove('hidden'); TF.Board.render();
     K.bindActs(el, {
@@ -7120,7 +7382,8 @@ body.immersion #immExit{display:block}
       profile: function () { TF.Screens.profile(); }, next: function () { TF.Screens.nextFlight(); }, docs: function () { TF.Screens.docs(); },
       scenario: function () { TF.Screens.scenario(); },
       voices: function () { TF.Screens.voices(); },
-      free: function () { H.hide(); TF.app.modes.idle(); }
+      free: function () { H.hide(); TF.app.modes.idle(); },
+      ifr: function () { H.hide(); TF.Ifr.show('home'); }
     });
   };
   H.hide = function () { K.$('home').classList.add('hidden'); };
@@ -7212,11 +7475,12 @@ body.immersion #immExit{display:block}
   /* ------------------------------------------------------------ Page ------------------------------------------------------------ */
   E.show = function (tab) {
     if (tab) E.tab = tab;
-    TF.Home.hide();
+    TF.Home.hide(); if (TF.Ifr) TF.Ifr.close();
     var el = K.$('ess'), h = '<div class="hm-in">';
     var pr = TF.Profiles.current();
     h += '<div class="ess-top"><div><div class="hm-hello">' + (pr ? 'Bonjour ' + esc(pr.name) + ' 👋 · ' : '') + 'Mon vol</div><div class="hm-sub">L\'essentiel : le flow et les procédures essentielles, l\'avion en chiffres, le tour avion. Le détail exhaustif est dans 📚 Procédures complètes.</div></div>' +
       '<button class="btn" data-act="home">📚 Procédures complètes</button></div>';
+    h += '<button class="ifr-entry" data-act="ifr"><span class="ie-i">📚</span><span><b>L\'IFR POUR LES NULS</b><small>Toute la réglementation utile et les bons réflexes IFR, sans prise de tête.</small></span><span class="ie-go">GO</span></button>';
     h += '<div class="ess-tabs">' + [['flow', '⏱ Le flow'], ['mem', '🧠 Mémoire cockpit'], ['avion', '✈️ L\'avion'], ['tour', '🚶 Tour avion'], ['brief', '🗣 Briefings'], ['test', '📝 Class test']].map(function (t) {
       return '<button data-act="tab" data-v="' + t[0] + '" class="' + (E.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>'; }).join('') + '</div>';
     h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
@@ -7226,6 +7490,7 @@ body.immersion #immExit{display:block}
     el.innerHTML = K.plain(h); el.classList.remove('hidden'); el.scrollTop = keep;
     K.bindActs(el, {
       home: function () { E.close(); TF.Home.show(); },
+      ifr: function () { E.close(); TF.Ifr.show('home'); },
       tab: function (b) { E.show(b.getAttribute('data-v')); },
       voices: function () { TF.Screens.voices(); },
       // briefings
@@ -7492,6 +7757,7 @@ body.immersion #immExit{display:block}
     missedAlt: [{ knobTo: 'alt', value: 3000 }],
     wHundred: [{ waitFor: 'hundredAbove', timeout: 90000 }],
     wMinima: [{ waitFor: 'atMinima', timeout: 90000 }],
+    suspNav: [{ press: 'pfd_sk5', ms: 250 }, { wait: 600 }, { press: 'ap_nav', ms: 250 }],
     goAround: [{ set: 'power_l', to: 100 }, { set: 'power_r', to: 100 }, { press: 'ga_btn', ms: 250 }, { script: [{ t: 0, ias: 85, alt: 620, vs: -300, pitch: 2, ground: false, label: 'Remise de gaz' }, { t: 2500, ias: 86, alt: 615, vs: 200, pitch: 7, ground: false },
       { t: 8000, ias: 90, alt: 700, vs: 800, pitch: 7, ground: false }, { t: 20000, ias: 92, alt: 900, vs: 900, pitch: 7, ground: false }, { t: 60000, ias: 95, alt: 1500, vs: 900, pitch: 7, ground: false, label: 'Montée de remise de gaz' }] }, { wait: 2000 }],
     gaGearUp: [{ waitFor: 'posClimb', timeout: 20000 }, { set: 'gear_lever', to: 'UP' }],
@@ -7814,6 +8080,11 @@ body.immersion #immExit{display:block}
       if (e.state !== 'run') return 'Le test ECU se fait moteur tournant.';
       if (s.controls[id === 'ecu_test_l' ? 'power_l' : 'power_r'] >= 3) return 'Manette de puissance au ralenti (IDLE) avant le test ECU.';
       if (!e.ecu || !e.ecu.done) return 'Maintiens le bouton jusqu\'à la fin de la séquence (ECU A / B FAIL s\'éteignent), puis relâche.';
+    }
+    if (id === 'pfd_sk5' || (c && c.sim === 'suspNav')) {
+      var gg = s.g;
+      if (gg.susp) return 'Séquencement encore suspendu : annonce SUSP sur le HSI. Appuie sur la softkey SUSP en bas du PFD (5e en partant de la gauche).';
+      if (gg.lat !== 'GPS' && gg.lat !== 'HDG') return 'SUSP libéré ✔. Maintenant NAV (procédure publiée) ou HDG (cap ATC) sur le contrôleur AFCS.';
     }
     if (c && c.sim === 'fmsSet') return 'Le calculateur doit être égal au carburant jaugé (Main L + R) : DEC / INC FUEL par pas de 1 gal, RST FUEL = plein.';
     return null;
@@ -8173,6 +8444,427 @@ body.immersion #immExit{display:block}
     }
     station();
   }
+})(this);
+
+</script>
+<script>/* js/ui/ifr.js */
+/* L'IFR POUR LES NULS — moteur de jeu, progression et interface.
+ * Contenus : TF.DATA.ifr (js/data/ifr.js). Progression : profil pilote (p.ifr), sauvegarde locale uniquement.
+ * Compatible Safari 12 : ES5, pas de ?. / ??, pas de flex gap.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, K = TF.UI, esc = TF.util.esc;
+  var D = function () { return TF.DATA.ifr; };
+  var I = TF.Ifr = {};
+  var DAY = 864e5, BOX = [0, 0, DAY, 2 * DAY, 4 * DAY, 7 * DAY];
+  var KEYN = { lvl: 'le niveau', hdg: 'le cap (et le sens du virage)', cs: 'l\'indicatif', alt: 'l\'altitude', qnh: 'le QNH', freq: 'la fréquence', sq: 'le code transpondeur', rwy: 'la piste', clr: 'l\'autorisation', hp: 'le point d\'arrêt', hs: '« hold short »', spd: 'la vitesse', tl: 'le niveau de transition', sa: '« Say again »', ack: 'l\'accusé de réception' };
+  var PREF = { chasse: '🎖 Chasse', transport: '🛫 Transport', autre: '🧑‍✈️ Autre' };
+  var G = null;          // partie en cours
+  var tryTimer = null;
+
+  function app() { return TF.app; }
+  function el() { return K.$('ifr'); }
+  function shuffle(a, rnd) { a = a.slice(); rnd = rnd || Math.random; for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function seeded(seed) { var s = seed % 2147483647; if (s <= 0) s += 2147483646; return function () { s = s * 16807 % 2147483647; return (s - 1) / 2147483646; }; }
+
+  /* ---------------- Progression (profil pilote) ---------------- */
+  function prof(p) {
+    p = p || TF.Profiles.current(); if (!p) return null;
+    if (!p.ifr) p.ifr = { pref: '', xp: 0, items: {}, tries: {}, best: 0, runs: 0, exams: {}, days: {}, showBoard: true };
+    if (!p.ifr.days) p.ifr.days = {};
+    if (!p.ifr.exams) p.ifr.exams = {};
+    return p.ifr;
+  }
+  I.prof = prof;
+  function allItems() { var d = D(); return d.radio.map(function (x) { return { ch: 'atc', kind: 'radio', it: x }; }).concat(d.calage.map(function (x) { return { ch: 'alti', kind: 'calage', it: x }; }), d.approach.map(function (x) { return { ch: 'appr', kind: 'approche', it: x }; })); }
+  function record(id, ok, hint, crit) {
+    var f = prof(); if (!f) return;
+    var x = f.items[id] = f.items[id] || { n: 0, ok: 0, fail: 0, hint: 0, crit: 0, box: 1, due: 0, last: 0 };
+    var now = Date.now(); x.n++; x.last = now; if (hint) x.hint++;
+    if (ok) { x.ok++; if (!hint) x.box = Math.min(5, x.box + 1); f.xp += hint ? 5 : 10; }
+    else { x.fail++; x.box = 1; if (crit) x.crit++; }
+    x.due = now + BOX[x.box];
+    TF.Profiles.save();
+  }
+  I.mastery = function (ch, p) {
+    var f = prof(p); if (!f) return 0;
+    var it = allItems().filter(function (a) { return a.ch === ch; }); if (!it.length) return 0;
+    var s = 0; it.forEach(function (a) { var x = f.items[a.it.id]; if (x && x.ok) s += Math.min(5, x.box) / 5; });
+    return Math.round(s / it.length * 100);
+  };
+  I.level = function (p) { var f = prof(p), L = D().levels, cur = L[0], nx = null; for (var i = 0; i < L.length; i++) if ((f ? f.xp : 0) >= L[i][0]) { cur = L[i]; nx = L[i + 1] || null; } return { name: cur[1], min: cur[0], next: nx ? nx[0] : null, nextName: nx ? nx[1] : null }; };
+  /* Priorité de révision : erreurs d'abord, puis éléments arrivés à échéance, puis jamais vus */
+  function prio(a) { var f = prof(), x = f && f.items[a.it.id], now = Date.now(); if (!x) return 2; if (x.box === 1 && x.fail) return 0; if (x.due <= now) return 1; return 3 + x.box; }
+  function pickBy(list, n) { return shuffle(list).sort(function (a, b) { return prio(a) - prio(b); }).slice(0, n); }
+
+  /* ---------------- Sources ---------------- */
+  function refsHtml(ids) {
+    var S = D().sources, C = D().CAT;
+    return '<div class="ifr-refs">' + (ids || []).map(function (id) { var s = S[id]; if (!s) return '';
+      var lab = '<b>' + esc(s.t) + '</b><br><small>' + esc(C[s.cat] || '') + ' · ' + esc(s.pub) + ' · ' + (s.url ? 'consulté le ' : 'version ') + esc(s.date) + '</small>' + (s.verify ? '<br><small class="ifr-verify">⚠ À valider : ' + esc(s.verify) + '</small>' : '');
+      return s.url ? '<a class="ifr-ref" href="' + esc(s.url) + '" target="_blank" rel="noopener">§ ' + lab + '</a>' : '<div class="ifr-ref">§ ' + lab + '</div>'; }).join('') + '</div>';
+  }
+
+  /* ---------------- Illustrations ---------------- */
+  function altOfFl(fl, qnh) { return Math.round(fl * 100 + (qnh - 1013.25) * 27.3); }
+  function calageSvg(v, acAlt) {
+    var H = 250, top = 9000, y = function (a) { return 236 - a / top * 222; };
+    var tlA = altOfFl(v.tl, v.qnh), s = '<svg class="ifr-svg" viewBox="0 0 320 ' + H + '">';
+    s += '<rect x="0" y="0" width="320" height="' + H + '" fill="#0c1a2b"/>';
+    s += '<rect x="0" y="' + y(tlA) + '" width="320" height="' + (y(v.ta) - y(tlA)) + '" fill="#3a2f12" opacity=".75"/><text x="8" y="' + ((y(tlA) + y(v.ta)) / 2 + 4) + '" font-size="10" fill="#f2c21b">couche de transition</text>';
+    s += '<line x1="0" x2="320" y1="' + y(v.ta) + '" y2="' + y(v.ta) + '" stroke="#3fe0e8" stroke-dasharray="6 4"/><text x="314" y="' + (y(v.ta) + 12) + '" font-size="11" fill="#3fe0e8" text-anchor="end">TA ' + v.ta + ' ft</text>';
+    s += '<line x1="0" x2="320" y1="' + y(tlA) + '" y2="' + y(tlA) + '" stroke="#f2c21b" stroke-dasharray="6 4"/><text x="314" y="' + (y(tlA) - 4) + '" font-size="11" fill="#f2c21b" text-anchor="end">TL FL ' + v.tl + ' ≈ ' + tlA + ' ft</text>';
+    s += '<text x="8" y="16" font-size="11" fill="#c8d4e4">au-dessus : niveaux (1013)</text><text x="8" y="' + (y(v.ta) + 16) + '" font-size="11" fill="#c8d4e4">en dessous : altitudes (QNH)</text>';
+    var g = v.gnd || 0; s += '<path d="M0,' + y(g) + ' L60,' + (y(g) - 6) + ' L120,' + y(g) + ' L200,' + (y(g) - 10) + ' L320,' + y(g) + ' L320,' + H + ' L0,' + H + 'Z" fill="#4a3a22"/>';
+    s += '<rect x="212" y="' + (H - 34) + '" width="100" height="24" rx="5" fill="#000" stroke="#3fe0e8"/><text x="262" y="' + (H - 17) + '" font-size="12" fill="#3fe0e8" text-anchor="middle" font-weight="700">QNH ' + v.qnh + '</text>';
+    var rot = v.dir > 0 ? -18 : v.dir < 0 ? 18 : 0;
+    s += '<g id="ifrAc" transform="translate(150,' + y(acAlt) + ')"><g transform="rotate(' + rot + ')"><path d="M-22,0 L14,-3 L22,0 L14,3Z M-4,-1 L-10,-14 L-4,-14 L6,-1Z M-4,1 L-10,14 L-4,14 L6,1Z M-20,-1 L-24,-7 L-19,-7 L-15,-1Z" fill="#fff"/></g>' +
+      '<text x="30" y="4" font-size="11" fill="#fff" font-weight="700">' + Math.round(acAlt) + ' ft</text>' + (v.dir ? '<text x="-38" y="5" font-size="16" fill="#2fe35a">' + (v.dir > 0 ? '↑' : '↓') + '</text>' : '') + '</g>';
+    return s + '</svg>';
+  }
+  function animCalage(v, from, to) {
+    var t0 = Date.now(), y = function (a) { return 236 - a / 9000 * 222; };
+    function f() { var g = K.$('ifrAc'); if (!g) return; var r = Math.min(1, (Date.now() - t0) / 800), a = from + (to - from) * (1 - Math.pow(1 - r, 3));
+      g.setAttribute('transform', 'translate(150,' + y(a) + ')'); var tx = g.getElementsByTagName('text')[0]; if (tx) tx.textContent = Math.round(a) + ' ft'; if (r < 1) root.requestAnimationFrame(f); }
+    if (from !== to && root.requestAnimationFrame) root.requestAnimationFrame(f);
+  }
+  /* Profil vertical d'approche (fictif) */
+  function px(d) { return 20 + (10.4 - d) / 14.6 * 300; }
+  function py(a) { return 190 - a / 3300 * 170; }
+  /* altitude sur le profil ; en remise de gaz : montée ≈ 450 ft/NM depuis le point de remise de gaz (illustration) */
+  function apPos(d, ga, from) {
+    var P = D().profile, pts = P.pts;
+    if (ga && from) return Math.min(3000, from.a + Math.max(0, from.d - d) * 450);
+    if (d >= pts[0].d) return pts[0].a;
+    for (var i = 0; i < pts.length - 1; i++) { var a = pts[i], b = pts[i + 1]; if (d <= a.d && d >= b.d) return a.a + (b.a - a.a) * (a.d - d) / (a.d - b.d); }
+    return pts[pts.length - 1].a;
+  }
+  function approachSvg(st) {
+    var P = D().profile, s = '<svg class="ifr-svg" viewBox="0 0 340 214">';
+    s += '<rect width="340" height="214" fill="#0c1a2b"/>';
+    var base = st.vis === false ? 380 : 950; // plafond fictif
+    s += '<rect x="0" y="' + py(3300) + '" width="340" height="' + (py(base) - py(3300)) + '" fill="#4b5563" opacity=".35"/>' + (st.vis === false ? '<text x="334" y="' + (py(base) + 22) + '" font-size="9" fill="#9fb3cc" text-anchor="end">plafond très bas (scénario)</text>' : '<text x="6" y="' + (py(base) - 4) + '" font-size="9" fill="#9fb3cc">base des nuages (scénario)</text>') + '';
+    s += '<rect x="0" y="' + py(P.thr) + '" width="340" height="' + (214 - py(P.thr)) + '" fill="#3a3222"/>';
+    s += '<rect x="' + px(0) + '" y="' + (py(P.thr) - 3) + '" width="22" height="4" fill="#ddd"/>';
+    s += '<line x1="0" x2="340" y1="' + py(P.da) + '" y2="' + py(P.da) + '" stroke="#f2c21b" stroke-dasharray="5 4"/><text x="6" y="' + (py(P.da) + 12) + '" font-size="10" fill="#f2c21b">DA ' + P.da + ' ft (fictive)</text>';
+    s += '<polyline fill="none" stroke="#e04ad8" stroke-width="2.5" points="' + P.pts.map(function (p) { return px(p.d) + ',' + py(p.a); }).join(' ') + '"/>';
+    s += '<polyline fill="none" stroke="#2fe35a" stroke-width="2" stroke-dasharray="6 4" points="' + P.miss.map(function (p) { return px(p.d) + ',' + py(p.a); }).join(' ') + '"/>';
+    P.pts.forEach(function (p) { if (p.id === 'THR') return; s += '<circle cx="' + px(p.d) + '" cy="' + py(p.a) + '" r="3.5" fill="#fff"/><text x="' + px(p.d) + '" y="' + (py(p.a) - 8) + '" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">' + p.id + '</text><text x="' + px(p.d) + '" y="' + (py(p.a) + 16) + '" font-size="9" fill="#9fb3cc" text-anchor="middle">' + p.a + '</text>'; });
+    var d = st.d, a = apPos(d, st.ga, st.from);
+    s += '<g id="ifrAp" transform="translate(' + px(d) + ',' + py(a) + ')"><path d="M-12,0 L8,-2 L12,0 L8,2Z M-3,-1 L-6,-8 L-2,-8 L4,-1Z" fill="#3fe0e8"/></g>';
+    s += '<text x="334" y="14" font-size="9" fill="#9fb3cc" text-anchor="end">' + esc(P.name) + '</text>';
+    return s + '</svg>';
+  }
+  function animApproach(gf, from, to, ga, cb) {
+    var t0 = Date.now(), dur = Math.min(1600, 250 + Math.abs(from - to) * 160);
+    function f() { var g = K.$('ifrAp'); if (!g) { if (cb) cb(); return; } var r = Math.min(1, (Date.now() - t0) / dur), d = from + (to - from) * r;
+      g.setAttribute('transform', 'translate(' + px(d) + ',' + py(apPos(d, ga, gf)) + ')'); if (r < 1) root.requestAnimationFrame(f); else if (cb) cb(); }
+    if (root.requestAnimationFrame) root.requestAnimationFrame(f); else if (cb) cb();
+  }
+
+  /* ---------------- Partie : construction des séquences ---------------- */
+  function approachSeq(rnd, short) {
+    rnd = rnd || Math.random;
+    var A = {}; D().approach.forEach(function (x) { A[x.id] = x; });
+    var stab = rnd() < 0.6, vis = rnd() < 0.5, seq = short ? [] : [A['p-where'], A['p-next'], A['p-mda']];
+    seq.push(stab ? A['p-stab-ok'] : A['p-stab']);
+    if (stab) seq.push(vis ? A['p-da-vis'] : A['p-da-novis']);
+    if (!stab || !vis) seq.push(A['p-susp']);
+    return { items: seq, vis: stab ? vis : false };
+  }
+  function q(kind, it, extra) { var o = { kind: kind, it: it }; for (var k in extra || {}) o[k] = extra[k]; return o; }
+  function start(kind, mode, opt) {
+    opt = opt || {};
+    var d = D(), list = [], rnd = opt.seed ? seeded(opt.seed) : Math.random, ap = null;
+    if (kind === 'radio') list = (mode === 'exam' ? shuffle(d.radio).slice(0, 6) : pickBy(d.radio.map(function (x) { return { it: x }; }), 6).map(function (a) { return a.it; })).map(function (x) { return q('radio', x); });
+    else if (kind === 'calage') list = (mode === 'exam' ? shuffle(d.calage).slice(0, 6) : pickBy(d.calage.map(function (x) { return { it: x }; }), 5).map(function (a) { return a.it; })).map(function (x) { return q('calage', x); });
+    else if (kind === 'approche') { ap = approachSeq(rnd); list = ap.items.map(function (x) { return q('approche', x); }); }
+    else { // mission 3 min / défi : mélange
+      var f = prof(), pref = f && f.pref, nr = pref === 'chasse' ? 3 : 2, na = 2;
+      var R = opt.seed ? shuffle(d.radio, rnd).slice(0, nr) : pickBy(d.radio.map(function (x) { return { it: x }; }), nr).map(function (a) { return a.it; });
+      var C = opt.seed ? shuffle(d.calage, rnd).slice(0, na) : pickBy(d.calage.map(function (x) { return { it: x }; }), na).map(function (a) { return a.it; });
+      ap = approachSeq(rnd, true);
+      for (var i = 0; i < Math.max(R.length, C.length); i++) { if (R[i]) list.push(q('radio', R[i])); if (C[i]) list.push(q('calage', C[i])); }
+      list = list.concat(ap.items.map(function (x) { return q('approche', x); }));
+    }
+    G = { kind: kind, mode: mode, list: list, i: 0, ok: 0, errs: [], crit: 0, hints: 0, t0: Date.now(), limit: kind === 'mission' ? 180000 : 0, day: opt.day || null,
+      vis: ap ? ap.vis : null, apD: 10.4, apGa: false, alt: null, picked: [], answered: false, hint: false, fr: mode !== 'exam', transcript: mode !== 'exam' };
+    renderGame();
+  }
+  I.start = start;
+
+  /* ---------------- Rendu d'une question ---------------- */
+  function head() {
+    var n = G.list.length, h = '<div class="ifr-gh"><button class="btn" data-act="quit">✕</button><div class="ifr-prog"><i style="width:' + Math.round(G.i / n * 100) + '%"></i></div><span class="ifr-cnt">' + Math.min(G.i + 1, n) + '/' + n + '</span>';
+    if (G.limit) { var left = Math.max(0, G.limit - (Date.now() - G.t0)); h += '<span class="ifr-timer" id="ifrTimer">⏱ ' + Math.floor(left / 60000) + ':' + ('0' + Math.floor(left / 1000) % 60).slice(-2) + '</span>'; }
+    return h + '</div>';
+  }
+  function renderGame() {
+    var e = el(); if (!G) return;
+    if (G.i >= G.list.length || (G.limit && Date.now() - G.t0 > G.limit && !G.answered && G.i > 0)) return finish();
+    var Q = G.list[G.i], it = Q.it, h = '<div class="ifr-in">' + head();
+    var chName = { radio: '🎙 Tu es à la radio', calage: '📏 Le bon calage', approche: '🛬 Sauve ton approche' }[Q.kind];
+    h += '<div class="ifr-card"><div class="ifr-tag">' + chName + ' · ' + esc(it.obj) + (G.mode === 'exam' ? ' · <b>examen</b>' : '') + '</div>';
+    if (Q.kind === 'radio') h += radioHtml(it);
+    else if (Q.kind === 'calage') h += calageHtml(it);
+    else h += approHtml(it);
+    h += '</div></div>';
+    e.innerHTML = h; e.scrollTop = 0;
+    if (Q.kind === 'calage' && G.anim) { animCalage(it.vis, G.anim[0], G.anim[1]); G.anim = null; }
+    if (Q.kind === 'approche' && G.apAnim) { var a = G.apAnim; G.apAnim = null; animApproach(G.gaFrom, a[0], a[1], a[2]); }
+    if (Q.kind === 'radio' && !G.answered && !G.spoke && G.mode === 'exam') { G.spoke = true; say(it.atc); }
+    tickTimer();
+  }
+  function tickTimer() {
+    if (!G || !G.limit) return;
+    clearTimeout(I._tt); I._tt = setTimeout(function () { var t = K.$('ifrTimer'); if (!t || !G) return; var left = Math.max(0, G.limit - (Date.now() - G.t0)); t.textContent = '⏱ ' + Math.floor(left / 60000) + ':' + ('0' + Math.floor(left / 1000) % 60).slice(-2); if (!left) t.classList.add('over'); tickTimer(); }, 500);
+  }
+  function say(t) { if (TF.Voice && TF.Voice.available()) { TF.Voice.stop(); TF.Voice.say(t.replace(/\[[^\]]*\]/g, '…'), 'en'); } }
+
+  /* --- radio --- */
+  function radioHtml(it) {
+    var h = '<div class="ifr-ctx">' + esc(it.ctx) + ' <small>(scénario fictif)</small></div>';
+    h += '<div class="ifr-atc"><button class="ifr-play" data-act="say">🔊</button><div>' + (G.transcript ? '<b>ATC :</b> « ' + esc(it.atc) + ' »' + (G.fr ? '<br><small>🇫🇷 ' + esc(it.fr) + '</small>' : '') : '<i>Écoute le contrôleur…</i> <button class="lnk" data-act="trans">Afficher la transcription</button>') + '</div></div>';
+    if (!G.order) G.order = shuffle(it.frags.map(function (f, i) { return i; }));
+    h += '<div class="ifr-q">Ton collationnement :</div><div class="ifr-rb">' + (G.picked.length ? G.picked.map(function (i, k) { return '<button class="ifr-chip on" data-act="unpick" data-v="' + k + '">' + esc(it.frags[i].t) + '</button>'; }).join('') : '<span class="ifr-ph">Touche les fragments dans l\'ordre…</span>') + '</div>';
+    if (!G.answered) {
+      h += '<div class="ifr-frags">' + G.order.map(function (i) { var used = G.picked.indexOf(i) >= 0; return '<button class="ifr-chip' + (used ? ' used' : '') + '" data-act="pick" data-v="' + i + '"' + (used ? ' disabled' : '') + '>' + esc(it.frags[i].t) + '</button>'; }).join('') + '</div>';
+      h += '<div class="ifr-acts"><button class="btn" data-act="clear">Effacer</button>' + (G.mode !== 'exam' ? '<button class="btn" data-act="hint">💡 Indice</button>' : '') + '<button class="btn primary" data-act="send">📡 Transmettre</button></div>';
+      if (G.hint) h += '<div class="ifr-hint">💡 Il faut ' + it.need.length + ' éléments : ' + it.need.map(function (k) { return KEYN[k] || k; }).join(', ') + '.</div>';
+    } else h += G.fb;
+    return h;
+  }
+  function judgeRadio(it, picked) {
+    var have = {}, bad = [], weak = false, msgs = [];
+    picked.forEach(function (i) { var f = it.frags[i]; if (f.k) have[f.k] = (have[f.k] || 0) + 1; if (f.bad) bad.push(f); if (f.weak) weak = true; });
+    var miss = it.need.filter(function (k) { return !have[k]; });
+    var dup = Object.keys(have).filter(function (k) { return have[k] > 1; });
+    var ok = !miss.length && !bad.length;
+    var crit = bad.some(function (f) { return f.crit; });
+    bad.forEach(function (f) { msgs.push((f.crit ? '⛔ ' : '✗ ') + esc(f.t) + ' — ' + esc(f.bad)); });
+    miss.forEach(function (k) { msgs.push('✗ Il manque ' + esc(KEYN[k] || k) + '.'); });
+    if (weak && miss.length) msgs.push('✗ « Roger / Wilco » ne remplace pas le collationnement des éléments de sécurité.');
+    if (dup.length) msgs.push('• Élément répété : une seule fois suffit.');
+    var last = picked.length ? it.frags[picked[picked.length - 1]] : null;
+    if (ok && have.cs && last && last.k !== 'cs') msgs.push('💡 Usage : l\'indicatif en fin de collationnement.');
+    return { ok: ok, crit: crit, msgs: msgs };
+  }
+
+  /* --- calage --- */
+  function calageHtml(it) {
+    var v = it.vis, h = '<div class="ifr-ctx">' + esc(it.ctx) + '</div>';
+    var from = G.alt == null ? v.alt : G.alt; if (!G.answered && G.alt !== v.alt) { G.anim = [from, v.alt]; G.alt = v.alt; }
+    h += '<div class="ifr-two"><div class="ifr-ill">' + calageSvg(v, G.anim ? G.anim[0] : v.alt) + '</div><div class="ifr-side"><div class="ifr-q">' + esc(it.q) + '</div>' + choicesHtml(it) + '</div></div>';
+    return h;
+  }
+  function choicesHtml(it) {
+    var h = '<div class="ifr-choices">';
+    if (!G.order) G.order = shuffle(it.ch.map(function (c, i) { return i; }));
+    G.order.forEach(function (i) {
+      var cls = 'ifr-ch'; if (G.answered) { if (i === it.ans) cls += ' good'; else if (i === G.pick) cls += ' bad'; }
+      h += '<button class="' + cls + '" data-act="choose" data-v="' + i + '"' + (G.answered ? ' disabled' : '') + '>' + esc(it.ch[i]) + '</button>';
+    });
+    h += '</div>';
+    if (!G.answered && G.mode !== 'exam') h += '<div class="ifr-acts"><button class="btn" data-act="hint">💡 Indice</button></div>' + (G.hint ? '<div class="ifr-hint">💡 ' + esc(hintFor(it)) + '</div>' : '');
+    if (G.answered) h += G.fb;
+    return h;
+  }
+  function hintFor(it) {
+    var c = D().cards.filter(function (c) { return (it.refs || []).some(function (r) { return c.refs.indexOf(r) >= 0; }) && c.ch === (it.id.charAt(0) === 'a' ? 'alti' : 'appr'); })[0];
+    return c ? c.keep : it.obj;
+  }
+
+  /* --- approche --- */
+  function approHtml(it) {
+    if (!G.answered && G.apD !== it.at && !G.apGa) { G.apAnim = [G.apD, it.at, false]; }
+    else if (!G.answered && G.apD !== it.at) { G.apAnim = [G.apD, it.at, true]; }
+    var st = { d: G.apAnim ? G.apAnim[0] : G.apD, ga: G.apGa, vis: G.vis, from: G.gaFrom };
+    if (!G.answered) G.apD = it.at;
+    var h = '<div class="ifr-ill wide">' + approachSvg(st) + '</div>';
+    h += '<div class="ifr-q">' + esc(it.q) + '</div>' + choicesHtml(it);
+    return h;
+  }
+  /* --- correction commune --- */
+  function feedback(ok, crit, msgs, it) {
+    var praise = ['Collationnement propre. Le contrôleur respire.', 'Exact. Calé, compris, appliqué.', 'Bonne décision.', 'Nickel — c\'est ça l\'IFR.'];
+    var h = '<div class="ifr-fb ' + (ok ? 'ok' : (crit ? 'crit' : 'ko')) + '"><div class="ifr-fbh">' + (ok ? '✅ ' + praise[Math.floor(Math.random() * praise.length)] : crit ? '⛔ Erreur de sécurité' : '❌ Pas tout à fait') + '</div>';
+    if (msgs && msgs.length) h += '<div class="ifr-msgs">' + msgs.join('<br>') + '</div>';
+    h += '<div class="ifr-why"><b>Pourquoi :</b> ' + esc(it.why) + (it.note ? '<br><small>ℹ︎ ' + esc(it.note) + '</small>' : '') + '</div>';
+    if (it.errs && it.errs.length) h += '<div class="ifr-errs">Erreurs fréquentes : ' + it.errs.map(esc).join(' · ') + '</div>';
+    h += refsHtml(it.refs);
+    h += '<div class="ifr-acts">' + (it.try ? '<button class="btn try" data-act="try" data-v="' + it.try + '">🛩 ESSAYER DANS LE COCKPIT</button>' : '') + '<button class="btn primary" data-act="next">Suivant ›</button></div></div>';
+    return h;
+  }
+  function answer(ok, crit, msgs) {
+    var Q = G.list[G.i], it = Q.it;
+    G.answered = true; if (ok) G.ok++; else { G.errs.push({ kind: Q.kind, it: it }); if (crit) G.crit++; }
+    if (G.hint) G.hints++;
+    record(it.id, ok, G.hint, crit);
+    if (ok) K.sound.ok(); else K.sound.err();
+    G.fb = feedback(ok, crit, msgs, it);
+    if (Q.kind === 'approche' && ok) {
+      if (it.id === 'p-da-vis') { G.apAnim = [it.at, 0, false]; G.apD = 0; }
+      if (it.id === 'p-da-novis' || it.id === 'p-stab') { G.gaFrom = { d: it.at, a: apPos(it.at, false) }; G.apGa = true; G.apAnim = [it.at, it.at - 1.4, true]; G.apD = it.at - 1.4; }
+    }
+    renderGame();
+  }
+  function next() { G.i++; G.picked = []; G.order = null; G.answered = false; G.hint = false; G.fb = ''; G.pick = null; G.spoke = false; G.transcript = G.mode !== 'exam'; renderGame(); }
+
+  /* ---------------- Fin de partie ---------------- */
+  function finish() {
+    clearTimeout(I._tt);
+    var f = prof(), n = G.i, pct = n ? Math.round(G.ok / n * 100) : 0, chMap = { radio: 'atc', calage: 'alti', approche: 'appr' };
+    var score = Math.max(0, G.ok * 100 - G.crit * 50 - G.hints * 20);
+    if (f) {
+      f.runs++;
+      if (G.kind === 'mission') { f.best = Math.max(f.best || 0, score); f.xp += 15; }
+      if (G.mode === 'exam') { var ch = chMap[G.kind]; f.exams[ch] = Math.max(f.exams[ch] || 0, pct); }
+      if (G.day) { var prev = f.days[G.day]; if (!prev || score > prev) f.days[G.day] = score; var ks = Object.keys(f.days).sort(); if (ks.length > 30) delete f.days[ks[0]]; }
+      TF.Profiles.save();
+    }
+    var h = '<div class="ifr-in"><div class="ifr-card ifr-end"><div class="ifr-big">' + (pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '📚') + '</div><h2>' + G.ok + ' / ' + n + ' · ' + pct + ' %</h2>';
+    h += '<div class="ifr-sub">' + (G.kind === 'mission' ? 'Mission IFR 3 min — score ' + score + ' (meilleur : ' + (f ? f.best : 0) + ')' : G.day ? 'Défi du jour — score ' + score : G.mode === 'exam' ? 'Examen du chapitre' : 'Entraînement') + (G.crit ? ' · ⛔ ' + G.crit + ' erreur(s) de sécurité' : '') + (G.hints ? ' · 💡 ' + G.hints + ' indice(s)' : '') + '</div>';
+    if (G.errs.length) {
+      h += '<div class="ifr-q">À revoir (reviendra dans une prochaine dose, dans un autre contexte) :</div><ul class="ifr-rev">';
+      G.errs.forEach(function (e) { h += '<li><b>' + esc(e.it.obj) + '</b> — ' + esc(e.it.why) + '</li>'; });
+      h += '</ul>';
+    } else h += '<div class="ifr-why">Sans faute. Le simulateur DA42 t\'attend pour mettre ça en pratique.</div>';
+    h += '<div class="ifr-acts"><button class="btn" data-act="home">↩ Accueil IFR</button><button class="btn primary" data-act="again">🔁 Rejouer</button></div></div></div>';
+    var last = { kind: G.kind, mode: G.mode, day: G.day }; G = null; I._last = last;
+    el().innerHTML = h; el().scrollTop = 0;
+  }
+
+  /* ---------------- « Essayer dans le cockpit » ---------------- */
+  I.tryCockpit = function (key) {
+    var T = D().tries[key]; if (!T) return;
+    var A = app(), ck = A.ck, sc = A.scenario(), PE = TF.ProcEngine, back = !!G;
+    I.hide(); if (TF.Ess) TF.Ess.close(); TF.Home.hide(); A.modes.idle();
+    ck.reset(sc); ck.restore(PE.buildInitial(T.state, sc));
+    var g = (T.setup || {}).g || {}; for (var k in g) ck.s.g[k] = g[k];
+    if (T.ops) new PE.Runner(ck, null, PE.Runner.instantClock(ck)).run(T.ops);
+    A.view.renderAll(); if (A.view.home) A.view.home(true);
+    var b = K.$('ifrTry'); if (!b) { b = document.createElement('div'); b.id = 'ifrTry'; document.body.appendChild(b); }
+    function draw(done) {
+      b.innerHTML = '<div class="it-h">' + (done ? '✅ Réussi dans le cockpit !' : '🎯 Essayer dans le cockpit') + '</div><div class="it-t">' + esc(T.txt) + '</div>' + (b._hint && !done ? '<div class="it-hint">💡 ' + esc(T.hint) + '</div>' : '') +
+        '<div class="it-a">' + (done ? '' : '<button data-act="hint">💡 Indice</button>') + '<button class="pri" data-act="back">' + (back ? '↩ Reprendre l\'exercice' : '↩ Retour à l\'IFR') + '</button></div>';
+      b.className = done ? 'done' : '';
+    }
+    b._hint = false; draw(false);
+    K.bindActs(b, { hint: function () { b._hint = true; draw(false); }, back: function () { stopTry(); I.show(back ? 'resume' : null); } });
+    clearInterval(tryTimer);
+    tryTimer = setInterval(function () {
+      if (TF.evalCond(T.cond, ck.s)) {
+        clearInterval(tryTimer); tryTimer = null; K.sound.ok(); var f = prof();
+        if (f) { if (!f.tries[key]) f.xp += 15; f.tries[key] = Date.now(); TF.Profiles.save(); }
+        draw(true);
+      }
+    }, 300);
+  };
+  function stopTry() { clearInterval(tryTimer); tryTimer = null; var b = K.$('ifrTry'); if (b && b.parentNode) b.parentNode.removeChild(b); }
+
+  /* ---------------- Accueil du module ---------------- */
+  function boardHtml() {
+    var rows = TF.Profiles.list().map(function (p) { var f = prof(p); return { p: p, f: f, m: Math.round((I.mastery('atc', p) + I.mastery('alti', p) + I.mastery('appr', p)) / 3), day: f.days[TF.Profiles.dayId()] }; })
+      .filter(function (r) { return r.f.xp > 0; }).sort(function (a, b) { return b.m - a.m || b.f.xp - a.f.xp; });
+    var h = '<div class="ifr-board"><div class="ifr-bh">🏆 Classement IFR de l\'équipe <small>(local, sur cet appareil — rien n\'est envoyé)</small></div>';
+    if (!rows.length) return h + '<div class="ifr-sub">Personne n\'a encore joué : sois le premier !</div></div>';
+    h += '<table><tr><th>Pilote</th><th>Profil</th><th>Maîtrise</th><th>Mission</th><th>Défi du jour</th></tr>';
+    rows.forEach(function (r) { h += '<tr><td><b>' + esc(r.p.name) + '</b><br><small>' + esc(I.level(r.p).name) + '</small></td><td>' + (PREF[r.f.pref] || '—') + '</td><td>' + r.m + ' %</td><td>' + (r.f.best || '—') + '</td><td>' + (r.day != null ? r.day : '—') + '</td></tr>'; });
+    h += '</table>';
+    var team = {}; rows.forEach(function (r) { if (r.f.pref === 'chasse' || r.f.pref === 'transport') { var t = team[r.f.pref] = team[r.f.pref] || { s: 0, n: 0 }; t.s += r.m; t.n++; } });
+    if (team.chasse && team.transport) h += '<div class="ifr-team">🎖 Chasseurs ' + Math.round(team.chasse.s / team.chasse.n) + ' % <span>vs</span> ' + Math.round(team.transport.s / team.transport.n) + ' % Transporteurs 🛫<br><small>Moyenne de la maîtrise des 3 chapitres par pilote ayant choisi son profil (équitable 3 contre 2). Les mêmes exercices pour tous.</small></div>';
+    return h + '</div>';
+  }
+  function homeHtml() {
+    var p = TF.Profiles.current(), f = prof(), L = I.level(), d = D();
+    var pct = L.next ? Math.round((f.xp - L.min) / (L.next - L.min) * 100) : 100;
+    var h = '<div class="ifr-in"><div class="ifr-top"><div><div class="ifr-title">📚 L\'IFR POUR LES NULS</div><div class="ifr-sub">Toute la réglementation utile et les bons réflexes IFR, sans prise de tête.</div></div><button class="btn" data-act="close">✈︎ Retour</button></div>';
+    h += '<div class="ifr-me"><b>' + esc(p ? p.name : '') + '</b> · ' + esc(L.name) + '<div class="xpbar"><i style="width:' + pct + '%"></i></div><small>' + f.xp + ' XP IFR' + (L.next ? ' · ' + (L.next - f.xp) + ' avant « ' + esc(L.nextName) + ' »' : '') + ' — récompense pédagogique, pas une qualification</small>';
+    h += '<div class="ifr-pref">Mon profil : ' + Object.keys(PREF).map(function (k) { return '<button class="' + (f.pref === k ? 'on' : '') + '" data-act="pref" data-v="' + k + '">' + PREF[k] + '</button>'; }).join('') + '<small> (adapte la dose proposée, ne présume aucune compétence)</small></div></div>';
+    h += '<div class="ifr-big3"><button class="ifr-b dose" data-act="dose"><span>▶</span><b>MA DOSE D\'IFR — 3 MIN</b><small>Radio, calages, une approche. Tes erreurs reviennent en priorité.</small></button>';
+    h += '<button class="ifr-b learn" data-act="learn"><span>🎯</span><b>APPRENDRE L\'IFR</b><small>10 chapitres · 3 jouables aujourd\'hui</small></button>';
+    h += '<button class="ifr-b defi" data-act="defi"><span>🏆</span><b>DÉFIER LES COPAINS</b><small>Le défi du jour, identique pour les 5 pilotes</small></button></div>';
+    h += '<div class="ifr-map" id="ifrMap">' + d.chapters.map(function (c) {
+      var m = c.on ? I.mastery(c.id) : 0, ex = f.exams[c.id];
+      return '<button class="ifr-chp' + (c.on ? '' : ' lock') + '" data-act="chap" data-v="' + c.id + '"' + (c.on ? '' : ' disabled') + '><span class="n">' + c.n + '</span><span class="i">' + c.ico + '</span><b>' + esc(c.title) + '</b>' +
+        (c.on ? '<span class="gauge"><i style="width:' + m + '%"></i></span><small>Maîtrise ' + m + ' %' + (ex != null ? ' · examen ' + ex + ' %' : '') + '</small>' : '<small>🔒 Bientôt</small>') + '</button>';
+    }).join('') + '</div>';
+    if (f.showBoard) h += boardHtml();
+    h += '<div class="ifr-foot"><button class="lnk" data-act="board">' + (f.showBoard ? 'Masquer' : 'Afficher') + ' le classement</button> · <button class="lnk" data-act="sources">§ Sources réglementaires</button><div class="ifr-disc">' + esc(d.disclaimer) + '</div></div></div>';
+    return h;
+  }
+  function chapHtml(id) {
+    var d = D(), c = d.chapters.filter(function (x) { return x.id === id; })[0], f = prof();
+    var h = '<div class="ifr-in"><div class="ifr-top"><div><div class="ifr-title">' + c.ico + ' Ch. ' + c.n + ' — ' + esc(c.title) + '</div><div class="ifr-sub">' + esc(c.intro) + '</div></div><button class="btn" data-act="home">↩</button></div>';
+    h += '<div class="ifr-big3"><button class="ifr-b dose" data-act="game" data-v="' + c.game + '"><span>🎮</span><b>' + esc(c.gameTitle).toUpperCase() + '</b><small>Mini-jeu · indices disponibles</small></button>';
+    h += '<button class="ifr-b defi" data-act="exam" data-v="' + c.game + '"><span>📝</span><b>EXAMEN DU CHAPITRE</b><small>Sans indice' + (c.game === 'radio' ? ', audio d\'abord' : '') + (f.exams[id] != null ? ' · meilleur ' + f.exams[id] + ' %' : '') + '</small></button></div>';
+    if (id === 'alti') h += '<div class="ifr-card"><div class="ifr-tag">🎚 Joue avec le QNH — altitude ou niveau ?</div><div class="ifr-two"><div class="ifr-ill" id="ifrQnhSvg">' + qnhToy(1013) + '</div><div class="ifr-side"><input type="range" min="975" max="1045" value="1013" id="ifrQnh" class="ifr-range"><div class="ifr-sub" id="ifrQnhTxt"></div><button class="btn try" data-act="try" data-v="qnh">🛩 ESSAYER : régler 1008 au G1000</button> <button class="btn try" data-act="try" data-v="std">🛩 ESSAYER : STD Baro</button></div></div></div>';
+    if (id === 'appr') h += '<div class="ifr-acts"><button class="btn try" data-act="try" data-v="susp">🛩 ESSAYER DANS LE COCKPIT : remise de gaz → SUSP → NAV</button></div>';
+    h += '<div class="ifr-q">Fiches anti-sèche</div><div class="ifr-cards">' + d.cards.filter(function (x) { return x.ch === id; }).map(function (x) {
+      return '<details class="ifr-memo"><summary>' + esc(x.t) + '</summary><div><b>À retenir</b><p>' + esc(x.keep) + '</p><b>Exemple</b><p>' + esc(x.ex) + '</p><b>Piège fréquent</b><p>' + esc(x.trap) + '</p>' + (x.note ? '<p class="ifr-verify">⚠ ' + esc(x.note) + '</p>' : '') + (x.verify ? '<p class="ifr-verify">⚠ À valider avec l\'instructeur / la source officielle.</p>' : '') + refsHtml(x.refs) + '<button class="btn" data-act="game" data-v="' + c.game + '">Tester mes connaissances</button></div></details>';
+    }).join('') + '</div></div>';
+    return h;
+  }
+  function qnhToy(qnh) {
+    var a = altOfFl(50, qnh), y = function (v) { return 200 - v / 7000 * 180; };
+    return '<svg class="ifr-svg" viewBox="0 0 260 210"><rect width="260" height="210" fill="#0c1a2b"/><path d="M0,' + y(0) + ' L260,' + y(0) + ' L260,210 L0,210Z" fill="#4a3a22"/><text x="6" y="' + (y(0) - 4) + '" font-size="10" fill="#c8d4e4">niveau de la mer</text>' +
+      '<line x1="0" x2="260" y1="' + y(5000) + '" y2="' + y(5000) + '" stroke="#3fe0e8" stroke-dasharray="5 4"/><text x="254" y="' + (y(5000) + 12) + '" font-size="10" fill="#3fe0e8" text-anchor="end">5 000 ft (altitude, QNH)</text>' +
+      '<path d="M0,' + y(a) + ' C80,' + (y(a) - 6) + ' 180,' + (y(a) + 6) + ' 260,' + y(a) + '" stroke="#f2c21b" stroke-width="2.5" fill="none"/><text x="6" y="' + (y(a) - 6) + '" font-size="11" fill="#f2c21b" font-weight="700">FL 50 ≈ ' + a + ' ft</text></svg>';
+  }
+  function sourcesHtml() {
+    var S = D().sources, h = '<div class="ifr-in"><div class="ifr-top"><div><div class="ifr-title">§ Sources du module IFR</div><div class="ifr-sub">Vérifiées le ' + esc(D().checked) + '. Les documents école (OM-B, PDP, Garmin) restent locaux et ne sont jamais publiés.</div></div><button class="btn" data-act="home">↩</button></div>';
+    h += refsHtml(Object.keys(S));
+    h += '<div class="ifr-disc">Mise à jour : les textes et les exercices sont dans js/data/ifr.js (sources, date de vérification, références par exercice). Ordre de priorité : règle européenne → particularité française → procédure locale → type d\'exploitation → avion → consigne opérateur → astuce.</div></div>';
+    return h;
+  }
+
+  I.view = 'home';
+  I.show = function (v) {
+    if (v === 'resume' && G) { el().classList.remove('hidden'); renderGame(); return; }
+    if (v) I.view = v; if (v === 'resume') I.view = 'home';
+    if (TF.Ess) TF.Ess.close(); TF.Home.hide(); stopTry();
+    var e = el(); G = null;
+    e.innerHTML = K.plain(I.view === 'sources' ? sourcesHtml() : /^ch:/.test(I.view) ? chapHtml(I.view.slice(3)) : homeHtml());
+    e.classList.remove('hidden'); e.scrollTop = 0;
+    var r = K.$('ifrQnh'); if (r) { var up = function () { K.$('ifrQnhSvg').innerHTML = qnhToy(+r.value); K.$('ifrQnhTxt').innerHTML = 'QNH <b>' + r.value + '</b> hPa : le niveau 50 est à environ <b>' + altOfFl(50, +r.value) + ' ft</b> d\'altitude.<br><small>QNH bas → niveaux plus bas. ≈ 27 ft/hPa (approximation pédagogique).</small>'; }; r.oninput = up; r.onchange = up; up(); }
+  };
+  I.hide = function () { var e = el(); if (e) e.classList.add('hidden'); if (TF.Voice) TF.Voice.stop(); };
+  I.close = function () { G = null; clearTimeout(I._tt); stopTry(); I.hide(); };
+  I.visible = function () { var e = el(); return e && !e.classList.contains('hidden'); };
+  I.state = function () { return G; };
+
+  /* ---------------- Actions ---------------- */
+  function bind() {
+    K.bindActs(el(), {
+      close: function () { I.close(); if (TF.Ess) TF.Ess.show(); },
+      home: function () { I.show('home'); },
+      pref: function (b) { var f = prof(); f.pref = b.getAttribute('data-v'); TF.Profiles.save(); I.show('home'); },
+      dose: function () { start('mission', 'learn'); },
+      learn: function () { var m = K.$('ifrMap'); if (m && m.scrollIntoView) m.scrollIntoView(); },
+      defi: function () { var day = TF.Profiles.dayId(), p = day.split('-'); start('mission', 'exam', { seed: +p[0] * 400 + +p[1] * 32 + +p[2], day: day }); },
+      chap: function (b) { I.show('ch:' + b.getAttribute('data-v')); },
+      game: function (b) { start(b.getAttribute('data-v'), 'learn'); },
+      exam: function (b) { start(b.getAttribute('data-v'), 'exam'); },
+      board: function () { var f = prof(); f.showBoard = !f.showBoard; TF.Profiles.save(); I.show('home'); },
+      sources: function () { I.show('sources'); },
+      quit: function () { if (G && (G.i > 0 || G.answered)) { if (G.answered) G.i++; finish(); return; } G = null; clearTimeout(I._tt); I.show(); },
+      again: function () { var l = I._last || { kind: 'mission', mode: 'learn' }; if (l.day) { bindDefi(); return; } start(l.kind, l.mode); },
+      say: function () { say(G.list[G.i].it.atc); },
+      trans: function () { G.transcript = true; renderGame(); },
+      pick: function (b) { if (G.answered) return; G.picked.push(+b.getAttribute('data-v')); K.sound.click && K.sound.click(); renderGame(); },
+      unpick: function (b) { if (G.answered) return; G.picked.splice(+b.getAttribute('data-v'), 1); renderGame(); },
+      clear: function () { G.picked = []; renderGame(); },
+      hint: function () { G.hint = true; renderGame(); },
+      send: function () { if (!G.picked.length) { K.toast('Touche au moins un fragment.', 'info'); return; } var it = G.list[G.i].it, r = judgeRadio(it, G.picked); answer(r.ok, r.crit, r.msgs); },
+      choose: function (b) { if (G.answered) return; var it = G.list[G.i].it, v = +b.getAttribute('data-v'); G.pick = v; var ok = v === it.ans; answer(ok, !ok && (it.crit || []).indexOf(v) >= 0, null); },
+      next: function () { next(); },
+      try: function (b) { I.tryCockpit(b.getAttribute('data-v')); }
+    });
+  }
+  function bindDefi() { var day = TF.Profiles.dayId(), p = day.split('-'); start('mission', 'exam', { seed: +p[0] * 400 + +p[1] * 32 + +p[2], day: day }); }
+  I.init = function () { if (el()) bind(); };
+  I._judgeRadio = judgeRadio; I._altOfFl = altOfFl; I._approachSeq = approachSeq;
 })(this);
 
 </script>
@@ -8852,6 +9544,7 @@ body.immersion #immExit{display:block}
 
   /* Accueil */
   TF.Board.init();
+  if (TF.Ifr) TF.Ifr.init();
   TF.MiniMap.init(); setInterval(function () { TF.MiniMap.update(); }, 250);
   TF.Screens.splash(function () { app.onProfile(); app.view.resize(); app.view.home(false); });
   app.modes.render();
