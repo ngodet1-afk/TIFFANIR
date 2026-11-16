@@ -938,6 +938,70 @@ body.immersion #immExit{display:block}
 .sp-big.mh-f3d { background: linear-gradient(135deg, #0f5d6b, #133a6e); }
 @media (max-width: 1100px) { .f3-stage .f3-card { width: 330px; } .f3-t { font-size: 18px; } }
 
+
+
+/* ======================= FLOW 3D — FULL FLIGHT (v7.1) : fenêtres flottantes déplaçables ======================= */
+#f3d.f3-fly { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 14; pointer-events: none; }
+.f3w { position: absolute; pointer-events: auto; background: rgba(7, 13, 24, .95); border: 1px solid #2f5585; border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,.55); color: #e8eef6; overflow: hidden; }
+.f3w.dragging { opacity: .9; box-shadow: 0 18px 40px rgba(0,0,0,.7); }
+.f3wh { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 5px 8px; background: linear-gradient(180deg, #13284a, #0d1c33); border-bottom: 1px solid #23406a; font-size: 12px; letter-spacing: .6px; }
+.drag-handle { cursor: move; -webkit-user-select: none; user-select: none; touch-action: none; }
+.f3grip { color: #6f8aa8; margin-right: 6px; font-size: 14px; }
+.f3wb { padding: 8px 10px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.f3wCard { left: 10px; top: 10px; width: 370px; max-width: calc(100% - 20px); max-height: calc(100% - 90px); display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+.f3wCard .f3wb { -webkit-flex: 1; flex: 1; }
+.f3w3d { right: 10px; top: 10px; width: 400px; max-width: 48%; }
+.f3w3d .f3wc { position: relative; height: 230px; }
+.f3w3d.big { width: 640px; max-width: 70%; } .f3w3d.big .f3wc { height: 380px; }
+.f3w3d canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+.f3vbtn .btn.sm { padding: 2px 6px; font-size: 10px; margin-left: 2px; }
+.f3vbtn .btn.on { background: #1d4f86; border-color: #3fa0ff; color: #fff; }
+.f3wVals { right: 10px; top: 288px; width: 250px; }
+.f3c-ph { font-weight: 900; font-size: 15px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.f3c-ph small { -webkit-flex-basis: 100%; flex-basis: 100%; font-weight: 400; font-size: 11px; color: #8fb0d0; margin-top: 2px; }
+.f3c-n { display: inline-block; min-width: 22px; height: 22px; line-height: 22px; border-radius: 11px; background: #7f5dd6; color: #fff; text-align: center; font-size: 12px; margin-right: 7px; }
+.f3c-bar { height: 4px; background: #13243c; border-radius: 2px; margin: 6px 0 8px; overflow: hidden; } .f3c-bar i { display: block; height: 100%; background: #3fe0e8; }
+.f3c-item { font-size: 17px; font-weight: 800; color: #fff; }
+.f3c-resp { font-size: 19px; font-weight: 900; color: #ffcf6b; margin: 2px 0 6px; letter-spacing: .3px; }
+.f3c-lines div { display: -webkit-flex; display: flex; -webkit-align-items: baseline; align-items: baseline; font-size: 13px; margin: 2px 0; }
+.f3c-lines i { -webkit-flex: 1; flex: 1; border-bottom: 1px dotted #4b6a90; margin: 0 6px; } .f3c-lines b { color: #ffcf6b; }
+.f3c-call { margin: 6px 0; padding: 5px 9px; border-radius: 10px; background: rgba(127,93,214,.2); border: 1px solid #7f5dd6; font-weight: 800; }
+.f3c-k { font-size: 10px; font-weight: 900; letter-spacing: 1px; color: #3fe0e8; margin: 8px 0 3px; }
+.f3c-acts, .f3c-vals { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.4; } .f3c-acts li { color: #fff; } .f3c-vals li { color: #cfe3ff; }
+.f3c-none { font-size: 12px; color: #8fa6c0; }
+.f3c-ok { color: #3ddc84; font-weight: 800; margin-top: 6px; } .f3c-todo { color: #ffcf6b; font-size: 12px; margin-top: 6px; }
+.f3c-det { margin-top: 6px; font-size: 12px; color: #dfe8f2; border-top: 1px solid #23406a; padding-top: 6px; line-height: 1.4; } .f3c-det small { color: #8fa6c0; }
+.f3c-btns { display: -webkit-flex; display: flex; margin-top: 8px; } .f3c-btns .btn { -webkit-flex: 1; flex: 1; margin-right: 5px; padding: 8px 4px; font-size: 13px; } .f3c-btns .btn:last-child { margin-right: 0; }
+.f3c-btns.sm .btn { padding: 4px 3px; font-size: 11px; } .f3c-btns .btn.on { background: #1d4f86; border-color: #3fa0ff; }
+.f3v { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; -webkit-align-items: baseline; align-items: baseline; padding: 4px 6px; border-radius: 9px; margin-bottom: 4px; background: #0d1a2c; border: 1px solid #1b2f4c; }
+.f3v small { width: 74px; color: #7f9bbb; font-size: 10px; letter-spacing: .5px; } .f3v b { font-size: 15px; } .f3v em { font-style: normal; font-size: 10px; color: #8fa6c0; margin-left: 6px; }
+.f3v.hot { border-color: #ffcf6b; background: #1f1a0c; } .f3v.hot.first b { font-size: 22px; color: #ffcf6b; }
+.f3v-t { -webkit-flex-basis: 100%; flex-basis: 100%; font-size: 11px; color: #ffcf6b; margin-top: 2px; } .f3v-t.ok { color: #3ddc84; } .f3v-t.ko { color: #ff9f43; }
+.f3v-cfg { font-size: 11px; color: #8fa6c0; margin-top: 4px; } .f3v-cfg span { display: inline-block; margin-right: 8px; } .f3v-cfg b { color: #fff; } .f3v-cfg b.g { color: #3ddc84; } .f3v-cfg b.r { color: #ff6b6b; }
+.f3-phlist .btn { text-align: left; margin-bottom: 5px; } .f3-phlist small { color: #9fb5cf; font-weight: 400; }
+@media (max-width: 1100px) { .f3wCard { width: 320px; } .f3w3d { width: 330px; } .f3w3d .f3wc { height: 190px; } .f3wVals { top: 246px; width: 220px; } }
+.f3-hero { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; width: 100%; text-align: left; padding: 14px 16px; margin: 4px 0 8px; border-radius: 18px; border: 1px solid #3fa0ff; background: linear-gradient(135deg, #0f5d6b, #1b3f86 60%, #3a2a7a); color: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.4); }
+.f3-hero b { display: block; font-size: 17px; letter-spacing: .5px; } .f3-hero small { display: block; color: #cfe3ff; margin-top: 3px; } .f3-hero em { display: inline-block; margin: 5px 8px 0 0; font-style: normal; font-size: 12px; color: #ffcf6b; }
+.f3-hi { font-size: 34px; margin-right: 14px; } .f3-hero > span:nth-child(2) { -webkit-flex: 1; flex: 1; }
+.f3-go { font-weight: 900; font-size: 18px; padding: 10px 16px; border-radius: 12px; background: rgba(255,255,255,.15); margin-left: 10px; }
+.f3-sec { font-size: 11px; font-weight: 900; letter-spacing: 1px; color: #9fc3e6; margin: 14px 0 4px; text-transform: uppercase; }
+/* v7.1 — accueil : FLOW 3D en partie principale ; ancien flow rangé en dossier */
+.f3-main { margin: 0 0 14px; padding: 14px 16px; border-radius: 20px; background: linear-gradient(135deg, #0c4a58 0%, #17336e 55%, #33246e 100%); border: 1px solid #3fa0ff; box-shadow: 0 12px 30px rgba(0,0,0,.45); color: #fff; }
+.f3m-h { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 10px; }
+.f3m-h b { display: block; font-size: 20px; letter-spacing: .6px; } .f3m-h small { color: #cfe3ff; font-size: 13px; }
+.f3m-i { font-size: 36px; margin-right: 14px; }
+.f3m-b { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -5px; }
+.f3m-go { -webkit-flex: 1 1 260px; flex: 1 1 260px; margin: 5px; text-align: left; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.14); color: #fff; }
+.f3m-go b { display: block; font-size: 17px; letter-spacing: .4px; } .f3m-go small { display: block; color: #e0ecff; margin-top: 2px; }
+.f3m-go.alt { background: rgba(0,0,0,.18); }
+.ess-folder { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; width: 100%; text-align: left; padding: 12px 14px; margin: 8px 0; border-radius: 14px; border: 1px dashed #4b6a90; background: #0d1a2c; color: #e8eef6; }
+.ess-folder b { display: block; font-size: 15px; } .ess-folder small { display: block; color: #8fa6c0; margin-top: 2px; }
+.ess-folder > span:nth-child(2) { -webkit-flex: 1; flex: 1; } .ef-i { font-size: 26px; margin-right: 12px; } .ef-o { color: #3fe0e8; font-weight: 800; margin-left: 10px; }
+.ess-folder.open { border-style: solid; }
+.pop-grip { text-align: center; color: #6f8aa8; font-size: 13px; line-height: 10px; margin: -6px 0 4px; cursor: move; }
+#obsCard .oc-k, #ifrTry .it-h, #ecuPanel .ecu-h, .f3-stage .f3-card .f3-k { cursor: move; }
+.f3c-item.sm { font-size: 14px; color: #cfe3ff; margin-bottom: 4px; }
+
 </style>
 </head>
 <body>
@@ -1005,7 +1069,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '7.0';
+  TF.VERSION = '7.1';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -1398,6 +1462,10 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
  *  - AIP AD 2 LFBU DATA / AD 2.19 (via le MIAC 1 DIRCAM) : LOC 28, GP 28 (RDH 49 ft), DME 30Y, NDB AGO 404 kHz, FAF LOC RWY 28, FU28Z (RNP Z) ;
  *  - AIP AD 2 LFBL DATA (AMDT 04/24) et précodage RNP RWY 21 : IBL21, FBL21 (= FAP RWY 21), BL502, BL504, BL512, LOC 21 « LG » 110.1,
  *    GP 21 (RDH 54 ft), seuils 21 / 03 ; legs RNP 21 (IF / TF, altitudes 4 000 ft, finale 3°, remise de gaz BL512 puis direct IBL21 4 000 ft).
+ * v7.1 — ajouts (MIAC 1 DIRCAM, reproduction de l'AIP) : AIP ENR 4.4 AMDT 09/25 (GONPO, NORON, ARPIL, LECAR, MIGRA, NERTI, SOLNO, BALAN,
+ *   GUERE, GUSON, MAKOX, PERIG, LARON, LINAK, MAVAC, PIGUL) ; ENR 4.1 (VOR/DME LMG, CNA) ; AD 2 LFBU DATA 01 et RNP Z RWY 28 CODE (AMDT 10/25) ;
+ *   AD 2 LFBL DATA 01, RNP RWY 03 / 21 CODE (AMDT 04/24), STAR RNAV RWY 03 / 21 (AMDT 04/23), SID RNAV 3A / 3B (AMDT 12/22).
+ *   ⚠︎ Extraits d'une copie PDF (OCR) : à vérifier sur l'AIP en vigueur. L'AIRAC en cours peut avoir modifié ces données.
  * Ce qui n'a PAS été trouvé (cartes IAC en image) n'est PAS inventé : transitions de l'ILS 21 autres que IBL21 / vecteurs, remise de gaz
  * publiée des ILS 21 et 28, altitude du FAF ILS 28, SID / STAR → signalé « non codé » dans le simulateur.
  * ⚠︎ Aide pédagogique au sol — jamais une donnée de navigation utilisable en vol réel.
@@ -1419,8 +1487,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     src: 'AIP AD 2 LFBU (VAC 09 JUL 2026)' });
   add('LFBL', 'APT', 'LIMOGES BELLEGARDE', P('45°51\'40.8"N', '001°10\'51.0"E'), { elev: 1300, city: 'LIMOGES', var: '1°E', arpCalc: true,
     rwys: [{ id: '21', thr: P('45°52\'12.63"N', '001°11\'20.90"E'), crs: 212, len: 2350, elev: 1278 }, { id: '03', thr: P('45°51\'08.96"N', '001°10\'21.14"E'), crs: 32, len: 2350 }],
-    freqs: [['APP LIMOGES', 118080], ['ILS 21 LG', 110100, 'nav']],
-    src: 'AIP AD 2 LFBL (seuils, LOC / GP, DATA AMDT 04/24). Position de l\'aérodrome = milieu des seuils (calcul). Fréquences TWR / ATIS non relevées.' });
+    freqs: [['ATIS', 128080], ['TWR', 119555], ['APP LIMOGES', 118080], ['INFO', 124050], ['ILS 21 LG', 110100, 'nav']],
+    src: 'AIP AD 2 LFBL (seuils, LOC / GP, DATA AMDT 04/24 ; fréquences AD 2.18 via MIAC 1 — TWR 119.550 MHz = canal 8,33 kHz 119.555). Position de l\'aérodrome = milieu des seuils (calcul).' });
   /* ---------------- Moyens et points ---------------- */
   add('AGO', 'NDB', 'ANGOULEME', P('45°42\'38.6"N', '000°25\'36.8"E'), { freq: 404, src: 'AIP AD 2 LFBU.19' });
   add('AM', 'LOC', 'LOC 28 ANGOULEME', P('45°43\'50.6"N', '000°12\'16.6"E'), { freq: 109350, src: 'AIP AD 2 LFBU.19' });
@@ -1433,6 +1501,28 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   add('BL512', 'INT', 'BL512', P('45°50\'27.3"N', '001°09\'42.0"E'), { src: 'AIP AD 2 LFBL DATA' });
   add('BU415', 'INT', 'BU415', P('45°47\'34.3"N', '000°19\'21.1"E'), { src: 'AIP AD 2 LFBU DATA' });
   add('BU416', 'INT', 'BU416', P('45°45\'26.7"N', '000°24\'05.3"E'), { src: 'AIP AD 2 LFBU DATA' });
+  /* v7.1 — LFBU (AD 2 LFBU DATA 01 ; ENR 4.4 ; ENR 4.1) */
+  var E44 = 'AIP ENR 4.4 (AMDT 09/25, via MIAC 1)', DBU = 'AIP AD 2 LFBU DATA 01 (via MIAC 1)', DBL = 'AIP AD 2 LFBL DATA 01 (AMDT 04/24, via MIAC 1)';
+  add('GONPO', 'INT', 'GONPO', P('45°42\'12.1"N', '000°31\'17.5"E'), { src: E44 + ' — IAF / IF RNP Z RWY 28, attente' });
+  add('OBUKO', 'INT', 'OBUKO', P('45°42\'49.1"N', '000°24\'12.7"E'), { src: E44 });
+  add('FU28Y', 'INT', 'FU28Y', P('45°43\'18.2"N', '000°18\'36.1"E'), { src: DBU });
+  add('BU412', 'INT', 'BU412', P('45°43\'58.5"N', '000°10\'41.7"E'), { src: DBU });
+  add('BU414', 'INT', 'BU414', P('45°47\'15.1"N', '000°11\'15.2"E'), { src: DBU });
+  add('NORON', 'INT', 'NORON', P('45°29\'05.0"N', '000°40\'39.0"E'), { src: E44 });
+  add('ARPIL', 'INT', 'ARPIL', P('45°41\'09.7"N', '000°41\'52.3"E'), { src: E44 });
+  add('LECAR', 'INT', 'LECAR', P('45°41\'58.1"N', '001°00\'57.8"E'), { src: E44 });
+  add('LMG', 'VOR', 'LIMOGES', P('45°48\'57.3"N', '001°01\'32.1"E'), { freq: 114500, src: 'AIP ENR 4.1 (via MIAC 1)' });
+  add('CNA', 'VOR', 'COGNAC', P('45°39\'34.4"N', '000°18\'41.9"W'), { freq: 114650, src: 'AIP ENR 4.1 (via MIAC 1)' });
+  /* v7.1 — LFBL (AD 2 LFBL DATA 01 ; ENR 4.4) */
+  [['BL410', '45°52\'54.3"N', '001°12\'00.0"E'], ['BL602', '46°02\'18.0"N', '001°01\'40.9"E'], ['BL604', '45°52\'51.1"N', '001°24\'18.8"E'], ['BL703', '46°04\'59.5"N', '001°33\'54.4"E'],
+   ['BL705', '45°51\'02.5"N', '001°01\'42.0"E'], ['BL707', '45°34\'21.5"N', '001°11\'51.5"E'], ['BL905', '45°57\'19.4"N', '001°01\'37.6"E'], ['BL907', '45°55\'11.6"N', '001°37\'23.1"E'],
+   ['BL909', '45°32\'26.5"N', '001°06\'23.4"E'], ['BL911', '45°33\'35.7"N', '000°48\'15.7"E'], ['BL913', '45°31\'33.9"N', '001°00\'08.3"E'], ['FBL03', '45°44\'54.2"N', '001°04\'30.4"E']
+  ].forEach(function (x) { add(x[0], 'INT', x[0], P(x[1], x[2]), { src: DBL }); });
+  [['MIGRA', '45°41\'02.8"N', '001°00\'54.5"E'], ['NERTI', '45°42\'07.6"N', '000°54\'20.0"E'], ['SOLNO', '45°37\'09.6"N', '001°06\'47.5"E'], ['BALAN', '46°30\'58.0"N', '001°02\'00.0"E'],
+   ['GUERE', '46°11\'24.0"N', '002°05\'22.0"E'], ['GUSON', '46°28\'27.0"N', '001°28\'40.0"E'], ['MAKOX', '45°19\'58.0"N', '001°14\'17.0"E'], ['PERIG', '45°07\'02.0"N', '000°58\'10.0"E'],
+   ['LARON', '46°13\'39.0"N', '002°11\'54.0"E'], ['LINAK', '45°31\'46.0"N', '001°09\'11.0"E'], ['MAVAC', '45°30\'59.0"N', '001°00\'07.0"E'], ['PIGUL', '45°34\'28.0"N', '000°46\'18.0"E']
+  ].forEach(function (x) { add(x[0], 'INT', x[0], P(x[1], x[2]), { src: E44 }); });
+  add('RW03', 'RWY', 'LFBL RWY 03', W.LFBL.rwys[1].thr, { src: 'AIP AD 2 LFBL' });
   add('RW21', 'RWY', 'LFBL RWY 21', W.LFBL.rwys[0].thr, { elev: 1278, src: 'AIP AD 2 LFBL' });
   add('RW28', 'RWY', 'LFBU RWY 28', W.LFBU.rwys[0].thr, { elev: 414, src: 'AIP AD 2 LFBU' });
 
@@ -1449,17 +1539,62 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
         trans: [{ id: 'VECTORS', legs: [] }, { id: 'BL502', legs: [{ id: 'BL502', alt: 4000, role: 'IAF' }, { id: 'IBL21', alt: 4000, role: 'IF' }] },
           { id: 'BL504', legs: [{ id: 'BL504', alt: 4000, role: 'IAF' }, { id: 'IBL21', alt: 4000, role: 'IF' }] }, { id: 'IBL21', legs: [{ id: 'IBL21', alt: 4000, role: 'IF' }] }],
         fin: [{ id: 'FBL21', alt: 4000, role: 'FAF' }, { id: 'RW21', role: 'MAP' }], miss: [{ id: 'BL512' }, { id: 'IBL21', alt: 4000 }],
-        note: 'Précodage RNP RWY 21 (AIP AD 2 LFBL DATA) : IF BL502 / BL504 / IBL21 4 000 ft, FBL21 4 000 ft, finale 3° TCH 54 ft, remise de gaz BL512 puis direct IBL21 4 000 ft. Minima : sur l\'IAC.' }
+        note: 'Précodage RNP RWY 21 (AIP AD 2 LFBL DATA) : IF BL502 / BL504 / IBL21 4 000 ft, FBL21 4 000 ft, finale 3° TCH 54 ft, remise de gaz BL512 puis direct IBL21 4 000 ft (virage à droite, 185 kt). Minima : sur l\'IAC.' },
+      { id: 'RNAV 03', kind: 'RNAV', svc: 'LPV', crs: 32, rwy: 'RW03', gp: 3, tch: 49,
+        trans: [{ id: 'VECTORS', legs: [] }, { id: 'NERTI', legs: [{ id: 'NERTI', alt: 3700, role: 'IAF' }, { id: 'MIGRA', alt: 3700, role: 'IF' }] },
+          { id: 'SOLNO', legs: [{ id: 'SOLNO', alt: 3700, role: 'IAF' }, { id: 'MIGRA', alt: 3700, role: 'IF' }] }, { id: 'MIGRA', legs: [{ id: 'MIGRA', alt: 3700, role: 'IF' }] }],
+        fin: [{ id: 'FBL03', alt: 3700, role: 'FAF' }, { id: 'RW03', role: 'MAP' }], miss: [{ id: 'BL410' }, { id: 'MIGRA', alt: 3700 }],
+        note: 'Précodage RNP RWY 03 (AIP AD 2 LFBL DATA, AMDT 04/24) : IF NERTI / SOLNO / MIGRA 3 700 ft (attente MIGRA), FBL03 3 700 ft, finale 3°, remise de gaz BL410 puis direct MIGRA 3 700 ft (virage à gauche, 185 kt). TCH lu sur une copie OCR : à vérifier. Minima : sur l\'IAC.' }
     ],
     LFBU: [
       { id: 'ILS 28', kind: 'ILS', loc: 109350, ident: 'AM', crs: 276, rwy: 'RW28', gp: 3, tch: 49,
         trans: [{ id: 'VECTORS', legs: [] }],
         fin: [{ id: 'FU28Z', role: 'FAF' }, { id: 'RW28', role: 'MAP' }], miss: null,
-        note: 'FAF LOC RWY 28 (AIP DATA). IAF / IF, altitude du FAF et remise de gaz : cartes IAC non disponibles → non codés (vecteurs ATC).' }
+        note: 'FAF LOC RWY 28 (AIP DATA, même position que FU28Z / OBUKO). IAF / IF, altitude du FAF et remise de gaz de l\'ILS : carte IAC non disponible → non codés (vecteurs ATC).' },
+      { id: 'RNAV 28 Z', kind: 'RNAV', svc: 'LNAV/VNAV', crs: 276, rwy: 'RW28', gp: 3, tch: 49,
+        trans: [{ id: 'VECTORS', legs: [] }, { id: 'GONPO', legs: [{ id: 'GONPO', alt: 2800, role: 'IAF' }] }],
+        fin: [{ id: 'FU28Z', alt: 2800, role: 'FAF' }, { id: 'RW28', role: 'MAP' }], miss: [{ id: 'BU412' }, { id: 'GONPO', alt: 2800 }],
+        note: 'Précodage RNP Z RWY 28 (AIP AD 2 LFBU DATA, AMDT 10/25) : IAF / IF GONPO 2 800 ft (attente), FU28Z 2 800 ft, finale 3° TCH 49 ft, remise de gaz BU412 puis direct GONPO 2 800 ft (virage à gauche). Minima LNAV, LNAV/VNAV : sur l\'IAC. Le RNP Y RWY 28 (codage 2021) n\'est pas repris : publication actuelle non vérifiée.' }
     ]
   };
-  var NONE_PROC = 'Non codé dans la base du simulateur (SID / STAR non relevées).';
-  TF.DATA.navdb = { wpts: W, apr: APR, dep: {}, arr: {}, noneProc: NONE_PROC, dms: dms };
+  /* SID / STAR (legs vers des points seulement : la montée initiale « dans l'axe jusqu'à 500 ft AAL » n'est pas un leg codé ici).
+   * LFBL : SID RNAV 3A / 3B (AMDT 12/22, consignes AMDT 04/24 — FL 70, 250 kt sous FL 100) ; STAR RNAV RWY 03 / 21 (AMDT 04/23).
+   * Désignateurs des STAR non relevés : nommées par le point d'entrée et la piste. LFBU : SID conventionnelles (interception radiale AGO) et
+   * SID RNAV RWY 28 (AMDT 10/25) non codées. */
+  function legs(a) { return a.map(function (x) { return typeof x === 'string' ? { id: x } : { id: x[0], alt: x[1], altc: x[2] }; }); }
+  var SIDN = 'Montée dans l\'axe jusqu\'à 500 ft AAL (1 800 ft) avant le premier virage (consigne de la SID, non codée). FL 70, 250 kt maxi sous FL 100. Pente 4,7 % mini.';
+  var DEP = {
+    LFBL: [
+      { id: 'BALAN3A', rwy: '03', legs: legs(['BL602', 'BALAN']), note: 'SID RNAV RWY 03 : virage à gauche direct BL602 puis BALAN. ' + SIDN },
+      { id: 'LARON3A', rwy: '03', legs: legs(['BL604', 'LARON']), note: 'SID RNAV RWY 03 : virage à droite direct BL604 puis LARON. ' + SIDN },
+      { id: 'NORON3A', rwy: '03', legs: legs(['PIGUL', 'NORON']), note: 'SID RNAV RWY 03 : virage à gauche direct PIGUL puis NORON. ' + SIDN },
+      { id: 'MAKOX3A', rwy: '03', legs: legs(['LINAK', 'MAKOX']), note: 'SID RNAV RWY 03 : virage à gauche direct LINAK puis MAKOX. ' + SIDN },
+      { id: 'PERIG3A', rwy: '03', legs: legs(['MAVAC', 'PERIG']), note: 'SID RNAV RWY 03 : virage à gauche direct MAVAC puis PERIG. ' + SIDN },
+      { id: 'BALAN3B', rwy: '21', legs: legs(['BL602', 'BALAN']), note: 'SID RNAV RWY 21 : virage à droite direct BL602 puis BALAN. ' + SIDN },
+      { id: 'LARON3B', rwy: '21', legs: legs(['BL604', 'LARON']), note: 'SID RNAV RWY 21 : virage à gauche direct BL604 puis LARON. ' + SIDN + ' Les autres SID RWY 21 n\'ont pas été relevées.' }
+    ],
+    LFBU: []
+  };
+  var STN = 'STAR RNAV (AMDT 04/23) — désignateur non relevé, nommée par son point d\'entrée.';
+  var ARR = {
+    LFBL: [
+      { id: 'BALAN RW21', rwy: '21', legs: legs(['BALAN', ['IBL21', 4000, 'A']]), note: STN + ' BALAN → IBL21 (4 000 ft mini, 185 kt).' },
+      { id: 'GUERE RW21', rwy: '21', legs: legs(['GUERE', ['BL703', 6000, 'B'], ['IBL21', 4000, 'A']]), note: STN + ' GUERE → BL703 (6 000 ft maxi) → IBL21 (4 000 ft mini).' },
+      { id: 'GUSON RW21', rwy: '21', legs: legs(['GUSON', ['IBL21', 4000, 'A']]), note: STN + ' GUSON → IBL21 (4 000 ft mini).' },
+      { id: 'MAKOX RW21', rwy: '21', legs: legs(['MAKOX', ['BL707', 5000, 'B'], ['BL504', 4000, 'A']]), note: STN + ' MAKOX → BL707 (5 000 ft maxi) → BL504 (4 000 ft mini, 220 kt).' },
+      { id: 'NORON RW21', rwy: '21', legs: legs(['NORON', ['BL705', 5000, 'B'], ['BL502', 4000, 'A']]), note: STN + ' NORON → BL705 (5 000 ft maxi) → BL502 (4 000 ft mini, 220 kt).' },
+      { id: 'PERIG RW21', rwy: '21', legs: legs(['PERIG', ['BL705', 5000, 'B'], ['BL502', 4000, 'A']]), note: STN + ' PERIG → BL705 (5 000 ft maxi) → BL502 (4 000 ft mini, 220 kt).' },
+      { id: 'BALAN RW03', rwy: '03', legs: legs(['BALAN', 'BL905', ['NERTI', 3700, 'B']]), note: STN + ' BALAN → BL905 → NERTI (3 700 ft maxi, 210 kt).' },
+      { id: 'GUERE RW03', rwy: '03', legs: legs(['GUERE', ['BL907', 6000, 'B'], ['SOLNO', 3700, 'B']]), note: STN + ' GUERE → BL907 (6 000 ft maxi) → SOLNO (3 700 ft maxi, 210 kt).' },
+      { id: 'GUSON RW03', rwy: '03', legs: legs(['GUSON', 'BL905', ['NERTI', 3700, 'B']]), note: STN + ' GUSON → BL905 → NERTI (3 700 ft maxi).' },
+      { id: 'MAKOX RW03', rwy: '03', legs: legs(['MAKOX', ['BL909', 5000, 'B'], ['MIGRA', 3700, 'B']]), note: STN + ' MAKOX → BL909 (5 000 ft maxi) → MIGRA (3 700 ft maxi).' },
+      { id: 'NORON RW03', rwy: '03', legs: legs(['NORON', ['BL911', 5000, 'B'], ['MIGRA', 3700, 'B']]), note: STN + ' NORON → BL911 (5 000 ft maxi) → MIGRA (3 700 ft maxi).' },
+      { id: 'PERIG RW03', rwy: '03', legs: legs(['PERIG', ['BL913', 5000, 'B'], ['MIGRA', 3700, 'B']]), note: STN + ' PERIG → BL913 (5 000 ft maxi) → MIGRA (3 700 ft maxi).' }
+    ],
+    LFBU: []
+  };
+  var NONE_PROC = 'Aucune procédure de ce type codée pour cet aérodrome dans la base du simulateur.';
+  TF.DATA.navdb = { wpts: W, apr: APR, dep: DEP, arr: ARR, noneProc: NONE_PROC, dms: dms };
 })(this);
 
 </script>
@@ -2089,6 +2224,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   M.brg = brg; M.dist = dist;
   M.ids = function () { return Object.keys(DB().wpts).sort(); };
   M.apr = function (ad) { return (DB().apr[ad] || []); };
+  M.procs = function (kind, ad) { var d = DB(); return kind === 'DEP' ? ((d.dep || {})[ad] || []) : kind === 'ARR' ? ((d.arr || {})[ad] || []) : M.apr(ad); };
+  function procDef(kind, p) { return p ? M.procs(kind, p.ad).filter(function (x) { return x.id === p.id; })[0] : null; }
 
   /* ---------------- État ---------------- */
   M.initial = function () {
@@ -2104,7 +2241,10 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   M.legs = function (fm) {
     var L = [];
     if (fm.orig) L.push({ id: fm.orig, seg: 'orig' });
+    var DP = procDef('DEP', fm.dep), AR = procDef('ARR', fm.arr);
+    if (DP) DP.legs.forEach(function (l) { L.push({ id: l.id, seg: 'dep', alt: l.alt, altc: l.altc }); });
     fm.enr.forEach(function (id, i) { L.push({ id: id, seg: 'enr', i: i }); });
+    if (AR) AR.legs.forEach(function (l) { L.push({ id: l.id, seg: 'arr', alt: l.alt, altc: l.altc }); });
     var A = fm.app && aprDef(fm.app);
     if (fm.dest && !A) L.push({ id: fm.dest, seg: 'dest' });
     if (A) {
@@ -2122,8 +2262,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function here(ck) { var f = ck.s.flight; return [f.mx, f.my]; }
 
   /* ---------------- Actions FMS ---------------- */
-  M.setOrig = function (ck, id) { var fm = F(ck); fm.orig = id; fixAct(ck); };
-  M.setDest = function (ck, id) { var fm = F(ck); fm.dest = id; if (fm.app && fm.app.ad !== id) fm.app = null; fixAct(ck); };
+  M.setOrig = function (ck, id) { var fm = F(ck); fm.orig = id; if (fm.dep && fm.dep.ad !== id) fm.dep = null; fixAct(ck); };
+  M.setDest = function (ck, id) { var fm = F(ck); fm.dest = id; if (fm.app && fm.app.ad !== id) fm.app = null; if (fm.arr && fm.arr.ad !== id) fm.arr = null; fixAct(ck); };
+  M.loadProc = function (ck, kind, ad, id) { var fm = F(ck); if (kind === 'DEP') { if (fm.orig !== ad) fm.orig = ad; fm.dep = { ad: ad, id: id }; } else { if (fm.dest !== ad) { fm.dest = ad; if (fm.app && fm.app.ad !== ad) fm.app = null; } fm.arr = { ad: ad, id: id }; } fixAct(ck, true); };
   M.insert = function (ck, at, id) { var fm = F(ck); fm.enr.splice(U.clamp(at, 0, fm.enr.length), 0, id); fixAct(ck, true); };
   M.removeEnr = function (ck, i) { var fm = F(ck); fm.enr.splice(i, 1); fixAct(ck, true); };
   function fixAct(ck, keep) {
@@ -2131,9 +2272,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (L.length < 2) { fm.act = null; fm.from = null; return; }
     if (fm.act == null || fm.act >= L.length || !keep) { if (fm.act == null) { fm.act = 1; fm.from = null; } else fm.act = Math.min(fm.act, L.length - 1); }
   }
-  M.deleteFpl = function (ck) { var fm = F(ck); fm.orig = fm.dest = null; fm.enr = []; fm.app = null; fm.act = null; fm.from = null; fm.dto = null; ck.s.g.susp = false; };
-  M.invert = function (ck) { var fm = F(ck), o = fm.orig; fm.orig = fm.dest; fm.dest = o; fm.enr.reverse(); fm.app = null; fm.act = null; fixAct(ck); };
-  M.activatePlan = function (ck, p) { var fm = F(ck); fm.orig = p.orig; fm.dest = p.dest; fm.enr = p.enr.slice(); fm.app = null; fm.act = null; fm.dto = null; fixAct(ck); };
+  M.deleteFpl = function (ck) { var fm = F(ck); fm.orig = fm.dest = null; fm.enr = []; fm.app = null; fm.dep = fm.arr = null; fm.act = null; fm.from = null; fm.dto = null; ck.s.g.susp = false; };
+  M.invert = function (ck) { var fm = F(ck), o = fm.orig; fm.orig = fm.dest; fm.dest = o; fm.enr.reverse(); fm.app = null; fm.dep = fm.arr = null; fm.act = null; fixAct(ck); };
+  M.activatePlan = function (ck, p) { var fm = F(ck); fm.orig = p.orig; fm.dest = p.dest; fm.enr = p.enr.slice(); fm.app = null; fm.dep = fm.arr = null; fm.act = null; fm.dto = null; fixAct(ck); };
   M.store = function (ck) { var fm = F(ck); if (!fm.orig && !fm.dest) return; fm.cat.push({ name: (fm.orig || '____') + ' / ' + (fm.dest || '____'), orig: fm.orig, dest: fm.dest, enr: fm.enr.slice() }); };
   M.activateLeg = function (ck, i) { var fm = F(ck), L = M.legs(fm); if (i < 1 || i >= L.length) return false; fm.act = i; fm.from = null; fm.dto = null; ck.s.g.susp = false; if (L[i].seg === 'app' || L[i].seg === 'miss') fm.app.active = true; return true; };
   M.directTo = function (ck, id) {
@@ -2299,9 +2440,11 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var fm = F(ck), R = [], L = M.legs(fm), A = fm.app && aprDef(fm.app);
     function li(id, seg) { for (var i = 0; i < L.length; i++) if (L[i].id === id && L[i].seg === seg) return i; return -1; }
     R.push({ k: 'orig', id: fm.orig, li: li(fm.orig, 'orig') });
+    if (fm.dep) { R.push({ k: 'hdr', t: 'Departure – ' + fm.dep.ad + ' – ' + fm.dep.id }); L.forEach(function (l, i) { if (l.seg === 'dep') R.push({ k: 'dep', id: l.id, li: i, alt: l.alt, altc: l.altc }); }); }
     if (fm.enr.length || fm.orig || fm.dest) R.push({ k: 'hdr', t: 'Enroute' });
     fm.enr.forEach(function (id, i) { R.push({ k: 'enr', id: id, i: i, li: L.indexOf(L.filter(function (l) { return l.seg === 'enr' && l.i === i; })[0]) }); });
     R.push({ k: 'add', i: fm.enr.length });
+    if (fm.arr) { R.push({ k: 'hdr', t: 'Arrival – ' + fm.arr.ad + ' – ' + fm.arr.id }); L.forEach(function (l, i) { if (l.seg === 'arr') R.push({ k: 'arr', id: l.id, li: i, alt: l.alt, altc: l.altc }); }); }
     R.push({ k: 'dest', id: fm.dest, li: A ? -1 : li(fm.dest, 'dest') });
     if (A) {
       var tr = A.trans[fm.app.trans] || A.trans[0];
@@ -2492,7 +2635,13 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function ldEnt(ck, u, sd) {
     var ld = u.ld;
     if (u.ent) return commitEntry(ck, u, sd);
-    if (ld.kind !== 'APR') return msg(TF.DATA.navdb.noneProc);
+    if (ld.kind !== 'APR') {
+      var PL = M.procs(ld.kind, ld.ad); if (!PL.length) return msg(TF.DATA.navdb.noneProc);
+      if (ld.fld < 1) { ld.fld = 1; return { ok: true }; }
+      var pr = PL[ld.ai] || PL[0]; M.loadProc(ck, ld.kind, ld.ad, pr.id);
+      u.ld = null; u.cur = false; u.win = null; if (sd !== 'pfd') { u.grp = 'FPL'; u.pg = 0; u.prev = null; }
+      return msg((ld.kind === 'DEP' ? 'Départ ' : 'Arrivée ') + pr.id + ' ' + ld.ad + ' chargé(e) dans le plan de vol.');
+    }
     if (!M.apr(ld.ad).length) return msg('Aucune approche codée pour ' + ld.ad + '.');
     if (ld.fld < 5) { ld.fld = ld.fld === 3 && ld.minT === 'OFF' ? 5 : ld.fld + 1; return { ok: true }; }
     return ldFinish(ck, u, sd, ld.act === 1);
@@ -2500,7 +2649,11 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function ldKnob(ck, u, sd, big, dir) {
     var ld = u.ld, ap = M.apr(ld.ad);
     if (u.ent) { entryKnob(u.ent, big, dir); return; }
-    if (big) { if (ld.fld === 5) { ld.act = dir > 0 ? 1 : 0; if (ld.act === 0 && dir < 0) {} return; } ld.fld = U.clamp(ld.fld + dir, 0, 5); if (ld.kind !== 'APR' && ld.fld > 0) ld.fld = 0; return; }
+    if (ld.kind !== 'APR') {
+      if (big) { ld.fld = U.clamp(ld.fld + dir, 0, 1); return; }
+      if (ld.fld === 1) { var PL = M.procs(ld.kind, ld.ad); if (PL.length) ld.ai = (ld.ai + dir + PL.length) % PL.length; return; }
+    }
+    if (big) { if (ld.fld === 5) { ld.act = dir > 0 ? 1 : 0; if (ld.act === 0 && dir < 0) {} return; } ld.fld = U.clamp(ld.fld + dir, 0, 5); return; }
     if (ld.fld === 0) { u.ent = { txt: '', pos: 0 }; if (dir < 0) { u.win = { type: 'list', sel: 0, items: M.nearest(ck, 'APT').map(function (x) { return { id: x.id, grp: 'NRST' }; }), back: u.win }; u.ent = null; return; } entryKnob(u.ent, false, 1); return; }
     if (!ap.length) return;
     if (ld.fld === 1) { ld.ai = (ld.ai + dir + ap.length) % ap.length; ld.ti = 0; }
@@ -2616,7 +2769,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   /* Résumé de l'état pour l'affichage et le rafraîchissement */
   M.digest = function (ck) {
     var fm = F(ck), n = M.nav(ck);
-    return [fm.orig, fm.dest, fm.enr.join(','), fm.app ? [fm.app.ad, fm.app.id, fm.app.trans, fm.app.active, fm.app.vtf] : 0, fm.act, fm.dto && fm.dto.id,
+    return [fm.orig, fm.dest, fm.enr.join(','), fm.app ? [fm.app.ad, fm.app.id, fm.app.trans, fm.app.active, fm.app.vtf] : 0, fm.act, fm.dto && fm.dto.id, fm.dep ? fm.dep.id : 0, fm.arr ? fm.arr.id : 0,
       JSON.stringify(fm.mfd.win), fm.mfd.grp, fm.mfd.pg, fm.mfd.cur, fm.mfd.row, fm.mfd.ent && fm.mfd.ent.txt + fm.mfd.ent.pos, JSON.stringify(fm.mfd.ld), fm.mfd.rng, fm.mfd.aprInfo, fm.mfd.bar.join(), JSON.stringify(fm.mfd.wpt), fm.cat.length,
       JSON.stringify(fm.pfd.win), fm.pfd.row, fm.pfd.ent && fm.pfd.ent.txt + fm.pfd.ent.pos, JSON.stringify(fm.pfd.ld),
       n.valid ? [Math.round(n.dis * 10), Math.round(n.dtk), Math.round(n.xtk * 50), n.phase] : 0].join('|');
@@ -6395,8 +6548,444 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       note: 'Extrait des libellés exacts de la check-list BEFORE TAKEOFF (C/L complète dans « Procédures complètes »).' }
   };
 
+
+  /* ======================================================================================
+     VOL COMPLET (préparation cabine → coupure moteurs) — scènes 3D par bloc du flow détaillé (TF.DATA.essFlow).
+     Chaque point : [x NM, y NM, z ft AAL, IAS kt, index de l'étape du bloc, cap magnétique imposé (option)].
+     Repère schématique : piste 28 orientée vers +x (cap 276°), seuil 28 en x = 0, intersection E en x = 0,30,
+     parking Airbus au sud de la piste. ⚠︎ Schéma pédagogique — pas une carte de l'aérodrome.
+     ====================================================================================== */
+  var PK = [0.22, 0.38], HP = [0.30, 0.08];
+  function S0(c, hdg) { return [PK[0], PK[1], 0, 0, c, hdg == null ? 7 : hdg]; }
+  TF.DATA.flow3dFlight = {
+    runway: { x0: 0, x1: 1.0, w: 0.025 },
+    beacon: { x: -6.3, y: 0 },
+    apron: [[0.12, 0.33], [0.36, 0.33], [0.36, 0.44], [0.12, 0.44]],
+    taxiways: [[[0.22, 0.38], [0.22, 0.30], [0.40, 0.22], [0.40, 0.14], [0.30, 0.10], [0.30, 0.0]], [[0.85, 0.0], [0.85, 0.08], [0.70, 0.18], [0.40, 0.25], [0.30, 0.33]]],
+    scenes: {
+      arr: { view: 'iso', zoom: 90, pts: [S0(0)] },
+      ret: { view: 'iso', zoom: 90, pts: [S0(0)] },
+      avs: { view: 'iso', zoom: 90, pts: [S0(0)] },
+      start: { view: 'iso', zoom: 90, pts: [S0(0)] },
+      post: { view: 'iso', zoom: 90, pts: [S0(0)] },
+      ap: { view: 'iso', zoom: 90, pts: [S0(0)] },
+      taxi: { view: 'dessus', zoom: 45, pts: [S0(0), S0(5), [0.22, 0.30, 0, 8, 6], [0.31, 0.26, 0, 10, 8], [0.40, 0.22, 0, 10, 10], [0.40, 0.14, 0, 10, 12], [0.32, 0.10, 0, 6, 13], [HP[0], HP[1], 0, 0, 14, 7], [HP[0], HP[1], 0, 0, 15, 7]] },
+      run: { view: 'iso', zoom: 90, pts: [[HP[0], HP[1], 0, 0, 0, 7]] },
+      to: { view: 'iso', zoom: 30, pts: [[0.30, 0, 0, 0, 0, 276], [0.30, 0, 0, 0, 2, 276], [0.31, 0, 0, 5, 3], [0.36, 0, 0, 20, 8], [0.42, 0, 0, 30, 9], [0.50, 0, 0, 60, 10], [0.62, 0, 0, 76, 13], [0.75, 0, 60, 83, 14], [0.95, 0, 180, 89, 15], [1.15, 0, 300, 90, 16], [1.30, 0, 380, 90, 17], [1.42, 0, 420, 92, 19]] },
+      pa: { view: 'profil', zoom: 4, pts: [[1.6, 0, 500, 92, 0], [2.0, 0, 700, 92, 4], [3.0, 0, 1100, 92, 9], [3.6, -0.3, 1300, 92, 10], [4.0, -1.2, 1600, 92, 12], [3.6, -2.2, 1800, 95, 13], [2.6, -2.8, 2080, 100, 15]] },
+      cruise: { view: 'dessus', zoom: 2, pts: [[1.5, -3.0, 2180, 140, 0], [-6.0, -3.0, 2180, 150, 5]] },
+      ifr: { view: 'dessus', zoom: 2, pts: [[-7.0, -3.0, 2180, 150, 0], [-9.0, -3.0, 2180, 145, 6], [-10.0, -2.6, 1900, 140, 8], [-10.5, -2.2, 1580, 135, 10], [-9.0, -1.2, 1580, 125, 18], [-6.3, 0, 1580, 120, 26], [-8.5, 0.8, 1580, 105, 27], [-10.2, 0.8, 1580, 105, 28], [-9.7, 0, 1580, 100, 29], [-5.7, 0, 1580, 100, 30], [-4.97, 0, 1580, 100, 31]] },
+      ga: { view: 'profil', zoom: 6, pts: [[-3.4, 0, 1080, 95, 0], [-3.0, 0, 955, 90, 2], [-2.6, 0, 830, 90, 3], [-1.04, 0, 330, 90, 4], [-0.72, 0, 230, 90, 5], [-0.55, 0, 245, 88, 6], [-0.35, 0, 300, 86, 7], [0.1, 0, 420, 88, 8], [0.6, 0, 560, 90, 9], [1.4, 0, 800, 92, 10], [2.2, 0, 1000, 92, 11], [3.2, 0, 1300, 95, 12]] },
+      ldg: { view: 'profil', zoom: 8, pts: [[-3.4, 0, 1080, 95, 0], [-3.0, 0, 955, 90, 1], [-2.6, 0, 830, 88, 2], [-1.6, 0, 510, 85, 5], [-1.04, 0, 330, 85, 6], [-0.72, 0, 230, 85, 7], [0.15, 0, 0, 70, 8], [0.80, 0, 0, 15, 9], [0.85, 0.06, 0, 10, 10], [0.80, 0.12, 0, 10, 12], [0.70, 0.18, 0, 10, 14], [0.55, 0.22, 0, 10, 16], [0.40, 0.25, 0, 10, 18]] },
+      park: { view: 'iso', zoom: 90, pts: [[0.30, 0.33, 0, 5, 0], S0(1), S0(13)] }
+    },
+    order: ['arr', 'ret', 'avs', 'start', 'post', 'ap', 'taxi', 'run', 'to', 'pa', 'cruise', 'ifr', 'ga', 'ldg', 'park']
+  };
+
+  /* v7.1 : textes des flows en anglais (Flow 3D tout en anglais). Clé = texte d'origine (français). */
+  var EN = {
+"Approche de précision (ILS) avec racetrack": "Precision approach (ILS) with racetrack",
+"Schéma pédagogique — aucune procédure publiée réelle n'est représentée": "Teaching diagram — no real published procedure is shown",
+"Libellés exacts de la check-list. En approche IFR, le PDP (p.227) précise que FLAPS LANDING ne s'emploie que pour une piste limitative : configuration normale FLAPS APP.": "Exact check-list wording. For IFR approaches the PDP (p.227) states that FLAPS LANDING is only used for limited runways: normal configuration FLAPS APP.",
+"PRÉPARATION": "PREPARATION",
+"Préparation et briefing arrivée, descente": "Arrival preparation and briefing, descent",
+"Racetrack, interception du LOC à 45°": "Racetrack, LOC interception at 45°",
+"½ déviation G/S → volets APP, sur le G/S → train sorti": "½ G/S deviation → flaps APP, on the G/S → gear down",
+"DÉCISION": "DECISION",
+"« Hundred above », minima, continuer ou remettre les gaz": "« Hundred above », minima, continue or go around",
+"Préparation arrivée + briefing arrivée": "Arrival preparation + arrival briefing",
+"Briefing arrivée fait (approche, minima, remise de gaz)": "Arrival briefing done (approach, minima, go-around)",
+"Le PDP place la préparation et le briefing arrivée AVANT la descente. Le briefing complet se trouve dans l'onglet Briefings ; la C/L APPROACH (« BRIEFING … COMPLETED ») est une check-list distincte, faite avant d'entrer dans la procédure (PDP, Approach check-list).": "The PDP puts the arrival preparation and briefing BEFORE the descent. The full briefing is in the Briefings tab; the APPROACH C/L (« BRIEFING … COMPLETED ») is a separate check-list, done before entering the procedure (PDP, Approach check-list).",
+"Descente sur un plan standard de 3°, IAS ≤ VNO": "Descent on a standard 3° path, IAS ≤ VNO",
+"Descente standard sur un plan de 3° (≈ 318 ft/NM), vitesse indiquée inférieure ou égale à VNO (PDP p.227). Le PDP rappelle de contrôler le plan régulièrement (Descent).": "Standard descent on a 3° path (≈ 318 ft/NM), indicated airspeed at or below VNO (PDP p.227). The PDP reminds you to check the path regularly (Descent).",
+"Calage altimétrique": "Altimeter setting",
+"Changer le calage quand la descente vers une ALTITUDE est autorisée": "Change the setting when cleared to descend to an ALTITUDE",
+"QNH destination affiché": "Destination QNH set",
+"Le PDP lie le changement de calage à la clairance de descente vers une altitude (et non vers un niveau). Ici : petit bouton BARO du PFD (QNH destination du scénario).": "The PDP links the altimeter change to the clearance to descend to an altitude (not to a level). Here: small BARO knob on the PFD (destination QNH of the scenario).",
+"Entrer et suivre le racetrack publié ; réduire sous la vitesse max du racetrack": "Enter and follow the published racetrack; reduce below the racetrack maximum speed",
+"Éloignement : IAS 105 kt": "Outbound: IAS 105 kt",
+"La vitesse maximale du racetrack est celle publiée sur la carte de la procédure réelle. Le PDP montre 105 kt en éloignement. Le racetrack dessiné ici est schématique : il ne correspond à aucune procédure publiée.": "The racetrack maximum speed is the one published on the real procedure chart. The PDP shows 105 kt outbound. The racetrack drawn here is schematic: it matches no published procedure.",
+"AP/FD : armer APR pour l'approche": "AP/FD: arm APR for the approach",
+"Mode d'approche armé sur le PFD": "Approach mode armed on the PFD",
+"Le profil d'approche IFR du PDP indique « AP/FD APR » sur l'approche initiale. Le moment exact où armer APR dépend de la clairance et de la source de navigation (ILS chargé, NAV calée) : point à valider avec l'instructeur.": "The PDP IFR approach profile shows « AP/FD APR » on the initial approach. The exact moment to arm APR depends on the clearance and the navigation source (ILS loaded, NAV tuned): to be validated with the instructor.",
+"Interception du LOC": "LOC interception",
+"Interception du LOC à 45° ; confirmer le LOC par un autre moyen": "Intercept the LOC at 45°; confirm the LOC with another navaid",
+"LOC confirmé — IAS 100 kt": "LOC confirmed — IAS 100 kt",
+"Intercepter à 45° et confirmer le LOC par un autre moyen (identification, autre moyen radio) protège contre un faux alignement. Fenêtre en finale : ½ déviation LOC et G/S (PDP p.227).": "Intercepting at 45° and confirming the LOC with another navaid (identification, other radio aid) protects against a false alignment. Final approach window: ½ deviation LOC and G/S (PDP p.227).",
+"½ déviation G/S": "½ G/S deviation",
+"Volets APP": "Flaps APP",
+"Indicateur volets APP": "Flap indicator APP",
+"À ½ point du G/S, volets APP : l'avion est configuré avant de commencer la descente. En IFR, la configuration normale reste FLAPS APP ; FLAPS LDG seulement pour une piste limitative (PDP p.227).": "At ½ dot of G/S, flaps APP: the aircraft is configured before the descent starts. In IFR the normal configuration stays FLAPS APP; FLAPS LDG only for a limited runway (PDP p.227).",
+"Sur le G/S": "On the G/S",
+"Train sorti — ajuster la puissance": "Gear down — adjust power",
+"Sortir le train à l'interception du G/S crée la traînée qui permet de descendre sur le plan sans accélérer ; on ajuste ensuite la puissance.": "Lowering the gear at G/S interception gives the drag needed to descend on the path without accelerating; then adjust the power.",
+"Lancer la C/L FINAL (par cœur) — IAS 90 kt": "Start the FINAL C/L (by heart) — IAS 90 kt",
+"Train DOWN, pompes ON, volets APP (IFR) — « Final check-list complete »": "Gear DOWN, pumps ON, flaps APP (IFR) — « Final check-list complete »",
+"La C/L FINAL est une check-list (C/L DA42-VI : GEAR DOWN, FUEL PUMPS ON, FLAPS, RUDDER TRIM NEUTRAL, MISSED APP ALTITUDE SET). Le flow dit QUAND la faire ; le contenu reste celui de la check-list officielle. Ici le simulateur observe le train, les pompes et les volets ; le trim de direction et l'altitude d'API restent à déclarer.": "The FINAL C/L is a check-list (C/L DA42-VI: GEAR DOWN, FUEL PUMPS ON, FLAPS, RUDDER TRIM NEUTRAL, MISSED APP ALTITUDE SET). The flow says WHEN to do it; the content stays the official check-list. Here the simulator observes gear, pumps and flaps; rudder trim and missed-approach altitude are declared.",
+"Stabilisé à 1 000 ft AAL (IMC) / 500 ft AAL (VMC)": "Stabilised at 1,000 ft AAL (IMC) / 500 ft AAL (VMC)",
+"Sur le plan, dans l'axe, bonne configuration, bonne IAS, C/L FINAL faite": "On the path, on the axis, right configuration, right IAS, FINAL C/L done",
+"Critères de stabilisation du PDP : sur le plan, dans l'axe, bonne configuration, bonne vitesse, C/L FINAL faite. Non stabilisé à la hauteur de stabilisation : remise de gaz.": "PDP stabilisation criteria: on the path, on the axis, right configuration, right speed, FINAL C/L done. Not stabilised at the stabilisation height: go around.",
+"100 ft au-dessus des minima": "100 ft above minima",
+"Annonce « Hundred above »": "Call « Hundred above »",
+"Annonce faite": "Call made",
+"Annonce écrite dans le PDP, 100 ft au-dessus des minima.": "Callout written in the PDP, 100 ft above minima.",
+"Décision : « Continue » ou « Go-around »": "Decision: « Continue » or « Go-around »",
+"Décision annoncée": "Decision called",
+"Aux minima, deux annonces possibles écrites dans le PDP : « Continue » ou « Go-around ». Cette animation montre la remise de gaz, pour enchaîner sur la procédure d'approche interrompue.": "At minima, two callouts are written in the PDP: « Continue » or « Go-around ». This animation shows the go-around, to continue with the missed approach.",
+"Procédure d'approche interrompue — AP/FD GA": "Missed approach procedure — AP/FD GA",
+"Mode GA au PFD": "GA mode on the PFD",
+"Le profil IFR du PDP indique AP/FD GA pour la remise de gaz. La procédure complète de remise de gaz (puissance, assiette, volets, train) est celle de l'OM-B (B02 §11) : elle n'est pas détaillée dans cette animation. Le bouton GA ne déconnecte pas l'AP.": "The PDP IFR profile shows AP/FD GA for the go-around. The full go-around procedure (power, pitch, flaps, gear) is the OM-B one (B02 §11): not detailed in this animation. The GA button does not disconnect the AP.",
+"Relâcher le mode SUSP pour suivre l'approche interrompue": "Release SUSP to follow the missed approach",
+"SUSP relâché (softkey 5 du PFD)": "SUSP released (PFD softkey 5)",
+"Le PDP précise : relâcher le mode SUSP pour suivre la procédure d'approche interrompue. Dans cette animation l'approche n'est pas chargée dans le FMS : l'étape est déclarée (« FAIT »), pas observée.": "The PDP says: release SUSP mode to follow the missed approach procedure. In this animation the approach is not loaded in the FMS: the step is declared (« DONE »), not observed.",
+"Schéma pédagogique — sens et dimensions illustratifs, altitudes AAL": "Teaching diagram — direction and size illustrative, altitudes AAL",
+"Libellés exacts de la check-list. En VFR, FLAPS LANDING est la configuration normale (PDP p.231).": "Exact check-list wording. In VFR, FLAPS LANDING is the normal configuration (PDP p.231).",
+"Mise en puissance, rotation, rentrée du train, TOSA": "Power set, rotation, gear up, TOSA",
+"Virage, C/L après décollage, 1 000 ft, vent arrière": "Turn, after take-off C/L, 1,000 ft, downwind",
+"« Speed check » volets APP, « Speed check » train, travers seuil TOP": "« Speed check » flaps APP, « Speed check » gear, abeam threshold TOP",
+"Dernier virage, C/L FINAL, 85 kt, stabilisation 300 ft": "Last turn, FINAL C/L, 85 kt, stabilised at 300 ft",
+"« Continue » ou « Go-around »": "« Continue » or « Go-around »",
+"Puissance MAX (manettes plein avant)": "Power MAX (levers fully forward)",
+"La séquence complète de mise en puissance (« TAKEOFF », 70 %, freins relâchés, MAX, chrono, vérifications à 60 kt) est celle de l'OM-B et du flow Décollage. Le flow chart du tour de piste commence à la rotation.": "The full power-setting sequence (« TAKEOFF », 70 %, brakes released, MAX, timer, 60 kt checks) is the OM-B one and the Take-off flow. The circuit flow chart starts at rotation.",
+"Rotation Θ +5° à IAS 76 kt, puis Load 100 %, Θ +12°": "Rotation Θ +5° at IAS 76 kt, then Load 100 %, Θ +12°",
+"Assiette de montée": "Climb attitude",
+"Valeurs du flow chart du PDP pour ce tour de piste. Ce n'est pas une vitesse de rotation universelle : elle dépend de la masse et des conditions (OM-B / AFM). Le pilotage n'est pas évalué ici.": "Values of the PDP flow chart for this circuit. Not a universal rotation speed: it depends on mass and conditions (OM-B / AFM). Flying is not assessed here.",
+"Freins — train UP": "Brakes — gear UP",
+"Plus de vert, train rentré": "No more green, gear up",
+"Vario positif confirmé : freiner les roues puis rentrer le train (PDP p.231). IAS 85 kt dans la montée initiale.": "Positive rate confirmed: brake the wheels then retract the gear (PDP p.231). IAS 85 kt in the initial climb.",
+"À la TOSA (400 ft AAL dans ce flow chart) : assiette +10°, puissance de montée 92 %.": "At TOSA (400 ft AAL in this flow chart): pitch +10°, climb power 92 %.",
+"Virage": "Turn",
+"Virage au-dessus de 500 ft, taux standard φ 15°": "Turn above 500 ft, standard rate φ 15°",
+"Pas de virage avant 500 ft AAL ; taux standard (inclinaison 15°). Pilotage : non évalué.": "No turn below 500 ft AAL; standard rate (15° bank). Flying: not assessed.",
+"Le flow dit QUAND faire la C/L ; son contenu reste celui de la check-list officielle (GEAR AND FLAPS UP, FUEL PUMPS OFF, POWER SET, PITOT AS REQUIRED, ENGINES PARAMETERS CHECK, ALTIMETERS). Le simulateur observe train, volets et pompes.": "The flow says WHEN to do the C/L; its content stays the official check-list (GEAR AND FLAPS UP, FUEL PUMPS OFF, POWER SET, PITOT AS REQUIRED, ENGINES PARAMETERS CHECK, ALTIMETERS). The simulator observes gear, flaps and pumps.",
+"« Speed check » : volets APP": "« Speed check »: flaps APP",
+"IAS 100 kt — volets APP": "IAS 100 kt — flaps APP",
+"En vent arrière (IAS 100 kt) : on vérifie la vitesse AVANT de sortir les volets (« Speed …. check », VFR approach du PDP).": "Downwind (IAS 100 kt): check the speed BEFORE lowering the flaps (« Speed …. check », PDP VFR approach).",
+"« Speed check » : train DOWN": "« Speed check »: gear DOWN",
+"Deuxième « Speed check » puis train sorti. L'ordre volets puis train est celui du PDP ; une inversion est comptée comme variation (à valider avec l'instructeur), pas comme erreur.": "Second « Speed check » then gear down. Flaps then gear is the PDP order; swapping them counts as a variation (to be validated with the instructor), not as an error.",
+"Vent arrière": "Downwind",
+"Assiette +3°, puissance 75 % pour tenir 100 kt configuré. Tolérance ±5 % appliquée par le simulateur (aide pédagogique, à valider).": "Pitch +3°, power 75 % to hold 100 kt configured. ±5 % tolerance applied by the simulator (teaching aid, to be validated).",
+"TOP chrono — 1 minute, -1 s par kt de vent arrière": "TOP timer — 1 minute, -1 s per kt of tailwind",
+"Chrono lancé": "Timer started",
+"Au travers du seuil : top chrono. Durée de base 1 minute, corrigée de 1 seconde par nœud de vent arrière (PDP p.231).": "Abeam the threshold: start the timer. Basic time 1 minute, corrected by 1 second per knot of tailwind (PDP p.231).",
+"Descente et virage": "Descent and turn",
+"Au top : on commence ensemble descente et virage. Surveiller l'anticipation pour intercepter l'axe (« Check anticipation to intercept runway axis »). Tolérance ±5 % (aide pédagogique).": "At the TOP: start the descent and the turn together. Watch the anticipation to intercept the axis (« Check anticipation to intercept runway axis »). ±5 % tolerance (teaching aid).",
+"C/L FINAL (par cœur) — 500 ft, IAS 90 puis 85 kt": "FINAL C/L (by heart) — 500 ft, IAS 90 then 85 kt",
+"En VFR, FLAPS LANDING est la configuration normale (PDP p.231). Le contenu de la C/L FINAL reste celui de la check-list officielle ; le simulateur observe train, pompes et volets, le trim de direction et l'altitude d'API restent à déclarer.": "In VFR, FLAPS LANDING is the normal configuration (PDP p.231). The FINAL C/L content stays the official check-list; the simulator observes gear, pumps and flaps; rudder trim and missed-approach altitude are declared.",
+"Stabilisé à 300 ft": "Stabilised at 300 ft",
+"Sur le plan, dans l'axe, configuré, bonne IAS, C/L faite": "On the path, on the axis, configured, right IAS, C/L done",
+"Hauteur de stabilisation VFR du PDP : 300 ft AAL.": "PDP VFR stabilisation height: 300 ft AAL.",
+"Décision": "Decision",
+"« Continue » ou « Go-Around »": "« Continue » or « Go-Around »",
+"Deux annonces possibles écrites dans le PDP. Cette animation montre la poursuite de l'atterrissage.": "Two callouts written in the PDP. This animation shows the landing being continued.",
+"Before take-off : test ECU et voters": "Before take-off: ECU and voter test",
+"Point d'arrêt (schéma)": "Holding point (schematic)",
+"Extrait des libellés exacts de la check-list BEFORE TAKEOFF (C/L complète dans « Procédures complètes »).": "Extract of the exact BEFORE TAKEOFF check-list wording (full C/L in « Procédures complètes »).",
+"Manettes IDLE, RPM, pompes, voters, températures": "Power levers IDLE, RPM, pumps, voters, temperatures",
+"SÉCURISATION": "SECURING",
+"ECU test gauche puis voter gauche": "Left ECU test then left voter",
+"ECU test droit puis voter droit": "Right ECU test then right voter",
+"CONTRÔLE": "CHECK",
+"Pages annonces / moteur / système": "Annunciations / engine / system pages",
+"Manettes plein réduit": "Levers fully back",
+"Préalable au test ECU (OM-B B02 §4, 3.g).": "Before the ECU test (OM-B B02 §4, 3.g).",
+"RPM < 1 000 sur le MFD": "RPM < 1,000 on the MFD",
+"Contrôle sur la page moteur du MFD (OM-B, 3.h).": "Check on the MFD engine page (OM-B, 3.h).",
+"Pompes LH / RH sur OFF": "LH / RH pumps OFF",
+"Voters sur AUTO": "Voters on AUTO",
+"Températures": "Temperatures",
+"Gearbox > 40 °C sur le MFD": "Gearbox > 40 °C on the MFD",
+"Le test ECU fait monter le régime : l'avion doit être immobilisé. Frein de parc : levier en BAS = ON.": "The ECU test raises the RPM: the aircraft must be held. Parking brake: lever DOWN = ON.",
+"ECU A / B FAIL allumés puis éteints, RPM > 1 800 puis ralenti": "ECU A / B FAIL on then off, RPM > 1,800 then idle",
+"Maintenir le bouton jusqu'à la fin du cycle (2 montées de régime par canal). Relâcher trop tôt ou toucher la manette annule le test. AFAe recommande un moteur après l'autre.": "Hold the button until the end of the cycle (2 RPM rises per channel). Releasing too early or moving the lever cancels the test. AFAe recommends one engine after the other.",
+"Moteur tourne sans variation": "Engine runs without change",
+"Chaque canal seul doit faire tourner le moteur sans changement. Le voter revient sur AUTO à la fin.": "Each channel alone must run the engine without change. The voter returns to AUTO at the end.",
+"ECU A / B FAIL allumés puis éteints": "ECU A / B FAIL on then off",
+"Même test sur le moteur droit. Commencer par le droit n'est pas une erreur (variation acceptable, à valider avec l'instructeur).": "Same test on the right engine. Starting with the right one is not an error (acceptable variation, to be validated with the instructor).",
+"ECU A ou B sélectionné hors test : interdit — le voter doit finir sur AUTO.": "ECU A or B selected outside the test: forbidden — the voter must end on AUTO.",
+"Pages": "Pages",
+"Pas d'alarme, paramètres verts": "No alarm, green parameters",
+"FINALE": "FINAL",
+"C/L FINAL, 90 kt, stabilisation 1 000 ft": "FINAL C/L, 90 kt, stabilisation 1,000 ft",
+"Descente": "Descent",
+"3 vertes": "3 greens",
+"Approche interrompue": "Missed approach",
+"Tour de piste standard (VFR)": "Standard circuit pattern (VFR)",
+"Inclinaison 15°": "Bank 15°",
+"Travers seuil": "Abeam threshold",
+"BEFORE TAKEOFF (extrait)": "BEFORE TAKEOFF (extract)",
+"Frein de parc ON": "Parking brake ON",
+"TEST GAUCHE": "LEFT TEST",
+"TEST DROIT": "RIGHT TEST",
+"Levier en bas (ON)": "Lever down (ON)",
+"ECU test gauche": "Left ECU test",
+"Voter gauche": "Left voter",
+"ECU test droit": "Right ECU test",
+"Voter droit": "Right voter",
+"Plan 3° — IAS ≤ VNO": "3° path — IAS ≤ VNO"
+};
+  function tr(x) { return x && EN[x] != null ? EN[x] : x; }
+  [app3d, ccl, run].forEach(function (f) {
+    f.sub = tr(f.sub); f.field = tr(f.field); f.checklist.note = tr(f.checklist.note); f.checklist.title = tr(f.checklist.title);
+    f.waypoints.forEach(function (w) { w.t = tr(w.t); w.d = tr(w.d); });
+    f.steps.forEach(function (s) { s.title = tr(s.title); s.action = tr(s.action); s.check = tr(s.check); s.why = tr(s.why); });
+  });
+  run.title = 'ECU TEST AT THE HOLDING POINT';
+
   TF.DATA.flow3d = { version: '1.0', updated: '2026-11-16', flows: [app3d, ccl, run],
-    srcLabels: { PDP: 'PDP (flow chart)', DOC: 'Autre doc approuvé (OM-B / C/L)', PEDA: 'Simplification pédagogique', VAL: 'À valider' } };
+    srcLabels: { PDP: 'PDP (flow chart)', DOC: 'Other approved doc (OM-B / C/L)', PEDA: 'Teaching simplification', VAL: 'To be validated' } };
+})(this);
+
+</script>
+<script>/* js/data/flow3d-en.js */
+/* FLOW 3D — traductions anglaises du flow détaillé (TF.DATA.essFlow). Clé = texte français exact ; un texte absent reste en français (tests). */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  TF.DATA.flowEn = {
+    vals: {
+"Pompe hydraulique du train : 5 à 20 s maxi": "Gear hydraulic pump: 5 to 20 s max",
+"Allumer, vérifier dehors, éteindre": "Switch on, check outside, switch off",
+"Ne pas regarder les ACL en face": "Do not look directly at the ACL",
+"STAL HT FAIL possible au sol (normal)": "STAL HT FAIL possible on the ground (normal)",
+"PDP p.115 « How to check the VEBS » — ELECTRIC MASTER ON": "PDP p.115 « How to check the VEBS » — ELECTRIC MASTER ON",
+"Débattement normal à cabrer 15,5°": "Normal nose-up travel 15.5°",
+"Le manche reste en butée arrière": "Stick stays on the aft stop",
+"Butée limitée à 13° à cabrer (PDP p.114)": "Stop limited to 13° nose-up (PDP p.114)",
+"Retour en butée 15,5°": "Back to the 15.5° stop",
+"Les volets n'ont aucune influence (PDP p.115)": "Flaps have no influence (PDP p.115)",
+"Calé pendant la mise sous tension": "Caged during power-up",
+"PFD et MFD s'allument (MFD : page de mise sous tension)": "PFD and MFD come on (MFD: power-up page)",
+"Après la mise sous tension": "After power-up",
+"Dates de validité des bases : à contrôler": "Database validity dates: check",
+"Puis ENT pour continuer": "Then ENT to continue",
+"Jaugé Main L + R = Fuel Calculator": "Gauged Main L + R = Fuel Calculator",
+"L ENG FIRE + R ENG FIRE sur le PFD": "L ENG FIRE + R ENG FIRE on the PFD",
+"Alarme sonore": "Aural alarm",
+"Vol IFR : ATIS Angoulême 130.090 (VAC)": "IFR flight: Angoulême ATIS 130.090 (VAC)",
+"Fuel Temp °C : lire L et R (page Engine, cadre Fuel System)": "Fuel Temp °C: read L and R (Engine page, Fuel System box)",
+"L GLOW ON s'allume (moteur froid)": "L GLOW ON comes on (cold engine)",
+"START seulement quand L GLOW ON est éteint": "START only when L GLOW ON is out",
+"Démarreur : 10 s maximum": "Starter: 10 s maximum",
+"L STARTER affiché pendant le démarrage": "L STARTER shown during the start",
+"Oil pressure hors du rouge < 3 s (min 0,9 bar sous 1 500 RPM, OM-B p.27)": "Oil pressure out of the red < 3 s (min 0.9 bar below 1,500 RPM, OM-B p.27)",
+"L STARTER : absent": "L STARTER: not shown",
+"710 ± 30 RPM": "710 ± 30 RPM",
+"R GLOW ON éteint avant START": "R GLOW ON out before START",
+"R STARTER absent": "R STARTER not shown",
+"Auto-test AFCS : PFT blanc encadré + AFCS rouge sur le PFD": "AFCS self-test: white boxed PFT + red AFCS on the PFD",
+"Fin du test : PFT et AFCS s'effacent + tonalité de déconnexion": "End of test: PFT and AFCS clear + disconnect tone",
+"Jamais plus de 50 % au sol ici": "Never more than 50 % on the ground here",
+"Environ 30 s en CROSSFEED (test, les deux moteurs ensemble possible)": "About 30 s in CROSSFEED (test, both engines together possible)",
+"Interdit hors de ce test": "Forbidden outside this test",
+"PITOT HT OFF s'efface": "PITOT HT OFF clears",
+"ATIS 130.090 · AFIS 123.155 · Limoges APP 118.080 (VAC)": "ATIS 130.090 · AFIS 123.155 · Limoges APP 118.080 (VAC)",
+"Piste 28 : 276°": "Runway 28: 276°",
+"Première altitude de la clairance (exemple 2 500 ft)": "First cleared altitude (example 2,500 ft)",
+"TOSA : 400 ft sol VFR / 1 500 ft sol IFR": "TOSA: 400 ft AGL VFR / 1,500 ft AGL IFR",
+"ILS/DME 28 : 109.35 (VAC)": "ILS/DME 28: 109.35 (VAC)",
+"AP DISC maintenu + trim : le trim ne doit bouger ni à cabrer ni à piquer": "AP DISC held + trim: the trim must move neither nose-up nor nose-down",
+"ROL / PIT verts (modes par défaut)": "Green ROL / PIT (default modes)",
+"HDG vert à la place de ROL": "Green HDG instead of ROL",
+"AP et YD verts": "Green AP and YD",
+"Bug +3° : manche à droite": "Bug +3°: stick to the right",
+"Bug −3° : manche à gauche": "Bug −3°: stick to the left",
+"NOSE UP : manche tiré (cabrer)": "NOSE UP: stick pulled (nose-up)",
+"NOSE DN : manche poussé (piquer)": "NOSE DN: stick pushed (nose-down)",
+"AP reste engagé, TO / TO, FD ≈ +7°": "AP stays engaged, TO / TO, FD ≈ +7°",
+"CWS blanc, manche libre, puis l'AP reprend": "White CWS, stick free, then the AP takes over again",
+"AP jaune clignotant + tonalité": "Flashing amber AP + tone",
+"YD coupé aussi": "YD off as well",
+"Repère T/O sur l'index": "T/O mark on the index",
+"Taxi, take-off, departure, radio failure, TEM": "Taxi, take-off, departure, radio failure, TEM",
+"Clairance de roulage reçue et collationnée": "Taxi clearance received and read back",
+"Sortie du Pkg Airbus par F (sens unique) puis W": "Leave Airbus apron via F (one way) then W",
+"Freinage : la vitesse sol tombe à 0, puis on repart": "Braking: ground speed drops to 0, then move off again",
+"W → G : les caps augmentent (PFD et compas)": "W → G: headings increase (PFD and compass)",
+"Bille à l'extérieur : à gauche": "Ball to the outside: left",
+"E1 → E : les caps diminuent": "E1 → E: headings decrease",
+"Bille à l'extérieur : à droite": "Ball to the outside: right",
+"Puis jusqu'au point d'arrêt E": "Then to holding point E",
+"La verrière passe de la position 1/2 à FERMÉE ET VERROUILLÉE": "Canopy goes from position 1/2 to CLOSED AND LOCKED",
+"ECU A / B FAIL allumés": "ECU A / B FAIL on",
+"RPM > 1 800 puis ralenti, 2 fois par canal": "RPM > 1,800 then idle, twice per channel",
+"ECU A / B FAIL éteints = test terminé": "ECU A / B FAIL off = test complete",
+"ECU A ou B hors test : interdit": "ECU A or B outside the test: forbidden",
+"Décollage en CROSSFEED interdit": "Take-off in CROSSFEED forbidden",
+"APP puis UP : voyants et position": "APP then UP: lights and position",
+"QNH affiché, comparé au secours": "QNH set, compared with the standby",
+"Libres et dans le bon sens": "Free and correct",
+"QFU, état de piste, masse, type de décollage, VR, actions en cas de panne, TEM": "QFU, runway state, mass, type of take-off, VR, failure actions, TEM",
+"Cap piste 28 : 276°": "Runway 28 heading: 276°",
+"Intersection E : ≈ 1 300 m devant (lu sur la carte)": "Intersection E: ≈ 1,300 m ahead (read on the chart)",
+"Doucement": "Gently",
+"Pas d'alarme": "No alarm",
+"Annonce PDP": "PDP callout",
+"Assiette ≈ +12° (PDP)": "Pitch ≈ +12° (PDP)",
+"Horizon PFD et secours à cabrer": "PFD and standby horizon nose-up",
+"Freiner fermement avant de rentrer le train": "Brake firmly before retracting the gear",
+"Voyants éteints": "Lights out",
+"Exemple : 2 500 ft (clairance)": "Example: 2,500 ft (clearance)",
+"À régler AVANT de sélectionner FLC": "Set BEFORE selecting FLC",
+"FLC vert + vitesse de référence": "Green FLC + reference speed",
+"NOSE UP = vitesse de référence diminue": "NOSE UP = reference speed decreases",
+"AP + YD verts (400 ft sol mini)": "Green AP + YD (400 ft AGL min)",
+"ALTS vert clignotant, puis ALT vert à 2 500 ft": "Flashing green ALTS, then green ALT at 2,500 ft",
+"AFAe recommande 70 % en instruction": "AFAe recommends 70 % in training",
+"Motoriste : 75 %": "Engine maker: 75 %",
+"Écart LH / RH ≤ 5 US gal (OM-B p.30)": "LH / RH imbalance ≤ 5 US gal (OM-B p.30)",
+"Aux tanks : transfert dès que main ≤ 17 gal (si équipé)": "Aux tanks: transfer once main ≤ 17 gal (if fitted)",
+"Avant le POD": "Before the TOD",
+"QNH destination (exercice 1018)": "Destination QNH (exercise 1018)",
+"Écart avec le secours < 80 ft (PDP)": "Difference with the standby < 80 ft (PDP)",
+"Altitude autorisée (exercice 2 000 ft)": "Cleared altitude (exercise 2,000 ft)",
+"VS vert, ALTS armé en blanc": "Green VS, ALTS armed in white",
+"Pente standard 3° (PDP)": "Standard 3° path (PDP)",
+"IAS ≤ VNO": "IAS ≤ VNO",
+"ALTS vert, puis ALT à 2 000 ft": "Green ALTS, then ALT at 2,000 ft",
+"Annonce : « Leaving … for … » au départ (PDP)": "Call: « Leaving … for … » when starting the descent (PDP)",
+"IFR : APP à ½ point de glide (plus bas)": "IFR: APP at ½ dot of glide (further down)",
+"OM-B : ici ; profil PDP IFR : sur le glide (3D) ou au FAF (2D) — voir plus bas": "OM-B: here; PDP IFR profile: on the glide (3D) or at the FAF (2D) — see below",
+"Vitesse max de l'attente": "Maximum holding speed",
+"Approche chargée et activée dans le FMS": "Approach loaded and activated in the FMS",
+"GPS vert, GP armé en blanc": "Green GPS, GP armed in white",
+"Réduire vers 105 kt (PDP)": "Reduce to 105 kt (PDP)",
+"Annonce LPV sur le HSI": "LPV annunciation on the HSI",
+"3D : à ½ déviation du glide (2D : 1 NM avant FAF)": "3D: at ½ glide deviation (2D: 1 NM before FAF)",
+"IAS ≤ 133 kt (VFE APP)": "IAS ≤ 133 kt (VFE APP)",
+"Puis IAS 100 kt": "Then IAS 100 kt",
+"3D : sur le glide (2D : passage du FAF)": "3D: on the glide (2D: passing the FAF)",
+"Ajuster la puissance": "Adjust power",
+"VLO 188 kt": "VLO 188 kt",
+"Exercice : 3 000 ft": "Exercise: 3,000 ft",
+"IMC : 1 000 ft AAL (VMC : 500 ft)": "IMC: 1,000 ft AAL (VMC: 500 ft)",
+"Sur le plan, dans l'axe, bonne configuration, bonne vitesse, C/L FINAL faite": "On the path, on the axis, right configuration, right speed, FINAL C/L done",
+"100 ft au-dessus des minima (exercice 650 ft)": "100 ft above minima (exercise 650 ft)",
+"Aux minima : « Continue » ou « Go-around »": "At minima: « Continue » or « Go-around »",
+"Ici : pas de références → remise de gaz": "Here: no visual references → go-around",
+"GA / GA sur la barre de modes": "GA / GA on the mode bar",
+"FD +7° ; si l'AP est engagé, il le reste (OÄM 42-209)": "FD +7°; if the AP is engaged, it stays engaged (OÄM 42-209)",
+"Manche ferme en main": "Firm grip on the stick",
+"Déjà APP en IFR ; depuis LDG → APP": "Already APP in IFR; from LDG → APP",
+"Minimum 90 KIAS": "Minimum 90 KIAS",
+"Vario positif établi": "Positive rate of climb established",
+"IAS ≥ 86 kt (PDP) — OM-B : 90 KIAS mini": "IAS ≥ 86 kt (PDP) — OM-B: 90 KIAS min",
+"Softkey SUSP du PFD (5e en partant de la gauche, à la place d'OBS) : l'annonce SUSP disparaît du HSI, la remise de gaz publiée devient active": "PFD SUSP softkey (5th from the left, in place of OBS): SUSP clears from the HSI, the published missed approach becomes active",
+"Puis NAV (procédure publiée, GPS en magenta) — ou HDG si l'ATC donne un cap": "Then NAV (published procedure, magenta GPS) — or HDG if ATC gives a heading",
+"> 1 900 kg : 92 / 88 KIAS": "> 1,900 kg: 92 / 88 KIAS",
+"IFR : LDG seulement sur piste limitative (PDP) — sinon APP": "IFR: LDG only on a limiting runway (PDP) — otherwise APP",
+"Références visuelles acquises": "Visual references acquired",
+"Transpondeur GND (C/L)": "Transponder GND (C/L)",
+"Landing OFF, taxi ON": "Landing OFF, taxi ON",
+"Refroidissement du turbo : 1 min mini (raccourci ici)": "Turbo cool-down: 1 min minimum (shortened here)",
+"Pas d'arrêt avec le sélecteur carburant": "Never shut down with the fuel selector",
+"Écriture des données moteur avant coupure": "Write down engine data before shutdown"
+},
+    notes: {
+"Interrupteur de la climatisation (si installée), paroi latérale gauche : non représenté.": "Air-conditioning switch (if fitted), left side wall: not shown.",
+"Si la pompe tourne en continu ou par intermittence : arrêter (panne du train, OM-B p.49).": "If the pump runs continuously or intermittently: stop (gear failure, OM-B p.49).",
+"Contrôle obligatoire : si le backstop ne fonctionne pas, arrêter la préparation du vol (OM-B p.49 1.j).": "Mandatory check: if the backstop does not work, stop the flight preparation (OM-B p.49 1.j).",
+"Gauche ramenée au ralenti pour tester la droite seule (lecture de la liste PDP — à confirmer avec l'instructeur).": "Left lever back to idle to test the right one alone (reading of the PDP list — to be confirmed with the instructor).",
+"Fin du contrôle : manche relâché, manettes IDLE.": "End of the check: stick released, power levers IDLE.",
+"Avant le tour avion (C/L PRE-FLIGHT INSPECTION : ELECT MASTER OFF).": "Before the walk-around (PRE-FLIGHT INSPECTION C/L: ELECT MASTER OFF).",
+"Deux interrupteurs AUX PUMP derrière la roue de trim, sur la console (OM-B p.333). Ils transfèrent le carburant des réservoirs auxiliaires (si installés) vers les réservoirs principaux.": "Two AUX PUMP switches behind the trim wheel, on the console (OM-B p.333). They transfer fuel from the auxiliary tanks (if fitted) to the main tanks.",
+"Levier ALTERNATE AIR NOIR, sous le tableau à DROITE de la console (OM-B p.370 rep. 28 ; p.417) : commun aux deux moteurs ; CLOSED au sol.": "BLACK ALTERNATE AIR lever, under the panel to the RIGHT of the console (OM-B p.370 item 28; p.417): common to both engines; CLOSED on the ground.",
+"Levier ROUGE d'extension de secours du train, sous le tableau à GAUCHE de la console (OM-B p.370 rep. 29 ; p.403) : enfoncé (PUSHED IN). Le tirer libère la pression hydraulique.": "RED manual gear extension lever, under the panel to the LEFT of the console (OM-B p.370 item 29; p.403): PUSHED IN. Pulling it releases the hydraulic pressure.",
+"Petit bouton vert sous le tableau, à gauche, côté pilote (OM-B p.370, rep. 14 ; p.410 — position confirmée par l'équipage).": "Small green knob under the panel, on the left, pilot side (OM-B p.370, item 14; p.410 — position confirmed by the crew).",
+"Seulement si l'avion est équipé de la climatisation « Recirculating Air - Cabin Cooling » (OÄM 42-193). Interrupteur sur la paroi latérale gauche (OM-B p.301), non représenté sur la photo. Il alimente la climatisation par un alternateur supplémentaire sur le moteur gauche.": "Only if the aircraft has the « Recirculating Air - Cabin Cooling » air conditioning (OÄM 42-193). Switch on the left side wall (OM-B p.301), not shown on the photo. It powers the air conditioning from an extra alternator on the left engine.",
+"Ici : tout ce qui est éclairage et feux (position, strobe, landing, taxi, éclairage instruments, flood) sur OFF.": "Here: all lighting and lights (position, strobe, landing, taxi, instrument lighting, flood) OFF.",
+"Deux zones : le panneau de disjoncteurs à droite du MFD et la rangée de disjoncteurs moteurs en bas à droite.": "Two areas: the circuit-breaker panel to the right of the MFD and the row of engine circuit breakers at the bottom right.",
+"Liste reçue : « UP » — l'OM-B dit OFF (interrupteurs de pompes, pas de position UP). Corrigé en OFF.": "List received: « UP » — the OM-B says OFF (pump switches have no UP position). Corrected to OFF.",
+"Si la pompe hydraulique tourne en continu ou par intermittence → arrêter la préparation (OM-B p.56).": "If the hydraulic pump runs continuously or intermittently → stop the preparation (OM-B p.56).",
+"L'OM-B (5.a) demande l'horizon calé pendant la mise sous tension mais ne dit pas quand le décager : moment à confirmer avec l'instructeur.": "The OM-B (5.a) requires the horizon caged during power-up but does not say when to uncage it: timing to be confirmed with the instructor.",
+"Electronic Stability and Protection (G1000 NXi) : vérifier son état.": "Electronic Stability and Protection (G1000 NXi): check its status.",
+"Page de mise sous tension du MFD : vérifie les cycles et les dates, puis touche ENT (en bas à droite du MFD).": "MFD power-up page: check the cycles and dates, then press ENT (bottom right of the MFD).",
+"Softkey ENGINE (1re touche sous le MFD) → page EIS. Puis DEC FUEL / INC FUEL (± 1 gal par appui) et RST FUEL (remise au plein) jusqu'à ce que le calculateur = Main L + R.": "ENGINE softkey (1st key under the MFD) → EIS page. Then DEC FUEL / INC FUEL (± 1 gal per press) and RST FUEL (reset to full) until the calculator = Main L + R.",
+"Si l'alarme sonore ou l'alerte PFD n'apparaît pas : arrêter (OM-B p.57).": "If the aural alarm or the PFD alert does not appear: stop (OM-B p.57).",
+"Seulement si givrage prévu : ANNUN-TEST puis OFF. Pas requis dans ce scénario.": "Only if icing is expected: ANNUN-TEST then OFF. Not required in this scenario.",
+"Sur le PFD, dans la fenêtre d'alertes : « L GLOW ON » (OM-B p.33 ; la procédure p.57 l'appelle « L ENGINE GLOW »). Il s'éteint quand le préchauffage est terminé.": "On the PFD, in the alerts window: « L GLOW ON » (OM-B p.33; the procedure p.57 calls it « L ENGINE GLOW »). It goes out when pre-heating is complete.",
+"Touche le PFD ou le MFD pour valider : la case pointillée du PFD montre où L STARTER apparaîtrait ; une fois vérifié, elle affiche « absent ». S'il reste affiché moteur démarré et clé relâchée → ENGINE MASTER OFF (OM-B p.57).": "Touch the PFD or MFD to confirm: the dotted box on the PFD shows where L STARTER would appear; once checked it shows « absent ». If it stays on with the engine running and the key released → ENGINE MASTER OFF (OM-B p.57).",
+"Les sélecteurs reviennent sur ON à l'item 1.r (bloc suivant).": "The selectors go back to ON at item 1.r (next block).",
+"Pratique école avant l'engagement de l'AP.": "School practice before engaging the AP.",
+"Bouton sur le flanc gauche de la manette gauche (repère « GO AROUND »).": "Button on the left side of the left power lever (« GO AROUND » mark).",
+"Gâchette derrière la poignée du manche.": "Trigger behind the stick grip.",
+"AFAe recommande un moteur après l'autre. Relâcher avant la fin ou toucher la manette annule le test.": "AFAe recommends one engine after the other. Releasing before the end or moving the lever cancels the test.",
+"OM-B : sans altitude. Tes notes : au-dessus de la TOSA (D9).": "OM-B: no altitude given. Your notes: above the TOSA (D9).",
+"PDP p.188 : 10 à 15 min avant le point de descente (POD).": "PDP p.188: 10 to 15 min before the top of descent (TOD).",
+"Le profil PDP (approche 3D) sort le train sur le glide : il est appliqué plus bas dans ce flow.": "The PDP profile (3D approach) lowers the gear on the glide: applied further down in this flow.",
+"PDP : entrée et attente publiées, vitesse réduite sous le maximum. Tes notes : softkey SUSP pour sortir de l'attente (« cancel suspend ») — à confirmer.": "PDP: published entry and holding, speed reduced below the maximum. Your notes: SUSP softkey to leave the hold (« cancel suspend ») — to be confirmed.",
+"Exemple GPS (LPV). Sur ILS/DME 28 (109.35, VAC LFBU) : CDI sur LOC, APR → LOC / GS (OM-B p.75).": "GPS example (LPV). On ILS/DME 28 (109.35, VAC LFBU): CDI on LOC, APR → LOC / GS (OM-B p.75).",
+"Approche 2D (LNAV) : vérifier la disponibilité RAIM.": "2D approach (LNAV): check RAIM availability.",
+"OM-B p.78 : sans l'OÄM 42-209, le GA déconnecte l'AP et le FD affiche 6° ; avec l'AP couplé (OÄM 42-209) il reste engagé. Retenu ici : AP couplé, +7° (PDP, simulateur école, confirmé équipage).": "OM-B p.78: without OÄM 42-209, GA disconnects the AP and the FD shows 6°; with the coupled AP (OÄM 42-209) it stays engaged. Used here: coupled AP, +7° (PDP, school simulator, confirmed by the crew).",
+"Garmin G1000 NXi p.65-66 (Figure 2-26) et p.242 : « press the SUSP Softkey on the PFD ». Le PDP p.251 dit que le bouton GA libère SUSP : divergence signalée, consigne équipage retenue (SUSP à presser) — à confirmer au simulateur.": "Garmin G1000 NXi p.65-66 (Figure 2-26) and p.242: « press the SUSP Softkey on the PFD ». PDP p.251 says the GA button releases SUSP: discrepancy flagged, crew instruction kept (press SUSP) — to be confirmed in the simulator."
+},
+    blocks: {
+"arr": [
+"Aircraft arrival",
+"Cabin inspection (OM-B B02 §2.1 a-j, p.49)"
+],
+"tour": [
+"Walk-around",
+"Pitot check — see the Walk-around tab"
+],
+"ret": [
+"Cabin preparation",
+"Crew order, matched to OM-B B02 §2.12 Cabin preparation (a → z, a) — ends with « Pre-flight inspection complete »"
+],
+"avs": [
+"Before starting engine",
+"Before starting engine (OM-B B02 §3, p.56-57) — PFD and MFD come on with the Master"
+],
+"start": [
+"Engine start — left then right",
+"Starting engine (OM-B B02 §3, p.57-58) — crew order; PFD on, MFD on the Engine page"
+],
+"post": [
+"After start-up",
+"After start-up procedure (OM-B B02 §3 1.a-l, p.58-59) — both engines running"
+],
+"ap": [
+"Autopilot test, trim, departure",
+"After start-up 1.m-s, departure briefing, « complete » + AFTER START C/L (OM-B p.60); school tests (R/L, NOSE, GA, CWS)"
+],
+"taxi": [
+"Taxi",
+"Taxiing (OM-B p.60 a-i) + PDP p.129-130 — Airbus apron → F → W → G → E1 → holding point E (AIP GMC 01)"
+],
+"run": [
+"Before take-off",
+"Before take-off (OM-B B02 §4, p.61-63): cockpit check, ECU test, preparation, BEFORE TAKEOFF C/L — at holding point E"
+],
+"to": [
+"Take-off",
+"Normal take-off flaps UP (OM-B B02 §5, p.64-65) + PDP callouts — runway 28 from intersection E"
+],
+"pa": [
+"Climb and autopilot",
+"After take-off / climb (OM-B §6 p.67) + AFTER TAKEOFF / CLIMB C/L + GFC 700 FLC (OM-B p.67)"
+],
+"cruise": [
+"Cruise",
+"Cruise procedure (OM-B §7 p.69) + CRUISE C/L"
+],
+"ifr": [
+"IFR descent and approach",
+"Arrival (PDP p.188-190), Before descent + GFC 700 VS (OM-B p.72-73), Approach procedure (OM-B p.74), APPROACH C/L, 3D profile (PDP) — example to runway 28"
+],
+"ga": [
+"Final and go-around",
+"FINAL C/L by heart, stabilisation, minima (PDP), Go-around OM-B p.78 + coupled AP (OÄM 42-209) — example runway 28"
+],
+"ldg": [
+"Landing and after landing",
+"FINAL C/L, Before landing (OM-B §10 p.77), touchdown, After landing (OM-B §12 p.81) + C/L — runway 28"
+],
+"park": [
+"Parking and shutdown",
+"Parking procedure / shut down (OM-B §13 p.81), PARKING C/L, exit, parking (§14-16)"
+]
+}
+  };
 })(this);
 
 </script>
@@ -7954,7 +8543,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function ldPage(I, fm, u, x, y, w, h, pfd) {
     var F = FMS(), ld = u.ld, AP = F.apr(ld.ad), A = AP[ld.ai], s = '', sz = pfd ? 10 : 12, lh = pfd ? 13 : 18;
     var px = pfd ? x : x + 252, pw = pfd ? w : w - 252;
-    if (!pfd) { var prev = A ? (A.trans[ld.ti] || A.trans[0]).legs.concat(A.fin).map(function (l) { return l.id; }) : []; s += X.navMap(I, x, y, 250, h, false, { center: F.pos(ld.ad), rng: 10, preview: prev }); }
+    var PL = ld.kind !== 'APR' ? F.procs(ld.kind, ld.ad) : null, PR = PL ? PL[ld.ai] : null;
+    if (!pfd) { var prev = PR ? PR.legs.map(function (l) { return l.id; }) : A ? (A.trans[ld.ti] || A.trans[0]).legs.concat(A.fin).map(function (l) { return l.id; }) : []; s += X.navMap(I, x, y, 250, h, false, { center: F.pos(ld.ad), rng: 10, preview: prev }); }
     s += rect(px, y, pw, h, '#06090c', ' stroke="#9aa" stroke-width="1"');
     var cur = pfd || u.cur, yy = y + (pfd ? 12 : 18);
     s += t(px + pw / 2, yy, ld.kind === 'APR' ? 'APPROACH LOADING' : ld.kind === 'DEP' ? 'DEPARTURE LOADING' : 'ARRIVAL LOADING', sz - 1, CY, 'middle', 700); yy += lh;
@@ -7967,7 +8557,15 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     }
     var apt = TF.DATA.navdb.wpts[ld.ad];
     field(0, 'AIRPORT', ld.ad + (apt && !pfd ? ' ' + apt.name.slice(0, 16) : ''));
-    if (ld.kind !== 'APR') { s += wrapTxt(TF.DATA.navdb.noneProc, px + 6, yy + 6, pw - 12, sz - 2, '#f2e23a', 3); return s; }
+    if (ld.kind !== 'APR') {
+      if (!PR) { s += wrapTxt(TF.DATA.navdb.noneProc, px + 6, yy + 6, pw - 12, sz - 2, '#f2e23a', 3); return s; }
+      field(1, ld.kind === 'DEP' ? 'DEPARTURE' : 'ARRIVAL', PR.id + ' RW' + PR.rwy);
+      if (!pfd && cur && ld.fld === 1) { PL.forEach(function (a2, k) { s += t(px + 92, yy + k * 12 - 2, (k === ld.ai ? '▸ ' : '  ') + a2.id, 9.5, k === ld.ai ? CY : GR); }); yy += PL.length * 12; }
+      s += t(px + 6, yy + 2, 'ENT : LOAD', sz - 2, '#fff', 'start', 700); yy += lh;
+      if (!pfd) { PR.legs.forEach(function (l, k) { s += t(px + 50, yy + k * 12, l.id + (l.alt ? '  ' + l.alt + 'FT' + (l.altc === 'B' ? ' ▼' : l.altc === 'A' ? ' ▲' : '') : ''), 10, '#fff'); }); yy += PR.legs.length * 12 + 8;
+        s += wrapTxt(PR.note, px + 6, Math.min(yy, y + h - 46), pw - 12, 8.5, '#f2e23a', 5); }
+      return s;
+    }
     if (!A) { s += t(px + 6, yy + 6, 'Aucune approche codée.', sz - 1, '#f2e23a'); return s; }
     field(1, 'APPROACH', A.id + (A.kind === 'RNAV' ? ' ' + (A.svc || 'LNAV') : ' LOC') + (A.loc ? ' ' + TF.G1000.fmtNav(A.loc) : ''));
     if (!pfd && cur && ld.fld === 1) AP.forEach(function (a2, k) { s += t(px + 92, yy + k * 13 - 2, (k === ld.ai ? '▸ ' : '  ') + a2.id, 10, k === ld.ai ? CY : GR); }), yy += AP.length * 13;
@@ -8612,7 +9210,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   /* ------------------------------------------------ Trajectoire ------------------------------------------------ */
   function prepTrack(flow) {
-    var tr = flow.track.map(function (p) { return { x: p.x, y: p.y, z: p.z, ias: p.ias, mark: p.mark }; }), i, real = [0], tot = 0;
+    var tr = flow.track.map(function (p) { return { x: p.x, y: p.y, z: p.z, ias: p.ias, mark: p.mark, hd: p.hd }; }), i, real = [0], tot = 0;
     if (flow.kind === 'ground') {
       var gap = flow.stepGap || 6;
       tr.forEach(function (p, k) { p.t = k * gap; p.rt = p.t; });
@@ -8628,7 +9226,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       var n = tr[Math.min(i + 1, tr.length - 1)], c = tr[i], pv = tr[Math.max(0, i - 1)];
       var dx = n.x - c.x, dy = n.y - c.y;
       if (Math.abs(dx) + Math.abs(dy) < 1e-6) { dx = c.x - pv.x; dy = c.y - pv.y; }
-      c.h = (Math.abs(dx) + Math.abs(dy) < 1e-6) ? (i ? tr[i - 1].h : 0) : Math.atan2(dy, dx);
+      c.h = c.hd != null ? c.hd : (Math.abs(dx) + Math.abs(dy) < 1e-6) ? (i ? tr[i - 1].h : 0) : Math.atan2(dy, dx);
     }
     var marks = {}; tr.forEach(function (p) { if (p.mark && marks[p.mark] == null) marks[p.mark] = p.t; });
     return { pts: tr, marks: marks, T: tr[tr.length - 1].t };
@@ -8682,8 +9280,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (this.flow.kind === 'ground') { sc = Math.min(this.W, this.H) / 0.05; cx = 0; cy = 0; }
     else if (this.cam.el < 15) cy = Math.max(cy, miny + 0.27 * this.H / sc); // vue de profil : le sol dans le tiers bas
     if (close && focus && this.flow.kind !== 'ground') {
-      var fp = this.w2(focus.x, focus.y, focus.z), k = this.flow.id === 'app3d' ? 3.2 : 1.9;
-      sc = sc * k; cx = dot(fp, B.R); cy = dot(fp, B.U);
+      var fp = this.w2(focus.x, focus.y, focus.z), k = this.flow.closeK || (this.flow.id === 'app3d' ? 3.2 : 1.9);
+      if (close === 'ground') sc = Math.min(this.W, this.H) / 0.9; else sc = sc * k;
+      cx = dot(fp, B.R); cy = dot(fp, B.U);
     }
     return { sc: sc, cx: cx, cy: cy };
   };
@@ -8702,9 +9301,10 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     this.propA += dt * ((cfg.rpm ? cfg.rpm[0] : 0) > 0 ? 18 + (cfg.rpm[0] / 2400) * 30 : 0);
     if (st.view === 'cockpit') return this.drawCockpit(s, st, cfg);
     // caméra (transitions courtes et automatiques)
+    this.zoomK = st.zoomK || 0;
     var V = VIEWS[st.view] || VIEWS.iso, cam = this.cam, k = this.fitDone ? Math.min(1, dt * 3.2) : 1;
     cam.az += (V.az - cam.az) * k; cam.el += (V.el - cam.el) * k;
-    var B = this.basis(cam.az, cam.el), tgt = this.fit(B, s, st.zoom === 'close');
+    var B = this.basis(cam.az, cam.el), tgt = this.fit(B, s, st.zoom === 'close' || st.zoom === 'ground' ? st.zoom : false);
     cam.sc += (tgt.sc - cam.sc) * k; cam.cx += (tgt.cx - cam.cx) * k; cam.cy += (tgt.cy - cam.cy) * k; this.fitDone = true;
     // fond
     var g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0d2340'); g.addColorStop(1, '#173a5c'); c.fillStyle = g; c.fillRect(0, 0, W, H);
@@ -8716,7 +9316,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     // ombre + avion
     var ac = this.proj(B, this.w2(s.x, s.y, s.z)), gr = this.proj(B, this.w2(s.x, s.y, 0));
     if (st.view !== 'profil' && s.z > 5) { c.strokeStyle = 'rgba(255,255,255,.25)'; c.setLineDash([3, 4]); c.beginPath(); c.moveTo(ac[0], ac[1]); c.lineTo(gr[0], gr[1]); c.stroke(); c.setLineDash([]); }
-    var px = this.flow.kind === 'ground' ? Math.min(W, H) / 20 : (st.zoom === 'close' ? 9 : 7);
+    var px = this.flow.kind === 'ground' ? Math.min(W, H) / 20 : st.zoom === 'ground' ? Math.min(W, H) / 26 : (st.zoom === 'close' ? 9 : 7);
     if (st.view !== 'profil') this.drawPlane(B, gr, s, px, cfg, true);
     this.drawPlane(B, ac, s, px, cfg, false);
   };
@@ -8742,6 +9342,12 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   };
   View.prototype.drawRunway = function (B) {
     var rw = this.flow.runway, c = this.cx, self = this; if (!rw) { if (this.flow.kind === 'ground') this.drawTaxi(B); return; }
+    if (this.flow.apron) { var ap = this.flow.apron.map(function (p) { return self.proj(B, [p[0], p[1], 0]); }); c.fillStyle = '#353a42'; c.beginPath(); ap.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.fill(); }
+    (this.flow.taxiways || []).forEach(function (tw) {
+      c.strokeStyle = '#3d424b'; c.lineWidth = Math.max(2, 0.018 * self.cam.sc); c.lineJoin = 'round'; c.beginPath();
+      tw.forEach(function (p, i) { var q = self.proj(B, [p[0], p[1], 0]); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.stroke();
+      c.strokeStyle = 'rgba(255,214,102,.7)'; c.lineWidth = 1; c.stroke();
+    });
     var w = rw.w, pts = [[rw.x0, -w, 0], [rw.x1, -w, 0], [rw.x1, w, 0], [rw.x0, w, 0]].map(function (p) { return self.proj(B, p); });
     c.fillStyle = '#3a3f47'; c.strokeStyle = '#d9dde3'; c.lineWidth = 1;
     c.beginPath(); pts.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.fill(); c.stroke();
@@ -8762,7 +9368,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var a = this.proj(B, this.w2(bc.x, bc.y, 0)), b = this.proj(B, this.w2(bc.x, bc.y, 2600));
     c.strokeStyle = 'rgba(255,214,102,.55)'; c.setLineDash([2, 4]); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.setLineDash([]);
     c.fillStyle = '#ffd666'; c.beginPath(); c.moveTo(a[0], a[1] - 9); c.lineTo(a[0] - 5, a[1]); c.lineTo(a[0] + 5, a[1]); c.closePath(); c.fill();
-    c.font = '600 10px -apple-system, Helvetica, Arial'; c.fillStyle = 'rgba(255,214,102,.9)'; c.fillText('balise / FAF (schéma)', a[0] + 7, a[1] + 3);
+    c.font = '600 10px -apple-system, Helvetica, Arial'; c.fillStyle = 'rgba(255,214,102,.9)'; c.fillText('beacon / FAF (schematic)', a[0] + 7, a[1] + 3);
   };
   View.prototype.drawTrack = function (B, st) {
     if (this.flow.kind === 'ground') return;
@@ -8874,7 +9480,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     }
     c.restore();
     // IMC illustratif (approche IFR) : couche nuageuse au-dessus de 900 ft AAL
-    if (this.flow.ifr) { var fog = clamp((s.z - 650) / 300, 0, 1); if (fog > 0) { c.fillStyle = 'rgba(236,240,244,' + (0.93 * fog) + ')'; c.fillRect(0, 0, W, H); if (fog > 0.6) { c.fillStyle = 'rgba(60,70,84,.75)'; c.font = '600 12px -apple-system, Helvetica, Arial'; c.fillText('IMC (illustratif)', 14, H * 0.6); } } }
+    if (this.flow.ifr) { var fog = clamp((s.z - 650) / 300, 0, 1); if (fog > 0) { c.fillStyle = 'rgba(236,240,244,' + (0.93 * fog) + ')'; c.fillRect(0, 0, W, H); if (fog > 0.6) { c.fillStyle = 'rgba(60,70,84,.75)'; c.font = '600 12px -apple-system, Helvetica, Arial'; c.fillText('IMC (illustrative)', 14, H * 0.6); } } }
     // capot / auvent
     c.fillStyle = '#1a1f27'; c.beginPath(); c.moveTo(0, H); c.lineTo(0, H * 0.78); c.quadraticCurveTo(W / 2, H * 0.68, W, H * 0.78); c.lineTo(W, H); c.closePath(); c.fill();
     c.fillStyle = '#0f1318'; c.fillRect(0, 0, W, 10);
@@ -8938,7 +9544,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   /* opts.dock = 'right' : fenêtre calée sur le bord droit de la scène (le cockpit est recadré à gauche par l'appelant) */
   K.popover = function (html, at, onMount, opts) {
     var p = K.$('popover'), stage = K.$('stage');
-    p.innerHTML = html; p.classList.remove('hidden'); p.classList.toggle('dock', !!(opts && opts.dock));
+    p.innerHTML = '<div class="pop-grip" title="Glisser pour déplacer la fenêtre">⠿</div>' + html; p.classList.remove('hidden'); p.classList.toggle('dock', !!(opts && opts.dock));
+    p.style.transform = ''; K.draggable(p, p.querySelector('.pop-grip'));
     var sr = stage.getBoundingClientRect(), pw = p.offsetWidth, ph = p.offsetHeight;
     var x = at.x - sr.left + 18, y = at.y - sr.top - ph / 2;
     if (x + pw > sr.width - 8) x = at.x - sr.left - pw - 18;
@@ -8973,6 +9580,48 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   /* Délégation de clics : data-act="nom" → handlers[nom](el) */
   /* Un seul écouteur par conteneur : un nouveau rendu REMPLACE les gestionnaires (sinon ils s'accumulent) */
+  /* Fenêtres déplaçables (v7.1) : cliqué-glissé souris ou doigt sur la poignée ; sans Pointer Events (iOS 12).
+   * La position est gardée (localStorage) sous « key » ; double-clic / double-tap sur la poignée : position d'origine. */
+  K.draggable = function (el, handle, key) {
+    if (!el || !handle || handle._tfDrag) return; handle._tfDrag = true;
+    function par() { return el.offsetParent || el.parentNode; }
+    if (key) { try { var sv = JSON.parse(root.localStorage.getItem('tiffanir.win.' + key) || 'null'); if (sv) dragPlace(el, sv[0], sv[1]); } catch (e) { } }
+    function start(x, y, e) {
+      if (e && e.target && e.target.closest && e.target.closest('button,input,select,textarea,a,label')) return false;
+      if (el.classList.contains('no-drag')) return false;
+      var r = el.getBoundingClientRect(), p = par(), pr = p && p.getBoundingClientRect ? p.getBoundingClientRect() : { left: 0, top: 0 };
+      DRAG = { el: el, key: key, sx: x, sy: y, ox: r.left - pr.left, oy: r.top - pr.top }; el.classList.add('dragging'); K.toFront(el); return true;
+    }
+    function reset() { el.style.left = el.style.top = el.style.right = el.style.bottom = el.style.transform = el.style.webkitTransform = ''; if (key) { try { root.localStorage.removeItem('tiffanir.win.' + key); } catch (e) { } } }
+    var lastTap = 0;
+    handle.addEventListener('mousedown', function (e) { if (e.button !== 0) return; if (start(e.clientX, e.clientY, e)) e.preventDefault(); });
+    handle.addEventListener('dblclick', function (e) { if (e.target.closest && e.target.closest('button')) return; reset(); });
+    handle.addEventListener('touchstart', function (e) {
+      var t = e.touches[0], now = Date.now();
+      if (now - lastTap < 300 && !(e.target.closest && e.target.closest('button'))) { reset(); lastTap = 0; return; }
+      lastTap = now; if (start(t.clientX, t.clientY, e)) e.preventDefault();
+    }, { passive: false });
+    handle.classList.add('drag-handle');
+    dragInit();
+  };
+  var DRAG = null, dragReady = false;
+  function dragPlace(el, x, y) {
+    var p = el.offsetParent || el.parentNode, pw = p ? p.clientWidth : 1e4, ph = p ? p.clientHeight : 1e4;
+    x = Math.max(-el.offsetWidth + 60, Math.min(pw - 60, x)); y = Math.max(0, Math.min(ph - 30, y));
+    el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; el.style.transform = 'none'; el.style.webkitTransform = 'none';
+  }
+  function dragInit() {
+    if (dragReady) return; dragReady = true;
+    function mv(x, y, e) { if (!DRAG) return; dragPlace(DRAG.el, DRAG.ox + x - DRAG.sx, DRAG.oy + y - DRAG.sy); if (e) e.preventDefault(); }
+    function end() { if (!DRAG) return; var d = DRAG; DRAG = null; d.el.classList.remove('dragging'); if (d.key) { try { root.localStorage.setItem('tiffanir.win.' + d.key, JSON.stringify([d.el.offsetLeft, d.el.offsetTop])); } catch (e) { } } }
+    root.addEventListener('mousemove', function (e) { if (DRAG) mv(e.clientX, e.clientY, e); });
+    root.addEventListener('mouseup', end);
+    root.addEventListener('touchmove', function (e) { if (DRAG) { var t = e.touches[0]; mv(t.clientX, t.clientY, e); } }, { passive: false });
+    root.addEventListener('touchend', end); root.addEventListener('touchcancel', end);
+  }
+  K.dragPlace = dragPlace;
+  var ZTOP = 20; K.toFront = function (el) { if (el && el.classList.contains('f3w')) el.style.zIndex = ++ZTOP; };
+
   K.bindActs = function (rootEl, handlers) {
     rootEl._tfActs = handlers;
     if (rootEl._tfBound) return;
@@ -10713,7 +11362,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     learn: { i: '📚', t: 'Comprendre', c: '#7a5bd6', d: 'Les bases de l\'IFR, l\'avion en chiffres et le tour avion.' }
   };
   var TAB = {
-    flow: { sp: 'ground', i: '⏱', s: 'Le flow', t: 'Le flow', d: 'Chaque bloc en 4 niveaux : Découvrir · Apprendre · Mémoriser · Examen.' },
+    flow: { sp: 'ground', i: '📁', s: 'Le flow détaillé', t: 'Le flow détaillé (dossier)', d: 'Chaque bloc en 4 niveaux : Découvrir · Apprendre · Mémoriser · Examen.' },
     mem: { sp: 'ground', i: '🧠', s: 'Mémoire', t: 'Mémoire cockpit', d: 'Retrouver les commandes de mémoire, flash et missions éclair.' },
     brief: { sp: 'prep', i: '🗣', s: 'Briefings', t: 'Briefings', d: 'Le briefing départ à répéter à voix haute.' },
     test: { sp: 'prep', i: '📝', s: 'Class test', t: 'Class test', d: 'Les questions du class test, avec correction.' },
@@ -10725,12 +11374,22 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     function tile(k, body) { var p = SP[k]; return '<div class="sp-tile sp-' + k + '" style="border-top-color:' + p.c + '"><div class="sp-h"><span class="sp-i" style="background:' + p.c + '">' + p.i + '</span><div><b>' + esc(p.t) + '</b><small>' + esc(p.d) + '</small></div></div><div class="sp-b">' + body + '</div></div>'; }
     function big(act, cls, t, d, extra) { return '<button class="sp-big ' + cls + '" data-act="' + act + '"' + (extra || '') + '><b>' + t + '</b><small>' + d + '</small></button>'; }
     function chip(k) { var t = TAB[k]; return '<button class="sp-chip' + (E.tab === k ? ' on' : '') + '" data-act="tab" data-v="' + k + '" data-sp="1">' + t.i + ' ' + esc(t.t) + '</button>'; }
-    var h = '<div class="sp-grid">';
+    // v7.1 : le FLOW 3D (s'entraîner au sol) devient la partie principale de l'application
+    var fk = 0; try { fk = +(root.localStorage.getItem('tiffanir.f3flight.k') || 0); } catch (e) { }
+    var h = '<div class="f3-main"><div class="f3m-h"><span class="f3m-i">✈</span><div><b>FLOW 3D — APPRENDRE EN REGARDANT</b><small>Visualise le vol, mémorise les actions, maîtrise ton DA42. Tout en anglais, étape par étape.</small></div></div>' +
+      '<div class="f3m-b"><button class="f3m-go" data-act="f3flight"><b>▶ VOL COMPLET</b><small>' + (fk ? 'Reprendre à l\'étape ' + (fk + 1) : 'De la préparation cabine à la coupure moteurs') + '</small></button>' +
+      '<button class="f3m-go alt" data-act="flow3d"><b>📐 FLOW CHARTS PDP</b><small>Approche 3D · tour de piste · test ECU — regarder, manipuler, de mémoire</small></button></div></div>';
+    h += '<div class="sp-grid">';
     h += tile('fly', big('trip', 'mh-trip', '🛫 VOL IFR LFBU ⇄ LFBL', 'Roulage, radio AFIS, décollage, montée, ILS à Limoges, retour et atterrissage') + '<div class="sp-row">' + '<button class="sp-chip mh-free" data-act="free">🎮 COCKPIT LIBRE</button></div>');
     h += tile('prep', big('mepmap', 'mh-mep', '✈ MES VOLS MEP', 'Prépare chaque vol, réussis les missions, arrive prêt devant ton instructeur') + '<div class="sp-row">' + chip('brief') + chip('test') + '</div>');
-    h += tile('ground', big('flow3d', 'mh-f3d', '✈ FLOW 3D — APPRENDRE EN REGARDANT', 'Visualise le vol, mémorise les actions, maîtrise ton DA42.') + '<div class="sp-row">' + chip('flow') + chip('mem') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
+    h += tile('ground', '<div class="sp-row">' + '<button class="sp-chip' + (E.tab === 'flow' ? ' on' : '') + '" data-act="flowfolder">📁 Le flow détaillé</button>' + chip('mem') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
     h += tile('learn', big('ifr', 'mh-ifr', '📚 L\'IFR POUR LES NULS', 'Les bases de l\'IFR expliquées simplement') + '<div class="sp-row">' + chip('avion') + chip('tour') + '</div>');
     return h + '</div>';
+  }
+  // v7.1 : l'ancien « Le flow » est rangé dans un dossier, ouvert seulement pour aller dans le détail
+  function folderHtml() {
+    if (!E.flowOpen) return '<button class="ess-folder" data-act="flowfolder"><span class="ef-i">📁</span><span><b>Le flow détaillé</b><small>Notes de cours + OM-B, bloc par bloc, en 4 niveaux (Découvrir · Apprendre · Mémoriser · Examen). À ouvrir pour aller dans le détail — l\'entraînement principal est le FLOW 3D ci-dessus.</small></span><span class="ef-o">Ouvrir ▸</span></button>';
+    return '<div class="ess-folder open"><span class="ef-i">📂</span><span><b>Le flow détaillé</b></span><button class="btn sm" data-act="flowclose">Refermer le dossier ▴</button></div>' + flowHtml();
   }
   // garde la rubrique ouverte à l'écran (au lieu de remonter en haut de la page)
   function toSection() { var sc = K.$('essSec'), el2 = K.$('ess'); if (sc && el2) el2.scrollTop = Math.max(0, sc.offsetTop - 10); }
@@ -10747,7 +11406,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     h += '<div class="ess-sec" id="essSec"><div class="ess-sec-h" style="border-color:' + SP[T.sp].c + '"><span class="ess-sec-k" style="color:' + SP[T.sp].c + '">' + SP[T.sp].i + ' ' + esc(SP[T.sp].t) + '</span><b>' + T.i + ' ' + esc(T.t) + '</b><small>' + esc(T.d) + '</small></div>';
     h += '<div class="ess-tabs">' + TABS.map(function (k) { var t = TAB[k];
       return '<button data-act="tab" data-v="' + k + '" class="' + (E.tab === k ? 'on' : '') + '" style="' + (E.tab === k ? 'background:' + SP[t.sp].c : '') + '">' + t.i + ' ' + esc(t.s) + '</button>'; }).join('') + '</div>';
-    h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : flowHtml();
+    h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : folderHtml();
     h += '</div><div class="hm-foot"><button data-act="voices">🗣 Voix de l\'instructeur</button><button data-act="cloud">👥 Équipe, classement et sauvegarde</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     }
@@ -10760,6 +11419,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       mepmap: function () { E.close(); TF.Mep.show('map'); },
       trip: function () { E.close(); TF.Trip.show(); },
       flow3d: function () { E.close(); TF.Flow3D.show(); },
+      f3flight: function () { E.close(); TF.Flow3D.flight.open(); },
+      flowfolder: function () { E.flowOpen = true; E.show('flow'); toSection(); },
+      flowclose: function () { E.flowOpen = false; E.show('flow'); toSection(); },
       cloud: function () { if (TF.Cloud) TF.Cloud.openPanel(); },
       tab: function (b) { var v = b.getAttribute('data-v'); if (v === 'test' && E.tab !== 'test') E.prevTab = E.tab; E.show(v); toSection(); },
       ctback: function () { E.ct = null; E.show(E.prevTab && E.prevTab !== 'test' ? E.prevTab : 'flow'); toSection(); },
@@ -11406,6 +12068,14 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (S.i >= S.b.chips.length) finishTry();
   }
   E.realDone = realDone;
+  /* v7.1 — accès pour le Flow 3D « vol complet » : gestes de démonstration d'une puce et réponse en anglais */
+  E.f3 = {
+    ops: function (c) { var f = c && c.sim && SIMS[c.sim]; if (!f) return null; if (f.ops) f = f.ops(); return (f.length != null && typeof f !== 'function') ? f : null; },
+    fn: function (c) { var f = c && c.sim && SIMS[c.sim]; return (typeof f === 'function') ? f : null; },
+    blocks: function () { return TF.DATA.essFlow; }
+  };
+
+  E.chipOps = simOps;
   function crank(ck, k, fast, cb) {
     ck.setControl('start_key', 'START ' + k);
     waitFor(function () { return eng(k).state === 'run'; }, function () { ck.setControl('start_key', 'OFF'); waitFor(function () { return (eng(k).oilP || 0) >= 0.9 * 0.9; }, cb, fast, 4000); }, fast, 12000);
@@ -11736,6 +12406,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (!it) { if (el) el.parentNode.removeChild(el); return; }
     if (!el) { el = document.createElement('div'); el.id = 'obsCard'; if (st) st.appendChild(el); }
     el.innerHTML = '<div class="oc-k">ÉLÉMENT NON SIMULÉ — À CONFIRMER</div><div class="oc-t">' + esc((it.c.a + ' — ' + it.c.r).toUpperCase()) + '</div><button data-i="' + it.i + '">✓ FAIT</button>';
+    K.draggable(el, el.querySelector('.oc-k'), 'obsCard');
     el.querySelector('button').onclick = function () { if (obsOn() && !it.done) { O.ev.push({ t: Date.now() - O.t0, type: 'decl', i: it.i }); obsCredit(it, 'decl'); } };
   }
   function obsPanel(bdy, b, h) {
@@ -12371,6 +13042,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       b.innerHTML = '<div class="it-h">' + (done ? '✅ Réussi dans le cockpit !' : '🎯 Essayer dans le cockpit') + '</div><div class="it-t">' + esc(T.txt) + '</div>' + (b._hint && !done ? '<div class="it-hint">💡 ' + esc(T.hint) + '</div>' : '') +
         '<div class="it-a">' + (done ? '' : '<button data-act="hint">💡 Indice</button>') + '<button class="pri" data-act="back">' + (back ? '↩ Reprendre l\'exercice' : '↩ Retour à l\'IFR') + '</button></div>';
       b.className = done ? 'done' : '';
+      K.draggable(b, b.querySelector('.it-h'), 'ifrTry');
     }
     b._hint = false; draw(false);
     K.bindActs(b, { hint: function () { b._hint = true; draw(false); }, back: function () { stopTry(); I.show(back ? 'resume' : null); } });
@@ -13742,6 +14414,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     h += '<div id="ecuEis"></div>' + (q ? '' : '<ul class="ecu-c" id="ecuC"></ul><div class="ecu-ph" id="ecuPh"></div>');
     h += '<button class="ecu-hold" id="ecuHold"></button><div class="ecu-v" id="ecuV"><span></span><button data-v="ECU A">ECU A</button><button data-v="AUTO">AUTO</button><button data-v="ECU B">ECU B</button></div><div class="ecu-ref" id="ecuRef"></div>';
     el.innerHTML = h; built = q ? 'q' : 'n';
+    if (TF.UI.draggable) TF.UI.draggable(el, el.querySelector('.ecu-h'), 'ecuPanel'); // v7.1 : fenêtre déplaçable
     var hb = el.querySelector('#ecuHold');
     function on(ev) { ev.preventDefault(); press(); }
     function off(ev) { if (ev) ev.preventDefault(); release(); }
@@ -13965,7 +14638,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     normal: { k: 1, dwell: 3400, l: '▶ NORMAL' },
     immersion: { k: 0.55, dwell: 6500, l: '🎧 IMMERSION' }
   };
-  var MODES = { watch: '👁 Regarder et comprendre', learn: '✋ Apprendre en manipulant', memory: '🧠 De mémoire' };
+  var MODES = { watch: '👁 Watch and understand', learn: '✋ Learn by doing', memory: '🧠 From memory' };
   var VIEWN = { auto: 'AUTO', profil: 'PROFIL', dessus: 'DESSUS', iso: '3D ISO', cockpit: 'COCKPIT' };
   var R = null, view = null, raf = 0, poll = 0, gen = 0;
 
@@ -14024,50 +14697,58 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     F.stop(true);
     if (TF.Home) TF.Home.hide(); if (TF.Ess && TF.Ess.visible()) TF.Ess.close();
     var e = el(), pv = F.pubVersion();
-    var h = '<div class="f3-menu"><div class="f3-top"><div><b>✈ FLOW 3D — APPRENDRE EN REGARDANT</b><small>Visualise le vol, mémorise les actions, maîtrise ton DA42.</small></div><button class="btn" data-act="close">✕ Fermer</button></div>';
-    h += '<div class="f3-rule">UNE PHASE DE VOL <i>→</i> UNE ANIMATION <i>→</i> UNE ACTION ESSENTIELLE <i>→</i> UNE VÉRIFICATION <i>→</i> PHASE SUIVANTE</div>';
+    var h = '<div class="f3-menu"><div class="f3-top"><div><b>✈ FLOW 3D — LEARN BY WATCHING</b><small>See the flight, remember the actions, master your DA42.</small></div><button class="btn" data-act="close">✕ Close</button></div>';
+    h += '<div class="f3-rule">ONE FLIGHT PHASE <i>→</i> ONE ANIMATION <i>→</i> ONE ESSENTIAL ACTION <i>→</i> ONE CHECK <i>→</i> NEXT PHASE</div>';
+    var fp = TF.Profiles.current() && TF.Profiles.current().flow3d && TF.Profiles.current().flow3d.flight, fk = 0; try { fk = +(root.localStorage.getItem('tiffanir.f3flight.k') || 0); } catch (e) { }
+    h += '<button class="f3-hero" data-act="flight"><span class="f3-hi">✈</span><span><b>FULL FLIGHT — CABIN PREPARATION TO ENGINE SHUTDOWN</b><small>Step by step, in English: the essentials, the cockpit actions (incl. G1000 selections), the key values, the 3D view. NEXT whenever you want.</small>' +
+      (fk ? '<em>Resume at step ' + (fk + 1) + '</em>' : '') + (fp && fp.done ? '<em>✓ completed once</em>' : '') + '</span><span class="f3-go">GO</span></button>';
+    if (fk) h += '<div class="f3-acts"><button class="btn" data-act="flight0">↺ Start again from cabin preparation</button></div>';
+    h += '<div class="f3-sec">PDP flow charts — watch · practise · from memory</div>';
     h += '<div class="f3-cards">';
     F.flows().forEach(function (fl) {
       var pg = prog(fl.id) || {}, m = pg.mem && pg.mem.best;
       var errs = Object.keys(pg.errs || {}).filter(function (k) { return pg.errs[k] >= 2; }).map(function (k) { var s = fl.steps.filter(function (x) { return x.id === k; })[0]; return s ? s.title : k; });
       h += '<div class="f3-card"><div class="f3-ch"><span class="f3-ico">' + fl.icon + '</span><div><b>' + esc(fl.title) + '</b><small>' + esc(fl.sub) + ' · ' + esc(fl.ref.doc + ' p.' + fl.ref.p) + '</small></div></div>';
-      h += '<div class="f3-prog"><span class="' + (pg.disc ? 'on' : '') + '">👁 ' + (pg.disc ? 'Découvert' : 'À découvrir') + '</span>' +
-        '<span class="' + (pg.learn ? 'on' : '') + '">✋ ' + (pg.learn ? 'Pratiqué · ' + pg.learn.hints + ' indice' + (pg.learn.hints > 1 ? 's' : '') : 'À pratiquer') + '</span>' +
-        '<span class="' + (m ? 'on' : '') + '">🧠 ' + (m ? 'Meilleur : ' + m.om + ' oubli' + (m.om > 1 ? 's' : '') + ' · ' + m.ord + ' err. d\'ordre' : 'De mémoire : pas encore') + '</span>' +
-        '<span>🕑 Dernière révision : ' + fmtDate(pg.last) + '</span></div>';
-      if (errs.length) h += '<div class="f3-errs">⚠ Erreurs récurrentes : ' + errs.map(esc).join(' · ') + '</div>';
-      h += '<div class="f3-acts"><button class="btn primary" data-act="go" data-id="' + fl.id + '" data-m="watch">👁 Regarder</button><button class="btn" data-act="go" data-id="' + fl.id + '" data-m="learn">✋ Manipuler</button><button class="btn" data-act="go" data-id="' + fl.id + '" data-m="memory">🧠 De mémoire</button><button class="btn" data-act="syn" data-id="' + fl.id + '">📋 Synthèse</button></div></div>';
+      h += '<div class="f3-prog"><span class="' + (pg.disc ? 'on' : '') + '">👁 ' + (pg.disc ? 'Discovered' : 'To discover') + '</span>' +
+        '<span class="' + (pg.learn ? 'on' : '') + '">✋ ' + (pg.learn ? 'Practised · ' + pg.learn.hints + ' hint' + (pg.learn.hints > 1 ? 's' : '') : 'To practise') + '</span>' +
+        '<span class="' + (m ? 'on' : '') + '">🧠 ' + (m ? 'Best: ' + m.om + ' omission' + (m.om > 1 ? 's' : '') + ' · ' + m.ord + ' order error' + (m.ord > 1 ? 's' : '') : 'From memory: not yet') + '</span>' +
+        '<span>🕑 Last review: ' + fmtDate(pg.last) + '</span></div>';
+      if (errs.length) h += '<div class="f3-errs">⚠ Recurring errors: ' + errs.map(esc).join(' · ') + '</div>';
+      h += '<div class="f3-acts"><button class="btn primary" data-act="go" data-id="' + fl.id + '" data-m="watch">👁 Watch</button><button class="btn" data-act="go" data-id="' + fl.id + '" data-m="learn">✋ Practise</button><button class="btn" data-act="go" data-id="' + fl.id + '" data-m="memory">🧠 From memory</button><button class="btn" data-act="syn" data-id="' + fl.id + '">📋 Summary</button></div></div>';
     });
-    h += '</div><div class="f3-foot">Schémas pédagogiques d\'après les flow charts du PDP DA42 VI et l\'OM-B — ce ne sont ni des procédures publiées, ni des données de navigation. ' +
-      'En cas d\'écart : l\'OM-B prévaut.' + (pv ? ' <b>Version validée locale v' + pv.version + ' (' + esc(pv.by || '') + ')</b>.' : '') + '</div>';
+    h += '</div><div class="f3-foot">Teaching diagrams based on the PDP DA42 VI flow charts and the OM-B — neither published procedures nor navigation data. ' +
+      'In case of difference: the OM-B prevails.' + (pv ? ' <b>Locally validated version v' + pv.version + ' (' + esc(pv.by || '') + ')</b>.' : '') + '</div>';
     if (F.editorAllowed()) h += '<div class="f3-acts"><button class="btn" data-act="edit">✏️ Éditeur de flows (administrateur)</button></div>';
     h += '</div>';
-    e.className = 'f3-full'; e.innerHTML = K.plain(h);
+    e.className = 'f3-full'; e.style.cssText = ''; e.innerHTML = K.plain(h);
     K.bindActs(e, {
       close: function () { F.close(); TF.Ess.show(); },
       go: function (b) { F.open(b.getAttribute('data-id'), b.getAttribute('data-m')); },
+      flight: function () { F.flight.open(); },
+      flight0: function () { try { root.localStorage.removeItem('tiffanir.f3flight.k'); } catch (e) { } F.flight.open(0); },
       syn: function (b) { F.synthesis(b.getAttribute('data-id')); },
-      edit: function () { F.editor(); }
+      edit: function () { F.editor(); },
+      _x: null
     });
   };
   F.visible = function () { var e = K.$('f3d'); return !!e && !/hidden/.test(e.className); };
   F.active = function () { return !!R; };
-  F.close = function (silent) { F.stop(silent); var e = K.$('f3d'); if (e) { e.className = 'hidden'; e.innerHTML = ''; } };
+  F.close = function (silent) { F.stop(silent); if (F.flight && F.flight.active()) F.flight.stop(); var e = K.$('f3d'); if (e) { e.className = 'hidden'; e.innerHTML = ''; } };
 
   /* ------------------------------------------------ Tableau de synthèse ------------------------------------------------ */
   F.synthesis = function (id) {
     var fl = F.flowById(id), L = TF.DATA.flow3d.srcLabels;
-    var h = K.head('📋 ' + esc(fl.title) + ' — synthèse');
-    h += '<p class="f3-note">Ordre logique retenu, avec le statut de chaque élément : <b>PDP</b> = écrit dans le flow chart · <b>DOC</b> = autre document approuvé (OM-B, C/L) · <b>PÉDA</b> = simplification pédagogique · <b>À VALIDER</b> = point à confirmer avec l\'instructeur.</p>';
-    h += '<div class="f3-tw"><table class="f3-tab"><tr><th>Phase</th><th>Déclencheur</th><th>Action essentielle</th><th>Vérification</th><th>Source</th></tr>';
+    var h = K.head('📋 ' + esc(fl.title) + ' — summary');
+    h += '<p class="f3-note">Logical order kept, with the status of each element: <b>PDP</b> = written in the flow chart · <b>DOC</b> = other approved document (OM-B, C/L) · <b>TEACH</b> = teaching simplification · <b>TO VALIDATE</b> = to be confirmed with the instructor.</p>';
+    h += '<div class="f3-tw"><table class="f3-tab"><tr><th>Phase</th><th>Trigger</th><th>Essential action</th><th>Check</th><th>Source</th></tr>';
     var wp = {}; fl.waypoints.forEach(function (w) { wp[w.id] = w.t; });
     fl.steps.forEach(function (s) {
-      var st = s.src === 'PEDA' ? 'PÉDA' : s.src === 'VAL' ? 'À VALIDER' : s.src;
-      var flag = /à confirmer/i.test(s.ref.sec || '') ? ' <span class="f3-val">page à confirmer</span>' : '';
-      h += '<tr><td>' + esc(wp[s.phase] || s.phase) + '</td><td>' + esc(s.title) + '</td><td>' + esc(s.action) + (s.callout ? '<br><small>🎙 ' + esc(s.calloutPdp || '« ' + s.callout + ' »') + (s.calloutSrc === 'PEDA' ? ' (formulation pédagogique)' : '') + '</small>' : '') + '</td><td>' + esc(s.check) + '</td>' +
-        '<td><span class="f3-src f3-' + s.src + '">' + st + '</span> ' + esc(s.ref.doc + ' p.' + s.ref.p) + flag + (s.locked ? ' <span class="f3-lock">🔒 exigence</span>' : '') + '</td></tr>';
+      var st = s.src === 'PEDA' ? 'TEACH' : s.src === 'VAL' ? 'TO VALIDATE' : s.src;
+      var flag = /à confirmer/i.test(s.ref.sec || '') ? ' <span class="f3-val">page to be confirmed</span>' : '';
+      h += '<tr><td>' + esc(wp[s.phase] || s.phase) + '</td><td>' + esc(s.title) + '</td><td>' + esc(s.action) + (s.callout ? '<br><small>🎙 ' + esc(s.calloutPdp || '« ' + s.callout + ' »') + (s.calloutSrc === 'PEDA' ? ' (teaching wording)' : '') + '</small>' : '') + '</td><td>' + esc(s.check) + '</td>' +
+        '<td><span class="f3-src f3-' + s.src + '">' + st + '</span> ' + esc(s.ref.doc + ' p.' + s.ref.p) + flag + (s.locked ? ' <span class="f3-lock">🔒 requirement</span>' : '') + '</td></tr>';
     });
-    h += '</table></div><p class="f3-note">' + esc(fl.field) + '. ' + (L ? '' : '') + 'Les valeurs (vitesses, puissances) sont celles du flow chart cité ; elles ne remplacent pas l\'OM-B / l\'AFM.</p>';
+    h += '</table></div><p class="f3-note">' + esc(fl.field) + '. ' + (L ? '' : '') + 'Values (speeds, power) are those of the quoted flow chart; they do not replace the OM-B / AFM.</p>';
     K.sheet(h, function (s) { var c = s.querySelector('.sh-close'); if (c) c.onclick = K.closeSheet; }, { width: '980px' });
   };
 
@@ -14114,8 +14795,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     R = { flow: fl, mode: mode || 'watch', speed: mode === 'memory' ? 'immersion' : 'normal', view: 'auto', t: 0, playing: true, idx: 0, cur: -1, last: Date.now(),
       waiting: false, res: fl.steps.map(function () { return {}; }), hints: 0, nav: false, review: null, layout: mode === 'memory' ? 'pip' : 'full', g: gen, ord: 0,
       voice: V.enabled(), preview: !!opts.preview, finished: false, detail: false, lastStep: -1 };
-    var e = el(); e.className = 'f3-' + R.layout; e.innerHTML = '';
+    var e = el(); e.className = 'f3-' + R.layout + (R.layout === 'full' ? ' no-drag' : ''); e.style.left = e.style.top = e.style.right = e.style.bottom = e.style.transform = ''; e.innerHTML = '';
     buildPlayer();
+    K.draggable(e, e.querySelector('.f3-head'));
     view = new TF.Flow3DView(K.$('f3cv'));
     R.TK = view.setFlow(fl);
     resetCockpit();
@@ -14124,7 +14806,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     R.cfg = cfgNow();
     renderCard(); renderBar();
     loop();
-    if (R.mode === 'memory') K.toast('🧠 De mémoire : l\'animation avance, fais le flow dans le cockpit. Rien n\'est validé par l\'animation.', 'info', 4200);
+    if (R.mode === 'memory') K.toast('🧠 From memory: the animation runs, do the flow in the cockpit. Nothing is validated by the animation.', 'info', 4200);
   };
   F.stop = function (silent) {
     if (!R) return;
@@ -14181,13 +14863,13 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     }
   }
   function speakStep(sp, done) {
-    var fr = sp.title + '. ' + sp.action + '. Vérification : ' + sp.check + '.';
-    V.say(fr, 'fr', function () { if (sp.callout && R && R.voice) V.say(sp.callout, 'en', done); else if (done) done(); });
+    var fr = sp.title + '. ' + sp.action + '. Check: ' + sp.check + '.';
+    V.say(fr.replace(/[«»→—]/g, ' '), 'en', function () { if (sp.callout && R && R.voice) V.say(sp.callout, 'en', done); else if (done) done(); });
   }
   function learnDone(i, already) {
     if (!R || R.cur !== i) return;
     var r = R.res[i]; if (r.done) return; r.done = true; r.doneT = R.t;
-    K.sound.ok(); K.toast(already ? '✓ Déjà en place : ' + esc(R.flow.steps[i].title) : '✓ ' + esc(R.flow.steps[i].check), 'ok', 1600);
+    K.sound.ok(); K.toast(already ? '✓ Already set: ' + esc(R.flow.steps[i].title) : '✓ ' + esc(R.flow.steps[i].check), 'ok', 1600);
     app().view.clearHighlight();
     if (R.layout === 'pip' && R.mode === 'learn') setLayout('full'); // retour automatique à l'animation
     var g = R.g; setTimeout(function () { if (!R || R.g !== g || R.cur !== i) return; R.waiting = false; R.cur = -1; renderCard(); renderBar(); }, 900);
@@ -14232,7 +14914,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function goStep(i) {
     if (!R || R.mode === 'memory') return;
     var steps = R.flow.steps; i = Math.max(0, Math.min(i, steps.length - 1));
-    if (R.mode === 'learn') { for (var k = 0; k < i; k++) if (!R.res[k].done) { R.res[k].skipped = true; R.nav = true; } }
+    if (R.mode === 'learn') { R.nav = true; for (var k = 0; k < i; k++) if (!R.res[k].done) R.res[k].skipped = true; } // toute navigation est signalée : le passage n'est pas compté comme pratiqué
     V.stop(); gen++; R.g = gen; loop();
     resetCockpit();
     var ops = []; for (var j = 0; j < i; j++) if (steps[j].demo) ops = ops.concat(steps[j].demo);
@@ -14249,7 +14931,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     R.review = ph; R.reviewStarted = false; goStep(i0);
     var t0 = i0 ? markT(steps[i0 - 1].at) : 0; R.t = Math.max(t0, markT(steps[i0].at) - 6);
   }
-  function setLayout(l) { if (!R) return; R.layout = l; el().className = 'f3-' + l + (l === 'pip' && R.pipRight ? ' r' : ''); renderCard(); renderBar(); }
+  function setLayout(l) { if (!R) return; R.layout = l; var e = el(); e.className = 'f3-' + l + (l === 'pip' && R.pipRight ? ' r' : '') + (l === 'full' ? ' no-drag' : ''); if (l === 'full') e.style.left = e.style.top = e.style.right = e.style.bottom = e.style.transform = e.style.webkitTransform = ''; renderCard(); renderBar(); }
   // la fenêtre réduite se place du côté opposé à la commande à manipuler
   function pipSide(id) {
     var v = app().view, d = ck().defs[id], st = K.$('stage'); if (!d || !st || !v.toScreen) return;
@@ -14259,7 +14941,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   /* ------------------------------------------------ Interface du lecteur ------------------------------------------------ */
   function buildPlayer() {
     var h = '<div class="f3-head"><span class="f3-ttl">' + R.flow.icon + ' ' + esc(R.flow.title) + '</span><span class="f3-mode">' + MODES[R.mode] + (R.preview ? ' · APERÇU (brouillon)' : '') + '</span>' +
-      '<span class="f3-sp"></span><button class="btn sm" data-act="pip" title="Réduire / agrandir">⇲</button><button class="btn sm" data-act="quit">✕</button></div>';
+      '<span class="f3-sp"></span><button class="btn sm" data-act="pip" title="Smaller / bigger">⇲</button><button class="btn sm" data-act="quit">✕</button></div>';
     h += '<div class="f3-wps" id="f3wps"></div>';
     h += '<div class="f3-stage"><canvas id="f3cv"></canvas><div class="f3-hud" id="f3hud"></div><div class="f3-card" id="f3card"></div></div>';
     h += '<div class="f3-bar" id="f3bar"></div>';
@@ -14275,22 +14957,22 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (wps) {
       wps.innerHTML = K.plain(R.flow.waypoints.map(function (w, n) {
         var on = cur && cur.phase === w.id, dis = R.mode === 'memory' ? ' disabled' : '';
-        return '<button class="f3-wp' + (on ? ' on' : '') + (R.review === w.id ? ' rv' : '') + '" data-act="wp" data-v="' + w.id + '"' + dis + ' title="' + esc(w.d) + (R.mode === 'memory' ? '' : ' — revoir cette étape') + '"><i>' + (n + 1) + '</i>' + esc(w.t) + '</button>';
+        return '<button class="f3-wp' + (on ? ' on' : '') + (R.review === w.id ? ' rv' : '') + '" data-act="wp" data-v="' + w.id + '"' + dis + ' title="' + esc(w.d) + (R.mode === 'memory' ? '' : ' — review this phase') + '"><i>' + (n + 1) + '</i>' + esc(w.t) + '</button>';
       }).join('<span class="f3-arr">›</span>'));
       K.bindActs(wps, { wp: function (b) { review(b.getAttribute('data-v')); } });
     }
     var b = K.$('f3bar'); if (!b) return;
     var mem = R.mode === 'memory', h = '';
     if (R.layout === 'pip') {
-      h = '<div class="f3-grp"><button class="btn primary" data-act="play">' + (R.playing ? '❚❚' : '▶') + '</button>' + (mem ? '<button class="btn warn" data-act="end">⏹ Terminer</button>' : '<button class="btn" data-act="bigger">⤢ Animation</button>') + '<button class="btn" data-act="voice">' + (R.voice ? '🔊' : '🔇') + '</button></div>';
+      h = '<div class="f3-grp"><button class="btn primary" data-act="play">' + (R.playing ? '❚❚' : '▶') + '</button>' + (mem ? '<button class="btn warn" data-act="end">⏹ Finish</button>' : '<button class="btn" data-act="bigger">⤢ Animation</button>') + '<button class="btn" data-act="voice">' + (R.voice ? '🔊' : '🔇') + '</button></div>';
     } else {
-    h += '<div class="f3-grp"><button class="btn" data-act="prev"' + (mem ? ' disabled title="Navigation désactivée en mode De mémoire"' : '') + '>◀ ÉTAPE PRÉCÉDENTE</button>' +
-      '<button class="btn primary" data-act="play">' + (R.playing ? '❚❚ PAUSE' : '▶ LECTURE') + '</button>' +
-      '<button class="btn" data-act="next"' + (mem ? ' disabled title="Navigation désactivée en mode De mémoire"' : '') + '>ÉTAPE SUIVANTE ▶</button>' +
-      '<button class="btn" data-act="replay">↺ REJOUER</button></div>';
+    h += '<div class="f3-grp"><button class="btn" data-act="prev"' + (mem ? ' disabled title="Navigation disabled in From memory mode"' : '') + '>◀ PREVIOUS STEP</button>' +
+      '<button class="btn primary" data-act="play">' + (R.playing ? '❚❚ PAUSE' : '▶ PLAY') + '</button>' +
+      '<button class="btn" data-act="next"' + (mem ? ' disabled title="Navigation disabled in From memory mode"' : '') + '>NEXT STEP ▶</button>' +
+      '<button class="btn" data-act="replay">↺ REPLAY</button></div>';
     h += '<div class="f3-grp seg">' + Object.keys(SPEEDS).map(function (k) { return '<button class="btn' + (R.speed === k ? ' on' : '') + '" data-act="speed" data-v="' + k + '">' + SPEEDS[k].l + '</button>'; }).join('') + '</div>';
     h += '<div class="f3-grp seg">' + Object.keys(VIEWN).map(function (k) { return '<button class="btn' + (R.view === k ? ' on' : '') + '" data-act="view" data-v="' + k + '">' + VIEWN[k] + '</button>'; }).join('') + '</div>';
-    h += '<div class="f3-grp"><button class="btn" data-act="voice">' + (R.voice ? '🔊 Voix' : '🔇 Muet') + '</button>' + (mem && !R.finished ? '<button class="btn warn" data-act="end">⏹ Terminer</button>' : '') + '</div>';
+    h += '<div class="f3-grp"><button class="btn" data-act="voice">' + (R.voice ? '🔊 Voice' : '🔇 Muted') + '</button>' + (mem && !R.finished ? '<button class="btn warn" data-act="end">⏹ Finish</button>' : '') + '</div>';
     }
     b.innerHTML = K.plain(h);
     K.bindActs(b, {
@@ -14313,7 +14995,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     s += '<span><small>TRAIN</small>' + gtxt + '</span><span><small>VOLETS</small><b>' + esc(c.flaps) + '</b></span><span><small>PWR</small><b>' + c.pwr[0] + '/' + c.pwr[1] + '</b> %</span>';
     if (R.flow.kind === 'air') s += '<span><small>AFCS</small><b>' + esc((c.ap ? 'AP ' : '') + (c.lat || '—') + (c.latArm ? ' · ' + c.latArm : '') + (c.vert ? ' · ' + c.vert : '')) + '</b></span>';
     if (R.flow.kind === 'ground') s += '<span><small>RPM</small><b>' + c.rpm[0] + ' / ' + c.rpm[1] + '</b></span>';
-    s += '<em>Simulateur · schéma illustratif</em>';
+    s += '<em>Simulator · illustrative diagram</em>';
     h.innerHTML = s;
   }
 
@@ -14323,7 +15005,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   }
   function calloutHtml(sp) {
     if (!sp.callout) return '';
-    return '<div class="f3-call">🎙 « ' + esc(sp.callout) + ' »' + (sp.calloutSrc === 'PDP' ? '<small>annonce écrite dans le PDP' + (sp.calloutPdp ? ' : ' + esc(sp.calloutPdp) : '') + '</small>' : '<small>formulation pédagogique' + (sp.calloutPdp ? ' — PDP : ' + esc(sp.calloutPdp) : '') + '</small>') + '</div>';
+    return '<div class="f3-call">🎙 « ' + esc(sp.callout) + ' »' + (sp.calloutSrc === 'PDP' ? '<small>callout written in the PDP' + (sp.calloutPdp ? ': ' + esc(sp.calloutPdp) : '') + '</small>' : '<small>teaching wording' + (sp.calloutPdp ? ' — PDP: ' + esc(sp.calloutPdp) : '') + '</small>') + '</div>';
   }
   function renderCard() {
     var c = K.$('f3card'); if (!c || !R) return;
@@ -14331,41 +15013,42 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (R.finished) { c.innerHTML = ''; c.className = 'f3-card hidden'; return; }
     if (R.reviewEnd) {
       var wn = R.flow.waypoints.filter(function (w) { return w.id === R.review; })[0];
-      h = '<div class="f3-k">RÉVISION</div><div class="f3-t">Fin de l\'étape « ' + esc(wn ? wn.t : '') + ' »</div><div class="f3-btns"><button class="btn primary" data-act="rvagain">↺ Rejouer cette étape</button><button class="btn" data-act="rvall">▶ Reprendre tout le flow</button></div>';
+      h = '<div class="f3-k">REVIEW</div><div class="f3-t">End of « ' + esc(wn ? wn.t : '') + ' »</div><div class="f3-btns"><button class="btn primary" data-act="rvagain">↺ Replay this phase</button><button class="btn" data-act="rvall">▶ Resume the whole flow</button></div>';
       c.className = 'f3-card'; c.innerHTML = K.plain(h);
       K.bindActs(c, { rvagain: function () { var p = R.review; R.reviewEnd = false; review(p); }, rvall: function () { R.review = null; R.reviewEnd = false; R.waiting = false; renderCard(); renderBar(); } });
       return;
     }
     if (i < 0) {
       var nx = steps[R.idx];
-      h = '<div class="f3-k">' + (R.mode === 'memory' ? 'OBSERVATEUR SILENCIEUX' : 'EN VOL VERS') + '</div>';
-      if (R.mode === 'memory') h += '<div class="f3-t">Fais le flow de mémoire dans le cockpit</div><div class="f3-s">Aucune aide. L\'animation ne valide rien : seul l\'état réel du cockpit compte.</div>';
-      else h += '<div class="f3-t">' + (nx ? esc(phaseName(nx.phase)) + ' — ' + esc(nx.title) : 'Fin du flow') + '</div>';
+      h = '<div class="f3-k">' + (R.mode === 'memory' ? 'SILENT OBSERVER' : 'FLYING TO') + '</div>';
+      if (R.mode === 'memory') h += '<div class="f3-t">Do the flow from memory in the cockpit</div><div class="f3-s">No help. The animation validates nothing: only the real cockpit state counts.</div>';
+      else h += '<div class="f3-t">' + (nx ? esc(phaseName(nx.phase)) + ' — ' + esc(nx.title) : 'End of the flow') + '</div>';
       c.className = 'f3-card dim'; c.innerHTML = K.plain(h); return;
     }
     var sp = steps[i], r = R.res[i], n = R.flow.waypoints.map(function (w) { return w.id; }).indexOf(sp.phase) + 1;
     h += '<div class="f3-k"><i>' + n + '</i> ' + esc(phaseName(sp.phase)) + (sp.locked ? ' <span class="f3-lock">🔒</span>' : '') + '</div>';
     h += '<div class="f3-t">' + esc(sp.title) + '</div>';
     if (R.mode === 'memory') {
-      h += '<div class="f3-s">Observateur silencieux — à toi.</div>';
+      h += '<div class="f3-s">Silent observer — your turn.</div>';
       c.className = 'f3-card'; c.innerHTML = K.plain(h); return;
     }
     var learn = R.mode === 'learn', showAct = !learn || r.hint >= 1 || r.done, showChk = !learn || r.hint >= 3 || r.done;
-    h += '<div class="f3-a"><span>ACTION →</span> ' + (showAct ? esc(sp.action) : '<em>à toi de trouver</em>') + '</div>';
+    h += '<div class="f3-a"><span>ACTION →</span> ' + (showAct ? esc(sp.action) : '<em>your turn to find it</em>') + '</div>';
     h += '<div class="f3-c"><span>CHECK →</span> ' + (showChk ? esc(sp.check) : '<em>?</em>') + '</div>';
     if (showAct) h += calloutHtml(sp);
-    if (r.done) h += '<div class="f3-ok">✓ ' + (r.already ? 'Déjà en place dans le cockpit' : 'Fait dans le cockpit') + '</div>';
+    if (r.done) h += '<div class="f3-ok">✓ ' + (r.already ? 'Already set in the cockpit' : 'Done in the cockpit') + '</div>';
     h += '<div class="f3-btns">';
-    h += '<button class="btn" data-act="why">' + (R.detail ? '▴ Masquer' : 'POURQUOI ? / DÉTAILS') + '</button>';
-    if (sp.ctls && sp.ctls.length && !r.done) h += '<button class="btn primary" data-act="manip">🖐 MANIPULER DANS LE COCKPIT</button>';
+    h += '<button class="btn" data-act="why">' + (R.detail ? '▴ Hide' : 'WHY? / DETAILS') + '</button>';
+    if (sp.ctls && sp.ctls.length && !r.done) h += '<button class="btn primary" data-act="manip">🖐 DO IT IN THE COCKPIT</button>';
     if (learn && !r.done) {
-      if (r.hint < 3) h += '<button class="btn hintbtn" data-act="hint">💡 Indice ' + (r.hint + 1) + ' / 3</button>';
-      if (!sp.success) h += '<button class="btn primary" data-act="fait">' + (sp.kind === 'call' ? '🎙 ANNONCE FAITE' : '✓ FAIT') + '</button>';
+      if (r.hint < 3) h += '<button class="btn hintbtn" data-act="hint">💡 Hint ' + (r.hint + 1) + ' / 3</button>';
+      if (!sp.success) h += '<button class="btn primary" data-act="fait">' + (sp.kind === 'call' ? '🎙 CALL MADE' : '✓ DONE') + '</button>';
     }
-    if (R.mode === 'watch' && !R.playing) h += '<button class="btn" data-act="cont">▶ Continuer</button>';
+    if (R.mode === 'watch' && !R.playing) h += '<button class="btn" data-act="cont">▶ Continue</button>';
     h += '</div>';
-    if (R.detail) h += '<div class="f3-why">' + esc(sp.why || '') + '<div class="f3-ref">' + srcTag(sp) + '</div>' + (learn && r.hint >= 2 && sp.ctls ? '<div class="f3-ref">Commande : ' + esc(ctlNames(sp.ctls)) + '</div>' : '') + '</div>';
+    if (R.detail) h += '<div class="f3-why">' + esc(sp.why || '') + '<div class="f3-ref">' + srcTag(sp) + '</div>' + (learn && r.hint >= 2 && sp.ctls ? '<div class="f3-ref">Control: ' + esc(ctlNames(sp.ctls)) + '</div>' : '') + '</div>';
     c.className = 'f3-card'; c.innerHTML = K.plain(h);
+    K.draggable(c, c.querySelector('.f3-k'), 'f3card');
     K.bindActs(c, {
       why: function () { R.detail = !R.detail; renderCard(); },
       manip: function () { manip(sp, r); },
@@ -14382,8 +15065,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     if (sp.ctls && sp.ctls[0]) { v.focusOn(sp.ctls[0], false); pipSide(sp.ctls[0]); }
     setLayout('pip');
     if (sp.ctls && sp.ctls[0]) { if (R.mode === 'watch' || (r.hint || 0) >= 3) { v.clearHighlight(); sp.ctls.forEach(function (t) { v.highlight(t, 'pulse'); }); } }
-    if (R.mode === 'watch') { R.playing = false; renderBar(); K.toast('Regarde la commande dans le cockpit — en mode Regarder rien n\'est évalué', 'info', 2600); }
-    else K.toast('À toi dans le cockpit : la fenêtre revient seule quand c\'est fait', 'info', 2400);
+    if (R.mode === 'watch') { R.playing = false; renderBar(); K.toast('Look at the control in the cockpit — nothing is assessed in Watch mode', 'info', 2600); }
+    else K.toast('Your turn in the cockpit: the window comes back by itself when it is done', 'info', 2400);
   }
 
   /* ------------------------------------------------ Fin, débriefing, check-list ------------------------------------------------ */
@@ -14395,19 +15078,19 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var pg = prog(R.flow.id), xp = 0, h = '';
     if (R.mode === 'watch') {
       if (pg && !R.preview) { pg.disc = true; pg.last = Date.now(); } xp = R.preview ? 0 : 5;
-      h = '<div class="f3-dt">✓ Flow regardé jusqu\'au bout</div><p>Prochaine étape : <b>✋ Apprendre en manipulant</b>, puis <b>🧠 De mémoire</b>.</p>';
+      h = '<div class="f3-dt">✓ Flow watched to the end</div><p>Next: <b>✋ Learn by doing</b>, then <b>🧠 From memory</b>.</p>';
     } else if (R.mode === 'learn') {
       var sk = R.res.filter(function (x) { return x.skipped; }).length, dn = R.res.filter(function (x) { return x.done; }).length;
       if (pg && !R.preview && !R.nav) { if (!pg.learn || R.hints <= pg.learn.hints) pg.learn = { hints: R.hints, ts: Date.now() }; pg.last = Date.now(); }
       xp = R.preview || R.nav ? 0 : Math.max(4, 12 - R.hints);
-      h = '<div class="f3-dt">✋ Flow pratiqué : ' + dn + ' / ' + R.flow.steps.length + ' étapes · ' + R.hints + ' indice' + (R.hints > 1 ? 's' : '') + '</div>' +
-        (R.nav ? '<p class="f3-warn">Navigation utilisée (' + sk + ' étape' + (sk > 1 ? 's' : '') + ' passée' + (sk > 1 ? 's' : '') + ') : ce passage n\'est pas enregistré comme pratiqué.</p>' : '');
+      h = '<div class="f3-dt">✋ Flow practised: ' + dn + ' / ' + R.flow.steps.length + ' steps · ' + R.hints + ' hint' + (R.hints > 1 ? 's' : '') + '</div>' +
+        (R.nav ? '<p class="f3-warn">Navigation used (' + sk + ' step' + (sk > 1 ? 's' : '') + ' skipped): this run is not recorded as practised.</p>' : '');
     } else { h = memDebrief(early); }
     if (xp && TF.Profiles.current()) { TF.Profiles.addXp(xp); h += '<p class="f3-xp">+' + xp + ' XP</p>'; }
     saveProg();
     h += checklistHtml();
-    h += '<div class="f3-btns"><button class="btn primary" data-act="again">↺ Rejouer</button>' + (R.mode === 'watch' ? '<button class="btn" data-act="tolearn">✋ Apprendre en manipulant</button>' : R.mode === 'learn' ? '<button class="btn" data-act="tomem">🧠 De mémoire</button>' : '') +
-      '<button class="btn" data-act="menu">☰ Menu Flow 3D</button></div>';
+    h += '<div class="f3-btns"><button class="btn primary" data-act="again">↺ Replay</button>' + (R.mode === 'watch' ? '<button class="btn" data-act="tolearn">✋ Learn by doing</button>' : R.mode === 'learn' ? '<button class="btn" data-act="tomem">🧠 From memory</button>' : '') +
+      '<button class="btn" data-act="menu">☰ Flow 3D menu</button></div>';
     var d = document.createElement('div'); d.className = 'f3-deb'; d.innerHTML = K.plain('<div class="f3-debin">' + h + '</div>');
     var st = el().querySelector('.f3-stage'); if (st) st.appendChild(d);
     var f0 = R.flow, pv = R.preview;
@@ -14435,9 +15118,9 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     }
     return { om: om, ord: ord, vari: vari, corr: corr, decl: decl };
   }
-  function scoreLine(s) { return '<b>' + s.om + ' OUBLI' + (s.om > 1 ? 'S' : '') + '</b> — <b>' + s.ord + ' ERREUR' + (s.ord > 1 ? 'S' : '') + ' D\'ORDRE</b> — <b>' + s.vari + ' VARIATION' + (s.vari > 1 ? 'S' : '') + ' ACCEPTABLE' + (s.vari > 1 ? 'S' : '') + '</b>'; }
+  function scoreLine(s) { return '<b>' + s.om + ' OMISSION' + (s.om > 1 ? 'S' : '') + '</b> — <b>' + s.ord + ' ORDER ERROR' + (s.ord > 1 ? 'S' : '') + '</b> — <b>' + s.vari + ' ACCEPTABLE VARIATION' + (s.vari > 1 ? 'S' : '') + '</b>'; }
   function updScore(d) {
-    var s = memScore(), e = d.querySelector('#f3score'); if (e) e.innerHTML = scoreLine(s) + '<small>' + s.corr + ' correction' + (s.corr > 1 ? 's' : '') + ' spontanée' + (s.corr > 1 ? 's' : '') + ' · dont ' + s.decl + ' étape' + (s.decl > 1 ? 's' : '') + ' non cochée' + (s.decl > 1 ? 's' : '') + ' dans l\'auto-évaluation</small>';
+    var s = memScore(), e = d.querySelector('#f3score'); if (e) e.innerHTML = scoreLine(s) + '<small>' + s.corr + ' spontaneous correction' + (s.corr > 1 ? 's' : '') + ' · incl. ' + s.decl + ' step' + (s.decl > 1 ? 's' : '') + ' not ticked in the self-assessment</small>';
     saveMem(s);
   }
   function saveMem(s) {
@@ -14449,26 +15132,26 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   }
   function memDebrief(early) {
     var steps = R.flow.steps, s = memScore(), h = '';
-    h += '<div class="f3-dt">🧠 Débriefing — De mémoire' + (early ? ' (arrêté avant la fin)' : '') + '</div>';
+    h += '<div class="f3-dt">🧠 Debrief — From memory' + (early ? ' (stopped before the end)' : '') + '</div>';
     h += '<div class="f3-score" id="f3score"></div>';
-    h += '<table class="f3-tab sm"><tr><th></th><th>Étape</th><th>Observé dans le cockpit</th></tr>';
+    h += '<table class="f3-tab sm"><tr><th></th><th>Step</th><th>Observed in the cockpit</th></tr>';
     steps.forEach(function (sp, i) {
       var r = R.res[i], ic, tx;
-      if (!sp.success) { ic = '☐'; tx = '<label class="f3-self"><input type="checkbox" data-act="self" data-i="' + i + '"' + (r.selfOk ? ' checked' : '') + '> fait (auto-évaluation : non observable par le simulateur)</label>'; }
-      else if (!r.done) { ic = '✗'; tx = 'Oubli : ' + esc(sp.action) + ' — attendu : ' + esc(sp.check); }
-      else if (r.orderErr) { ic = '⚠'; tx = 'Erreur d\'ordre : fait avant « ' + esc(r.orderErr.map(function (d) { var x = steps[stepIdx(d)]; return x ? x.title : d; }).join(', ')) + ' »'; }
-      else { ic = '✓'; tx = (r.already ? 'Déjà en place au début du flow' : 'Fait' + (r.early ? ' (anticipé)' : '') + (r.late ? ' (en retard — corrigé)' : '')) + ((r.corr || 0) ? ' · ' + r.corr + ' correction' + (r.corr > 1 ? 's' : '') + ' spontanée' + (r.corr > 1 ? 's' : '') : ''); }
+      if (!sp.success) { ic = '☐'; tx = '<label class="f3-self"><input type="checkbox" data-act="self" data-i="' + i + '"' + (r.selfOk ? ' checked' : '') + '> done (self-assessment: not observable by the simulator)</label>'; }
+      else if (!r.done) { ic = '✗'; tx = 'Omission: ' + esc(sp.action) + ' — expected: ' + esc(sp.check); }
+      else if (r.orderErr) { ic = '⚠'; tx = 'Order error: done before « ' + esc(r.orderErr.map(function (d) { var x = steps[stepIdx(d)]; return x ? x.title : d; }).join(', ')) + ' »'; }
+      else { ic = '✓'; tx = (r.already ? 'Already set at the start of the flow' : 'Done' + (r.early ? ' (anticipated)' : '') + (r.late ? ' (late — corrected)' : '')) + ((r.corr || 0) ? ' · ' + r.corr + ' spontaneous correction' + (r.corr > 1 ? 's' : '') : ''); }
       h += '<tr class="' + (ic === '✗' ? 'ko' : ic === '⚠' ? 'warn' : '') + '"><td>' + ic + '</td><td><b>' + esc(sp.title) + '</b><br><small>' + esc(sp.action) + '</small></td><td>' + tx + '</td></tr>';
     });
-    h += '</table><p class="f3-note">Variation acceptable = ordre différent du flow sans enfreindre une dépendance obligatoire (les dépendances sont indiquées dans la synthèse). Ces tolérances sont à valider avec l\'instructeur.</p>';
+    h += '</table><p class="f3-note">Acceptable variation = an order different from the flow that breaks no mandatory dependency (dependencies are shown in the summary). These tolerances are to be validated with the instructor.</p>';
     setTimeout(function () { var d = el().querySelector('.f3-deb'); if (d) updScore(d); }, 0);
     return h;
   }
   function checklistHtml() {
     var cl = R.flow.checklist; if (!cl) return '';
-    return '<div class="f3-cl"><div class="f3-clh">📋 Check-list documentée — ' + esc(cl.title) + ' <small>(' + esc(cl.src) + ')</small></div>' +
+    return '<div class="f3-cl"><div class="f3-clh">📋 Documented check-list — ' + esc(cl.title) + ' <small>(' + esc(cl.src) + ')</small></div>' +
       cl.items.map(function (x) { return '<div class="f3-cli"><span>' + esc(x[0]) + '</span><i></i><b>' + esc(x[1]) + '</b></div>'; }).join('') +
-      '<div class="f3-note">' + esc(cl.note) + ' Le flow et la check-list restent distincts : le flow fait les actions, la check-list les contrôle (PDP, Use of check-list).</div></div>';
+      '<div class="f3-note">' + esc(cl.note) + ' The flow and the check-list stay separate: the flow does the actions, the check-list checks them (PDP, Use of check-list).</div></div>';
   }
 
   /* ------------------------------------------------ Éditeur (administrateur, local) ------------------------------------------------ */
@@ -14545,6 +15228,393 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   // redimensionnement / orientation
   root.addEventListener('resize', function () { if (R) { renderBar(); } });
+})(this);
+
+</script>
+<script>/* js/ui/flow3d-flight.js */
+/* FLOW 3D — FULL FLIGHT (v7.1) : from cabin preparation to engine shutdown, step by step, in English.
+ * One step = one item of the detailed flow (TF.DATA.essFlow, OM-B / PDP / crew notes), shown on:
+ *   - the step card (item, response, callouts, values to check, the cockpit actions incl. G1000 selections),
+ *   - the 3D view (aircraft on a schematic track, gear / flaps / props from the real cockpit state),
+ *   - the key values window (RPM, IAS, ALT… highlighted when they matter for the step, with the target),
+ *   - the cockpit itself (controls focused and highlighted; SHOW ME performs the actions).
+ * NEXT is always allowed, even if the current step is not done: the cockpit is then set as the flow expects.
+ * All three windows can be dragged. ES5 only (iPad iOS 12).
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, K = TF.UI, esc = TF.util.esc, V = TF.Voice;
+  var FF = TF.Flow3D.flight = {};
+  var FE = 420, D2R = Math.PI / 180;
+  var R = null, view = null, raf = 0, poll = 0, gen = 0;
+  function app() { return TF.app; }
+  function ck() { return TF.app.ck; }
+  function EN() { return TF.DATA.flowEn || { vals: {}, notes: {}, blocks: {} }; }
+
+  /* ------------------------------------------------ English labels of the controls ------------------------------------------------ */
+  var CTL_EN = {
+    alt_air: 'ALTERNATE AIR (black lever)', alt_static: 'ALTERNATE STATIC (small green knob)', aux_pump_l: 'AUX PUMP LH', aux_pump_r: 'AUX PUMP RH',
+    cws_btn: 'CWS trigger (stick)', deice_annun: 'ICE LIGHT / ANNUN-TEST', elev_trim: 'ELEVATOR TRIM wheel', emergency_sw: 'EMERGENCY switch',
+    flaps: 'FLAPS selector', flood_light: 'FLOOD light', ga_btn: 'GA button (left power lever)', gear_emerg: 'MANUAL GEAR EXTENSION (red lever)',
+    gear_lever: 'LANDING GEAR selector', instr_light: 'INSTRUMENT lights', k_com: 'COM knob', k_crs: 'CRS / BARO knob (PFD)', mk_alt: 'ALT SEL knob',
+    mk_hdg: 'HDG knob', mk_fms: 'FMS knob (MFD)', mk_range: 'RANGE knob', parking_brake: 'PARKING BRAKE (up = OFF · down = ON)', start_key: 'START KEY',
+    stby_cage: 'Standby horizon CAGE knob', stick_pull: 'Stick', trim_hat: 'Electric trim (stick)', ap_disc: 'AP DISC / TRIM INTERRUPT (stick)',
+    pfd: 'PFD', mfd: 'MFD', stby: 'Standby instruments', cb_panel: 'Circuit breakers (right of MFD)', cb_bottom: 'Engine circuit breakers (bottom right)', gear_lights: 'Gear lights'
+  };
+  function ctlName(id) {
+    if (CTL_EN[id]) return CTL_EN[id];
+    if (/^ap_/.test(id)) return 'AFCS ' + id.slice(3).replace('_', ' ').toUpperCase() + ' key';
+    if (/^pfd_sk(\d)/.test(id)) return 'PFD softkey ' + id.slice(6);
+    if (/^mfd_sk(\d)/.test(id)) return 'MFD softkey ' + id.slice(6);
+    if (/^(mfd|pfd)_/.test(id)) return id.slice(0, 3).toUpperCase() + ' ' + id.slice(4).toUpperCase() + ' key';
+    var d = ck().defs[id]; if (!d) return id;
+    return (d.label || d.short || id).replace(/\s*\(.*\)\s*$/, '').replace(/—.*$/, '').trim();
+  }
+  FF.ctlName = ctlName;
+  var KNOB = { 'L+': 'outer knob clockwise', 'L-': 'outer knob anticlockwise', 'S+': 'inner knob clockwise', 'S-': 'inner knob anticlockwise', push: 'push' };
+  function fmtVal(v) { return typeof v === 'number' ? v + ' %' : String(v); }
+  /* A cockpit gesture, described in English (shown in « IN THE COCKPIT ») */
+  function gesture(o) {
+    if (o.set) return ctlName(o.set) + ' → ' + fmtVal(o.to);
+    if (o.press) return 'Press ' + ctlName(o.press);
+    if (o.hold || o.holdUntil) return 'Press and hold ' + ctlName(o.hold || o.holdUntil);
+    if (o.guard) return ctlName(o.guard) + ': ' + (o.open ? 'open the guard' : 'close the guard');
+    if (o.knobTo) return o.knobTo === 'alt' ? 'ALT SEL knob → ' + o.value + ' ft (preselected altitude)' : (o.knobTo.toUpperCase() + ' → ' + o.value);
+    if (o.knob) return ctlName(o.knob) + ': ' + (KNOB[o.act] || o.act) + (o.n > 1 ? ' × ' + o.n : '');
+    if (o.mfdPage) return 'MFD: ' + (o.mfdPage === 'engine' ? 'ENGINE softkey (EIS page)' : o.mfdPage.toUpperCase() + ' page');
+    if (o.fms === 'gauge') return 'MFD Fuel: DEC / INC / RST FUEL until the calculator = gauged quantity';
+    if (o.fms) return 'FMS: ' + o.fms;
+    return null;
+  }
+  var FLIGHTCOND = /^(ias|gIas|alt|hundred|atMinima|posClimb|gPos|touchdown|vacated|airborne|atVr|rollStarted|speedAlive|aboveTosa|turning|altHold|altCapture|cap)/i;
+  function cleanOps(ops) {
+    return (ops || []).filter(function (o) { return !o.script && !(o.waitFor && FLIGHTCOND.test(o.waitFor)); });
+  }
+
+  /* ------------------------------------------------ The flight, built from the detailed flow ------------------------------------------------ */
+  function enResp(r) { return String(r || '').replace(/\(PAR CŒUR\)/g, '(BY HEART)').replace(/ANNONCE/g, 'CALL OUT').replace(/, PUIS /g, ', THEN '); }
+  function build() {
+    var D = TF.DATA.flow3dFlight, blocks = TF.DATA.essFlow, E = EN(), steps = [], phases = [];
+    D.order.forEach(function (bid) {
+      var b = blocks.filter(function (x) { return x.id === bid; })[0]; if (!b || b.walk) return;
+      var be = E.blocks[bid] || [b.title, b.sub], ph = { id: bid, title: be[0], sub: be[1], first: steps.length, n: b.chips.length, state: b.state, block: b, scene: D.scenes[bid] };
+      phases.push(ph);
+      b.chips.forEach(function (c, i) {
+        steps.push({ ph: phases.length - 1, bid: bid, ci: i, c: c, item: c.a, resp: enResp(c.r), call: c.call || null,
+          lines: c.lines || null, vals: (c.vals || []).map(function (v) { return E.vals[v] || v; }), note: c.note ? (E.notes[c.note] || c.note) : null,
+          ref: (b.ref && b.ref.doc === 'OMB' ? 'OM-B ' : (b.ref ? b.ref.doc + ' ' : '')) + (c.om ? 'item ' + c.om + ' — ' : '') + (b.ref ? b.ref.sec + ' p.' + b.ref.page : '') });
+      });
+    });
+    // one global schematic track (all blocks one after the other) for the 3D view
+    var track = [], marks = {};
+    phases.forEach(function (ph) {
+      (ph.scene ? ph.scene.pts : [[0.22, 0.38, 0, 0, 0, 7]]).forEach(function (q) {
+        var p = { x: q[0], y: q[1], z: q[2], ias: q[3], mark: ph.id + ':' + q[4] };
+        if (q[5] != null) p.hd = (276 - q[5]) * D2R;
+        track.push(p);
+      });
+    });
+    return { steps: steps, phases: phases, flow: { id: 'flight', kind: 'air', ifr: true, duration: 600, runway: D.runway, beacon: D.beacon, apron: D.apron, taxiways: D.taxiways, track: track } };
+  }
+  FF.build = build;
+
+  /* time on the global track for step k : interpolation between the scene points of its block */
+  function stepT(k) {
+    var st = R.steps[k], ph = R.phases[st.ph], pts = ph.scene ? ph.scene.pts : null, M = R.TK.marks;
+    if (!pts) return 0;
+    var a = null, b = null;
+    for (var i = 0; i < pts.length; i++) { if (pts[i][4] <= st.ci) a = pts[i]; if (pts[i][4] >= st.ci && !b) b = pts[i]; }
+    a = a || pts[0]; b = b || pts[pts.length - 1];
+    var ta = M[ph.id + ':' + a[4]], tb = M[ph.id + ':' + b[4]];
+    if (ta == null) ta = tb; if (tb == null) tb = ta;
+    return a[4] === b[4] ? ta : ta + (tb - ta) * (st.ci - a[4]) / (b[4] - a[4]);
+  }
+
+  /* ------------------------------------------------ Key values: what matters for this step ------------------------------------------------ */
+  function num(s) { return +String(s).replace(/[ ,]/g, ''); }
+  function targets(st) {
+    // the item / response first (what to do), then the values to check
+    var main = [st.item, st.resp].concat(st.lines ? st.lines.map(function (l) { return l.join(' '); }) : []).join(' · '), txt = main + ' · ' + st.vals.join(' · '), T = {}, m;
+    function cmp(ctx) { return /BELOW|<|≤|UP TO|MAX\b|maxi|V[A-Z]{1,3}\s*$/i.test(ctx) ? '<=' : /MIN\b|>|ABOVE|≥|mini/i.test(ctx) ? '>=' : '~'; }
+    function lab(op, v, u) { return (op === '<=' ? '≤ ' : op === '>=' ? '≥ ' : '≈ ') + v + ' ' + u; }
+    function find(re, minV, src) { var r, g = new RegExp(re.source, 'gi'); while ((r = g.exec(src))) { var v = num(r[2]); if (v >= minV && !/difference|standby|imbalance|bar\b/i.test(r[1])) { var aft = src.substr(g.lastIndex, 14), op = cmp(r[1]); if (op === '~' && /^\s*(A[AG]L\s*)?(min|mini)\b/i.test(aft)) op = '>='; return { v: v, op: op, raw: r[2].trim(), aal: /A[AG]L/i.test((r[3] || '') + aft.slice(0, 5)) }; } } return null; }
+    var rng = /(\d[\d,]*)\s+TO\s+(\d[\d,]*)/i.exec(main);
+    if ((m = /(\d[\d ,]*)\s*±\s*(\d+)\s*RPM/i.exec(txt))) T.rpm = { v: num(m[1]), tol: +m[2], op: '±', txt: m[1].trim() + ' ± ' + m[2] + ' RPM' };
+    else if (rng && /RPM/i.test(st.item)) T.rpm = { lo: num(rng[1]), hi: num(rng[2]), op: 'in', txt: rng[1] + ' – ' + rng[2] + ' RPM' };
+    else { var r1 = find(/([A-Za-z<>≤≥ .]{0,14})(\d[\d ,]{2,})\s*RPM()/, 300, txt); if (r1) T.rpm = { v: r1.v, op: r1.op, txt: lab(r1.op, r1.raw, 'RPM') }; else if (/RPM/i.test(txt)) T.rpm = { focus: true }; }
+    if (rng && /load|power/i.test(st.item)) T.load = { lo: num(rng[1]), hi: num(rng[2]), op: 'in', txt: rng[1] + ' – ' + rng[2] + ' %' };
+    var r2 = find(/([A-Za-z<>≤≥ ]{0,14})(\d{2,3})\s*(?:KIAS|kt)\b()/, 40, main) || find(/([A-Za-z<>≤≥ ]{0,14})(\d{2,3})\s*(?:KIAS|kt)\b()/, 40, txt);
+    if (r2) T.ias = { v: r2.v, op: r2.op, txt: lab(r2.op, r2.raw, 'kt') }; else if (/airspeed|speed|sixty|\bVR\b|IAS/i.test(txt)) T.ias = { focus: true };
+    var preset = /preselect|alti(tude)? bug|missed app(roach)? altitude/i.test(st.item);
+    var r3 = find(/([A-Za-z<>≤≥ ]{0,14})(\d[\d ,]{2,})\s*(?:ft|feet)\b(\s*AAL)?/, 300, main) || find(/([A-Za-z<>≤≥ ]{0,14})(\d[\d ,]{2,})\s*(?:ft|feet)\b(\s*AAL)?/, 300, txt);
+    if (/hundred above/i.test(st.item)) T.alt = { minima: 100, focus: true };
+    else if (/continue|go-around|decision/i.test(st.item + st.resp) && /minim|decision/i.test(txt)) T.alt = { minima: 0, focus: true };
+    else if (r3 && !/per minute/i.test(txt)) T[preset ? 'sel' : 'alt'] = { v: r3.v, op: r3.op, aal: r3.aal, txt: lab(r3.op, r3.raw, r3.aal ? 'ft AAL' : 'ft') };
+    else if (/altitude|altimeter|TOSA|minima|\bALT\b/i.test(txt)) T.alt = { focus: true };
+    if (!T.load && /power|load|lever/i.test(main)) { var r4 = find(/([A-Za-z<>≤≥ ]{0,14})(\d{1,3})\s*%()/, 5, main); if (r4) T.load = { v: r4.v, op: r4.op, txt: lab(r4.op, r4.raw, '%') }; else if (/MAX\b/.test(st.resp)) T.load = { v: 97, op: '>=', txt: 'MAX (≥ 97 %)' }; else if (/IDLE/.test(st.resp)) T.load = { focus: true }; }
+    if (/vertical speed|\bVS\b|feet per minute/i.test(txt)) T.vs = { focus: true };
+    return T;
+  }
+  FF.targets = targets;
+  function met(t, v) {
+    if (t && t.op === 'in' && v != null) return v >= t.lo && v <= t.hi;
+    if (!t || t.v == null || v == null) return null;
+    if (t.op === '±') return Math.abs(v - t.v) <= t.tol;
+    if (t.op === '<=') return v <= t.v; if (t.op === '>=') return v >= t.v;
+    return Math.abs(v - t.v) <= Math.max(3, t.v * 0.04);
+  }
+
+  /* ------------------------------------------------ Cockpit synchronisation ------------------------------------------------ */
+  function freeze(on) {
+    var c = ck();
+    if (on) { if (!R.prevRate) R.prevRate = c.flightRate; c.flightRate = function () { return 0; }; }
+    else if (R && R.prevRate) { c.flightRate = R.prevRate; R.prevRate = null; }
+  }
+  function setUi(c) {
+    var s = ck().s, keep = s.ui || {}, u = { starterChecked: keep.starterChecked, glowOffSeen: keep.glowOffSeen, starterCheckedR: keep.starterCheckedR };
+    if (c && c.ui) for (var k in c.ui) u[k] = c.ui[k];
+    if (u.starterSlot === 'R') u.starterChecked = u.starterCheckedR;
+    s.ui = u;
+  }
+  function applyFlight(k) {
+    var ph = R.phases[R.steps[k].ph]; if (!ph.scene) return;
+    var s = TF.Flow3DView.sample(R.TK, stepT(k)), f = ck().s.flight;
+    var air = !s.onGround || s.ias > 30;
+    if (!air && /^(arr|ret|avs|start|post|ap|run|park|taxi)$/.test(ph.id)) return; // on the ground: the cockpit state of the block is kept
+    f.script = null; f.fdm = false; f.onGround = s.onGround; f.ias = Math.round(s.ias); f.alt = Math.round(FE + s.z); f.vs = s.onGround ? 0 : s.vs;
+    f.hdg = Math.round((276 - s.h / D2R + 720) % 360); f.pitch = s.pitch; f.bank = s.bank;
+  }
+  function chipDone(st) { var f = TF.Ess.realDone(st.c); return f ? !!f(ck().s) : null; }
+  function runChip(st, cb) {
+    var c = ck(), PE = TF.ProcEngine, ops = TF.Ess.f3.ops(st.c), fn = TF.Ess.f3.fn(st.c);
+    try {
+      if (ops) { new PE.Runner(c, null, PE.Runner.instantClock(c)).run(cleanOps(ops), function () { if (cb) cb(); }); return; }
+      if (fn) { var called = false, done = function () { if (!called) { called = true; if (cb) cb(); } }; fn(c, true, done); if (fn.length < 3) done(); return; }
+    } catch (e) { if (root.console) console.warn('flow3d flight', e); }
+    if (cb) cb();
+  }
+  /* cockpit as the flow expects at the START of step k (block state + the earlier steps of the block done) */
+  var snapCache = {};
+  function stateAt(k) {
+    var a = app(), sc = a.scenario(), st = R.steps[k], ph = R.phases[st.ph];
+    var key = ph.id;
+    if (!snapCache[key]) snapCache[key] = ph.state ? TF.ProcEngine.buildInitial(ph.state, sc) : null;
+    a.ck.reset(sc); if (snapCache[key]) a.ck.restore(snapCache[key]);
+    if (ph.block.stbyFree) a.ck.setControl('stby_cage', 'NORMAL');
+    if (a.ck.s.sys.mfdStage === 'normal') a.ck.s.sys.mfdPage = ph.block.mfdPage || 'map';
+    for (var i = ph.first; i < k; i++) runChip(R.steps[i]);
+  }
+
+  /* ------------------------------------------------ Player ------------------------------------------------ */
+  FF.open = function (k) {
+    TF.Flow3D.close(true);
+    if (TF.Ess) { if (TF.Ess.active && TF.Ess.active()) TF.Ess.stop(true); if (TF.Ess.visible()) TF.Ess.close(); }
+    if (TF.Home) TF.Home.hide(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); } if (TF.Mep) TF.Mep.abort();
+    app().modes.idle(); K.closeSheet();
+    var B = build(); gen++;
+    var saved = 0; try { saved = +(root.localStorage.getItem('tiffanir.f3flight.k') || 0); } catch (e) { }
+    R = { steps: B.steps, phases: B.phases, flow: B.flow, k: 0, g: gen, voice: V.enabled(), auto: false, details: false, view: 'auto', big: false, shown: {} };
+    var e = K.$('f3d'); e.className = 'f3-fly'; e.style.cssText = ''; e.innerHTML = K.plain(layout());
+    view = new TF.Flow3DView(K.$('f3fcv')); R.TK = view.setFlow(B.flow);
+    R.t = 0; R.tTarget = 0;
+    ['f3wCard', 'f3w3d', 'f3wVals'].forEach(function (id) { var w = K.$(id); K.draggable(w, w.querySelector('.f3wh'), id); w.addEventListener('mousedown', function () { K.toFront(w); }); w.addEventListener('touchstart', function () { K.toFront(w); }); });
+    K.toFront(K.$('f3wCard'));
+    bindWin();
+    freeze(true);
+    go(k != null ? k : Math.min(saved, R.steps.length - 1), true);
+    if (poll) clearInterval(poll); poll = setInterval(pollFn, 300);
+    loop();
+  };
+  FF.active = function () { return !!R; };
+  FF.state = function () { return R; };
+  FF.stop = function () {
+    if (!R) return; gen++; freeze(false); V.stop(); app().view.clearHighlight(); if (ck().s.ui) ck().s.ui = null;
+    if (poll) { clearInterval(poll); poll = 0; } if (raf) { (root.cancelAnimationFrame || clearTimeout)(raf); raf = 0; }
+    R = null;
+  };
+
+  function layout() {
+    return '<div class="f3w f3wCard" id="f3wCard"><div class="f3wh"><span class="f3grip">⠿</span><b>✈ FULL FLIGHT</b><span class="f3-sp"></span>' +
+      '<button class="btn sm" data-act="menu" title="Phases">☰</button><button class="btn sm" data-act="quit" title="Close">✕</button></div><div class="f3wb" id="f3fcard"></div></div>' +
+      '<div class="f3w f3w3d" id="f3w3d"><div class="f3wh"><span class="f3grip">⠿</span><b>3D</b><span class="f3-sp"></span><span class="f3vbtn" id="f3fviews"></span><button class="btn sm" data-act="big" title="Bigger / smaller">⤢</button></div>' +
+      '<div class="f3wc"><canvas id="f3fcv"></canvas></div></div>' +
+      '<div class="f3w f3wVals" id="f3wVals"><div class="f3wh"><span class="f3grip">⠿</span><b>KEY VALUES</b></div><div class="f3wb" id="f3fvals"></div></div>';
+  }
+  function bindWin() {
+    var e = K.$('f3d');
+    K.bindActs(e, {
+      menu: function () { phaseMenu(); },
+      quit: function () { FF.stop(); TF.Flow3D.close(); TF.Flow3D.show(); },
+      big: function () { R.big = !R.big; K.$('f3w3d').classList.toggle('big', R.big); },
+      fview: function (b) { R.view = b.getAttribute('data-v'); views(); },
+      back: function () { go(R.k - 1); }, next: function () { next(); }, show: function () { showMe(); },
+      auto: function () { R.auto = !R.auto; card(); if (R.auto) autoStep(); },
+      voice: function () { R.voice = !R.voice; if (!R.voice) V.stop(); else speak(); card(); },
+      det: function () { R.details = !R.details; card(); },
+      say: function () { speak(); },
+      jump: function (b) { K.closeSheet(); go(+b.getAttribute('data-k'), true); }
+    });
+    views();
+  }
+  function views() {
+    var el = K.$('f3fviews'); if (!el) return;
+    el.innerHTML = [['auto', 'AUTO'], ['profil', 'PROFILE'], ['dessus', 'TOP'], ['iso', '3D'], ['cockpit', 'OUT']].map(function (v) { return '<button class="btn sm' + (R.view === v[0] ? ' on' : '') + '" data-act="fview" data-v="' + v[0] + '">' + v[1] + '</button>'; }).join('');
+  }
+  function phaseMenu() {
+    var h = K.head('Full flight — phases');
+    h += '<div class="f3-phlist">' + R.phases.map(function (p, i) {
+      var cur = R.steps[R.k].ph === i;
+      return '<button class="btn block' + (cur ? ' primary' : '') + '" data-act="jump" data-k="' + p.first + '"><b>' + (i + 1) + '. ' + esc(p.title) + '</b><small> · ' + p.n + ' steps — ' + esc(p.sub) + '</small></button>';
+    }).join('') + '</div>';
+    K.sheet(h, function (s) { var c = s.querySelector('.sh-close'); if (c) c.onclick = K.closeSheet; K.bindActs(s, { jump: function (b) { K.closeSheet(); go(+b.getAttribute('data-k'), true); } }); }, { width: '760px' });
+  }
+
+  /* go to step k (restore = rebuild the cockpit as the flow expects) */
+  function go(k, restore) {
+    if (!R) return; k = Math.max(0, Math.min(k, R.steps.length - 1));
+    var prev = R.k; R.k = k; gen++; R.g = gen; V.stop();
+    if (restore || k < prev || R.steps[k].ph !== R.steps[prev].ph || k > prev + 1) stateAt(k);
+    var st = R.steps[k];
+    setUi(st.c); applyFlight(k);
+    R.tTarget = stepT(k); if (restore) R.t = R.tTarget;
+    try { root.localStorage.setItem('tiffanir.f3flight.k', String(k)); } catch (e) { }
+    app().view.renderAll(); focus(st); card(); speak();
+    var p = TF.Profiles.current(); if (p) { p.flow3d = p.flow3d || {}; var fl = p.flow3d.flight = p.flow3d.flight || { seen: {}, last: 0 }; fl.seen[st.bid] = Math.max(fl.seen[st.bid] || 0, st.ci + 1); fl.last = Date.now(); }
+  }
+  /* NEXT : allowed even if the step is not finished — the cockpit is then set as the flow expects */
+  function next() {
+    if (!R) return;
+    var st = R.steps[R.k], d = chipDone(st);
+    if (R.k >= R.steps.length - 1) { finish(); return; }
+    if (d === false || d === null) runChip(st);
+    var nx = R.steps[R.k + 1];
+    if (nx.ph !== st.ph) { go(R.k + 1, true); return; }
+    go(R.k + 1);
+  }
+  function focus(st) {
+    var v = app().view; v.clearHighlight();
+    var c = st.c; if (!c.ctls || !c.ctls.length) { v.home(true); return; }
+    v.focusOn(c.ctls[0]); var g = R.g;
+    setTimeout(function () { if (!R || R.g !== g) return; c.ctls.forEach(function (t) { v.highlight(t, 'pulse'); }); }, 450);
+  }
+  function speak(done) {
+    if (!R || !R.voice) { if (done) done(); return; }
+    var st = R.steps[R.k], txt = st.c.say || (st.item + '. ' + st.resp + '.');
+    if (st.vals.length) txt += ' ' + st.vals.join('. ') + '.';
+    V.say(txt.replace(/[«»→]/g, ' '), 'en', done);
+  }
+  /* SHOW ME : performs the step in the cockpit, gesture by gesture, at a visible pace */
+  function showMe(cb) {
+    if (!R) return; var st = R.steps[R.k], c = ck(), PE = TF.ProcEngine, g = R.g, v = app().view;
+    var ops = cleanOps(TF.Ess.f3.ops(st.c) || []), fn = TF.Ess.f3.fn(st.c);
+    focus(st);
+    function end() { if (!R || R.g !== g) return; v.renderAll(); card(); if (cb) cb(); }
+    if (!ops.length && !fn) { K.toast(st.c.ctls ? '👁 Look at the highlighted control(s)' : '🎙 Nothing to move: say it / check it', 'info', 1800); setTimeout(end, 900); return; }
+    if (fn) { fn(c, true, function () { }); setTimeout(end, 600); return; }
+    var clock = { advance: function (ms, k) { var t0 = Date.now(), left = ms; (function tick() { if (!R || R.g !== g) return; var n = Math.min(left, 250); c.update(n); left -= n; v.renderDynamic(true); if (left > 0) setTimeout(tick, Math.max(16, n / 2)); else k(); })(); } };
+    var i = 0;
+    (function stepOp() {
+      if (!R || R.g !== g) return;
+      if (i >= ops.length) { end(); return; }
+      var o = ops[i++], tgt = o.set || o.press || o.hold || o.holdUntil || o.knob || o.guard;
+      if (tgt) { v.focusOn(tgt); v.clearHighlight(); v.highlight(tgt, 'pulse'); }
+      setTimeout(function () {
+        if (!R || R.g !== g) return;
+        new PE.Runner(c, null, clock).run([o], function () { v.renderAll(); setTimeout(stepOp, 420); });
+      }, tgt ? 520 : 0);
+    })();
+  }
+  function autoStep() {
+    if (!R || !R.auto) return; var g = R.g;
+    showMe(function () { if (!R || !R.auto || R.g !== g) return; setTimeout(function () { if (!R || !R.auto || R.g !== g) return; if (R.k >= R.steps.length - 1) { R.auto = false; card(); finish(); return; } next(); setTimeout(autoStep, 300); }, R.voice ? 2600 : 1400); });
+  }
+  function finish() {
+    var p = TF.Profiles.current();
+    if (p && p.flow3d && p.flow3d.flight && !p.flow3d.flight.done) { p.flow3d.flight.done = Date.now(); TF.Profiles.addXp(20); }
+    try { TF.Profiles.save(); } catch (e) { }
+    K.toast('✓ End of the flight — engines off, parking C/L. Well done!', 'ok', 3500);
+  }
+
+  /* ------------------------------------------------ Step card ------------------------------------------------ */
+  function card() {
+    var el = K.$('f3fcard'); if (!el || !R) return;
+    var st = R.steps[R.k], ph = R.phases[st.ph], c = st.c, d = chipDone(st), h = '';
+    h += '<div class="f3c-ph"><span class="f3c-n">' + (st.ph + 1) + '</span>' + esc(ph.title) + '<small>step ' + (st.ci + 1) + ' / ' + ph.n + ' · ' + (R.k + 1) + ' / ' + R.steps.length + '</small></div>';
+    h += '<div class="f3c-bar"><i style="width:' + Math.round((R.k + 1) / R.steps.length * 100) + '%"></i></div>';
+    if (st.lines) h += '<div class="f3c-item sm">' + esc(st.item) + '</div><div class="f3c-lines">' + st.lines.map(function (l) { return '<div><span>' + esc(l[0]) + '</span><i></i><b>' + esc(enResp(l[1])) + '</b></div>'; }).join('') + '</div>';
+    else h += '<div class="f3c-item">' + esc(st.item) + '</div><div class="f3c-resp">' + esc(st.resp) + '</div>';
+    if (st.call) h += '<div class="f3c-call">🎙 « ' + esc(st.call) + ' »</div>';
+    // cockpit actions (incl. G1000 selections)
+    var ops = TF.Ess.f3.ops(c), gl = [];
+    cleanOps(ops || []).forEach(function (o) { var g2 = gesture(o); if (g2 && gl.indexOf(g2) < 0) gl.push(g2); });
+    if (!gl.length && c.ctls) gl = c.ctls.map(function (id) { return (/^(pfd|mfd|stby|cb_|gear_lights)/.test(id) ? 'Look: ' : 'Check: ') + ctlName(id); });
+    h += '<div class="f3c-k">IN THE COCKPIT</div>';
+    h += gl.length ? '<ul class="f3c-acts">' + gl.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '<div class="f3c-none">No control to move — say it / check it.</div>';
+    if (st.vals.length) h += '<div class="f3c-k">CHECK</div><ul class="f3c-vals">' + st.vals.map(function (v) { return '<li>' + esc(v) + '</li>'; }).join('') + '</ul>';
+    if (d === true) h += '<div class="f3c-ok">✓ Done in the cockpit</div>';
+    else if (d === false) h += '<div class="f3c-todo">○ Not done yet — do it in the cockpit, SHOW ME, or NEXT</div>';
+    if (R.details) h += '<div class="f3c-det">' + (st.note ? esc(st.note) + '<br>' : '') + '<small>' + esc(st.ref) + '</small></div>';
+    h += '<div class="f3c-btns"><button class="btn" data-act="back"' + (R.k ? '' : ' disabled') + '>◀ BACK</button><button class="btn" data-act="show">▶ SHOW ME</button><button class="btn primary" data-act="next">' + (R.k >= R.steps.length - 1 ? 'FINISH ✓' : 'NEXT ▶') + '</button></div>';
+    h += '<div class="f3c-btns sm"><button class="btn sm' + (R.auto ? ' on' : '') + '" data-act="auto">' + (R.auto ? '❚❚ AUTO' : '▶▶ AUTO') + '</button><button class="btn sm" data-act="voice">' + (R.voice ? '🔊 Voice' : '🔇 Muted') + '</button><button class="btn sm" data-act="say">↺ Repeat</button><button class="btn sm" data-act="det">' + (R.details ? '▴ Details' : 'Details / source') + '</button></div>';
+    el.innerHTML = K.plain(h);
+  }
+
+  /* ------------------------------------------------ Key values window (smart) ------------------------------------------------ */
+  function vals() {
+    var el = K.$('f3fvals'); if (!el || !R) return;
+    var s = ck().s, f = s.flight, I = null; try { I = ck().indications(); } catch (e) { }
+    var st = R.steps[R.k], ph = R.phases[st.ph], T = targets(st), air = !f.onGround;
+    var rpmL = I && I.eng && I.eng.L ? I.eng.L.rpm : null, rpmR = I && I.eng && I.eng.R ? I.eng.R.rpm : null;
+    var ldL = I && I.eng && I.eng.L ? I.eng.L.load : null, ldR = I && I.eng && I.eng.R ? I.eng.R.load : null;
+    var mn = (s.scenario && s.scenario.minima) || 650;
+    if (T.alt && T.alt.minima != null) { T.alt = { v: mn + T.alt.minima, op: '~', txt: (T.alt.minima ? '≈ ' + (mn + 100) + ' ft (minima + 100)' : '≈ ' + mn + ' ft (minima)') }; }
+    var tiles = [
+      { k: 'rpm', l: 'RPM L / R', v: (rpmL == null ? '—' : rpmL) + ' / ' + (rpmR == null ? '—' : rpmR), n: rpmL == null ? null : Math.min(rpmL, rpmR == null ? rpmL : rpmR), n2: rpmR, base: !air ? 3 : 1 },
+      { k: 'ias', l: 'IAS', v: Math.round(f.ias || 0) + ' kt', n: Math.round(f.ias || 0), base: air || f.ias > 5 ? 3 : 1 },
+      { k: 'alt', l: 'ALT', v: Math.round(f.alt || 0) + ' ft', sub: Math.max(0, Math.round((f.alt || 0) - FE)) + ' ft AAL', n: T.alt && T.alt.aal ? Math.round((f.alt || 0) - FE) : Math.round(f.alt || 0), base: air ? 3 : 1 },
+      { k: 'sel', l: 'ALT SEL', v: (s.g.altSel != null ? s.g.altSel : '—') + ' ft', n: s.g.altSel, base: 0 },
+      { k: 'load', l: 'LOAD L / R', v: (ldL == null ? '—' : ldL) + ' / ' + (ldR == null ? '—' : ldR) + ' %', n: ldL, base: 1 },
+      { k: 'vs', l: 'VS', v: (f.vs > 0 ? '+' : '') + Math.round((f.vs || 0) / 10) * 10 + ' fpm', n: f.vs, base: air ? 1 : 0 }
+    ];
+    tiles.forEach(function (t) { t.score = t.base + (T[t.k] ? 5 : 0); });
+    tiles.sort(function (a, b) { return b.score - a.score; });
+    var h = '';
+    tiles.forEach(function (t, i) {
+      if (t.score <= 0) return;
+      var tg = T[t.k], ok = tg ? (t.k === 'rpm' && tg.v != null && t.n2 != null ? (met(tg, t.n) && met(tg, t.n2)) : met(tg, t.n)) : null;
+      h += '<div class="f3v' + (tg ? ' hot' : '') + (i === 0 ? ' first' : '') + '"><small>' + t.l + '</small><b>' + esc(t.v) + '</b>' + (t.sub ? '<em>' + t.sub + '</em>' : '') +
+        (tg && tg.txt ? '<span class="f3v-t ' + (ok === true ? 'ok' : ok === false ? 'ko' : '') + '">' + (ok === true ? '✓ ' : ok === false ? '→ ' : '') + esc(tg.txt) + '</span>' : '') + '</div>';
+    });
+    var c = s.controls, gp = s.sys.gear ? s.sys.gear.pos : (c.gear_lever === 'DOWN' ? 1 : 0);
+    h += '<div class="f3v-cfg"><span>GEAR ' + (gp >= 0.99 ? '<b class="g">●●●</b>' : gp <= 0.01 ? '<b>UP</b>' : '<b class="r">TRANSIT</b>') + '</span><span>FLAPS <b>' + esc(c.flaps) + '</b></span>' +
+      (s.sys.avionics ? '<span>AFCS <b>' + esc((s.sys.apEngaged ? 'AP ' : '') + (s.g.lat || '—') + (s.g.vert ? ' · ' + s.g.vert : '')) + '</b></span>' : '') + '</div>';
+    el.innerHTML = h;
+  }
+  function pollFn() {
+    if (!R) return; vals();
+    var st = R.steps[R.k], d = chipDone(st);
+    if (d !== R.lastDone) { R.lastDone = d; card(); if (d === true) K.sound.ok(); }
+  }
+
+  /* ------------------------------------------------ 3D loop ------------------------------------------------ */
+  function loop() {
+    var g = R && R.g, raf2 = root.requestAnimationFrame || function (f) { return setTimeout(f, 33); };
+    function fr() {
+      if (!R) return;
+      try {
+        var d = R.tTarget - R.t; R.t += Math.abs(d) < 0.02 ? d : d * 0.08;
+        var st = R.steps[R.k], ph = R.phases[st.ph], sc = ph.scene || {};
+        var vw = R.view === 'auto' ? (sc.view || 'iso') : R.view;
+        var I = null; try { I = ck().indications(); } catch (e) { }
+        var c = ck().s.controls, gp = ck().s.sys.gear ? ck().s.sys.gear.pos : 1;
+        view.draw({ t: R.t, view: vw, zoom: 'close', zoomK: sc.zoom || 3, cfg: { gear: gp, flaps: c.flaps, rpm: I && I.eng ? [I.eng.L.rpm || 0, I.eng.R.rpm || 0] : [0, 0], nav: c.position_lights === 'ON', strobe: c.strobe === 'ON', landing: c.landing_light === 'ON' },
+          steps: R.phases.map(function (p) { return { at: p.id + ':' + (p.scene ? p.scene.pts[0][4] : 0), title: p.title, phase: p.id }; }),
+          stepState: function (sp) { return sp.phase === ph.id ? 'cur' : ''; } });
+      } catch (e) { if (root.console) console.error(e); }
+      raf = raf2(fr);
+    }
+    raf = raf2(fr);
+  }
 })(this);
 
 </script>
@@ -15219,7 +16289,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   if (TF.Ifr) TF.Ifr.init();
   if (TF.Mep) TF.Mep.init();
   if (TF.Cloud) { TF.Cloud.init(); var cb = document.getElementById('tbCloud'); if (cb) cb.onclick = function () { TF.Cloud.openPanel(); }; }
-  TF.MiniMap.init(); setInterval(function () { TF.MiniMap.update(); }, 250);
+  // v7.1 : mini-carte (cartouche « vue en vol ») retirée — la vue 3D du Flow 3D la remplace (js/render/minimap.js conservé, non chargé au démarrage)
   TF.Screens.splash(function () { app.onProfile(); app.view.resize(); app.view.home(false); });
   app.modes.render();
   app.modes.setChip();
