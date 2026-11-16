@@ -1001,6 +1001,19 @@ body.immersion #immExit{display:block}
 .pop-grip { text-align: center; color: #6f8aa8; font-size: 13px; line-height: 10px; margin: -6px 0 4px; cursor: move; }
 #obsCard .oc-k, #ifrTry .it-h, #ecuPanel .ecu-h, .f3-stage .f3-card .f3-k { cursor: move; }
 .f3c-item.sm { font-size: 14px; color: #cfe3ff; margin-bottom: 4px; }
+#instructor.off { display: none; }
+.f3m-fl { padding: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
+.f3m-main { text-align: left; padding: 12px 14px 8px; background: none; border: 0; color: #fff; }
+.f3m-main b { display: block; font-size: 17px; letter-spacing: .4px; } .f3m-main small { display: block; color: #e0ecff; margin-top: 2px; }
+.f3m-sub { display: -webkit-flex; display: flex; border-top: 1px solid rgba(255,255,255,.2); }
+.f3m-sub button { -webkit-flex: 1; flex: 1; padding: 8px 6px; background: rgba(0,0,0,.18); border: 0; color: #fff; font-weight: 700; font-size: 13px; }
+.f3m-sub button + button { border-left: 1px solid rgba(255,255,255,.2); }
+.f3-pk-top { margin-bottom: 8px; }
+.f3-pkh { text-align: left; margin: 4px 0 2px; }
+.f3-pks { margin: 0 0 8px 10px; max-height: 46vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.f3-pk { display: -webkit-flex; display: flex; -webkit-align-items: baseline; align-items: baseline; width: 100%; text-align: left; padding: 6px 8px; margin: 2px 0; border-radius: 8px; border: 1px solid #1b2f4c; background: #0d1a2c; color: #e8eef6; font-size: 13px; }
+.f3-pk i { font-style: normal; width: 26px; color: #7f9bbb; -webkit-flex: none; flex: none; } .f3-pk span { -webkit-flex: 1; flex: 1; } .f3-pk b { color: #ffcf6b; font-size: 12px; margin-left: 8px; }
+.f3-pk.on { border-color: #ffcf6b; background: #1f1a0c; }
 
 </style>
 </head>
@@ -1069,7 +1082,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '7.1';
+  TF.VERSION = '7.2';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -8867,6 +8880,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     (function step() {
       var k = U.clamp((Date.now() - t0) / dur, 0, 1), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
       self.vb = { x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e, w: from.w + (to.w - from.w) * e, h: from.h + (to.h - from.h) * e };
+      if (k >= 1) { self._anim = null; self.fitVB(self.vb); } // fin : recadrage à la taille actuelle (la scène a pu changer pendant l'animation)
       self.applyVB();
       if (k < 1) self._anim = requestAnimationFrame(step);
     })();
@@ -11376,10 +11390,12 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     function chip(k) { var t = TAB[k]; return '<button class="sp-chip' + (E.tab === k ? ' on' : '') + '" data-act="tab" data-v="' + k + '" data-sp="1">' + t.i + ' ' + esc(t.t) + '</button>'; }
     // v7.1 : le FLOW 3D (s'entraîner au sol) devient la partie principale de l'application
     var fk = 0; try { fk = +(root.localStorage.getItem('tiffanir.f3flight.k') || 0); } catch (e) { }
-    var h = '<div class="f3-main"><div class="f3m-h"><span class="f3m-i">✈</span><div><b>FLOW 3D — APPRENDRE EN REGARDANT</b><small>Visualise le vol, mémorise les actions, maîtrise ton DA42. Tout en anglais, étape par étape.</small></div></div>' +
-      '<div class="f3m-b"><button class="f3m-go" data-act="f3flight"><b>▶ VOL COMPLET</b><small>' + (fk ? 'Reprendre à l\'étape ' + (fk + 1) : 'De la préparation cabine à la coupure moteurs') + '</small></button>' +
+    var h0 = '<div class="f3-main"><div class="f3m-h"><span class="f3m-i">✈</span><div><b>FLOW 3D — APPRENDRE EN REGARDANT</b><small>Visualise le vol, mémorise les actions, maîtrise ton DA42. Tout en anglais, étape par étape.</small></div></div>' +
+      '<div class="f3m-b"><div class="f3m-go f3m-fl"><button class="f3m-main" data-act="f3flight"><b>▶ VOL COMPLET</b><small>' + (fk ? 'Reprendre à l\'étape ' + (fk + 1) : 'De la préparation cabine à la coupure moteurs') + '</small></button>' +
+      '<span class="f3m-sub"><button data-act="f3start">⏮ Du début</button><button data-act="f3pick">☰ Choisir une étape</button></span></div>' +
       '<button class="f3m-go alt" data-act="flow3d"><b>📐 FLOW CHARTS PDP</b><small>Approche 3D · tour de piste · test ECU — regarder, manipuler, de mémoire</small></button></div></div>';
-    h += '<div class="sp-grid">';
+    E._f3main = h0;
+    var h = '<div class="sp-grid">';
     h += tile('fly', big('trip', 'mh-trip', '🛫 VOL IFR LFBU ⇄ LFBL', 'Roulage, radio AFIS, décollage, montée, ILS à Limoges, retour et atterrissage') + '<div class="sp-row">' + '<button class="sp-chip mh-free" data-act="free">🎮 COCKPIT LIBRE</button></div>');
     h += tile('prep', big('mepmap', 'mh-mep', '✈ MES VOLS MEP', 'Prépare chaque vol, réussis les missions, arrive prêt devant ton instructeur') + '<div class="sp-row">' + chip('brief') + chip('test') + '</div>');
     h += tile('ground', '<div class="sp-row">' + '<button class="sp-chip' + (E.tab === 'flow' ? ' on' : '') + '" data-act="flowfolder">📁 Le flow détaillé</button>' + chip('mem') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
@@ -11401,7 +11417,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       // Class test : page dédiée, sans les espaces de l'accueil
       h += '<div class="ct-top"><button class="btn" data-act="ctback">← Retour</button><b>📝 Class test</b><span></span></div>' + testHtml() + '</div>';
     } else {
-    h += TF.Mep ? TF.Mep.heroHtml(spacesHtml()) : spacesHtml();
+    var tiles = spacesHtml(); h += TF.Mep ? TF.Mep.heroHtml(tiles, E._f3main) : E._f3main + tiles;
     var T = TAB[E.tab] || TAB.flow;
     h += '<div class="ess-sec" id="essSec"><div class="ess-sec-h" style="border-color:' + SP[T.sp].c + '"><span class="ess-sec-k" style="color:' + SP[T.sp].c + '">' + SP[T.sp].i + ' ' + esc(SP[T.sp].t) + '</span><b>' + T.i + ' ' + esc(T.t) + '</b><small>' + esc(T.d) + '</small></div>';
     h += '<div class="ess-tabs">' + TABS.map(function (k) { var t = TAB[k];
@@ -11420,6 +11436,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       trip: function () { E.close(); TF.Trip.show(); },
       flow3d: function () { E.close(); TF.Flow3D.show(); },
       f3flight: function () { E.close(); TF.Flow3D.flight.open(); },
+      f3start: function () { E.close(); TF.Flow3D.flight.open(0); },
+      f3pick: function () { E.close(); TF.Flow3D.flight.pick(); },
       flowfolder: function () { E.flowOpen = true; E.show('flow'); toSection(); },
       flowclose: function () { E.flowOpen = false; E.show('flow'); toSection(); },
       cloud: function () { if (TF.Cloud) TF.Cloud.openPanel(); },
@@ -13499,12 +13517,12 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   TF.bus.on('cloud:synced', function () { var s = K.$('mepSync'); if (s && TF.Cloud) s.textContent = TF.Cloud.label(); });
 
   /* ---------------- Écrans ---------------- */
-  MP.heroHtml = function (extra) {
+  MP.heroHtml = function (extra, top) {
     var p = TF.Profiles.current(); if (!p) return '';
     var L = TF.Profiles.level(p), nx = MP.nextMission(), nm = nx ? mis(nx.mid) : null, tot = MP.totalMastery();
     var h = '<div class="mep-hero"><div class="mh-card">' + (TF.Avatars ? '<span class="mh-av">' + TF.Avatars.svg(p.id, 64) + '</span>' : '') +
       '<div class="mh-st"><div class="mh-hello">Bonjour <b>' + esc(p.name) + '</b> 👋</div><div class="mh-meta"><span class="mh-pill">' + (p.xp || 0) + ' XP</span><span class="mh-pill">' + esc(L.name) + '</span><span class="mh-pill">MEP ' + tot + ' %</span><button class="lnk" data-act="cloud">' + (TF.Cloud ? esc(TF.Cloud.label()) : '') + '</button></div>' +
-      '<div class="gauge mh-g"><i style="width:' + tot + '%"></i></div></div></div>';
+      '<div class="gauge mh-g"><i style="width:' + tot + '%"></i></div></div></div>' + (top || '');
     h += '<button class="mh-go" data-act="mepresume"><span class="mh-go-i">▶</span><span><b>REPRENDRE MON ENTRAÎNEMENT</b><small>' + (nm ? 'Prochaine mission : ' + esc(ses(nx.sid).n) + ' — ' + esc(nm.title) : 'Toutes les missions sont faites : rejoue tes erreurs ou passe l\'examen') + '</small></span></button>';
     return h + (extra || '') + '</div>';
   };
@@ -15435,7 +15453,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 
   function layout() {
     return '<div class="f3w f3wCard" id="f3wCard"><div class="f3wh"><span class="f3grip">⠿</span><b>✈ FULL FLIGHT</b><span class="f3-sp"></span>' +
-      '<button class="btn sm" data-act="menu" title="Phases">☰</button><button class="btn sm" data-act="quit" title="Close">✕</button></div><div class="f3wb" id="f3fcard"></div></div>' +
+      '<button class="btn sm" data-act="start0" title="Start from the beginning">⏮</button><button class="btn sm" data-act="menu" title="Choose a step">☰ Steps</button><button class="btn sm" data-act="quit" title="Close">✕</button></div><div class="f3wb" id="f3fcard"></div></div>' +
       '<div class="f3w f3w3d" id="f3w3d"><div class="f3wh"><span class="f3grip">⠿</span><b>3D</b><span class="f3-sp"></span><span class="f3vbtn" id="f3fviews"></span><button class="btn sm" data-act="big" title="Bigger / smaller">⤢</button></div>' +
       '<div class="f3wc"><canvas id="f3fcv"></canvas></div></div>' +
       '<div class="f3w f3wVals" id="f3wVals"><div class="f3wh"><span class="f3grip">⠿</span><b>KEY VALUES</b></div><div class="f3wb" id="f3fvals"></div></div>';
@@ -15444,6 +15462,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var e = K.$('f3d');
     K.bindActs(e, {
       menu: function () { phaseMenu(); },
+      start0: function () { go(0, true); },
       quit: function () { FF.stop(); TF.Flow3D.close(); TF.Flow3D.show(); },
       big: function () { R.big = !R.big; K.$('f3w3d').classList.toggle('big', R.big); },
       fview: function (b) { R.view = b.getAttribute('data-v'); views(); },
@@ -15460,15 +15479,30 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var el = K.$('f3fviews'); if (!el) return;
     el.innerHTML = [['auto', 'AUTO'], ['profil', 'PROFILE'], ['dessus', 'TOP'], ['iso', '3D'], ['cockpit', 'OUT']].map(function (v) { return '<button class="btn sm' + (R.view === v[0] ? ' on' : '') + '" data-act="fview" data-v="' + v[0] + '">' + v[1] + '</button>'; }).join('');
   }
-  function phaseMenu() {
-    var h = K.head('Full flight — phases');
+  /* choisir l'étape : phases dépliables, chaque étape cliquable ; « du début » en tête */
+  function phaseMenu(openPh) {
+    var cur = R.steps[R.k].ph, op = openPh == null ? cur : openPh;
+    var h = K.head('Full flight — choose a step');
+    h += '<div class="f3-pk-top"><button class="btn primary" data-act="jump" data-k="0">⏮ Start from the beginning (cabin preparation)</button></div>';
     h += '<div class="f3-phlist">' + R.phases.map(function (p, i) {
-      var cur = R.steps[R.k].ph === i;
-      return '<button class="btn block' + (cur ? ' primary' : '') + '" data-act="jump" data-k="' + p.first + '"><b>' + (i + 1) + '. ' + esc(p.title) + '</b><small> · ' + p.n + ' steps — ' + esc(p.sub) + '</small></button>';
+      var open = i === op, sh = '<button class="btn block f3-pkh' + (i === cur ? ' primary' : '') + '" data-act="phx" data-i="' + i + '"><b>' + (open ? '▾ ' : '▸ ') + (i + 1) + '. ' + esc(p.title) + '</b><small> · ' + p.n + ' steps</small></button>';
+      if (open) {
+        sh += '<div class="f3-pks">';
+        for (var k = p.first; k < p.first + p.n; k++) {
+          var st = R.steps[k];
+          sh += '<button class="f3-pk' + (k === R.k ? ' on' : '') + '" data-act="jump" data-k="' + k + '"><i>' + (st.ci + 1) + '</i><span>' + esc(st.item) + '</span><b>' + esc(st.resp) + '</b></button>';
+        }
+        sh += '</div>';
+      }
+      return sh;
     }).join('') + '</div>';
-    K.sheet(h, function (s) { var c = s.querySelector('.sh-close'); if (c) c.onclick = K.closeSheet; K.bindActs(s, { jump: function (b) { K.closeSheet(); go(+b.getAttribute('data-k'), true); } }); }, { width: '760px' });
+    K.sheet(h, function (s) {
+      var c = s.querySelector('.sh-close'); if (c) c.onclick = K.closeSheet;
+      K.bindActs(s, { jump: function (b) { K.closeSheet(); go(+b.getAttribute('data-k'), true); }, phx: function (b) { var i = +b.getAttribute('data-i'); phaseMenu(i === op ? -1 : i); } });
+      var on = s.querySelector('.f3-pk.on'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'center' });
+    }, { width: '820px' });
   }
-
+  FF.pick = function () { if (!R) FF.open(); phaseMenu(); };
   /* go to step k (restore = rebuild the cockpit as the flow expects) */
   function go(k, restore) {
     if (!R) return; k = Math.max(0, Math.min(k, R.steps.length - 1));
@@ -16289,6 +16323,17 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   if (TF.Ifr) TF.Ifr.init();
   if (TF.Mep) TF.Mep.init();
   if (TF.Cloud) { TF.Cloud.init(); var cb = document.getElementById('tbCloud'); if (cb) cb.onclick = function () { TF.Cloud.openPanel(); }; }
+  // v7.2 : le bandeau de droite n'apparaît que lorsqu'il a un contenu utile (procédure, flow, mission, vol) — jamais au repos
+  (function () {
+    var ins = K.$('instructor'), body = K.$('instrBody'); if (!ins || !body) return;
+    function upd() {
+      var off = !!body.querySelector('.idle-panel') || !body.innerHTML.replace(/\s/g, '');
+      if (off === ins.classList.contains('off')) return;
+      ins.classList.toggle('off', off); try { app.view.resize(); } catch (e) { } setTimeout(function () { app.view.resize(); }, 30);
+    }
+    if (root.MutationObserver) new root.MutationObserver(upd).observe(body, { childList: true }); else setInterval(upd, 500);
+    upd();
+  })();
   // v7.1 : mini-carte (cartouche « vue en vol ») retirée — la vue 3D du Flow 3D la remplace (js/render/minimap.js conservé, non chargé au démarrage)
   TF.Screens.splash(function () { app.onProfile(); app.view.resize(); app.view.home(false); });
   app.modes.render();
