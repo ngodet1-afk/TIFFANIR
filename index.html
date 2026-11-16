@@ -838,6 +838,106 @@ body.immersion #immExit{display:block}
 #popover.dock .pop-pos { padding-top: 7px; padding-bottom: 7px; }
 #popover.dock .ref { font-size: 10px; }
 
+/* ======================= FLOW 3D (v7.0) ======================= */
+#f3d.hidden { display: none; }
+#f3d { color: #e8eef6; }
+#f3d.f3-full { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 14; background: radial-gradient(ellipse at 70% 0%, #10294a, #060b14 75%); display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
+#f3d.f3-pip { position: absolute; left: 10px; top: 10px; width: 360px; max-width: 46%; z-index: 14; background: rgba(8, 14, 24, .96); border: 1px solid #2a4a78; border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,.55); display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; max-height: calc(100% - 20px); }
+.f3-menu { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 18px 30px; height: 100%; box-sizing: border-box; }
+.f3-top { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 10px; }
+.f3-top b { font-size: 22px; letter-spacing: .5px; display: block; }
+.f3-top small { color: #9fc3e6; font-size: 14px; }
+.f3-rule { font-size: 12px; font-weight: 800; letter-spacing: .6px; color: #bff6fb; background: rgba(63,224,232,.08); border: 1px solid rgba(63,224,232,.35); border-radius: 10px; padding: 8px 12px; margin-bottom: 14px; }
+.f3-rule i { color: #3fe0e8; font-style: normal; margin: 0 4px; }
+.f3-cards { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -6px; }
+.f3-card { box-sizing: border-box; }
+.f3-cards .f3-card { -webkit-flex: 1 1 300px; flex: 1 1 300px; margin: 6px; background: linear-gradient(180deg, #11223a, #0b1628); border: 1px solid #23406a; border-radius: 16px; padding: 12px 14px; }
+.f3-ch { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 8px; }
+.f3-ch b { display: block; font-size: 16px; } .f3-ch small { color: #8fb0d0; }
+.f3-ico { font-size: 28px; width: 46px; height: 46px; line-height: 46px; text-align: center; border-radius: 12px; background: #17345a; margin-right: 10px; -webkit-flex: none; flex: none; }
+.f3-prog span { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 10px; background: #0d1a2c; border: 1px solid #22385a; color: #8fa6c0; margin: 0 4px 4px 0; }
+.f3-prog span.on { color: #c9ffe0; border-color: #2f8f5b; background: #0f2a1d; }
+.f3-errs { font-size: 12px; color: #ffcf6b; margin: 4px 0; }
+.f3-acts { margin-top: 8px; } .f3-acts .btn, .f3-btns .btn { margin: 3px 6px 3px 0; }
+.f3-foot, .f3-note { font-size: 12px; color: #8fa6c0; margin: 10px 0; line-height: 1.4; }
+.f3-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 6px 10px; background: rgba(5, 10, 18, .7); border-bottom: 1px solid #1e3352; -webkit-flex: none; flex: none; }
+.f3-ttl { font-weight: 900; letter-spacing: .4px; margin-right: 10px; } .f3-mode { font-size: 12px; color: #9fc3e6; }
+.f3-sp { -webkit-flex: 1; flex: 1; }
+.btn.sm { padding: 3px 9px; font-size: 12px; min-height: 0; margin-left: 4px; }
+.f3-wps { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-flex-wrap: wrap; flex-wrap: wrap; padding: 6px 10px; -webkit-flex: none; flex: none; }
+.f3-wp { background: #0e1b2e; border: 1px solid #2a4570; color: #b8cbe0; border-radius: 16px; padding: 4px 10px 4px 4px; font-size: 11px; font-weight: 800; letter-spacing: .4px; }
+.f3-wp i { display: inline-block; width: 18px; height: 18px; line-height: 18px; border-radius: 9px; background: #7f5dd6; color: #fff; font-style: normal; text-align: center; margin-right: 5px; }
+.f3-wp.on { background: #2a1f52; border-color: #9b7dff; color: #fff; } .f3-wp.rv { border-color: #ffcf6b; }
+.f3-wp[disabled] { opacity: .65; }
+.f3-arr { color: #4b6a90; margin: 0 4px; }
+.f3-stage { position: relative; -webkit-flex: 1; flex: 1; min-height: 160px; }
+.f3-pip .f3-stage { -webkit-flex: none; flex: none; min-height: 0; overflow-y: auto; }
+.f3-pip #f3cv { position: relative; height: 150px; }
+#f3d.f3-pip.r { left: auto; right: 10px; }
+.f3-pip .f3-t { font-size: 17px; } .f3-pip .f3-a, .f3-pip .f3-c { font-size: 13px; } .f3-pip .f3-btns .btn { padding: 5px 8px; font-size: 12px; }
+.f3-pip .f3-wps, .f3-pip .f3-mode { display: none; }
+#f3cv { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+.f3-hud { position: absolute; right: 10px; bottom: 10px; background: rgba(5, 10, 18, .78); border: 1px solid #23406a; border-radius: 12px; padding: 6px 8px; font-size: 12px; max-width: 46%; pointer-events: none; }
+.f3-hud span { display: inline-block; margin: 0 8px 2px 0; } .f3-hud small { color: #7f9bbb; margin-right: 3px; font-size: 10px; }
+.f3-hud b.g3 { color: #3ddc84; } .f3-hud b.gt { color: #ff6b6b; } .f3-hud em { display: block; font-size: 10px; color: #6f8aa8; }
+.f3-pip .f3-hud { display: none; }
+.f3-stage .f3-card { position: absolute; left: 10px; top: 10px; width: 400px; max-width: calc(100% - 20px); background: rgba(6, 12, 22, .9); border: 1px solid #2f5585; border-left: 4px solid #ffcf6b; border-radius: 14px; padding: 10px 12px; box-shadow: 0 10px 26px rgba(0,0,0,.5); max-height: calc(100% - 20px); overflow-y: auto; }
+.f3-stage .f3-card.dim { border-left-color: #3fe0e8; opacity: .92; }
+.f3-stage .f3-card.hidden { display: none; }
+.f3-pip .f3-stage .f3-card { position: relative; left: auto; top: auto; width: auto; max-width: none; margin: 0; border-radius: 0; border-left-width: 4px; max-height: none; }
+.f3-pip .f3-stage { overflow: visible; }
+.f3-pip #f3card { position: relative; }
+.f3-k { font-size: 11px; font-weight: 800; letter-spacing: .8px; color: #c9b8ff; }
+.f3-k i { display: inline-block; width: 17px; height: 17px; line-height: 17px; border-radius: 9px; background: #7f5dd6; color: #fff; text-align: center; font-style: normal; }
+.f3-t { font-size: 20px; font-weight: 900; margin: 3px 0 6px; color: #fff; }
+.f3-s, .f3-trg { font-size: 12px; color: #9fc3e6; margin-bottom: 4px; }
+.f3-a, .f3-c { font-size: 15px; margin: 3px 0; } .f3-a span { color: #ffcf6b; font-weight: 900; } .f3-c span { color: #3fe0e8; font-weight: 900; }
+.f3-a em, .f3-c em { color: #7f9bbb; }
+.f3-call { margin: 6px 0; padding: 5px 9px; border-radius: 10px; background: rgba(127,93,214,.18); border: 1px solid #7f5dd6; font-weight: 800; }
+.f3-call small { display: block; font-weight: 400; color: #c9b8ff; font-size: 11px; }
+.f3-ok { color: #3ddc84; font-weight: 800; margin: 4px 0; }
+.f3-why { margin-top: 6px; font-size: 13px; line-height: 1.45; color: #dfe8f2; border-top: 1px solid #23406a; padding-top: 6px; }
+.f3-ref { font-size: 11px; color: #9fb5cf; margin-top: 5px; }
+.f3-src { display: inline-block; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 6px; background: #1f3352; color: #cfe3ff; }
+.f3-src.f3-PDP { background: #12406a; } .f3-src.f3-DOC { background: #1f5a3a; } .f3-src.f3-PEDA { background: #5a4a12; } .f3-src.f3-VAL { background: #6a1f2a; }
+.f3-val { font-size: 10px; color: #ffcf6b; } .f3-lock { font-size: 10px; color: #ffcf6b; }
+.f3-bar { -webkit-flex: none; flex: none; display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; -webkit-align-items: center; align-items: center; padding: 6px 8px; background: rgba(5, 10, 18, .85); border-top: 1px solid #1e3352; }
+.f3-grp { margin: 2px 10px 2px 0; } .f3-grp .btn { margin: 2px 3px 2px 0; padding: 6px 9px; font-size: 12px; }
+.f3-grp.seg .btn.on { background: #1d4f86; border-color: #3fa0ff; color: #fff; }
+.btn.warn { border-color: #ff9f43; color: #ffd9b0; }
+.f3-pip .f3-bar .seg { display: none; }
+.f3-deb { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: rgba(4, 8, 14, .82); overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 3; }
+.f3-debin { max-width: 860px; margin: 16px auto; background: #0c1728; border: 1px solid #2a4a78; border-radius: 16px; padding: 14px 18px; }
+.f3-dt { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+.f3-score { font-size: 15px; padding: 10px 12px; border-radius: 12px; background: #13213a; border: 1px solid #3f5f8f; margin: 8px 0; }
+.f3-score small { display: block; color: #9fb5cf; margin-top: 3px; }
+.f3-xp { color: #ffcf6b; font-weight: 900; }
+.f3-warn { color: #ffcf6b; }
+.f3-tw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.f3-tab { border-collapse: collapse; width: 100%; font-size: 12px; margin: 8px 0; }
+.f3-tab th, .f3-tab td { border-bottom: 1px solid #22385a; padding: 6px; text-align: left; vertical-align: top; }
+.f3-tab th { color: #9fc3e6; font-size: 11px; letter-spacing: .4px; }
+.f3-tab tr.ko td { background: rgba(255,80,80,.08); } .f3-tab tr.warn td { background: rgba(255,207,107,.08); }
+.f3-self { font-size: 12px; color: #cfe3ff; } .f3-self input { margin-right: 4px; }
+.f3-cl { margin: 12px 0; padding: 10px 12px; border-radius: 12px; background: #f4f1e6; color: #1b1b1b; }
+.f3-clh { font-weight: 900; margin-bottom: 6px; } .f3-clh small { font-weight: 400; color: #555; }
+.f3-cli { display: -webkit-flex; display: flex; -webkit-align-items: baseline; align-items: baseline; font-family: Menlo, Consolas, monospace; font-size: 13px; }
+.f3-cli i { -webkit-flex: 1; flex: 1; border-bottom: 2px dotted #888; margin: 0 6px; }
+.f3-cl .f3-note { color: #555; }
+.f3-ed { max-height: 56vh; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 8px 0; }
+.f3-er { border: 1px solid #23406a; border-radius: 12px; padding: 8px 10px; margin-bottom: 8px; background: #0c1728; }
+.f3-er.hid { opacity: .5; }
+.f3-erh { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 4px; }
+.f3-erh small { color: #8fa6c0; margin-left: 6px; }
+.f3-ef { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin: 3px 0; font-size: 12px; }
+.f3-ef span { width: 60px; color: #8fa6c0; -webkit-flex: none; flex: none; }
+.f3-ef input, .f3-ef textarea { -webkit-flex: 1; flex: 1; background: #091322; color: #e8eef6; border: 1px solid #2a4570; border-radius: 8px; padding: 5px 7px; font-size: 13px; }
+.f3-ef textarea { min-height: 46px; }
+.f3-hist { font-size: 12px; margin-top: 10px; } .f3-hist div { margin: 3px 0; }
+.f3-json { width: 100%; min-height: 160px; font-family: Menlo, monospace; font-size: 11px; background: #091322; color: #cfe3ff; }
+.sp-big.mh-f3d { background: linear-gradient(135deg, #0f5d6b, #133a6e); }
+@media (max-width: 1100px) { .f3-stage .f3-card { width: 330px; } .f3-t { font-size: 18px; } }
+
 </style>
 </head>
 <body>
@@ -881,6 +981,7 @@ body.immersion #immExit{display:block}
       <div id="ifr" class="hidden"></div>
       <div id="mep" class="hidden"></div>
       <div id="trip" class="hidden"></div>
+      <div id="f3d" class="hidden"></div>
       <div id="sysNote" class="sysnote hidden"></div>
       <div id="toast"></div>
       <div id="timeBadge" class="hidden"></div>
@@ -904,7 +1005,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '6.8.1';
+  TF.VERSION = '7.0';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -6038,6 +6139,267 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 })(this);
 
 </script>
+<script>/* js/data/flow3d.js */
+/* FLOW 3D — données des flows animés (séparées du code).
+ * Sources : PDP DA42 VI (flow charts p.227 « 3D APPROACH », p.231 « STANDARD CIRCUIT PATTERN », IFR approach profile),
+ * OM-B B02 (Before take-off p.61-63, Take-off p.64), Check-list DA42-VI Issue C.
+ * Rien n'est inventé : les éléments non écrits dans ces documents portent src 'PEDA' (simplification pédagogique) ou 'VAL' (à valider).
+ * Géométrie : schéma pédagogique (unités : NM, ft AAL). Ce n'est PAS une procédure publiée et ce ne sont pas des données de navigation.
+ *
+ * Schéma d'une étape :
+ *  id, phase (repère mémoire), ref {doc, sec, p}, src ('PDP'|'DOC'|'PEDA'|'VAL'),
+ *  trigger (texte), at (repère de trajectoire), until (repère limite pour le mode « De mémoire »),
+ *  title, action, check, callout (anglais), calloutSrc ('PDP' si l'annonce est écrite dans le PDP),
+ *  ctls [commandes], success (condition de réussite, null = déclaration « FAIT »),
+ *  kind ('act' | 'check' | 'call' | 'info'), priority ('safety' | 'normal'), view, cam ('wide'|'close'),
+ *  deps [ids qui DOIVENT précéder — une inversion est une vraie erreur d'ordre], locked (exigence opérationnelle non supprimable),
+ *  why (POURQUOI ? / DÉTAILS), demo (gestes de démonstration en mode Regarder)
+ *
+ * Conditions de réussite : { cond: 'nomDuMoteur' } | { ctl: 'id', eq: 'VAL' } | { pwr: [min, max] } | { all: [...] }
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF; TF.DATA = TF.DATA || {};
+
+  /* ---------- outils de géométrie (NM / ft) ---------- */
+  function P(x, y, z, ias, mark) { return { x: x, y: y, z: z, ias: ias, mark: mark || null }; }
+  // arc de cercle : centre (cx, cy), rayon r, angles a0 → a1 (degrés, sens trigonométrique si a1 > a0)
+  function arc(cx, cy, r, a0, a1, z0, z1, ias0, ias1, n, marks) {
+    var out = [], k;
+    for (k = 1; k <= n; k++) {
+      var f = k / n, a = (a0 + (a1 - a0) * f) * Math.PI / 180;
+      out.push(P(cx + r * Math.cos(a), cy + r * Math.sin(a), z0 + (z1 - z0) * f, ias0 + (ias1 - ias0) * f, marks && marks[k] || null));
+    }
+    return out;
+  }
+  function cat() { var a = []; for (var i = 0; i < arguments.length; i++) a = a.concat(arguments[i]); return a; }
+  var GS = 318; // pente 3° ≈ 318 ft / NM
+  function onGs(x) { return Math.round(-x * GS); }
+
+  var PDP = function (p, sec) { return { doc: 'PDP', p: p, sec: sec }; };
+  var OMB = function (p, sec) { return { doc: 'OM-B', p: p, sec: sec }; };
+  var CLD = { doc: 'C/L', p: 2, sec: 'Check-list DA42-VI Issue C' };
+
+  /* ======================================================================================
+     1. 3D APPROACH — PDP p.227 (+ IFR approach profile)
+     Piste : seuil en (0, 0), atterrissage vers +x. Balise / FAF en x = -6,3 NM (2 000 ft AAL sur un plan de 3°).
+     Racetrack schématique : éloignement côté +y, interception du LOC à 45°.
+     ====================================================================================== */
+  var APP_DA = 230; // minima d'exercice (ft AAL) — l'écran utilise les minima du scénario quand ils existent
+  var app3d = {
+    id: 'app3d', icon: '🛬', title: '3D APPROACH', sub: 'Approche de précision (ILS) avec racetrack', ref: PDP(227, 'Flow charts — 3D APPROACH'),
+    kind: 'air', state: 'ess-cruise', ifr: true, duration: 150, field: 'Schéma pédagogique — aucune procédure publiée réelle n\'est représentée',
+    beacon: { x: -6.3, y: 0 },
+    runway: { x0: 0, x1: 0.85, w: 0.05 },
+    waypoints: [
+      { id: 'prep', t: 'PRÉPARATION', d: 'Préparation et briefing arrivée, descente' },
+      { id: 'icpt', t: 'INTERCEPTION', d: 'Racetrack, interception du LOC à 45°' },
+      { id: 'conf', t: 'CONFIGURATION', d: '½ déviation G/S → volets APP, sur le G/S → train sorti' },
+      { id: 'fin', t: 'FINALE', d: 'C/L FINAL, 90 kt, stabilisation 1 000 ft' },
+      { id: 'dec', t: 'DÉCISION', d: '« Hundred above », minima, continuer ou remettre les gaz' }
+    ],
+    track: cat(
+      [P(-20, 6, 4000, 150, 'start'), P(-18.5, 5.4, 4000, 150, 'brief'), P(-17, 4.8, 4000, 150, 'desc'), P(-14, 3.4, 3480, 140, 'altim'), P(-9.5, 1.3, 2640, 125), P(-6.3, 0, 2000, 120, 'beacon')],
+      arc(-6.3, 0.8, 0.8, -90, 90, 2000, 2000, 120, 105, 10, { 10: 'outb' }),
+      [P(-8.3, 1.6, 2000, 105, 'apr'), P(-10.3, 1.6, 2000, 105)],
+      arc(-10.3, 1.1, 0.5, 90, 225, 2000, 2000, 105, 103, 6),
+      [P(-10.05, 0.146, 2000, 101, 'icpt')],
+      arc(-9.696, 0.5, 0.5, 225, 270, 2000, 2000, 100, 100, 3, { 3: 'onloc' }),
+      [P(-8.6, 0, 2000, 100, 'locok'), P(-7.0, 0, 2000, 100, 'halfgs'), P(-6.3, 0, onGs(-6.3), 100, 'ongs'), P(-5.5, 0, onGs(-5.5), 95, 'fcl'),
+        P(-4.5, 0, onGs(-4.5), 90), P(-1000 / GS, 0, 1000, 90, 'stab'), P(-(APP_DA + 100) / GS, 0, APP_DA + 100, 90, 'h100'), P(-APP_DA / GS, 0, APP_DA, 90, 'da'),
+        P(-0.3, 0, APP_DA + 60, 88, 'ga'), P(1.2, 0, 700, 92, 'ma'), P(3.5, 0, 1600, 95), P(5, 0, 2000, 100, 'end')]
+    ),
+    steps: [
+      { id: 'brief', phase: 'prep', at: 'brief', until: 'desc', kind: 'check', title: 'Arrival preparation', action: 'Préparation arrivée + briefing arrivée', check: 'Briefing arrivée fait (approche, minima, remise de gaz)',
+        callout: null, src: 'PDP', ref: PDP(227, '3D APPROACH — Arrival preparation / Arrival briefing'), success: null, priority: 'normal', view: 'iso', cam: 'wide', locked: true,
+        why: 'Le PDP place la préparation et le briefing arrivée AVANT la descente. Le briefing complet se trouve dans l\'onglet Briefings ; la C/L APPROACH (« BRIEFING … COMPLETED ») est une check-list distincte, faite avant d\'entrer dans la procédure (PDP, Approach check-list).' },
+      { id: 'desc', phase: 'prep', at: 'desc', until: 'beacon', kind: 'check', title: 'Descente', action: 'Descente sur un plan standard de 3°, IAS ≤ VNO', check: 'Plan 3° — IAS ≤ VNO',
+        src: 'PDP', ref: PDP(227, '3D APPROACH — Descent standard path 3°, IAS ≤ VNO'), success: null, priority: 'normal', view: 'profil', cam: 'wide',
+        why: 'Descente standard sur un plan de 3° (≈ 318 ft/NM), vitesse indiquée inférieure ou égale à VNO (PDP p.227). Le PDP rappelle de contrôler le plan régulièrement (Descent).' },
+      { id: 'altim', phase: 'prep', at: 'altim', until: 'beacon', kind: 'act', title: 'Calage altimétrique', action: 'Changer le calage quand la descente vers une ALTITUDE est autorisée', check: 'QNH destination affiché',
+        ctls: ['k_crs'], success: { cond: 'altimeterDest' }, src: 'PDP', ref: PDP(227, '3D APPROACH — Altimeter setting changed when cleared to descent to an altitude'), priority: 'normal', view: 'profil', cam: 'close',
+        demo: [{ knob: 'k_crs', act: 'L+', n: 5 }],
+        why: 'Le PDP lie le changement de calage à la clairance de descente vers une altitude (et non vers un niveau). Ici : petit bouton BARO du PFD (QNH destination du scénario).' },
+      { id: 'race', phase: 'icpt', at: 'beacon', until: 'outb', kind: 'info', title: 'Racetrack', action: 'Entrer et suivre le racetrack publié ; réduire sous la vitesse max du racetrack', check: 'Éloignement : IAS 105 kt',
+        src: 'PDP', ref: PDP(227, '3D APPROACH — Enter and follow the published racetrack / IAS = 105 KT'), success: null, priority: 'normal', view: 'dessus', cam: 'wide',
+        why: 'La vitesse maximale du racetrack est celle publiée sur la carte de la procédure réelle. Le PDP montre 105 kt en éloignement. Le racetrack dessiné ici est schématique : il ne correspond à aucune procédure publiée.' },
+      { id: 'apr', phase: 'icpt', at: 'apr', until: 'icpt', kind: 'act', title: 'Mode APR', action: 'AP/FD : armer APR pour l\'approche', check: 'Mode d\'approche armé sur le PFD',
+        ctls: ['ap_apr'], success: { cond: 'aprArmed' }, src: 'PDP', ref: PDP(201, 'IFR approach profile — AP/FD APR (page à confirmer)'), priority: 'normal', view: 'dessus', cam: 'close',
+        demo: [{ press: 'ap_apr', ms: 200 }],
+        why: 'Le profil d\'approche IFR du PDP indique « AP/FD APR » sur l\'approche initiale. Le moment exact où armer APR dépend de la clairance et de la source de navigation (ILS chargé, NAV calée) : point à valider avec l\'instructeur.' },
+      { id: 'loc', phase: 'icpt', at: 'locok', until: 'halfgs', kind: 'check', title: 'Interception du LOC', action: 'Interception du LOC à 45° ; confirmer le LOC par un autre moyen', check: 'LOC confirmé — IAS 100 kt',
+        src: 'PDP', ref: PDP(227, '3D APPROACH — Interception of the LOC by 45°, confirmation by another navaid, IAS = 100 KT'), success: null, priority: 'safety', view: 'dessus', cam: 'close', locked: true,
+        why: 'Intercepter à 45° et confirmer le LOC par un autre moyen (identification, autre moyen radio) protège contre un faux alignement. Fenêtre en finale : ½ déviation LOC et G/S (PDP p.227).' },
+      { id: 'flaps', phase: 'conf', at: 'halfgs', until: 'fcl', kind: 'act', title: '½ déviation G/S', action: 'Volets APP', check: 'Indicateur volets APP',
+        ctls: ['flaps'], success: { ctl: 'flaps', eq: 'APP' }, src: 'PDP', ref: PDP(227, '3D APPROACH — ½ deviation of G/S → Flaps App'), priority: 'normal', view: 'iso', cam: 'close',
+        demo: [{ set: 'flaps', to: 'APP' }],
+        why: 'À ½ point du G/S, volets APP : l\'avion est configuré avant de commencer la descente. En IFR, la configuration normale reste FLAPS APP ; FLAPS LDG seulement pour une piste limitative (PDP p.227).' },
+      { id: 'gear', phase: 'conf', at: 'ongs', until: 'stab', kind: 'act', title: 'Sur le G/S', action: 'Train sorti — ajuster la puissance', check: '3 vertes',
+        ctls: ['gear_lever'], success: { ctl: 'gear_lever', eq: 'DOWN' }, src: 'PDP', ref: PDP(227, '3D APPROACH — On G/S → Gear Down, Adjust power'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        demo: [{ set: 'gear_lever', to: 'DOWN' }],
+        why: 'Sortir le train à l\'interception du G/S crée la traînée qui permet de descendre sur le plan sans accélérer ; on ajuste ensuite la puissance.' },
+      { id: 'fcl', phase: 'fin', at: 'fcl', until: 'stab', kind: 'act', title: 'Final Checklist', action: 'Lancer la C/L FINAL (par cœur) — IAS 90 kt', check: 'Train DOWN, pompes ON, volets APP (IFR) — « Final check-list complete »',
+        ctls: ['fuel_pump_l', 'fuel_pump_r'], success: { all: [{ ctl: 'gear_lever', eq: 'DOWN' }, { cond: 'pumpsOnBoth' }, { ctl: 'flaps', eq: 'APP' }] }, deps: ['gear'],
+        callout: 'Final checklist complete', calloutSrc: 'PDP', calloutPdp: '« FINAL ….. complete »', src: 'PDP', ref: PDP(227, '3D APPROACH — Final Checklist, IAS = 90 KT'), priority: 'safety', view: 'profil', cam: 'close', locked: true,
+        demo: [{ set: 'fuel_pump_l', to: 'ON' }, { set: 'fuel_pump_r', to: 'ON' }],
+        why: 'La C/L FINAL est une check-list (C/L DA42-VI : GEAR DOWN, FUEL PUMPS ON, FLAPS, RUDDER TRIM NEUTRAL, MISSED APP ALTITUDE SET). Le flow dit QUAND la faire ; le contenu reste celui de la check-list officielle. Ici le simulateur observe le train, les pompes et les volets ; le trim de direction et l\'altitude d\'API restent à déclarer.' },
+      { id: 'stab', phase: 'fin', at: 'stab', until: 'h100', kind: 'check', title: 'Stabilisation', action: 'Stabilisé à 1 000 ft AAL (IMC) / 500 ft AAL (VMC)', check: 'Sur le plan, dans l\'axe, bonne configuration, bonne IAS, C/L FINAL faite',
+        src: 'PDP', ref: PDP(227, '3D APPROACH — Stabilization IMC 1000 ft AAL / VMC 500 ft AAL'), success: null, priority: 'safety', view: 'profil', cam: 'close', locked: true,
+        why: 'Critères de stabilisation du PDP : sur le plan, dans l\'axe, bonne configuration, bonne vitesse, C/L FINAL faite. Non stabilisé à la hauteur de stabilisation : remise de gaz.' },
+      { id: 'h100', phase: 'dec', at: 'h100', until: 'da', kind: 'call', title: '100 ft au-dessus des minima', action: 'Annonce « Hundred above »', check: 'Annonce faite',
+        callout: 'Hundred above', calloutSrc: 'PDP', src: 'PDP', ref: PDP(227, '3D APPROACH — 100 ft above minima « Hundred above »'), success: null, priority: 'normal', view: 'profil', cam: 'close',
+        why: 'Annonce écrite dans le PDP, 100 ft au-dessus des minima.' },
+      { id: 'dec', phase: 'dec', at: 'da', until: 'ga', kind: 'call', title: 'Minima DA/H', action: 'Décision : « Continue » ou « Go-around »', check: 'Décision annoncée',
+        callout: 'Go-around', calloutSrc: 'PDP', src: 'PDP', ref: PDP(227, '3D APPROACH — Minima DA/H, Decision « continue » or « Go-around »'), success: null, priority: 'safety', view: 'profil', cam: 'close', locked: true,
+        why: 'Aux minima, deux annonces possibles écrites dans le PDP : « Continue » ou « Go-around ». Cette animation montre la remise de gaz, pour enchaîner sur la procédure d\'approche interrompue.' },
+      { id: 'ga', phase: 'dec', at: 'ga', until: 'ma', kind: 'act', title: 'Approche interrompue', action: 'Procédure d\'approche interrompue — AP/FD GA', check: 'Mode GA au PFD',
+        ctls: ['ga_btn'], success: { cond: 'gaMode' }, deps: ['dec'], src: 'PDP', ref: PDP(201, 'IFR approach profile — Missed approach, AP/FD GA (page à confirmer)'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        demo: [{ press: 'ga_btn', ms: 250 }],
+        why: 'Le profil IFR du PDP indique AP/FD GA pour la remise de gaz. La procédure complète de remise de gaz (puissance, assiette, volets, train) est celle de l\'OM-B (B02 §11) : elle n\'est pas détaillée dans cette animation. Le bouton GA ne déconnecte pas l\'AP.' },
+      { id: 'susp', phase: 'dec', at: 'ma', until: 'end', kind: 'check', title: 'SUSP', action: 'Relâcher le mode SUSP pour suivre l\'approche interrompue', check: 'SUSP relâché (softkey 5 du PFD)',
+        ctls: ['pfd_sk5'], src: 'PDP', ref: PDP(201, 'IFR approach profile — (1) Release SUSP mode (page à confirmer)'), success: null, deps: ['ga'], priority: 'normal', view: 'iso', cam: 'close',
+        why: 'Le PDP précise : relâcher le mode SUSP pour suivre la procédure d\'approche interrompue. Dans cette animation l\'approche n\'est pas chargée dans le FMS : l\'étape est déclarée (« FAIT »), pas observée.' }
+    ],
+    checklist: { title: 'FINAL', src: 'Check-list DA42-VI Issue C', items: [['GEAR', 'DOWN'], ['FUEL PUMPS', 'ON'], ['FLAPS', 'LDG'], ['RUDDER TRIM', 'NEUTRAL'], ['MISSED APP ALTITUDE', 'SET']],
+      note: 'Libellés exacts de la check-list. En approche IFR, le PDP (p.227) précise que FLAPS LANDING ne s\'emploie que pour une piste limitative : configuration normale FLAPS APP.' }
+  };
+
+  /* ======================================================================================
+     2. STANDARD CIRCUIT PATTERN — PDP p.231 (toutes altitudes AAL)
+     Décollage vers +x depuis (0, 0), tour de piste à gauche (vent arrière côté +y).
+     ====================================================================================== */
+  var ccl = {
+    id: 'circuit', icon: '🔁', title: 'STANDARD CIRCUIT PATTERN', sub: 'Tour de piste standard (VFR)', ref: PDP(231, 'Flow charts — STANDARD CIRCUIT PATTERN'),
+    kind: 'air', state: 'ess-lined-28', ifr: false, duration: 130, field: 'Schéma pédagogique — sens et dimensions illustratifs, altitudes AAL',
+    runway: { x0: -0.05, x1: 0.85, w: 0.05 },
+    waypoints: [
+      { id: 'prep', t: 'PRÉPARATION', d: 'Mise en puissance, rotation, rentrée du train, TOSA' },
+      { id: 'icpt', t: 'INTERCEPTION', d: 'Virage, C/L après décollage, 1 000 ft, vent arrière' },
+      { id: 'conf', t: 'CONFIGURATION', d: '« Speed check » volets APP, « Speed check » train, travers seuil TOP' },
+      { id: 'fin', t: 'FINALE', d: 'Dernier virage, C/L FINAL, 85 kt, stabilisation 300 ft' },
+      { id: 'dec', t: 'DÉCISION', d: '« Continue » ou « Go-around »' }
+    ],
+    track: cat(
+      [P(0.02, 0, 0, 0, 'start'), P(0.05, 0, 0, 10, 'pwr'), P(0.4, 0, 0, 76, 'rot'), P(0.55, 0, 40, 82, 'vs0'), P(1.05, 0, 400, 85, 'tosa'), P(1.25, 0, 520, 92, 'turn')],
+      arc(1.25, 0.6, 0.6, -90, 90, 520, 1000, 92, 105, 12, { 5: 'atocl', 12: 'k1000' }),
+      [P(0.9, 1.2, 1000, 100, 'dw'), P(0.6, 1.2, 1000, 100, 'gear'), P(0.45, 1.2, 1000, 100, 'p75'), P(0, 1.2, 1000, 100, 'abeam'), P(-1.67, 1.2, 1000, 100, 'base')],
+      arc(-1.67, 0.6, 0.6, 90, 270, 1000, 500, 100, 90, 12, { 6: 'anticip', 12: 'final' }),
+      [P(-1.4, 0, 415, 85, 'fcl'), P(-0.94, 0, 300, 85, 'stab'), P(-0.6, 0, 190, 85, 'dec'), P(0.05, 0, 0, 72, 'td'), P(0.45, 0, 0, 30, 'end')]
+    ),
+    steps: [
+      { id: 'pmax', phase: 'prep', at: 'pwr', until: 'rot', kind: 'act', title: 'Take-off', action: 'Puissance MAX (manettes plein avant)', check: 'Load 100 %',
+        ctls: ['power_l', 'power_r'], success: { cond: 'powerMaxBoth' }, src: 'DOC', ref: OMB(64, 'B02 §5 Take-off'), priority: 'normal', view: 'iso', cam: 'close',
+        demo: [{ set: 'power_l', to: 100 }, { set: 'power_r', to: 100 }],
+        why: 'La séquence complète de mise en puissance (« TAKEOFF », 70 %, freins relâchés, MAX, chrono, vérifications à 60 kt) est celle de l\'OM-B et du flow Décollage. Le flow chart du tour de piste commence à la rotation.' },
+      { id: 'rot', phase: 'prep', at: 'rot', until: 'vs0', kind: 'info', title: 'Rotation', action: 'Rotation Θ +5° à IAS 76 kt, puis Load 100 %, Θ +12°', check: 'Assiette de montée',
+        src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — ROTATION Θ+5°, IAS = 76 KT ; Load 100 % Θ+12°'), success: null, priority: 'normal', view: 'profil', cam: 'close',
+        why: 'Valeurs du flow chart du PDP pour ce tour de piste. Ce n\'est pas une vitesse de rotation universelle : elle dépend de la masse et des conditions (OM-B / AFM). Le pilotage n\'est pas évalué ici.' },
+      { id: 'gearup', phase: 'prep', at: 'vs0', until: 'tosa', kind: 'act', title: 'VS ≥ 0', action: 'Freins — train UP', check: 'Plus de vert, train rentré',
+        ctls: ['gear_lever'], success: { ctl: 'gear_lever', eq: 'UP' }, src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — VS ≥ 0, Brakes, Gear UP'), priority: 'normal', view: 'iso', cam: 'close',
+        demo: [{ set: 'gear_lever', to: 'UP' }],
+        why: 'Vario positif confirmé : freiner les roues puis rentrer le train (PDP p.231). IAS 85 kt dans la montée initiale.' },
+      { id: 'tosa', phase: 'prep', at: 'tosa', until: 'atocl', kind: 'act', title: 'TOSA 400 ft', action: 'Θ +10°, Load 92 % — IAS 92 kt', check: 'Load 92 %',
+        ctls: ['power_l', 'power_r'], success: { cond: 'power92Both' }, deps: ['pmax'], src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — TOSA 400 ft, Θ+10°, Load 92 %, IAS = 92 KT'), priority: 'normal', view: 'profil', cam: 'close',
+        demo: [{ set: 'power_l', to: 92 }, { set: 'power_r', to: 92 }],
+        why: 'À la TOSA (400 ft AAL dans ce flow chart) : assiette +10°, puissance de montée 92 %.' },
+      { id: 'turn', phase: 'icpt', at: 'turn', until: 'k1000', kind: 'info', title: 'Virage', action: 'Virage au-dessus de 500 ft, taux standard φ 15°', check: 'Inclinaison 15°',
+        src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Start turn above 500 ft, standard rate φ+15°'), success: null, priority: 'normal', view: 'dessus', cam: 'wide',
+        why: 'Pas de virage avant 500 ft AAL ; taux standard (inclinaison 15°). Pilotage : non évalué.' },
+      { id: 'atocl', phase: 'icpt', at: 'atocl', until: 'abeam', kind: 'act', title: 'After take-off check-list', action: 'C/L AFTER TAKEOFF / CLIMB', check: 'GEAR AND FLAPS UP, FUEL PUMPS OFF, POWER SET',
+        ctls: ['fuel_pump_l', 'fuel_pump_r'], success: { all: [{ cond: 'gearFlapsUp' }, { cond: 'pumpsOffBoth' }] }, deps: ['gearup'],
+        callout: 'After take-off climb checklist complete', calloutSrc: 'PDP', calloutPdp: '« After T/O/climb C/L complete »', src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — After take-off check-list'), priority: 'normal', view: 'dessus', cam: 'close',
+        demo: [{ set: 'fuel_pump_l', to: 'OFF' }, { set: 'fuel_pump_r', to: 'OFF' }],
+        why: 'Le flow dit QUAND faire la C/L ; son contenu reste celui de la check-list officielle (GEAR AND FLAPS UP, FUEL PUMPS OFF, POWER SET, PITOT AS REQUIRED, ENGINES PARAMETERS CHECK, ALTIMETERS). Le simulateur observe train, volets et pompes.' },
+      { id: 'flaps', phase: 'conf', at: 'dw', until: 'abeam', kind: 'act', title: 'Approach configuration', action: '« Speed check » : volets APP', check: 'IAS 100 kt — volets APP',
+        ctls: ['flaps'], success: { ctl: 'flaps', eq: 'APP' }, callout: 'Speed check, flaps approach', calloutSrc: 'PEDA', calloutPdp: '« Speed …. check » — Flaps ……… APP', src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Approach Configuration, Speed check : flaps APP'), priority: 'normal', view: 'iso', cam: 'close',
+        demo: [{ set: 'flaps', to: 'APP' }],
+        why: 'En vent arrière (IAS 100 kt) : on vérifie la vitesse AVANT de sortir les volets (« Speed …. check », VFR approach du PDP).' },
+      { id: 'gear', phase: 'conf', at: 'gear', until: 'abeam', kind: 'act', title: 'Approach configuration', action: '« Speed check » : train DOWN', check: '3 vertes',
+        ctls: ['gear_lever'], success: { ctl: 'gear_lever', eq: 'DOWN' }, callout: 'Speed check, gear down', calloutSrc: 'PEDA', calloutPdp: '« Speed …. check » — Gear ……… Down', src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Speed check : Gear Down'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        demo: [{ set: 'gear_lever', to: 'DOWN' }],
+        why: 'Deuxième « Speed check » puis train sorti. L\'ordre volets puis train est celui du PDP ; une inversion est comptée comme variation (à valider avec l\'instructeur), pas comme erreur.' },
+      { id: 'p75', phase: 'conf', at: 'p75', until: 'abeam', kind: 'act', title: 'Vent arrière', action: 'Θ +3°, Load 75 %', check: 'Load ≈ 75 %',
+        ctls: ['power_l', 'power_r'], success: { pwr: [70, 80] }, src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Θ+3°, Load 75 %'), priority: 'normal', view: 'profil', cam: 'close',
+        demo: [{ set: 'power_l', to: 75 }, { set: 'power_r', to: 75 }],
+        why: 'Assiette +3°, puissance 75 % pour tenir 100 kt configuré. Tolérance ±5 % appliquée par le simulateur (aide pédagogique, à valider).' },
+      { id: 'top', phase: 'conf', at: 'abeam', until: 'base', kind: 'check', title: 'Travers seuil', action: 'TOP chrono — 1 minute, -1 s par kt de vent arrière', check: 'Chrono lancé',
+        src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Abeam threshold TOP, 1 minute -1"/1 kt tailwind'), success: null, priority: 'normal', view: 'dessus', cam: 'wide',
+        why: 'Au travers du seuil : top chrono. Durée de base 1 minute, corrigée de 1 seconde par nœud de vent arrière (PDP p.231).' },
+      { id: 'base', phase: 'fin', at: 'base', until: 'final', kind: 'act', title: 'Descente et virage', action: 'Θ 0°, φ 15°, Load 35 %, VS -500 ft/min', check: 'Load ≈ 35 %',
+        ctls: ['power_l', 'power_r'], success: { pwr: [30, 40] }, src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Start descent & turn : Θ0°, φ+15°, Load 35 %, VS -500 ft/min'), priority: 'normal', view: 'dessus', cam: 'wide',
+        demo: [{ set: 'power_l', to: 35 }, { set: 'power_r', to: 35 }],
+        why: 'Au top : on commence ensemble descente et virage. Surveiller l\'anticipation pour intercepter l\'axe (« Check anticipation to intercept runway axis »). Tolérance ±5 % (aide pédagogique).' },
+      { id: 'fcl', phase: 'fin', at: 'fcl', until: 'stab', kind: 'act', title: 'Final check-list', action: 'C/L FINAL (par cœur) — 500 ft, IAS 90 puis 85 kt', check: 'GEAR DOWN, FUEL PUMPS ON, FLAPS LDG — « Final check-list complete »',
+        ctls: ['flaps', 'fuel_pump_l', 'fuel_pump_r'], success: { all: [{ ctl: 'gear_lever', eq: 'DOWN' }, { cond: 'pumpsOnBoth' }, { ctl: 'flaps', eq: 'LDG' }] }, deps: ['gear'],
+        callout: 'Final checklist complete', calloutSrc: 'PDP', calloutPdp: '« Final C.L complete »', src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Final check-list, IAS 90 / 85 KT'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        demo: [{ set: 'fuel_pump_l', to: 'ON' }, { set: 'fuel_pump_r', to: 'ON' }, { set: 'flaps', to: 'LDG' }],
+        why: 'En VFR, FLAPS LANDING est la configuration normale (PDP p.231). Le contenu de la C/L FINAL reste celui de la check-list officielle ; le simulateur observe train, pompes et volets, le trim de direction et l\'altitude d\'API restent à déclarer.' },
+      { id: 'stab', phase: 'fin', at: 'stab', until: 'dec', kind: 'check', title: 'Stabilisation', action: 'Stabilisé à 300 ft', check: 'Sur le plan, dans l\'axe, configuré, bonne IAS, C/L faite',
+        src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Stabilization : 300 ft'), success: null, priority: 'safety', view: 'profil', cam: 'close', locked: true,
+        why: 'Hauteur de stabilisation VFR du PDP : 300 ft AAL.' },
+      { id: 'dec', phase: 'dec', at: 'dec', until: 'td', kind: 'call', title: 'Décision', action: '« Continue » ou « Go-Around »', check: 'Décision annoncée',
+        callout: 'Continue', calloutSrc: 'PDP', src: 'PDP', ref: PDP(231, 'STANDARD CIRCUIT PATTERN — Decision « Continue » or « Go-Around »'), success: null, priority: 'safety', view: 'profil', cam: 'close', locked: true,
+        why: 'Deux annonces possibles écrites dans le PDP. Cette animation montre la poursuite de l\'atterrissage.' }
+    ],
+    checklist: { title: 'FINAL', src: 'Check-list DA42-VI Issue C', items: [['GEAR', 'DOWN'], ['FUEL PUMPS', 'ON'], ['FLAPS', 'LDG'], ['RUDDER TRIM', 'NEUTRAL'], ['MISSED APP ALTITUDE', 'SET']],
+      note: 'Libellés exacts de la check-list. En VFR, FLAPS LANDING est la configuration normale (PDP p.231).' }
+  };
+
+  /* ======================================================================================
+     3. PROCÉDURE AU SOL — test ECU / voters au point d'arrêt (OM-B B02 §4 Before take-off, p.61-63)
+     ====================================================================================== */
+  var gnd = [], gt = 0;
+  ['start', 'idle', 'rpm', 'pumps', 'voters', 'temp', 'pb', 'ecuL', 'votL', 'ecuR', 'votR', 'pages', 'end'].forEach(function (m) { gnd.push(P(0, 0, 0, 0, m)); });
+  var run = {
+    id: 'runup', icon: '🧪', title: 'TEST ECU AU POINT D\'ARRÊT', sub: 'Before take-off : test ECU et voters', ref: OMB(61, 'B02 §4 Before Take-Off'),
+    kind: 'ground', state: 'after-taxi', ifr: false, duration: 90, field: 'Point d\'arrêt (schéma)', stepGap: 7,
+    waypoints: [
+      { id: 'prep', t: 'PRÉPARATION', d: 'Manettes IDLE, RPM, pompes, voters, températures' },
+      { id: 'icpt', t: 'SÉCURISATION', d: 'Frein de parc ON' },
+      { id: 'conf', t: 'TEST GAUCHE', d: 'ECU test gauche puis voter gauche' },
+      { id: 'fin', t: 'TEST DROIT', d: 'ECU test droit puis voter droit' },
+      { id: 'dec', t: 'CONTRÔLE', d: 'Pages annonces / moteur / système' }
+    ],
+    track: gnd,
+    steps: [
+      { id: 'idle', phase: 'prep', at: 'idle', until: 'pb', kind: 'act', title: 'Power levers', action: 'IDLE', check: 'Manettes plein réduit',
+        ctls: ['power_l', 'power_r'], success: { cond: 'powerIdleBoth' }, src: 'DOC', ref: OMB(62, 'B02 §4 — 3.g Power levers IDLE'), priority: 'normal', view: 'iso', cam: 'close',
+        demo: [{ set: 'power_l', to: 0 }, { set: 'power_r', to: 0 }], why: 'Préalable au test ECU (OM-B B02 §4, 3.g).' },
+      { id: 'rpm', phase: 'prep', at: 'rpm', until: 'pb', kind: 'check', title: 'Propeller RPM', action: 'CHECK BELOW 1000 RPM', check: 'RPM < 1 000 sur le MFD',
+        ctls: ['mfd'], success: null, src: 'DOC', ref: OMB(62, 'B02 §4 — 3.h RPM below 1000'), priority: 'normal', view: 'iso', cam: 'close', why: 'Contrôle sur la page moteur du MFD (OM-B, 3.h).' },
+      { id: 'pumps', phase: 'prep', at: 'pumps', until: 'pb', kind: 'check', title: 'Fuel pumps', action: 'CHECK OFF', check: 'Pompes LH / RH sur OFF',
+        ctls: ['fuel_pump_l', 'fuel_pump_r'], success: null, src: 'DOC', ref: OMB(62, 'B02 §4 — 3.i Fuel pumps check OFF'), priority: 'normal', view: 'dessus', cam: 'close', why: 'OM-B B02 §4, 3.i.' },
+      { id: 'voters', phase: 'prep', at: 'voters', until: 'pb', kind: 'check', title: 'Voter switches', action: 'CHECK AUTO', check: 'Voters sur AUTO',
+        ctls: ['voter_l', 'voter_r'], success: null, src: 'DOC', ref: OMB(62, 'B02 §4 — 3.j Voter switches AUTO'), priority: 'normal', view: 'iso', cam: 'close', why: 'OM-B B02 §4, 3.j.' },
+      { id: 'temp', phase: 'prep', at: 'temp', until: 'pb', kind: 'check', title: 'Températures', action: 'GREEN RANGE, GEARBOX ABOVE 40 °C', check: 'Gearbox > 40 °C sur le MFD',
+        ctls: ['mfd'], success: null, src: 'DOC', ref: OMB(62, 'B02 §4 — 3.k Engine / gearbox temperature'), priority: 'normal', view: 'dessus', cam: 'close', why: 'OM-B B02 §4, 3.k.' },
+      { id: 'pb', phase: 'icpt', at: 'pb', until: 'ecuL', kind: 'act', title: 'Parking brake', action: 'ON', check: 'Levier en bas (ON)',
+        ctls: ['parking_brake'], success: { ctl: 'parking_brake', eq: 'ON' }, src: 'DOC', ref: OMB(62, 'B02 §4 — 3.l Parking brake ON'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        demo: [{ set: 'parking_brake', to: 'ON' }], why: 'Le test ECU fait monter le régime : l\'avion doit être immobilisé. Frein de parc : levier en BAS = ON.' },
+      { id: 'ecuL', phase: 'conf', at: 'ecuL', until: 'votL', kind: 'act', title: 'ECU test gauche', action: 'PRESS AND HOLD, THEN RELEASE', check: 'ECU A / B FAIL allumés puis éteints, RPM > 1 800 puis ralenti',
+        ctls: ['ecu_test_l'], success: { cond: 'ecuTestL' }, deps: ['idle', 'pb'], src: 'DOC', ref: OMB(62, 'B02 §4 — 3.m-n ECU test'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        why: 'Maintenir le bouton jusqu\'à la fin du cycle (2 montées de régime par canal). Relâcher trop tôt ou toucher la manette annule le test. AFAe recommande un moteur après l\'autre.' },
+      { id: 'votL', phase: 'conf', at: 'votL', until: 'ecuR', kind: 'act', title: 'Voter gauche', action: 'ECU A, AUTO, ECU B, AUTO', check: 'Moteur tourne sans variation',
+        ctls: ['voter_l'], success: { cond: 'voterTestL' }, deps: ['ecuL'], src: 'DOC', ref: OMB(62, 'B02 §4 — 3.o-r (p.62-63) Voter switch'), priority: 'normal', view: 'dessus', cam: 'close',
+        why: 'Chaque canal seul doit faire tourner le moteur sans changement. Le voter revient sur AUTO à la fin.' },
+      { id: 'ecuR', phase: 'fin', at: 'ecuR', until: 'votR', kind: 'act', title: 'ECU test droit', action: 'PRESS AND HOLD, THEN RELEASE', check: 'ECU A / B FAIL allumés puis éteints',
+        ctls: ['ecu_test_r'], success: { cond: 'ecuTestR' }, deps: ['idle', 'pb'], src: 'DOC', ref: OMB(62, 'B02 §4 — 3.m-n ECU test'), priority: 'safety', view: 'iso', cam: 'close', locked: true,
+        why: 'Même test sur le moteur droit. Commencer par le droit n\'est pas une erreur (variation acceptable, à valider avec l\'instructeur).' },
+      { id: 'votR', phase: 'fin', at: 'votR', until: 'pages', kind: 'act', title: 'Voter droit', action: 'ECU A, AUTO, ECU B, AUTO', check: 'Moteur tourne sans variation',
+        ctls: ['voter_r'], success: { cond: 'voterTestR' }, deps: ['ecuR'], src: 'DOC', ref: OMB(62, 'B02 §4 — 3.o-r (p.62-63) Voter switch'), priority: 'normal', view: 'dessus', cam: 'close',
+        why: 'ECU A ou B sélectionné hors test : interdit — le voter doit finir sur AUTO.' },
+      { id: 'pages', phase: 'dec', at: 'pages', until: 'end', kind: 'check', title: 'Pages', action: 'Annunciations, engine, system page CHECKED', check: 'Pas d\'alarme, paramètres verts',
+        ctls: ['mfd'], success: null, src: 'DOC', ref: OMB(63, 'B02 §4 — 4.a Annunciations / engine / system page'), priority: 'normal', view: 'iso', cam: 'close', why: 'OM-B B02 §4, 4.a.' }
+    ],
+    checklist: { title: 'BEFORE TAKEOFF (extrait)', src: 'Check-list DA42-VI Issue C', items: [['ENGINES PARAMETERS', 'CHECK'], ['ECU TEST', 'TESTED'], ['VOTER SWITCHS', 'TESTED AND AUTO'], ['CIRCUIT BREAKERS', 'CHECKED']],
+      note: 'Extrait des libellés exacts de la check-list BEFORE TAKEOFF (C/L complète dans « Procédures complètes »).' }
+  };
+
+  TF.DATA.flow3d = { version: '1.0', updated: '2026-11-16', flows: [app3d, ccl, run],
+    srcLabels: { PDP: 'PDP (flow chart)', DOC: 'Autre doc approuvé (OM-B / C/L)', PEDA: 'Simplification pédagogique', VAL: 'À valider' } };
+})(this);
+
+</script>
 <!-- D. moteur pédagogique, F. profils -->
 <script>/* js/pedagogy/trainer.js */
 /* D. MOTEUR PÉDAGOGIQUE — planification des révisions, sessions, exercices ciblés.
@@ -8179,6 +8541,353 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 })(this);
 
 </script>
+<script>/* js/render/flow3d-view.js */
+/* FLOW 3D — rendu 2.5D sur canvas 2D (pas de WebGL nécessaire : fonctionne sur iPad iOS 12 / Safari 12).
+ * Vues : PROFIL, DESSUS, 3D ISO, COCKPIT (vue extérieure synthétique). ES5 uniquement.
+ * L'avion (DA42 « low-poly ») reflète l'état réel du cockpit : train (position animée), volets, hélices (régime), feux.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF;
+  var D2R = Math.PI / 180, FT_NM = 1 / 6076, EX = 6; // exagération verticale (lisibilité)
+  var VIEWS = { profil: { az: 0, el: 0 }, dessus: { az: 0, el: 90 }, iso: { az: -32, el: 30 } };
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, f) { return a + (b - a) * f; }
+  function angDiff(a, b) { var d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return d; }
+
+  /* ------------------------------------------------ Modèle DA42 (repère avion : x avant, y gauche, z haut, mètres) ------------------------------------------------ */
+  var WHITE = [244, 246, 249], GLASS = [34, 52, 74], DARK = [60, 66, 76], BLUE = [40, 92, 170];
+  function sections(list, yOff, col, glass) {
+    // list : [x, demi-largeur, haut, bas] ; renvoie des quadrilatères
+    var out = [], i;
+    for (i = 0; i < list.length - 1; i++) {
+      var a = list[i], b = list[i + 1];
+      var aTL = [a[0], yOff + a[1], a[2]], aTR = [a[0], yOff - a[1], a[2]], aBL = [a[0], yOff + a[1] * 0.85, a[3]], aBR = [a[0], yOff - a[1] * 0.85, a[3]];
+      var bTL = [b[0], yOff + b[1], b[2]], bTR = [b[0], yOff - b[1], b[2]], bBL = [b[0], yOff + b[1] * 0.85, b[3]], bBR = [b[0], yOff - b[1] * 0.85, b[3]];
+      var topCol = glass && glass(a[0], b[0]) ? GLASS : col;
+      out.push({ p: [aTL, aTR, bTR, bTL], c: topCol });
+      out.push({ p: [aBL, aBR, bBR, bBL], c: col });
+      out.push({ p: [aTL, aBL, bBL, bTL], c: glass && glass(a[0], b[0], 1) ? GLASS : col });
+      out.push({ p: [aTR, aBR, bBR, bTR], c: glass && glass(a[0], b[0], 1) ? GLASS : col });
+    }
+    return out;
+  }
+  function buildModel(flapDeg, gear) {
+    var m = [];
+    m = m.concat(sections([[4.3, 0.06, 0.02, -0.08], [3.4, 0.45, 0.32, -0.36], [2.2, 0.62, 0.72, -0.45], [0.6, 0.62, 0.74, -0.45], [-1.0, 0.5, 0.55, -0.35], [-3.0, 0.22, 0.38, 0.02], [-4.5, 0.1, 0.36, 0.16]], 0, WHITE,
+      function (x0, x1, side) { return side ? (x0 <= 3.4 && x1 >= 0.55 && x0 > 0.6) : (x0 <= 3.4 && x1 >= 0.6 && x0 > 0.6); }));
+    // ailes (plaques, dièdre léger)
+    [1, -1].forEach(function (s) {
+      m.push({ p: [[0.95, s * 0.6, -0.2], [0.5, s * 6.7, 0.18], [-0.32, s * 6.7, 0.18], [-0.75, s * 0.6, -0.2]], c: WHITE, wing: true });
+      // volet (charnière au bord de fuite, segment intérieur)
+      var d = flapDeg * D2R, ch = 0.42;
+      m.push({ p: [[-0.72, s * 0.65, -0.2], [-0.58, s * 3.3, -0.12], [-0.58 - ch * Math.cos(d), s * 3.3, -0.12 - ch * Math.sin(d)], [-0.72 - ch * Math.cos(d), s * 0.65, -0.2 - ch * Math.sin(d)]], c: [222, 228, 236] });
+      // nacelle
+      m = m.concat(sections([[2.78, 0.1, -0.1, -0.2], [2.3, 0.32, 0.12, -0.44], [0.2, 0.32, 0.14, -0.46], [-1.35, 0.07, -0.02, -0.14]], s * 2.15, WHITE));
+      // feux de bout d'aile
+      m.push({ light: s > 0 ? 'red' : 'green', at: [0.1, s * 6.72, 0.18] });
+      m.push({ prop: s, at: [2.85, s * 2.15, -0.15], r: 0.95 });
+    });
+    // empennage en T
+    m.push({ p: [[-3.0, 0, 0.36], [-3.98, 0, 1.62], [-4.62, 0, 1.62], [-4.5, 0, 0.2]], c: WHITE });
+    m.push({ p: [[-3.98, 2.5, 1.66], [-4.62, 2.5, 1.66], [-4.62, -2.5, 1.66], [-3.98, -2.5, 1.66]], c: WHITE, wing: true });
+    m.push({ p: [[-3.9, 0.6, 1.66], [-4.0, 0.6, 1.66], [-4.0, -0.6, 1.66], [-3.9, -0.6, 1.66]], c: BLUE });
+    // bande de décoration fuselage
+    m.push({ p: [[2.0, 0.63, -0.05], [-2.6, 0.27, 0.15], [-2.6, 0.27, 0.05], [2.0, 0.63, -0.18]], c: BLUE });
+    m.push({ p: [[2.0, -0.63, -0.05], [-2.6, -0.27, 0.15], [-2.6, -0.27, 0.05], [2.0, -0.63, -0.18]], c: BLUE });
+    // train (0 = rentré, 1 = sorti)
+    if (gear > 0.02) {
+      var L = 0.95 * gear;
+      [[0.35, 2.15, -0.46], [0.35, -2.15, -0.46], [2.55, 0, -0.42]].forEach(function (g, i) {
+        var zb = g[2] - L * (i === 2 ? 0.95 : 1);
+        m.push({ line: [[g[0], g[1], g[2]], [g[0], g[1], zb]], c: DARK, w: 3 });
+        var wh = [], k, r = 0.26 * gear;
+        for (k = 0; k < 8; k++) { var a = k / 8 * Math.PI * 2; wh.push([g[0] + r * Math.cos(a), g[1], zb + r * Math.sin(a)]); }
+        m.push({ p: wh, c: [38, 40, 46] });
+      });
+    }
+    return m;
+  }
+
+  /* ------------------------------------------------ Trajectoire ------------------------------------------------ */
+  function prepTrack(flow) {
+    var tr = flow.track.map(function (p) { return { x: p.x, y: p.y, z: p.z, ias: p.ias, mark: p.mark }; }), i, real = [0], tot = 0;
+    if (flow.kind === 'ground') {
+      var gap = flow.stepGap || 6;
+      tr.forEach(function (p, k) { p.t = k * gap; p.rt = p.t; });
+    } else {
+      for (i = 1; i < tr.length; i++) {
+        var a = tr[i - 1], b = tr[i], dist = Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y)), v = Math.max(30, (a.ias + b.ias) / 2);
+        tot += dist / v * 3600; real.push(tot);
+      }
+      var k2 = (flow.duration || 120) / Math.max(1, tot);
+      tr.forEach(function (p, j) { p.rt = real[j]; p.t = real[j] * k2; });
+    }
+    for (i = 0; i < tr.length; i++) {
+      var n = tr[Math.min(i + 1, tr.length - 1)], c = tr[i], pv = tr[Math.max(0, i - 1)];
+      var dx = n.x - c.x, dy = n.y - c.y;
+      if (Math.abs(dx) + Math.abs(dy) < 1e-6) { dx = c.x - pv.x; dy = c.y - pv.y; }
+      c.h = (Math.abs(dx) + Math.abs(dy) < 1e-6) ? (i ? tr[i - 1].h : 0) : Math.atan2(dy, dx);
+    }
+    var marks = {}; tr.forEach(function (p) { if (p.mark && marks[p.mark] == null) marks[p.mark] = p.t; });
+    return { pts: tr, marks: marks, T: tr[tr.length - 1].t };
+  }
+  function sample(TK, t) {
+    var P = TK.pts, i = 0;
+    t = clamp(t, 0, TK.T);
+    while (i < P.length - 2 && P[i + 1].t <= t) i++;
+    var a = P[i], b = P[Math.min(i + 1, P.length - 1)], f = b.t > a.t ? (t - a.t) / (b.t - a.t) : 1;
+    var x = lerp(a.x, b.x, f), y = lerp(a.y, b.y, f), z = lerp(a.z, b.z, f), ias = lerp(a.ias, b.ias, f);
+    var h = a.h + angDiff(a.h, b.h) * f * 0.6;
+    var rdt = Math.max(0.5, b.rt - a.rt);
+    var turn = angDiff(a.h, b.h) / D2R / rdt;                // °/s réel
+    var vs = (b.z - a.z) / rdt * 60;                        // ft/min réel
+    var bank = clamp(turn * 5, -30, 30);
+    var onGround = z < 2 && ias < 80;
+    var pitch = onGround ? 0 : clamp(Math.atan2(vs / 60, ias * 1.688) / D2R + 2, -8, 14);
+    return { x: x, y: y, z: z, ias: ias, h: h, vs: Math.round(vs), bank: bank, pitch: pitch, onGround: onGround, i: i };
+  }
+
+  /* ------------------------------------------------ Vue ------------------------------------------------ */
+  function View(canvas) {
+    this.cv = canvas; this.cx = canvas.getContext('2d');
+    this.cam = { az: VIEWS.iso.az, el: VIEWS.iso.el, cx: 0, cy: 0, sc: 30 };
+    this.view = 'iso'; this.zoom = 'wide'; this.flow = null; this.TK = null; this.propA = 0; this.gearV = null; this.flapV = 0; this.lastT = Date.now(); this.ox = 0;
+    this.dpr = Math.min(2, root.devicePixelRatio || 1);
+  }
+  View.prototype.setFlow = function (flow) { this.flow = flow; this.TK = prepTrack(flow); this.fitDone = false; return this.TK; };
+  View.prototype.resize = function () {
+    var r = this.cv.getBoundingClientRect(), w = Math.max(50, Math.round(r.width)), h = Math.max(50, Math.round(r.height));
+    if (this.cv.width !== Math.round(w * this.dpr) || this.cv.height !== Math.round(h * this.dpr)) { this.cv.width = Math.round(w * this.dpr); this.cv.height = Math.round(h * this.dpr); }
+    this.W = w; this.H = h;
+  };
+  View.prototype.basis = function (az, el) {
+    var a = az * D2R, e = el * D2R;
+    var R = [Math.cos(a), Math.sin(a), 0], F = [-Math.sin(a), Math.cos(a), 0];
+    var U = [F[0] * Math.sin(e), F[1] * Math.sin(e), Math.cos(e)];
+    var Dp = [F[0] * Math.cos(e), F[1] * Math.cos(e), -Math.sin(e)];
+    return { R: R, U: U, D: Dp };
+  };
+  function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  View.prototype.w2 = function (x, y, zft) { return [x, y, zft * FT_NM * EX]; };
+  View.prototype.proj = function (B, p) { var c = this.cam; return [this.W / 2 + (this.ox || 0) + (dot(p, B.R) - c.cx) * c.sc, this.H / 2 - (dot(p, B.U) - c.cy) * c.sc, dot(p, B.D)]; };
+  View.prototype.fit = function (B, focus, close) {
+    var self = this, minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9;
+    function acc(p) { var u = dot(p, B.R), v = dot(p, B.U); if (u < minx) minx = u; if (u > maxx) maxx = u; if (v < miny) miny = v; if (v > maxy) maxy = v; }
+    this.TK.pts.forEach(function (p) { acc(self.w2(p.x, p.y, p.z)); acc(self.w2(p.x, p.y, 0)); });
+    var rw = this.flow.runway; if (rw) { acc(this.w2(rw.x0, 0, 0)); acc(this.w2(rw.x1, 0, 0)); }
+    var w = Math.max(0.4, maxx - minx), h = Math.max(0.4, maxy - miny);
+    var sc = Math.min((this.W - 60 - 2 * (this.ox || 0)) / w, (this.H - 110) / h), cx = (minx + maxx) / 2, cy = (miny + maxy) / 2;
+    if (this.flow.kind === 'ground') { sc = Math.min(this.W, this.H) / 0.05; cx = 0; cy = 0; }
+    else if (this.cam.el < 15) cy = Math.max(cy, miny + 0.27 * this.H / sc); // vue de profil : le sol dans le tiers bas
+    if (close && focus && this.flow.kind !== 'ground') {
+      var fp = this.w2(focus.x, focus.y, focus.z), k = this.flow.id === 'app3d' ? 3.2 : 1.9;
+      sc = sc * k; cx = dot(fp, B.R); cy = dot(fp, B.U);
+    }
+    return { sc: sc, cx: cx, cy: cy };
+  };
+
+  /* Dessin principal. st = { t, view ('iso'|'profil'|'dessus'|'cockpit'), zoom ('wide'|'close'), cfg : état cockpit, steps, curStep, past } */
+  View.prototype.draw = function (st) {
+    this.resize();
+    this.ox += ((st.padL || 0) / 2 - this.ox) * 0.15;
+    var c = this.cx, W = this.W, H = this.H, now = Date.now(), dt = Math.min(0.1, (now - this.lastT) / 1000); this.lastT = now;
+    c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    var s = sample(this.TK, st.t); this.last = s;
+    var cfg = st.cfg || {};
+    // animations locales (train, volets) — suivent l'état réel du cockpit
+    var gT = cfg.gear != null ? cfg.gear : 1; if (this.gearV == null) this.gearV = gT; this.gearV += clamp(gT - this.gearV, -dt / 2.2, dt / 2.2);
+    var fT = cfg.flaps === 'LDG' ? 42 : cfg.flaps === 'APP' ? 20 : 0; this.flapV += clamp(fT - this.flapV, -dt * 12, dt * 12);
+    this.propA += dt * ((cfg.rpm ? cfg.rpm[0] : 0) > 0 ? 18 + (cfg.rpm[0] / 2400) * 30 : 0);
+    if (st.view === 'cockpit') return this.drawCockpit(s, st, cfg);
+    // caméra (transitions courtes et automatiques)
+    var V = VIEWS[st.view] || VIEWS.iso, cam = this.cam, k = this.fitDone ? Math.min(1, dt * 3.2) : 1;
+    cam.az += (V.az - cam.az) * k; cam.el += (V.el - cam.el) * k;
+    var B = this.basis(cam.az, cam.el), tgt = this.fit(B, s, st.zoom === 'close');
+    cam.sc += (tgt.sc - cam.sc) * k; cam.cx += (tgt.cx - cam.cx) * k; cam.cy += (tgt.cy - cam.cy) * k; this.fitDone = true;
+    // fond
+    var g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0d2340'); g.addColorStop(1, '#173a5c'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+    this.drawGround(B, st.view);
+    this.drawRunway(B);
+    this.drawBeacon(B);
+    this.drawTrack(B, st);
+    this.drawMarks(B, st);
+    // ombre + avion
+    var ac = this.proj(B, this.w2(s.x, s.y, s.z)), gr = this.proj(B, this.w2(s.x, s.y, 0));
+    if (st.view !== 'profil' && s.z > 5) { c.strokeStyle = 'rgba(255,255,255,.25)'; c.setLineDash([3, 4]); c.beginPath(); c.moveTo(ac[0], ac[1]); c.lineTo(gr[0], gr[1]); c.stroke(); c.setLineDash([]); }
+    var px = this.flow.kind === 'ground' ? Math.min(W, H) / 20 : (st.zoom === 'close' ? 9 : 7);
+    if (st.view !== 'profil') this.drawPlane(B, gr, s, px, cfg, true);
+    this.drawPlane(B, ac, s, px, cfg, false);
+  };
+
+  View.prototype.drawGround = function (B, view) {
+    var c = this.cx, self = this;
+    if (view === 'profil') {
+      var y0 = this.proj(B, [0, 0, 0])[1];
+      var g = c.createLinearGradient(0, y0, 0, this.H); g.addColorStop(0, '#2c4a2e'); g.addColorStop(1, '#1b2e1d'); c.fillStyle = g; c.fillRect(0, y0, this.W, this.H - y0);
+      c.strokeStyle = '#7fae7a'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(0, y0); c.lineTo(this.W, y0); c.stroke();
+      return;
+    }
+    var xs = this.TK.pts.map(function (p) { return p.x; }), ys = this.TK.pts.map(function (p) { return p.y; });
+    var x0 = Math.floor(Math.min.apply(null, xs)) - 2, x1 = Math.ceil(Math.max.apply(null, xs)) + 2, yy0 = Math.floor(Math.min.apply(null, ys)) - 2, yy1 = Math.ceil(Math.max.apply(null, ys)) + 2;
+    if (this.flow.kind === 'ground') { x0 = -0.05; x1 = 0.05; yy0 = -0.05; yy1 = 0.05; }
+    var q = [this.proj(B, [x0, yy0, 0]), this.proj(B, [x1, yy0, 0]), this.proj(B, [x1, yy1, 0]), this.proj(B, [x0, yy1, 0])];
+    c.fillStyle = '#20402c'; c.beginPath(); q.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.fill();
+    var step = this.flow.kind === 'ground' ? 0.01 : (x1 - x0 > 12 ? 2 : 0.5), v;
+    c.strokeStyle = 'rgba(160,210,170,.12)'; c.lineWidth = 1; c.beginPath();
+    for (v = Math.ceil(x0 / step) * step; v <= x1; v += step) { var a = self.proj(B, [v, yy0, 0]), b = self.proj(B, [v, yy1, 0]); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); }
+    for (v = Math.ceil(yy0 / step) * step; v <= yy1; v += step) { var a2 = self.proj(B, [x0, v, 0]), b2 = self.proj(B, [x1, v, 0]); c.moveTo(a2[0], a2[1]); c.lineTo(b2[0], b2[1]); }
+    c.stroke();
+  };
+  View.prototype.drawRunway = function (B) {
+    var rw = this.flow.runway, c = this.cx, self = this; if (!rw) { if (this.flow.kind === 'ground') this.drawTaxi(B); return; }
+    var w = rw.w, pts = [[rw.x0, -w, 0], [rw.x1, -w, 0], [rw.x1, w, 0], [rw.x0, w, 0]].map(function (p) { return self.proj(B, p); });
+    c.fillStyle = '#3a3f47'; c.strokeStyle = '#d9dde3'; c.lineWidth = 1;
+    c.beginPath(); pts.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.fill(); c.stroke();
+    var a = this.proj(B, [rw.x0 + 0.05, 0, 0]), b = this.proj(B, [rw.x1 - 0.05, 0, 0]);
+    c.setLineDash([4, 4]); c.strokeStyle = 'rgba(255,255,255,.8)'; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.setLineDash([]);
+  };
+  View.prototype.drawTaxi = function (B) {
+    var c = this.cx, self = this, w = 0.004;
+    function quad(x0, y0, x1, y1, col) { var q = [[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]].map(function (p) { return self.proj(B, p); }); c.fillStyle = col; c.beginPath(); q.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.fill(); }
+    quad(-0.05, -w, 0.05, w, '#3a3f47');
+    quad(0.012, -0.05, 0.03, 0.05, '#353a42');
+    // marquage de point d'arrêt (schématique)
+    var a = this.proj(B, [0.009, -w, 0]), b = this.proj(B, [0.009, w, 0]);
+    c.strokeStyle = '#ffd34d'; c.lineWidth = 3; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
+  };
+  View.prototype.drawBeacon = function (B) {
+    var bc = this.flow.beacon; if (!bc) return; var c = this.cx;
+    var a = this.proj(B, this.w2(bc.x, bc.y, 0)), b = this.proj(B, this.w2(bc.x, bc.y, 2600));
+    c.strokeStyle = 'rgba(255,214,102,.55)'; c.setLineDash([2, 4]); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#ffd666'; c.beginPath(); c.moveTo(a[0], a[1] - 9); c.lineTo(a[0] - 5, a[1]); c.lineTo(a[0] + 5, a[1]); c.closePath(); c.fill();
+    c.font = '600 10px -apple-system, Helvetica, Arial'; c.fillStyle = 'rgba(255,214,102,.9)'; c.fillText('balise / FAF (schéma)', a[0] + 7, a[1] + 3);
+  };
+  View.prototype.drawTrack = function (B, st) {
+    if (this.flow.kind === 'ground') return;
+    var c = this.cx, self = this, P = this.TK.pts, cur = this.last;
+    function path(zf, from, to) { c.beginPath(); for (var i = from; i <= to; i++) { var p = self.proj(B, self.w2(P[i].x, P[i].y, zf ? P[i].z : 0)); if (i === from) c.moveTo(p[0], p[1]); else c.lineTo(p[0], p[1]); } }
+    if (st.view !== 'profil') { c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 2; path(false, 0, P.length - 1); c.stroke(); }
+    c.lineWidth = 2; c.strokeStyle = 'rgba(255,255,255,.38)'; c.setLineDash([6, 6]); path(true, 0, P.length - 1); c.stroke(); c.setLineDash([]);
+    c.lineWidth = 3.5; c.strokeStyle = '#3fe0e8'; path(true, 0, cur.i); var pc = this.proj(B, this.w2(cur.x, cur.y, cur.z)); c.lineTo(pc[0], pc[1]); c.stroke();
+  };
+  View.prototype.drawMarks = function (B, st) {
+    var c = this.cx, self = this, TK = this.TK, steps = st.steps || [], P = TK.pts;
+    var seenPh = {};
+    steps.forEach(function (sp, i) {
+      var t = TK.marks[sp.at]; if (t == null) return;
+      var q = sample(TK, t), p = self.flow.kind === 'ground' ? null : self.proj(B, self.w2(q.x, q.y, q.z));
+      var state = st.stepState ? st.stepState(sp, i) : '';
+      if (p) {
+        var col = state === 'done' ? '#3ddc84' : state === 'missed' ? '#ff6b6b' : state === 'cur' ? '#ffcf6b' : 'rgba(255,255,255,.75)';
+        c.fillStyle = col; c.beginPath(); c.arc(p[0], p[1], state === 'cur' ? 6 : 4, 0, Math.PI * 2); c.fill();
+        if (state === 'cur') { var r = 9 + 5 * Math.abs(Math.sin(Date.now() / 300)); c.strokeStyle = col; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], r, 0, Math.PI * 2); c.stroke(); }
+        // repères mémoire : numéro de phase au premier point de chaque phase
+        if (!seenPh[sp.phase] && st.phases) {
+          seenPh[sp.phase] = 1; var n = st.phases.indexOf(sp.phase) + 1;
+          c.fillStyle = st.reviewPhase === sp.phase ? '#ffcf6b' : 'rgba(127,93,214,.95)'; c.beginPath(); c.arc(p[0], p[1] - 18, 9, 0, Math.PI * 2); c.fill();
+          c.fillStyle = '#fff'; c.font = '800 11px -apple-system, Helvetica, Arial'; c.textAlign = 'center'; c.fillText(String(n), p[0], p[1] - 14); c.textAlign = 'left';
+        }
+        if (state === 'cur' && sp.title) { c.font = '700 12px -apple-system, Helvetica, Arial'; var tw = c.measureText(sp.title).width; c.fillStyle = 'rgba(8,14,24,.85)'; c.fillRect(p[0] + 12, p[1] - 30, tw + 12, 20); c.fillStyle = '#ffcf6b'; c.fillText(sp.title, p[0] + 18, p[1] - 16); }
+      }
+    });
+  };
+  View.prototype.drawPlane = function (B, at, s, px, cfg, shadow) {
+    var c = this.cx, model = buildModel(this.flapV, this.gearV);
+    var ph = s.bank * D2R, th = s.pitch * D2R, ps = s.h;
+    if (shadow) { ph = 0; th = 0; }
+    var cr = Math.cos(ph), sr = Math.sin(ph), cp = Math.cos(th), sp = Math.sin(th), ch = Math.cos(ps), sh = Math.sin(ps);
+    function tf(v) {
+      var x = v[0], y = v[1], z = v[2];
+      var y1 = y * cr - z * sr, z1 = y * sr + z * cr;
+      var x2 = x * cp - z1 * sp, z2 = x * sp + z1 * cp;
+      var X = x2 * ch - y1 * sh, Y = x2 * sh + y1 * ch, Z = shadow ? 0 : z2;
+      return [X, Y, Z];
+    }
+    function scr(w) { return [at[0] + dot(w, B.R) * px, at[1] - dot(w, B.U) * px, dot(w, B.D)]; }
+    var L = [-0.35, 0.45, 0.82], polys = [], extras = [];
+    model.forEach(function (m) {
+      if (m.p) {
+        var wp = m.p.map(tf), sp2 = wp.map(scr), d = 0; sp2.forEach(function (q) { d += q[2]; }); d /= sp2.length;
+        var a = wp[0], b = wp[1], cc = wp[2], u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [cc[0] - a[0], cc[1] - a[1], cc[2] - a[2]];
+        var n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]], nl = Math.sqrt(dot(n, n)) || 1;
+        var lum = 0.58 + 0.42 * Math.abs(dot(n, L) / nl);
+        polys.push({ s: sp2, d: d, c: m.c, lum: lum });
+      } else if (m.line) { var l0 = scr(tf(m.line[0])), l1 = scr(tf(m.line[1])); polys.push({ line: [l0, l1], d: (l0[2] + l1[2]) / 2, c: m.c, w: m.w }); }
+      else extras.push(m);
+    });
+    polys.sort(function (a, b) { return b.d - a.d; });
+    polys.forEach(function (p) {
+      if (shadow) { c.fillStyle = 'rgba(0,0,0,.22)'; c.strokeStyle = 'rgba(0,0,0,.22)'; }
+      if (p.line) { c.strokeStyle = shadow ? 'rgba(0,0,0,.22)' : 'rgb(' + p.c.join(',') + ')'; c.lineWidth = Math.max(1, p.w * px / 7); c.beginPath(); c.moveTo(p.line[0][0], p.line[0][1]); c.lineTo(p.line[1][0], p.line[1][1]); c.stroke(); return; }
+      if (!shadow) { c.fillStyle = 'rgb(' + Math.round(p.c[0] * p.lum) + ',' + Math.round(p.c[1] * p.lum) + ',' + Math.round(p.c[2] * p.lum) + ')'; c.strokeStyle = 'rgba(20,30,45,.35)'; }
+      c.beginPath(); p.s.forEach(function (q, i) { if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.closePath(); c.fill(); if (!shadow) { c.lineWidth = 0.6; c.stroke(); }
+    });
+    if (shadow) return;
+    var self = this, blink = (Date.now() % 1200) < 90;
+    extras.forEach(function (m) {
+      if (m.light) {
+        var q = scr(tf(m.at)); if (!cfg.nav && !cfg.strobe) return;
+        if (cfg.nav) { c.fillStyle = m.light === 'red' ? '#ff4040' : '#40ff70'; c.beginPath(); c.arc(q[0], q[1], 2.4, 0, Math.PI * 2); c.fill(); }
+        if (cfg.strobe && blink) { c.fillStyle = 'rgba(255,255,255,.95)'; c.beginPath(); c.arc(q[0], q[1], 5, 0, Math.PI * 2); c.fill(); }
+      } else if (m.prop) {
+        var rpm = cfg.rpm ? cfg.rpm[m.prop > 0 ? 0 : 1] : 0, ring = [], k;
+        for (k = 0; k < 18; k++) { var a = k / 18 * Math.PI * 2; ring.push(scr(tf([m.at[0], m.at[1] + m.r * Math.cos(a), m.at[2] + m.r * Math.sin(a)]))); }
+        if (rpm > 0) {
+          c.fillStyle = 'rgba(210,225,245,' + (0.12 + Math.min(0.18, rpm / 15000)) + ')'; c.beginPath(); ring.forEach(function (q, i) { if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.closePath(); c.fill();
+        }
+        var bA = rpm > 0 ? self.propA * (m.prop > 0 ? 1 : -1) : 0.4; c.strokeStyle = rpm > 0 ? 'rgba(30,34,40,.45)' : '#22262c'; c.lineWidth = Math.max(1.2, px / 3.5);
+        for (k = 0; k < 3; k++) {
+          var aa = bA + k * Math.PI * 2 / 3, tip = scr(tf([m.at[0], m.at[1] + m.r * Math.cos(aa), m.at[2] + m.r * Math.sin(aa)])), hub = scr(tf(m.at));
+          c.beginPath(); c.moveTo(hub[0], hub[1]); c.lineTo(tip[0], tip[1]); c.stroke();
+        }
+      }
+    });
+    if (cfg.landing) { var nz = scr(tf([4.4, 0, -0.1])); var gl = c.createRadialGradient(nz[0], nz[1], 0, nz[0], nz[1], px * 3); gl.addColorStop(0, 'rgba(255,250,220,.9)'); gl.addColorStop(1, 'rgba(255,250,220,0)'); c.fillStyle = gl; c.beginPath(); c.arc(nz[0], nz[1], px * 3, 0, Math.PI * 2); c.fill(); }
+  };
+
+  /* Vue « cockpit » : vue extérieure synthétique depuis la place pilote (illustrative) */
+  View.prototype.drawCockpit = function (s, st, cfg) {
+    var c = this.cx, W = this.W, H = this.H, F = W * 0.9, ppd = F * D2R; // pixels par degré
+    var horizonY = H * 0.46 + s.pitch * ppd;
+    c.save(); c.translate(W / 2, H * 0.46); c.rotate(-s.bank * D2R); c.translate(-W / 2, -H * 0.46);
+    var sky = c.createLinearGradient(0, horizonY - H, 0, horizonY); sky.addColorStop(0, '#2d6fb5'); sky.addColorStop(1, '#a9cdea');
+    c.fillStyle = sky; c.fillRect(-W, horizonY - 2 * H, 3 * W, 2 * H);
+    var gnd = c.createLinearGradient(0, horizonY, 0, horizonY + H); gnd.addColorStop(0, '#6f8f5a'); gnd.addColorStop(1, '#3d5a33');
+    c.fillStyle = gnd; c.fillRect(-W, horizonY, 3 * W, 2 * H);
+    // piste en perspective
+    var rw = this.flow.runway;
+    if (rw || this.flow.kind === 'ground') {
+      var hM = Math.max(2, s.z * 0.3048) + 1.6, ch = Math.cos(s.h), sh = Math.sin(s.h), cp = Math.cos(s.pitch * D2R), sp = Math.sin(s.pitch * D2R);
+      var pr = function (xn, yn) {
+        var dx = (xn - s.x) * 1852, dy = (yn - s.y) * 1852, xf = dx * ch + dy * sh, yl = -dx * sh + dy * ch, zu = -hM;
+        var x1 = xf * cp + zu * sp, z1 = -xf * sp + zu * cp; if (x1 < 2) return null;
+        return [W / 2 - yl / x1 * F, H * 0.46 - z1 / x1 * F];
+      };
+      var R0 = rw || { x0: -0.05, x1: 0.05, w: 0.004 }, ww = this.flow.kind === 'ground' ? 0.004 : 0.016;
+      var q = [pr(R0.x0, -ww), pr(R0.x1, -ww), pr(R0.x1, ww), pr(R0.x0, ww)];
+      if (q[0] && q[1] && q[2] && q[3]) {
+        c.fillStyle = '#4a4e55'; c.beginPath(); q.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.fill();
+        var m0 = pr(R0.x0 + 0.02, 0), m1 = pr(R0.x1 - 0.02, 0); if (m0 && m1) { c.strokeStyle = '#fff'; c.setLineDash([8, 10]); c.lineWidth = 1.5; c.beginPath(); c.moveTo(m0[0], m0[1]); c.lineTo(m1[0], m1[1]); c.stroke(); c.setLineDash([]); }
+      }
+    }
+    c.restore();
+    // IMC illustratif (approche IFR) : couche nuageuse au-dessus de 900 ft AAL
+    if (this.flow.ifr) { var fog = clamp((s.z - 650) / 300, 0, 1); if (fog > 0) { c.fillStyle = 'rgba(236,240,244,' + (0.93 * fog) + ')'; c.fillRect(0, 0, W, H); if (fog > 0.6) { c.fillStyle = 'rgba(60,70,84,.75)'; c.font = '600 12px -apple-system, Helvetica, Arial'; c.fillText('IMC (illustratif)', 14, H * 0.6); } } }
+    // capot / auvent
+    c.fillStyle = '#1a1f27'; c.beginPath(); c.moveTo(0, H); c.lineTo(0, H * 0.78); c.quadraticCurveTo(W / 2, H * 0.68, W, H * 0.78); c.lineTo(W, H); c.closePath(); c.fill();
+    c.fillStyle = '#0f1318'; c.fillRect(0, 0, W, 10);
+    // maquette
+    c.strokeStyle = '#ffcf6b'; c.lineWidth = 3; c.beginPath(); c.moveTo(W / 2 - 40, H * 0.46); c.lineTo(W / 2 - 12, H * 0.46); c.lineTo(W / 2, H * 0.46 + 8); c.lineTo(W / 2 + 12, H * 0.46); c.lineTo(W / 2 + 40, H * 0.46); c.stroke();
+  };
+
+  TF.Flow3DView = View;
+  TF.Flow3DView.sample = sample;
+  TF.Flow3DView.prepTrack = prepTrack;
+})(this);
+
+</script>
 <!-- Interface -->
 <script>/* js/ui/kit.js */
 /* Interface — boîte à outils : toasts, popovers, feuilles modales, sons. */
@@ -9868,7 +10577,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     return '<span class="ladder"><i class="' + c(ph.discover) + '" title="Découvrir">👀</i><i class="' + c(ph.practice >= 90, ph.practice > 0) + '" title="S\'entraîner">✋</i><i class="' + c(ph.memory >= 100, ph.memory > 0) + '" title="De mémoire">🧠</i></span>';
   }
   H.show = function () {
-    if (TF.Ess) TF.Ess.close(); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); }
+    if (TF.Ess) TF.Ess.close(); if (TF.Flow3D) TF.Flow3D.close(true); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); }
     var p = TF.Profiles.current(); if (!p) return;
     var el = K.$('home'), L = TF.Profiles.level(p);
     var pct = L.next ? Math.round((p.xp - L.min) / (L.next - L.min) * 100) : 100;
@@ -10019,7 +10728,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var h = '<div class="sp-grid">';
     h += tile('fly', big('trip', 'mh-trip', '🛫 VOL IFR LFBU ⇄ LFBL', 'Roulage, radio AFIS, décollage, montée, ILS à Limoges, retour et atterrissage') + '<div class="sp-row">' + '<button class="sp-chip mh-free" data-act="free">🎮 COCKPIT LIBRE</button></div>');
     h += tile('prep', big('mepmap', 'mh-mep', '✈ MES VOLS MEP', 'Prépare chaque vol, réussis les missions, arrive prêt devant ton instructeur') + '<div class="sp-row">' + chip('brief') + chip('test') + '</div>');
-    h += tile('ground', '<div class="sp-row">' + chip('flow') + chip('mem') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
+    h += tile('ground', big('flow3d', 'mh-f3d', '✈ FLOW 3D — APPRENDRE EN REGARDANT', 'Visualise le vol, mémorise les actions, maîtrise ton DA42.') + '<div class="sp-row">' + chip('flow') + chip('mem') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
     h += tile('learn', big('ifr', 'mh-ifr', '📚 L\'IFR POUR LES NULS', 'Les bases de l\'IFR expliquées simplement') + '<div class="sp-row">' + chip('avion') + chip('tour') + '</div>');
     return h + '</div>';
   }
@@ -10027,7 +10736,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   function toSection() { var sc = K.$('essSec'), el2 = K.$('ess'); if (sc && el2) el2.scrollTop = Math.max(0, sc.offsetTop - 10); }
   E.show = function (tab) {
     if (tab) E.tab = tab;
-    TF.Home.hide(); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); }
+    TF.Home.hide(); if (TF.Flow3D) TF.Flow3D.close(true); if (TF.Ifr) TF.Ifr.close(); if (TF.Mep) TF.Mep.abort(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); }
     var el = K.$('ess'), h = '<div class="hm-in">';
     if (E.tab === 'test') {
       // Class test : page dédiée, sans les espaces de l'accueil
@@ -10050,6 +10759,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       mepresume: function () { E.close(); TF.Mep.resume(); },
       mepmap: function () { E.close(); TF.Mep.show('map'); },
       trip: function () { E.close(); TF.Trip.show(); },
+      flow3d: function () { E.close(); TF.Flow3D.show(); },
       cloud: function () { if (TF.Cloud) TF.Cloud.openPanel(); },
       tab: function (b) { var v = b.getAttribute('data-v'); if (v === 'test' && E.tab !== 'test') E.prevTab = E.tab; E.show(v); toSection(); },
       ctback: function () { E.ct = null; E.show(E.prevTab && E.prevTab !== 'test' ? E.prevTab : 'flow'); toSection(); },
@@ -13237,12 +13947,615 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 })(this);
 
 </script>
+<script>/* js/ui/flow3d.js */
+/* FLOW 3D — « Apprendre en regardant ».
+ * UNE PHASE DE VOL → UNE ANIMATION → UNE ACTION ESSENTIELLE → UNE VÉRIFICATION → PHASE SUIVANTE.
+ * Trois modes : Regarder et comprendre · Apprendre en manipulant · De mémoire (observateur silencieux).
+ * Le cockpit réel reste la référence : une action n'est jamais validée parce qu'une animation est terminée.
+ * ES5 uniquement (iPad iOS 12).
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF, K = TF.UI, esc = TF.util.esc, V = TF.Voice;
+  var F = TF.Flow3D = {};
+  var FE = 420; // altitude terrain utilisée par le simulateur (ft)
+  var D2R = Math.PI / 180;
+  var SPEEDS = {
+    express: { k: 2.2, dwell: 1500, l: '⏩ EXPRESS' },
+    normal: { k: 1, dwell: 3400, l: '▶ NORMAL' },
+    immersion: { k: 0.55, dwell: 6500, l: '🎧 IMMERSION' }
+  };
+  var MODES = { watch: '👁 Regarder et comprendre', learn: '✋ Apprendre en manipulant', memory: '🧠 De mémoire' };
+  var VIEWN = { auto: 'AUTO', profil: 'PROFIL', dessus: 'DESSUS', iso: '3D ISO', cockpit: 'COCKPIT' };
+  var R = null, view = null, raf = 0, poll = 0, gen = 0;
+
+  function app() { return TF.app; }
+  function ck() { return TF.app.ck; }
+  function el() {
+    var e = K.$('f3d');
+    if (!e) { e = document.createElement('div'); e.id = 'f3d'; e.className = 'hidden'; (K.$('stage') || document.body).appendChild(e); }
+    return e;
+  }
+  function store(k, v) { try { if (v === undefined) return JSON.parse(root.localStorage.getItem(k) || 'null'); root.localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } return v; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* ------------------------------------------------ Données (+ version validée localement par l'éditeur) ------------------------------------------------ */
+  var PUBKEY = 'tiffanir.flow3d.pub', HISTKEY = 'tiffanir.flow3d.hist', DRAFTKEY = 'tiffanir.flow3d.draft';
+  function applyOv(flow, ov) {
+    var f = clone(flow); if (!ov) return f;
+    var byId = {}; f.steps.forEach(function (s) { byId[s.id] = s; });
+    if (ov.text) Object.keys(ov.text).forEach(function (id) { var s = byId[id], t = ov.text[id]; if (!s) return; ['title', 'action', 'check', 'why'].forEach(function (k) { if (t[k] != null && t[k] !== '') s[k] = t[k]; }); });
+    if (ov.order) { var ord = ov.order.filter(function (id) { return byId[id]; }); f.steps.forEach(function (s) { if (ord.indexOf(s.id) < 0) ord.push(s.id); }); f.steps = ord.map(function (id) { return byId[id]; }); }
+    // une exigence opérationnelle (locked) ne peut pas être masquée
+    if (ov.hidden) f.steps = f.steps.filter(function (s) { return s.locked || !ov.hidden[s.id]; });
+    f._ov = true;
+    return f;
+  }
+  F.flows = function (draft) {
+    var pub = draft || store(PUBKEY) || {};
+    return TF.DATA.flow3d.flows.map(function (fl) { return applyOv(fl, pub.flows && pub.flows[fl.id]); });
+  };
+  F.flowById = function (id, draft) { return F.flows(draft).filter(function (f) { return f.id === id; })[0]; };
+  F.pubVersion = function () { var p = store(PUBKEY); return p && p.version ? p : null; };
+
+  /* ------------------------------------------------ Conditions de réussite ------------------------------------------------ */
+  function evalS(c, S) {
+    S = S || ck().s; if (!c) return false;
+    if (c.all) { for (var i = 0; i < c.all.length; i++) if (!evalS(c.all[i], S)) return false; return true; }
+    if (c.cond) return !!TF.evalCond(c.cond, S);
+    if (c.ctl) return S.controls[c.ctl] === c.eq;
+    if (c.pwr) return S.controls.power_l >= c.pwr[0] && S.controls.power_l <= c.pwr[1] && S.controls.power_r >= c.pwr[0] && S.controls.power_r <= c.pwr[1];
+    return false;
+  }
+  F.evalS = evalS;
+
+  /* ------------------------------------------------ Progression par pilote ------------------------------------------------ */
+  function prog(id) {
+    var p = TF.Profiles.current(); if (!p) return null;
+    p.flow3d = p.flow3d || {};
+    return p.flow3d[id] = p.flow3d[id] || { disc: false, learn: null, mem: null, memRuns: 0, errs: {}, last: 0 };
+  }
+  function saveProg() { try { TF.Profiles.save(); } catch (e) { } }
+  function fmtDate(t) { if (!t) return '—'; var d = new Date(t); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); }
+
+  /* ------------------------------------------------ Menu du module ------------------------------------------------ */
+  F.editorAllowed = function () { try { return /[?&]edit=1/.test(root.location.search) || root.localStorage.getItem('tiffanir.flowEditor') === '1'; } catch (e) { return false; } };
+  F.show = function () {
+    F.stop(true);
+    if (TF.Home) TF.Home.hide(); if (TF.Ess && TF.Ess.visible()) TF.Ess.close();
+    var e = el(), pv = F.pubVersion();
+    var h = '<div class="f3-menu"><div class="f3-top"><div><b>✈ FLOW 3D — APPRENDRE EN REGARDANT</b><small>Visualise le vol, mémorise les actions, maîtrise ton DA42.</small></div><button class="btn" data-act="close">✕ Fermer</button></div>';
+    h += '<div class="f3-rule">UNE PHASE DE VOL <i>→</i> UNE ANIMATION <i>→</i> UNE ACTION ESSENTIELLE <i>→</i> UNE VÉRIFICATION <i>→</i> PHASE SUIVANTE</div>';
+    h += '<div class="f3-cards">';
+    F.flows().forEach(function (fl) {
+      var pg = prog(fl.id) || {}, m = pg.mem && pg.mem.best;
+      var errs = Object.keys(pg.errs || {}).filter(function (k) { return pg.errs[k] >= 2; }).map(function (k) { var s = fl.steps.filter(function (x) { return x.id === k; })[0]; return s ? s.title : k; });
+      h += '<div class="f3-card"><div class="f3-ch"><span class="f3-ico">' + fl.icon + '</span><div><b>' + esc(fl.title) + '</b><small>' + esc(fl.sub) + ' · ' + esc(fl.ref.doc + ' p.' + fl.ref.p) + '</small></div></div>';
+      h += '<div class="f3-prog"><span class="' + (pg.disc ? 'on' : '') + '">👁 ' + (pg.disc ? 'Découvert' : 'À découvrir') + '</span>' +
+        '<span class="' + (pg.learn ? 'on' : '') + '">✋ ' + (pg.learn ? 'Pratiqué · ' + pg.learn.hints + ' indice' + (pg.learn.hints > 1 ? 's' : '') : 'À pratiquer') + '</span>' +
+        '<span class="' + (m ? 'on' : '') + '">🧠 ' + (m ? 'Meilleur : ' + m.om + ' oubli' + (m.om > 1 ? 's' : '') + ' · ' + m.ord + ' err. d\'ordre' : 'De mémoire : pas encore') + '</span>' +
+        '<span>🕑 Dernière révision : ' + fmtDate(pg.last) + '</span></div>';
+      if (errs.length) h += '<div class="f3-errs">⚠ Erreurs récurrentes : ' + errs.map(esc).join(' · ') + '</div>';
+      h += '<div class="f3-acts"><button class="btn primary" data-act="go" data-id="' + fl.id + '" data-m="watch">👁 Regarder</button><button class="btn" data-act="go" data-id="' + fl.id + '" data-m="learn">✋ Manipuler</button><button class="btn" data-act="go" data-id="' + fl.id + '" data-m="memory">🧠 De mémoire</button><button class="btn" data-act="syn" data-id="' + fl.id + '">📋 Synthèse</button></div></div>';
+    });
+    h += '</div><div class="f3-foot">Schémas pédagogiques d\'après les flow charts du PDP DA42 VI et l\'OM-B — ce ne sont ni des procédures publiées, ni des données de navigation. ' +
+      'En cas d\'écart : l\'OM-B prévaut.' + (pv ? ' <b>Version validée locale v' + pv.version + ' (' + esc(pv.by || '') + ')</b>.' : '') + '</div>';
+    if (F.editorAllowed()) h += '<div class="f3-acts"><button class="btn" data-act="edit">✏️ Éditeur de flows (administrateur)</button></div>';
+    h += '</div>';
+    e.className = 'f3-full'; e.innerHTML = K.plain(h);
+    K.bindActs(e, {
+      close: function () { F.close(); TF.Ess.show(); },
+      go: function (b) { F.open(b.getAttribute('data-id'), b.getAttribute('data-m')); },
+      syn: function (b) { F.synthesis(b.getAttribute('data-id')); },
+      edit: function () { F.editor(); }
+    });
+  };
+  F.visible = function () { var e = K.$('f3d'); return !!e && !/hidden/.test(e.className); };
+  F.active = function () { return !!R; };
+  F.close = function (silent) { F.stop(silent); var e = K.$('f3d'); if (e) { e.className = 'hidden'; e.innerHTML = ''; } };
+
+  /* ------------------------------------------------ Tableau de synthèse ------------------------------------------------ */
+  F.synthesis = function (id) {
+    var fl = F.flowById(id), L = TF.DATA.flow3d.srcLabels;
+    var h = K.head('📋 ' + esc(fl.title) + ' — synthèse');
+    h += '<p class="f3-note">Ordre logique retenu, avec le statut de chaque élément : <b>PDP</b> = écrit dans le flow chart · <b>DOC</b> = autre document approuvé (OM-B, C/L) · <b>PÉDA</b> = simplification pédagogique · <b>À VALIDER</b> = point à confirmer avec l\'instructeur.</p>';
+    h += '<div class="f3-tw"><table class="f3-tab"><tr><th>Phase</th><th>Déclencheur</th><th>Action essentielle</th><th>Vérification</th><th>Source</th></tr>';
+    var wp = {}; fl.waypoints.forEach(function (w) { wp[w.id] = w.t; });
+    fl.steps.forEach(function (s) {
+      var st = s.src === 'PEDA' ? 'PÉDA' : s.src === 'VAL' ? 'À VALIDER' : s.src;
+      var flag = /à confirmer/i.test(s.ref.sec || '') ? ' <span class="f3-val">page à confirmer</span>' : '';
+      h += '<tr><td>' + esc(wp[s.phase] || s.phase) + '</td><td>' + esc(s.title) + '</td><td>' + esc(s.action) + (s.callout ? '<br><small>🎙 ' + esc(s.calloutPdp || '« ' + s.callout + ' »') + (s.calloutSrc === 'PEDA' ? ' (formulation pédagogique)' : '') + '</small>' : '') + '</td><td>' + esc(s.check) + '</td>' +
+        '<td><span class="f3-src f3-' + s.src + '">' + st + '</span> ' + esc(s.ref.doc + ' p.' + s.ref.p) + flag + (s.locked ? ' <span class="f3-lock">🔒 exigence</span>' : '') + '</td></tr>';
+    });
+    h += '</table></div><p class="f3-note">' + esc(fl.field) + '. ' + (L ? '' : '') + 'Les valeurs (vitesses, puissances) sont celles du flow chart cité ; elles ne remplacent pas l\'OM-B / l\'AFM.</p>';
+    K.sheet(h, function (s) { var c = s.querySelector('.sh-close'); if (c) c.onclick = K.closeSheet; }, { width: '980px' });
+  };
+
+  /* ------------------------------------------------ Lecteur ------------------------------------------------ */
+  function markT(m) { var t = R.TK.marks[m]; return t == null ? R.TK.T : t; }
+  function stepIdx(id) { for (var i = 0; i < R.flow.steps.length; i++) if (R.flow.steps[i].id === id) return i; return -1; }
+  function freezeFlight(on) {
+    var c = ck();
+    if (on) { if (!R.prevRate) R.prevRate = c.flightRate; c.flightRate = function () { return 0; }; }
+    else if (R && R.prevRate) { c.flightRate = R.prevRate; R.prevRate = null; }
+  }
+  function resetCockpit() {
+    var a = app(), sc = a.scenario(), PE = TF.ProcEngine;
+    if (!R.snap0) R.snap0 = PE.buildInitial(R.flow.state, sc);
+    a.ck.reset(sc); a.ck.restore(R.snap0); a.ck.s.ui = null;
+    freezeFlight(true); syncCockpit(); a.view.clearHighlight(); a.view.home(false); a.view.renderAll();
+  }
+  function runOps(ops, cb) {
+    var PE = TF.ProcEngine, c = ck();
+    try { new PE.Runner(c, null, PE.Runner.instantClock(c)).run(ops, function () { app().view.renderDynamic(true); if (cb) cb(); }); } catch (e) { if (cb) cb(); }
+  }
+  function syncCockpit() {
+    if (!R || R.flow.kind !== 'air') return;
+    var s = TF.Flow3DView.sample(R.TK, R.t), f = ck().s.flight;
+    f.script = null; f.fdm = false;
+    f.onGround = s.onGround; f.ias = Math.round(s.ias); f.alt = Math.round(FE + s.z); f.vs = s.onGround ? 0 : s.vs;
+    f.hdg = Math.round((276 - s.h / D2R + 720) % 360); f.pitch = s.pitch; f.bank = s.bank;
+  }
+  function cfgNow() {
+    var s = ck().s, c = s.controls, I = null; try { I = ck().indications(); } catch (e) { }
+    var gp = s.sys.gear ? s.sys.gear.pos : (c.gear_lever === 'DOWN' ? 1 : 0);
+    return { gear: gp, flaps: c.flaps, rpm: I && I.eng ? [I.eng.L.rpm || 0, I.eng.R.rpm || 0] : [0, 0], nav: c.position_lights === 'ON', strobe: c.strobe === 'ON', landing: c.landing_light === 'ON',
+      pwr: [Math.round(c.power_l), Math.round(c.power_r)], lat: s.g.lat || '', vert: s.g.vert || '', latArm: s.g.latArm || '', ap: !!s.sys.apEngaged, gearLever: c.gear_lever, pumps: c.fuel_pump_l === 'ON' && c.fuel_pump_r === 'ON' };
+  }
+
+  F.open = function (id, mode, opts) {
+    opts = opts || {};
+    var fl = opts.flow || F.flowById(id); if (!fl) return;
+    F.stop(true); K.closeSheet();
+    if (TF.Ess) { if (TF.Ess.active && TF.Ess.active()) TF.Ess.stop(true); if (TF.Ess.visible()) TF.Ess.close(); }
+    if (TF.Home) TF.Home.hide(); if (TF.Trip) { TF.Trip.abort(); TF.Trip.hide(); } if (TF.Mep) TF.Mep.abort();
+    app().modes.idle();
+    gen++;
+    R = { flow: fl, mode: mode || 'watch', speed: mode === 'memory' ? 'immersion' : 'normal', view: 'auto', t: 0, playing: true, idx: 0, cur: -1, last: Date.now(),
+      waiting: false, res: fl.steps.map(function () { return {}; }), hints: 0, nav: false, review: null, layout: mode === 'memory' ? 'pip' : 'full', g: gen, ord: 0,
+      voice: V.enabled(), preview: !!opts.preview, finished: false, detail: false, lastStep: -1 };
+    var e = el(); e.className = 'f3-' + R.layout; e.innerHTML = '';
+    buildPlayer();
+    view = new TF.Flow3DView(K.$('f3cv'));
+    R.TK = view.setFlow(fl);
+    resetCockpit();
+    var pg = prog(fl.id); if (pg) { pg.last = Date.now(); saveProg(); }
+    if (poll) clearInterval(poll); poll = setInterval(pollFn, 250);
+    R.cfg = cfgNow();
+    renderCard(); renderBar();
+    loop();
+    if (R.mode === 'memory') K.toast('🧠 De mémoire : l\'animation avance, fais le flow dans le cockpit. Rien n\'est validé par l\'animation.', 'info', 4200);
+  };
+  F.stop = function (silent) {
+    if (!R) return;
+    gen++; freezeFlight(false);
+    if (raf) { (root.cancelAnimationFrame || clearTimeout)(raf); raf = 0; }
+    if (poll) { clearInterval(poll); poll = 0; }
+    V.stop(); app().view.clearHighlight();
+    R = null;
+  };
+  F.state = function () { return R; };
+
+  function loop() {
+    var g = R && R.g;
+    var raf2 = root.requestAnimationFrame || function (f) { return setTimeout(f, 33); };
+    function fr() { if (!R || R.g !== g) return; try { frame(); } catch (e) { if (root.console) console.error(e); } raf = raf2(fr); }
+    raf = raf2(fr);
+  }
+  function frame() {
+    var now = Date.now(), dt = Math.min(0.1, (now - R.last) / 1000); R.last = now;
+    if (R.playing && !R.waiting && !R.finished) R.t = Math.min(R.TK.T, R.t + dt * SPEEDS[R.speed].k);
+    var steps = R.flow.steps;
+    while (!R.waiting && R.idx < steps.length && R.t >= markT(steps[R.idx].at)) { var i = R.idx; R.idx++; trigger(i); }
+    if (!R.waiting && !R.finished && R.t >= R.TK.T && R.idx >= steps.length) finish();
+    syncCockpit();
+    var vs = curStep(), vw = R.view === 'auto' ? (vs ? vs.view : 'iso') : R.view, zm = vs ? vs.cam || 'wide' : 'wide';
+    if (R.layout === 'pip' && vw === 'cockpit' && R.view === 'auto') vw = 'iso';
+    var cd = K.$('f3card'), padL = (R.layout === 'full' && cd && !/hidden/.test(cd.className) && view.W > 760) ? Math.min(430, cd.offsetWidth + 20) : 0;
+    view.draw({ t: R.t, view: vw, zoom: zm, padL: padL, cfg: R.cfg, steps: steps, phases: R.flow.waypoints.map(function (w) { return w.id; }), reviewPhase: R.review,
+      stepState: function (sp, i) { var r = R.res[i]; if (i === R.cur && !R.finished) return 'cur'; if (r.missed) return 'missed'; if (r.done || r.seen) return 'done'; return ''; } });
+    R.viewNow = vw;
+  }
+  function curStep() { var i = R.cur >= 0 ? R.cur : R.lastStep; return i >= 0 ? R.flow.steps[i] : null; }
+
+  function trigger(i) {
+    var sp = R.flow.steps[i], r = R.res[i];
+    if (R.review && sp.phase !== R.review) {
+      if (R.reviewStarted) { R.idx = i; R.t = markT(sp.at) - 0.01; R.waiting = true; R.cur = -1; R.reviewEnd = true; renderCard(); return; }
+    }
+    if (R.review && sp.phase === R.review) R.reviewStarted = true;
+    R.lastStep = i; r.trigT = R.t;
+    if (R.mode === 'watch') {
+      R.cur = i; R.waiting = true; R.detail = false; r.seen = true; renderCard(); renderBar();
+      var g = R.g, said = !R.voice, dwelled = false;
+      var go = function () { if (!R || R.g !== g || R.cur !== i) return; if (said && dwelled && R.playing) { R.waiting = false; R.cur = -1; renderCard(); } };
+      R.resume = go;
+      setTimeout(function () { if (!R || R.g !== g || R.cur !== i) return; if (sp.demo) runOps(sp.demo); }, 700);
+      setTimeout(function () { dwelled = true; go(); }, SPEEDS[R.speed].dwell);
+      if (R.voice) speakStep(sp, function () { said = true; go(); });
+    } else if (R.mode === 'learn') {
+      R.cur = i; R.waiting = true; R.detail = false; r.hint = 0; renderCard(); renderBar();
+      if (sp.success && evalS(sp.success)) { r.already = true; setTimeout(function () { if (R && R.cur === i) learnDone(i, true); }, 1400); }
+    } else {
+      R.cur = i; renderCard();
+    }
+  }
+  function speakStep(sp, done) {
+    var fr = sp.title + '. ' + sp.action + '. Vérification : ' + sp.check + '.';
+    V.say(fr, 'fr', function () { if (sp.callout && R && R.voice) V.say(sp.callout, 'en', done); else if (done) done(); });
+  }
+  function learnDone(i, already) {
+    if (!R || R.cur !== i) return;
+    var r = R.res[i]; if (r.done) return; r.done = true; r.doneT = R.t;
+    K.sound.ok(); K.toast(already ? '✓ Déjà en place : ' + esc(R.flow.steps[i].title) : '✓ ' + esc(R.flow.steps[i].check), 'ok', 1600);
+    app().view.clearHighlight();
+    if (R.layout === 'pip' && R.mode === 'learn') setLayout('full'); // retour automatique à l'animation
+    var g = R.g; setTimeout(function () { if (!R || R.g !== g || R.cur !== i) return; R.waiting = false; R.cur = -1; renderCard(); renderBar(); }, 900);
+  }
+
+  /* ---- observateur « De mémoire » ---- */
+  function openT(i) { return i ? markT(R.flow.steps[i - 1].at) : 0; }
+  function dueT(i) { var sp = R.flow.steps[i]; return markT(sp.until || (R.flow.steps[i + 1] || sp).at); }
+  function observe() {
+    var steps = R.flow.steps;
+    steps.forEach(function (sp, i) {
+      if (!sp.success) return;
+      var r = R.res[i], v = evalS(sp.success), o = openT(i), due = dueT(i);
+      if (r.init == null) r.init = v;                       // état du cockpit au début du flow
+      if (!r.done) {
+        // instant réel où l'action a été faite (même avant l'ouverture de sa fenêtre)
+        if (v && r.firstT == null) r.firstT = r.init ? -1 : R.t;
+        if (!v) r.firstT = null;
+        if (R.t >= o && v) {
+          r.done = true; r.doneT = r.firstT; r.already = r.firstT === -1; r.early = r.firstT >= 0 && r.firstT < markT(sp.at) - 0.01; r.late = r.doneT > due;
+          (sp.deps || []).forEach(function (d) {
+            var j = stepIdx(d), rj = j >= 0 ? R.res[j] : null;
+            if (j >= 0 && steps[j].success && (!rj.done || rj.doneT > r.doneT)) { r.orderErr = r.orderErr || []; r.orderErr.push(d); }
+          });
+        }
+      } else if (R.t <= due) {
+        if (r.lastV && !v) r.undone = true;
+        if (r.undone && v) { r.corr = (r.corr || 0) + 1; r.undone = false; }
+      }
+      r.lastV = v;
+    });
+  }
+  function pollFn() {
+    if (!R) return;
+    R.cfg = cfgNow();
+    if (R.mode === 'learn' && R.waiting && R.cur >= 0) { var sp = R.flow.steps[R.cur]; if (sp.success && !R.res[R.cur].done && evalS(sp.success)) learnDone(R.cur); }
+    if (R.mode === 'memory' && !R.finished && R.playing) observe();
+    hud();
+  }
+
+  /* ------------------------------------------------ Navigation ------------------------------------------------ */
+  function goStep(i) {
+    if (!R || R.mode === 'memory') return;
+    var steps = R.flow.steps; i = Math.max(0, Math.min(i, steps.length - 1));
+    if (R.mode === 'learn') { for (var k = 0; k < i; k++) if (!R.res[k].done) { R.res[k].skipped = true; R.nav = true; } }
+    V.stop(); gen++; R.g = gen; loop();
+    resetCockpit();
+    var ops = []; for (var j = 0; j < i; j++) if (steps[j].demo) ops = ops.concat(steps[j].demo);
+    if (ops.length) runOps(ops);
+    for (var m = i; m < steps.length; m++) { var keepSkip = R.res[m].skipped; R.res[m] = {}; if (keepSkip) R.res[m].skipped = true; }
+    R.t = Math.max(0, markT(steps[i].at) - 0.01); R.idx = i; R.cur = -1; R.waiting = false; R.finished = false; R.playing = true; R.reviewEnd = false;
+    if (R.layout === 'pip' && R.mode !== 'memory') setLayout('full');
+    renderCard(); renderBar();
+  }
+  function review(ph) {
+    if (!R || R.mode === 'memory') return;
+    var steps = R.flow.steps, i0 = -1; for (var i = 0; i < steps.length; i++) if (steps[i].phase === ph) { i0 = i; break; }
+    if (i0 < 0) return;
+    R.review = ph; R.reviewStarted = false; goStep(i0);
+    var t0 = i0 ? markT(steps[i0 - 1].at) : 0; R.t = Math.max(t0, markT(steps[i0].at) - 6);
+  }
+  function setLayout(l) { if (!R) return; R.layout = l; el().className = 'f3-' + l + (l === 'pip' && R.pipRight ? ' r' : ''); renderCard(); renderBar(); }
+  // la fenêtre réduite se place du côté opposé à la commande à manipuler
+  function pipSide(id) {
+    var v = app().view, d = ck().defs[id], st = K.$('stage'); if (!d || !st || !v.toScreen) return;
+    try { var p = v.toScreen(d.x + (d.w || 0) / 2, d.y), r = st.getBoundingClientRect(); R.pipRight = (p.x - r.left) < r.width * 0.5; } catch (e) { }
+  }
+
+  /* ------------------------------------------------ Interface du lecteur ------------------------------------------------ */
+  function buildPlayer() {
+    var h = '<div class="f3-head"><span class="f3-ttl">' + R.flow.icon + ' ' + esc(R.flow.title) + '</span><span class="f3-mode">' + MODES[R.mode] + (R.preview ? ' · APERÇU (brouillon)' : '') + '</span>' +
+      '<span class="f3-sp"></span><button class="btn sm" data-act="pip" title="Réduire / agrandir">⇲</button><button class="btn sm" data-act="quit">✕</button></div>';
+    h += '<div class="f3-wps" id="f3wps"></div>';
+    h += '<div class="f3-stage"><canvas id="f3cv"></canvas><div class="f3-hud" id="f3hud"></div><div class="f3-card" id="f3card"></div></div>';
+    h += '<div class="f3-bar" id="f3bar"></div>';
+    var e = el(); e.innerHTML = K.plain(h);
+    K.bindActs(e.querySelector('.f3-head'), {
+      quit: function () { if (R && R.mode === 'memory' && !R.finished && R.t > 3) { finish(true); return; } F.close(); F.show(); },
+      pip: function () { setLayout(R.layout === 'pip' ? 'full' : 'pip'); }
+    });
+  }
+  function renderBar() {
+    if (!R) return;
+    var wps = K.$('f3wps'), steps = R.flow.steps, cur = curStep();
+    if (wps) {
+      wps.innerHTML = K.plain(R.flow.waypoints.map(function (w, n) {
+        var on = cur && cur.phase === w.id, dis = R.mode === 'memory' ? ' disabled' : '';
+        return '<button class="f3-wp' + (on ? ' on' : '') + (R.review === w.id ? ' rv' : '') + '" data-act="wp" data-v="' + w.id + '"' + dis + ' title="' + esc(w.d) + (R.mode === 'memory' ? '' : ' — revoir cette étape') + '"><i>' + (n + 1) + '</i>' + esc(w.t) + '</button>';
+      }).join('<span class="f3-arr">›</span>'));
+      K.bindActs(wps, { wp: function (b) { review(b.getAttribute('data-v')); } });
+    }
+    var b = K.$('f3bar'); if (!b) return;
+    var mem = R.mode === 'memory', h = '';
+    if (R.layout === 'pip') {
+      h = '<div class="f3-grp"><button class="btn primary" data-act="play">' + (R.playing ? '❚❚' : '▶') + '</button>' + (mem ? '<button class="btn warn" data-act="end">⏹ Terminer</button>' : '<button class="btn" data-act="bigger">⤢ Animation</button>') + '<button class="btn" data-act="voice">' + (R.voice ? '🔊' : '🔇') + '</button></div>';
+    } else {
+    h += '<div class="f3-grp"><button class="btn" data-act="prev"' + (mem ? ' disabled title="Navigation désactivée en mode De mémoire"' : '') + '>◀ ÉTAPE PRÉCÉDENTE</button>' +
+      '<button class="btn primary" data-act="play">' + (R.playing ? '❚❚ PAUSE' : '▶ LECTURE') + '</button>' +
+      '<button class="btn" data-act="next"' + (mem ? ' disabled title="Navigation désactivée en mode De mémoire"' : '') + '>ÉTAPE SUIVANTE ▶</button>' +
+      '<button class="btn" data-act="replay">↺ REJOUER</button></div>';
+    h += '<div class="f3-grp seg">' + Object.keys(SPEEDS).map(function (k) { return '<button class="btn' + (R.speed === k ? ' on' : '') + '" data-act="speed" data-v="' + k + '">' + SPEEDS[k].l + '</button>'; }).join('') + '</div>';
+    h += '<div class="f3-grp seg">' + Object.keys(VIEWN).map(function (k) { return '<button class="btn' + (R.view === k ? ' on' : '') + '" data-act="view" data-v="' + k + '">' + VIEWN[k] + '</button>'; }).join('') + '</div>';
+    h += '<div class="f3-grp"><button class="btn" data-act="voice">' + (R.voice ? '🔊 Voix' : '🔇 Muet') + '</button>' + (mem && !R.finished ? '<button class="btn warn" data-act="end">⏹ Terminer</button>' : '') + '</div>';
+    }
+    b.innerHTML = K.plain(h);
+    K.bindActs(b, {
+      prev: function () { var i = (R.cur >= 0 ? R.cur : R.idx) - 1; if (R.cur < 0 && R.idx > 0 && R.t - markT(steps[R.idx - 1].at) > 1.5) i = R.idx - 1; R.review = null; goStep(i); },
+      next: function () { var i = R.cur >= 0 ? R.cur + 1 : R.idx; R.review = null; if (i >= steps.length) { R.t = R.TK.T; R.idx = steps.length; R.cur = -1; R.waiting = false; return; } goStep(i); },
+      play: function () { R.playing = !R.playing; if (!R.playing) V.stop(); else if (R.waiting && R.mode === 'watch' && R.resume) { R.waiting = false; R.cur = -1; renderCard(); } renderBar(); },
+      replay: function () { var m = R.mode, f = R.flow, pv = R.preview; F.open(f.id, m, { flow: f, preview: pv }); },
+      speed: function (x) { R.speed = x.getAttribute('data-v'); renderBar(); },
+      view: function (x) { R.view = x.getAttribute('data-v'); renderBar(); },
+      voice: function () { R.voice = !R.voice; if (!R.voice) V.stop(); renderBar(); },
+      end: function () { finish(true); },
+      bigger: function () { setLayout('full'); }
+    });
+  }
+  function hud() {
+    var h = K.$('f3hud'); if (!h || !R) return;
+    var c = R.cfg, f = ck().s.flight, s = '';
+    if (R.flow.kind === 'air') s += '<span><small>IAS</small><b>' + Math.round(f.ias) + '</b> kt</span><span><small>ALT</small><b>' + Math.max(0, Math.round(f.alt - FE)) + '</b> ft AAL</span><span><small>VS</small><b>' + (f.vs > 0 ? '+' : '') + Math.round(f.vs / 10) * 10 + '</b></span>';
+    var gtxt = c.gear >= 0.99 ? '<b class="g3">● ● ●</b>' : c.gear <= 0.01 ? '<b>UP</b>' : '<b class="gt">TRANSIT</b>';
+    s += '<span><small>TRAIN</small>' + gtxt + '</span><span><small>VOLETS</small><b>' + esc(c.flaps) + '</b></span><span><small>PWR</small><b>' + c.pwr[0] + '/' + c.pwr[1] + '</b> %</span>';
+    if (R.flow.kind === 'air') s += '<span><small>AFCS</small><b>' + esc((c.ap ? 'AP ' : '') + (c.lat || '—') + (c.latArm ? ' · ' + c.latArm : '') + (c.vert ? ' · ' + c.vert : '')) + '</b></span>';
+    if (R.flow.kind === 'ground') s += '<span><small>RPM</small><b>' + c.rpm[0] + ' / ' + c.rpm[1] + '</b></span>';
+    s += '<em>Simulateur · schéma illustratif</em>';
+    h.innerHTML = s;
+  }
+
+  function srcTag(sp) {
+    var L = TF.DATA.flow3d.srcLabels;
+    return '<span class="f3-src f3-' + sp.src + '">' + esc(L[sp.src] || sp.src) + '</span> ' + esc(sp.ref.doc + ' p.' + sp.ref.p + ' — ' + sp.ref.sec);
+  }
+  function calloutHtml(sp) {
+    if (!sp.callout) return '';
+    return '<div class="f3-call">🎙 « ' + esc(sp.callout) + ' »' + (sp.calloutSrc === 'PDP' ? '<small>annonce écrite dans le PDP' + (sp.calloutPdp ? ' : ' + esc(sp.calloutPdp) : '') + '</small>' : '<small>formulation pédagogique' + (sp.calloutPdp ? ' — PDP : ' + esc(sp.calloutPdp) : '') + '</small>') + '</div>';
+  }
+  function renderCard() {
+    var c = K.$('f3card'); if (!c || !R) return;
+    var steps = R.flow.steps, i = R.cur, h = '';
+    if (R.finished) { c.innerHTML = ''; c.className = 'f3-card hidden'; return; }
+    if (R.reviewEnd) {
+      var wn = R.flow.waypoints.filter(function (w) { return w.id === R.review; })[0];
+      h = '<div class="f3-k">RÉVISION</div><div class="f3-t">Fin de l\'étape « ' + esc(wn ? wn.t : '') + ' »</div><div class="f3-btns"><button class="btn primary" data-act="rvagain">↺ Rejouer cette étape</button><button class="btn" data-act="rvall">▶ Reprendre tout le flow</button></div>';
+      c.className = 'f3-card'; c.innerHTML = K.plain(h);
+      K.bindActs(c, { rvagain: function () { var p = R.review; R.reviewEnd = false; review(p); }, rvall: function () { R.review = null; R.reviewEnd = false; R.waiting = false; renderCard(); renderBar(); } });
+      return;
+    }
+    if (i < 0) {
+      var nx = steps[R.idx];
+      h = '<div class="f3-k">' + (R.mode === 'memory' ? 'OBSERVATEUR SILENCIEUX' : 'EN VOL VERS') + '</div>';
+      if (R.mode === 'memory') h += '<div class="f3-t">Fais le flow de mémoire dans le cockpit</div><div class="f3-s">Aucune aide. L\'animation ne valide rien : seul l\'état réel du cockpit compte.</div>';
+      else h += '<div class="f3-t">' + (nx ? esc(phaseName(nx.phase)) + ' — ' + esc(nx.title) : 'Fin du flow') + '</div>';
+      c.className = 'f3-card dim'; c.innerHTML = K.plain(h); return;
+    }
+    var sp = steps[i], r = R.res[i], n = R.flow.waypoints.map(function (w) { return w.id; }).indexOf(sp.phase) + 1;
+    h += '<div class="f3-k"><i>' + n + '</i> ' + esc(phaseName(sp.phase)) + (sp.locked ? ' <span class="f3-lock">🔒</span>' : '') + '</div>';
+    h += '<div class="f3-t">' + esc(sp.title) + '</div>';
+    if (R.mode === 'memory') {
+      h += '<div class="f3-s">Observateur silencieux — à toi.</div>';
+      c.className = 'f3-card'; c.innerHTML = K.plain(h); return;
+    }
+    var learn = R.mode === 'learn', showAct = !learn || r.hint >= 1 || r.done, showChk = !learn || r.hint >= 3 || r.done;
+    h += '<div class="f3-a"><span>ACTION →</span> ' + (showAct ? esc(sp.action) : '<em>à toi de trouver</em>') + '</div>';
+    h += '<div class="f3-c"><span>CHECK →</span> ' + (showChk ? esc(sp.check) : '<em>?</em>') + '</div>';
+    if (showAct) h += calloutHtml(sp);
+    if (r.done) h += '<div class="f3-ok">✓ ' + (r.already ? 'Déjà en place dans le cockpit' : 'Fait dans le cockpit') + '</div>';
+    h += '<div class="f3-btns">';
+    h += '<button class="btn" data-act="why">' + (R.detail ? '▴ Masquer' : 'POURQUOI ? / DÉTAILS') + '</button>';
+    if (sp.ctls && sp.ctls.length && !r.done) h += '<button class="btn primary" data-act="manip">🖐 MANIPULER DANS LE COCKPIT</button>';
+    if (learn && !r.done) {
+      if (r.hint < 3) h += '<button class="btn hintbtn" data-act="hint">💡 Indice ' + (r.hint + 1) + ' / 3</button>';
+      if (!sp.success) h += '<button class="btn primary" data-act="fait">' + (sp.kind === 'call' ? '🎙 ANNONCE FAITE' : '✓ FAIT') + '</button>';
+    }
+    if (R.mode === 'watch' && !R.playing) h += '<button class="btn" data-act="cont">▶ Continuer</button>';
+    h += '</div>';
+    if (R.detail) h += '<div class="f3-why">' + esc(sp.why || '') + '<div class="f3-ref">' + srcTag(sp) + '</div>' + (learn && r.hint >= 2 && sp.ctls ? '<div class="f3-ref">Commande : ' + esc(ctlNames(sp.ctls)) + '</div>' : '') + '</div>';
+    c.className = 'f3-card'; c.innerHTML = K.plain(h);
+    K.bindActs(c, {
+      why: function () { R.detail = !R.detail; renderCard(); },
+      manip: function () { manip(sp, r); },
+      hint: function () { r.hint++; R.hints++; if (r.hint >= 2 && sp.ctls) { var v = app().view; v.focusOn(sp.ctls[0], false); pipSide(sp.ctls[0]); setLayout('pip'); if (r.hint >= 3) { v.clearHighlight(); sp.ctls.forEach(function (t) { v.highlight(t, 'pulse'); }); } } renderCard(); },
+      fait: function () { r.done = true; r.declared = true; K.sound.ok(); if (R.layout === 'pip') setLayout('full'); var g = R.g; setTimeout(function () { if (R && R.g === g && R.cur === i) { R.waiting = false; R.cur = -1; renderCard(); renderBar(); } }, 500); renderCard(); },
+      cont: function () { R.playing = true; R.waiting = false; R.cur = -1; renderCard(); renderBar(); },
+      full: function () { setLayout('full'); }
+    });
+  }
+  function ctlNames(ids) { var D = ck().defs || {}; return ids.map(function (id) { var d = D[id] || (TF.DATA.controlsById && TF.DATA.controlsById[id]); return d ? d.label : id; }).join(' · '); }
+  function phaseName(id) { var w = R.flow.waypoints.filter(function (x) { return x.id === id; })[0]; return w ? w.t : id; }
+  function manip(sp, r) {
+    var v = app().view;
+    if (sp.ctls && sp.ctls[0]) { v.focusOn(sp.ctls[0], false); pipSide(sp.ctls[0]); }
+    setLayout('pip');
+    if (sp.ctls && sp.ctls[0]) { if (R.mode === 'watch' || (r.hint || 0) >= 3) { v.clearHighlight(); sp.ctls.forEach(function (t) { v.highlight(t, 'pulse'); }); } }
+    if (R.mode === 'watch') { R.playing = false; renderBar(); K.toast('Regarde la commande dans le cockpit — en mode Regarder rien n\'est évalué', 'info', 2600); }
+    else K.toast('À toi dans le cockpit : la fenêtre revient seule quand c\'est fait', 'info', 2400);
+  }
+
+  /* ------------------------------------------------ Fin, débriefing, check-list ------------------------------------------------ */
+  function finish(early) {
+    if (!R || R.finished) return;
+    if (R.mode === 'memory') observe();
+    R.finished = true; R.waiting = true; R.cur = -1; V.stop(); app().view.clearHighlight();
+    if (R.layout === 'pip') setLayout('full');
+    var pg = prog(R.flow.id), xp = 0, h = '';
+    if (R.mode === 'watch') {
+      if (pg && !R.preview) { pg.disc = true; pg.last = Date.now(); } xp = R.preview ? 0 : 5;
+      h = '<div class="f3-dt">✓ Flow regardé jusqu\'au bout</div><p>Prochaine étape : <b>✋ Apprendre en manipulant</b>, puis <b>🧠 De mémoire</b>.</p>';
+    } else if (R.mode === 'learn') {
+      var sk = R.res.filter(function (x) { return x.skipped; }).length, dn = R.res.filter(function (x) { return x.done; }).length;
+      if (pg && !R.preview && !R.nav) { if (!pg.learn || R.hints <= pg.learn.hints) pg.learn = { hints: R.hints, ts: Date.now() }; pg.last = Date.now(); }
+      xp = R.preview || R.nav ? 0 : Math.max(4, 12 - R.hints);
+      h = '<div class="f3-dt">✋ Flow pratiqué : ' + dn + ' / ' + R.flow.steps.length + ' étapes · ' + R.hints + ' indice' + (R.hints > 1 ? 's' : '') + '</div>' +
+        (R.nav ? '<p class="f3-warn">Navigation utilisée (' + sk + ' étape' + (sk > 1 ? 's' : '') + ' passée' + (sk > 1 ? 's' : '') + ') : ce passage n\'est pas enregistré comme pratiqué.</p>' : '');
+    } else { h = memDebrief(early); }
+    if (xp && TF.Profiles.current()) { TF.Profiles.addXp(xp); h += '<p class="f3-xp">+' + xp + ' XP</p>'; }
+    saveProg();
+    h += checklistHtml();
+    h += '<div class="f3-btns"><button class="btn primary" data-act="again">↺ Rejouer</button>' + (R.mode === 'watch' ? '<button class="btn" data-act="tolearn">✋ Apprendre en manipulant</button>' : R.mode === 'learn' ? '<button class="btn" data-act="tomem">🧠 De mémoire</button>' : '') +
+      '<button class="btn" data-act="menu">☰ Menu Flow 3D</button></div>';
+    var d = document.createElement('div'); d.className = 'f3-deb'; d.innerHTML = K.plain('<div class="f3-debin">' + h + '</div>');
+    var st = el().querySelector('.f3-stage'); if (st) st.appendChild(d);
+    var f0 = R.flow, pv = R.preview;
+    K.bindActs(d, {
+      again: function () { F.open(f0.id, R.mode, { flow: f0, preview: pv }); },
+      tolearn: function () { F.open(f0.id, 'learn', { flow: f0, preview: pv }); },
+      tomem: function () { F.open(f0.id, 'memory', { flow: f0, preview: pv }); },
+      menu: function () { F.close(); F.show(); },
+      self: function (b) { var i = +b.getAttribute('data-i'); R.res[i].selfOk = b.checked; updScore(d); }
+    });
+    Array.prototype.forEach.call(d.querySelectorAll('input[data-act="self"]'), function (x) { x.onchange = function () { R.res[+x.getAttribute('data-i')].selfOk = x.checked; updScore(d); }; });
+    renderBar();
+  }
+  function memScore() {
+    var steps = R.flow.steps, om = 0, ord = 0, vari = 0, corr = 0, decl = 0, i, j;
+    for (i = 0; i < steps.length; i++) {
+      var sp = steps[i], r = R.res[i];
+      if (!sp.success) { if (!r.selfOk) { om++; decl++; } continue; }
+      if (!r.done) om++;
+      if (r.orderErr) ord++;
+      corr += (r.corr || 0) + (r.late ? 1 : 0);
+      if (r.done && !r.orderErr) {
+        for (j = 0; j < i; j++) { var rj = R.res[j]; if (steps[j].success && rj.done && rj.doneT > r.doneT && (sp.deps || []).indexOf(steps[j].id) < 0) { vari++; break; } }
+      }
+    }
+    return { om: om, ord: ord, vari: vari, corr: corr, decl: decl };
+  }
+  function scoreLine(s) { return '<b>' + s.om + ' OUBLI' + (s.om > 1 ? 'S' : '') + '</b> — <b>' + s.ord + ' ERREUR' + (s.ord > 1 ? 'S' : '') + ' D\'ORDRE</b> — <b>' + s.vari + ' VARIATION' + (s.vari > 1 ? 'S' : '') + ' ACCEPTABLE' + (s.vari > 1 ? 'S' : '') + '</b>'; }
+  function updScore(d) {
+    var s = memScore(), e = d.querySelector('#f3score'); if (e) e.innerHTML = scoreLine(s) + '<small>' + s.corr + ' correction' + (s.corr > 1 ? 's' : '') + ' spontanée' + (s.corr > 1 ? 's' : '') + ' · dont ' + s.decl + ' étape' + (s.decl > 1 ? 's' : '') + ' non cochée' + (s.decl > 1 ? 's' : '') + ' dans l\'auto-évaluation</small>';
+    saveMem(s);
+  }
+  function saveMem(s) {
+    var pg = prog(R.flow.id); if (!pg || R.preview) return;
+    if (!R.memSaved) { pg.memRuns = (pg.memRuns || 0) + 1; R.memSaved = true; R.flow.steps.forEach(function (sp, i) { var r = R.res[i]; if (sp.success && (!r.done || r.orderErr)) pg.errs[sp.id] = (pg.errs[sp.id] || 0) + 1; }); }
+    var best = pg.mem && pg.mem.best;
+    if (!best || s.om + s.ord < best.om + best.ord || (s.om + s.ord === best.om + best.ord && R.memBestSet)) { pg.mem = { best: { om: s.om, ord: s.ord, vari: s.vari, corr: s.corr, ts: Date.now() } }; R.memBestSet = true; }
+    pg.last = Date.now(); saveProg();
+  }
+  function memDebrief(early) {
+    var steps = R.flow.steps, s = memScore(), h = '';
+    h += '<div class="f3-dt">🧠 Débriefing — De mémoire' + (early ? ' (arrêté avant la fin)' : '') + '</div>';
+    h += '<div class="f3-score" id="f3score"></div>';
+    h += '<table class="f3-tab sm"><tr><th></th><th>Étape</th><th>Observé dans le cockpit</th></tr>';
+    steps.forEach(function (sp, i) {
+      var r = R.res[i], ic, tx;
+      if (!sp.success) { ic = '☐'; tx = '<label class="f3-self"><input type="checkbox" data-act="self" data-i="' + i + '"' + (r.selfOk ? ' checked' : '') + '> fait (auto-évaluation : non observable par le simulateur)</label>'; }
+      else if (!r.done) { ic = '✗'; tx = 'Oubli : ' + esc(sp.action) + ' — attendu : ' + esc(sp.check); }
+      else if (r.orderErr) { ic = '⚠'; tx = 'Erreur d\'ordre : fait avant « ' + esc(r.orderErr.map(function (d) { var x = steps[stepIdx(d)]; return x ? x.title : d; }).join(', ')) + ' »'; }
+      else { ic = '✓'; tx = (r.already ? 'Déjà en place au début du flow' : 'Fait' + (r.early ? ' (anticipé)' : '') + (r.late ? ' (en retard — corrigé)' : '')) + ((r.corr || 0) ? ' · ' + r.corr + ' correction' + (r.corr > 1 ? 's' : '') + ' spontanée' + (r.corr > 1 ? 's' : '') : ''); }
+      h += '<tr class="' + (ic === '✗' ? 'ko' : ic === '⚠' ? 'warn' : '') + '"><td>' + ic + '</td><td><b>' + esc(sp.title) + '</b><br><small>' + esc(sp.action) + '</small></td><td>' + tx + '</td></tr>';
+    });
+    h += '</table><p class="f3-note">Variation acceptable = ordre différent du flow sans enfreindre une dépendance obligatoire (les dépendances sont indiquées dans la synthèse). Ces tolérances sont à valider avec l\'instructeur.</p>';
+    setTimeout(function () { var d = el().querySelector('.f3-deb'); if (d) updScore(d); }, 0);
+    return h;
+  }
+  function checklistHtml() {
+    var cl = R.flow.checklist; if (!cl) return '';
+    return '<div class="f3-cl"><div class="f3-clh">📋 Check-list documentée — ' + esc(cl.title) + ' <small>(' + esc(cl.src) + ')</small></div>' +
+      cl.items.map(function (x) { return '<div class="f3-cli"><span>' + esc(x[0]) + '</span><i></i><b>' + esc(x[1]) + '</b></div>'; }).join('') +
+      '<div class="f3-note">' + esc(cl.note) + ' Le flow et la check-list restent distincts : le flow fait les actions, la check-list les contrôle (PDP, Use of check-list).</div></div>';
+  }
+
+  /* ------------------------------------------------ Éditeur (administrateur, local) ------------------------------------------------ */
+  F.editor = function (fid) {
+    var pub = store(PUBKEY) || { version: 0, flows: {} }, draft = store(DRAFTKEY) || clone(pub);
+    draft.flows = draft.flows || {};
+    var fl0 = TF.DATA.flow3d.flows, cur = fid || fl0[0].id;
+    function ov() { return draft.flows[cur] = draft.flows[cur] || { order: null, hidden: {}, text: {} }; }
+    function steps() { return applyOvShow(fl0.filter(function (f) { return f.id === cur; })[0], ov()); }
+    function render() {
+      var list = steps(), o = ov(), hist = store(HISTKEY) || [];
+      var h = K.head('✏️ Éditeur de flows — Flow 3D');
+      h += '<p class="f3-note">Édition locale par un administrateur. <b>Aucune sécurité ne repose sur cette page</b> : publier ici crée une version validée <b>sur cet appareil</b> ; pour la diffuser à l\'équipe, exporte le JSON et fais-le intégrer dans le dépôt par l\'administrateur. Les exigences 🔒 ne peuvent être ni masquées ni retirées.</p>';
+      h += '<div class="f3-grp seg">' + fl0.map(function (f) { return '<button class="btn' + (f.id === cur ? ' on' : '') + '" data-act="fl" data-v="' + f.id + '">' + esc(f.title) + '</button>'; }).join('') + '</div>';
+      h += '<div class="f3-ed">';
+      list.forEach(function (s, i) {
+        var t = (o.text || {})[s.id] || {}, hid = o.hidden && o.hidden[s.id];
+        h += '<div class="f3-er' + (hid ? ' hid' : '') + '"><div class="f3-erh"><b>' + (i + 1) + '. ' + esc(s.id) + '</b>' + (s.locked ? ' <span class="f3-lock">🔒 exigence opérationnelle</span>' : '') +
+          (s.deps ? ' <small>après : ' + esc(s.deps.join(', ')) + '</small>' : '') + '<span class="f3-sp"></span>' +
+          '<button class="btn sm" data-act="up" data-i="' + i + '">↑</button><button class="btn sm" data-act="dn" data-i="' + i + '">↓</button>' +
+          (s.locked ? '' : '<label class="f3-self"><input type="checkbox" data-act="hide" data-id="' + s.id + '"' + (hid ? ' checked' : '') + '> masquer</label>') + '</div>';
+        ['title', 'action', 'check'].forEach(function (k) { h += '<label class="f3-ef"><span>' + k + '</span><input data-f="' + k + '" data-id="' + s.id + '" value="' + esc(t[k] != null ? t[k] : s[k]) + '"></label>'; });
+        h += '<label class="f3-ef"><span>détails</span><textarea data-f="why" data-id="' + s.id + '">' + esc(t.why != null ? t.why : s.why || '') + '</textarea></label>';
+        h += '<div class="f3-note">Source : ' + esc(s.ref.doc + ' p.' + s.ref.p + ' — ' + s.ref.sec) + ' · condition de réussite et commandes : non modifiables ici.</div></div>';
+      });
+      h += '</div><div class="f3-btns"><button class="btn" data-act="prev">👁 Aperçu du brouillon</button><button class="btn primary" data-act="pub">✅ Publier une version validée</button><button class="btn" data-act="exp">⬇ Exporter le JSON</button><button class="btn" data-act="reset">Brouillon = version publiée</button></div>';
+      h += '<div class="f3-hist"><b>Historique des versions</b>' + (hist.length ? hist.slice().reverse().map(function (v) { return '<div>v' + v.version + ' — ' + esc(new Date(v.ts).toLocaleString()) + ' — ' + esc(v.by) + ' — ' + esc(v.note) + ' <button class="btn sm" data-act="rest" data-v="' + v.version + '">restaurer en brouillon</button></div>'; }).join('') : '<div>Aucune version publiée (version d\'origine du code).</div>') + '</div>';
+      h += '<textarea id="f3json" class="f3-json hidden" readonly></textarea>';
+      K.sheet(h, function (sh) {
+        var cl = sh.querySelector('.sh-close'); if (cl) cl.onclick = function () { saveDraft(); K.closeSheet(); };
+        Array.prototype.forEach.call(sh.querySelectorAll('[data-f]'), function (x) { x.onchange = function () { var o2 = ov(); o2.text = o2.text || {}; var id = x.getAttribute('data-id'); o2.text[id] = o2.text[id] || {}; o2.text[id][x.getAttribute('data-f')] = x.value; saveDraft(); }; });
+        Array.prototype.forEach.call(sh.querySelectorAll('input[data-act="hide"]'), function (x) {
+          x.onchange = function () {
+            var id = x.getAttribute('data-id'), o2 = ov(); o2.hidden = o2.hidden || {};
+            if (x.checked) {
+              var dep = steps().filter(function (s) { return (s.deps || []).indexOf(id) >= 0; })[0];
+              if (dep) { x.checked = false; K.toast('Impossible : « ' + esc(dep.id) + ' » dépend de cette étape', 'err', 2600); return; }
+              var why = root.prompt ? root.prompt('Justification obligatoire pour masquer cette étape :') : '';
+              if (!why) { x.checked = false; return; } o2.hidden[id] = why;
+            } else delete o2.hidden[id];
+            saveDraft(); render();
+          };
+        });
+        K.bindActs(sh, {
+          fl: function (b) { saveDraft(); cur = b.getAttribute('data-v'); render(); },
+          up: function (b) { move(+b.getAttribute('data-i'), -1); }, dn: function (b) { move(+b.getAttribute('data-i'), 1); },
+          prev: function () { saveDraft(); K.closeSheet(); var f = F.flowById(cur, draft); F.open(cur, 'watch', { flow: f, preview: true }); },
+          pub: function () {
+            var by = root.prompt ? root.prompt('Nom de l\'administrateur qui valide :') : ''; if (!by) return;
+            var note = root.prompt ? root.prompt('Note de version (ce qui change) :') || '' : '';
+            var hist2 = store(HISTKEY) || [], v = (pub.version || 0) + 1;
+            var rec = { version: v, ts: Date.now(), by: by, note: note, flows: clone(draft.flows) };
+            hist2.push(rec); store(HISTKEY, hist2); pub = rec; store(PUBKEY, rec); draft = clone(rec); saveDraft();
+            K.toast('✅ Version v' + v + ' validée sur cet appareil', 'ok', 2600); render();
+          },
+          exp: function () { var t = K.$('f3json'); t.classList.remove('hidden'); t.value = JSON.stringify({ flow3dOverrides: draft.flows, base: TF.DATA.flow3d.version, exported: new Date().toISOString() }, null, 2); t.select(); },
+          reset: function () { draft = clone(store(PUBKEY) || { version: 0, flows: {} }); draft.flows = draft.flows || {}; saveDraft(); render(); },
+          rest: function (b) { var v = +b.getAttribute('data-v'), r = (store(HISTKEY) || []).filter(function (x) { return x.version === v; })[0]; if (r) { draft = clone(r); saveDraft(); render(); } }
+        });
+      }, { width: '980px' });
+    }
+    function saveDraft() { store(DRAFTKEY, draft); }
+    function move(i, d) {
+      var list = steps(), j = i + d; if (j < 0 || j >= list.length) return;
+      var a = list[i], b = list[j];
+      if (a.locked || b.locked) { K.toast('🔒 Une exigence opérationnelle garde sa place', 'err', 2200); return; }
+      var first = d < 0 ? b : a, second = d < 0 ? a : b; // second passerait avant first
+      if ((first.deps || []).indexOf(second.id) >= 0 || (second.deps || []).indexOf(first.id) >= 0) { K.toast('Ordre imposé par une dépendance : déplacement refusé', 'err', 2400); return; }
+      var ids = list.map(function (s) { return s.id; }); ids[i] = b.id; ids[j] = a.id; ov().order = ids; saveDraft(); render();
+    }
+    render();
+  };
+  function applyOvShow(flow, o) { var f = clone(flow), by = {}; f.steps.forEach(function (s) { by[s.id] = s; }); if (o && o.order) f.steps = o.order.filter(function (id) { return by[id]; }).map(function (id) { return by[id]; }).concat(f.steps.filter(function (s) { return o.order.indexOf(s.id) < 0; })); return f.steps; }
+
+  // redimensionnement / orientation
+  root.addEventListener('resize', function () { if (R) { renderBar(); } });
+})(this);
+
+</script>
 <script>/* js/ui/avatars.js */
-/* Photos de profil : illustrations vectorielles ORIGINALES (profil 3/4 en vol, ciel en dégradé), inspirées de l'allure
- * des avions réels — aucune photo ni logo reproduit.
- * Nicolas et Jayson : Alpha Jet bleu à bandes blanche et rouge, fumigènes tricolores (clin d'œil à la Patrouille de France).
- * Julien : Rafale en montée, post-combustion, ciel de crépuscule. Cyril et Olivier : Transall C-160 au-dessus des nuages.
- * Invité : casque de pilote, visière qui reflète le ciel.
+/* Photos de profil v7 : illustrations vectorielles ORIGINALES, vue plongeante 3/4 d'un avion en vol au-dessus d'une couche,
+ * proportions relevées sur les plans 3 vues publics (envergure, longueur, flèche) — aucune photo, aucun logo reproduit.
+ *  - Nicolas, Jayson : Alpha Jet bleu à bandes blanche et rouge, fumigènes tricolores (clin d'œil à la Patrouille de France).
+ *  - Julien : Rafale (aile delta + plans canard), gris deux tons, post-combustion.
+ *  - Cyril, Olivier : Transall C-160 (aile haute droite, deux turbopropulseurs), gris, hélices en rotation.
+ *  - Invité : casque de pilote, visière qui reflète le ciel.
+ * Les cocardes sont l'insigne national générique (rond bleu-blanc-rouge).
  */
 (function (root) {
   'use strict';
@@ -13251,178 +14564,128 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   var MAP = { nicolas: 'alphajet', jayson: 'alphajet', julien: 'rafale', cyril: 'transall', olivier: 'transall', invite: 'guest' };
   var LABEL = { alphajet: 'Alpha Jet — Patrouille de France', rafale: 'Rafale', transall: 'Transall C-160', guest: 'Invité' };
 
-  function lin(id, x2, y2, stops) {
-    var s = '<linearGradient id="' + id + '" x1="0" y1="0" x2="' + x2 + '" y2="' + y2 + '">';
-    stops.forEach(function (p) { s += '<stop offset="' + p[0] + '" stop-color="' + p[1] + '"' + (p[2] != null ? ' stop-opacity="' + p[2] + '"' : '') + '/>'; });
-    return s + '</linearGradient>';
+  function stops(a) { return a.map(function (p) { return '<stop offset="' + p[0] + '" stop-color="' + p[1] + '"' + (p[2] != null ? ' stop-opacity="' + p[2] + '"' : '') + '/>'; }).join(''); }
+  function lin(id, x1, y1, x2, y2, st, user) { return '<linearGradient id="' + id + '"' + (user ? ' gradientUnits="userSpaceOnUse"' : '') + ' x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '">' + stops(st) + '</linearGradient>'; }
+  function rad(id, cx, cy, r, st, user) { return '<radialGradient id="' + id + '"' + (user ? ' gradientUnits="userSpaceOnUse"' : '') + ' cx="' + cx + '" cy="' + cy + '" r="' + r + '">' + stops(st) + '</radialGradient>'; }
+  function blur(id, sd) { return '<filter id="' + id + '" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="' + sd + '"/></filter>'; }
+  // moitié droite (x ≥ 0) → contour fermé symétrique
+  function sym(pts) {
+    var r = pts.map(function (p) { return p[0] + ',' + p[1]; }), l = pts.slice().reverse().map(function (p) { return (-p[0]) + ',' + p[1]; });
+    return 'M' + r.join(' L') + ' L' + l.join(' L') + 'Z';
   }
-  function rad(id, cx, cy, r, stops) {
-    var s = '<radialGradient id="' + id + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '">';
-    stops.forEach(function (p) { s += '<stop offset="' + p[0] + '" stop-color="' + p[1] + '"' + (p[2] != null ? ' stop-opacity="' + p[2] + '"' : '') + '/>'; });
-    return s + '</radialGradient>';
+  function poly(pts) { return 'M' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' L') + 'Z'; }
+  function mirror(pts) { return pts.map(function (p) { return [-p[0], p[1]]; }); }
+  function roundel(x, y, r) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#1f3c9e"/><circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.66) + '" fill="#f4f6f8"/><circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.33) + '" fill="#d6253a"/>'; }
+
+  /* fond : ciel au-dessus d'une couche de nuages (vue plongeante) */
+  function sky(u, top, mid, low) {
+    var s = '<defs>' + lin('sk' + u, 0, 0, 0, 1, [[0, top], [0.55, mid], [1, low]]) + rad('sg' + u, 0.25, 0.15, 0.7, [[0, '#ffffff', 0.35], [1, '#ffffff', 0]]) + blur('cb' + u, 2.2) + '</defs>';
+    s += '<rect width="100" height="100" fill="url(#sk' + u + ')"/>';
+    s += '<g filter="url(#cb' + u + ')" fill="#ffffff">' +
+      '<ellipse cx="12" cy="78" rx="22" ry="9" opacity=".55"/><ellipse cx="48" cy="92" rx="30" ry="10" opacity=".6"/><ellipse cx="88" cy="74" rx="20" ry="8" opacity=".5"/>' +
+      '<ellipse cx="70" cy="22" rx="18" ry="5" opacity=".35"/><ellipse cx="18" cy="30" rx="14" ry="4" opacity=".3"/><ellipse cx="86" cy="96" rx="22" ry="8" opacity=".55"/></g>';
+    return s + '<rect width="100" height="100" fill="url(#sg' + u + ')"/>';
   }
-  function blur(id, sd) { return '<filter id="' + id + '" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="' + sd + '"/></filter>'; }
-  function cloud(x, y, k, fill, op) {
-    return '<g opacity="' + op + '" fill="' + fill + '"><ellipse cx="' + x + '" cy="' + y + '" rx="' + 16 * k + '" ry="' + 6 * k + '"/><ellipse cx="' + (x - 9 * k) + '" cy="' + (y - 3 * k) + '" rx="' + 9 * k + '" ry="' + 6 * k + '"/><ellipse cx="' + (x + 6 * k) + '" cy="' + (y - 5 * k) + '" rx="' + 10 * k + '" ry="' + 7.5 * k + '"/></g>';
+  /* ombre portée sur la couche + avion (placé, tourné, légèrement incliné) */
+  function place(u, body, tx, ty, rot, sc, sh) {
+    var tr = 'translate(' + tx + ',' + ty + ') rotate(' + rot + ') scale(' + (sc * 0.9) + ',' + sc + ') translate(0,-50)';
+    return '<g transform="translate(' + (tx + sh[0]) + ',' + (ty + sh[1]) + ') rotate(' + rot + ') scale(' + (sc * 0.92) + ') translate(0,-50)" opacity=".28" filter="url(#sh' + u + ')">' + body.shadow + '</g>' +
+      '<g transform="' + tr + '">' + body.plane + '</g>';
   }
 
   var DRAW = {
-    // ---------- Alpha Jet : profil en montée, fumigènes bleu-blanc-rouge ----------
+    /* ---------- Alpha Jet (L 13,2 m, E 9,1 m ; flèche 28°) — livrée bleue, bandes blanche et rouge ---------- */
     alphajet: function (u) {
-      var d = '<defs>' +
-        lin('aS' + u, 0, 1, [[0, '#0d3d91'], [0.55, '#3d8fe0'], [1, '#bfe3ff']]) +
-        lin('aB' + u, 0, 1, [[0, '#2f5fd0'], [0.5, '#173a96'], [1, '#0a1f5c']]) +
-        lin('aC' + u, 0, 1, [[0, '#e9f8ff'], [0.5, '#8cc6ea'], [1, '#2c5a80']]) +
-        lin('aW' + u, 0, 1, [[0, '#1f47b0'], [1, '#0b2366']]) +
-        blur('aF' + u, 1.6) +
-        '<clipPath id="aK' + u + '"><path d="M117,29 C111,26.5 103,24 95,23 L87,22.5 C82,15 72,13 62,17 L56,19.5 L32,20 L22,5 L13,5 L9,21 L4,23.5 L5,27 L12,30 L40,33 L62,34 L82,33 C98,32 109,31 117,29Z"/></clipPath>' +
-        '</defs>';
-      var s = d + '<rect width="100" height="100" fill="url(#aS' + u + ')"/>';
-      s += cloud(78, 86, 1.2, '#ffffff', 0.55) + cloud(20, 92, 1.4, '#ffffff', 0.45);
-      // fumigènes (derrière l'avion, vers le bas-gauche)
-      s += '<g filter="url(#aF' + u + ')" stroke-linecap="round" fill="none">' +
-        '<path d="M27,53 C14,60 2,70 -8,82" stroke="#1f4fe0" stroke-width="6.5" opacity=".9"/>' +
-        '<path d="M26.5,56 C13,64 3,76 -4,90" stroke="#ffffff" stroke-width="6.5" opacity=".95"/>' +
-        '<path d="M26,59 C14,69 6,82 0,98" stroke="#ef2b3c" stroke-width="6.5" opacity=".9"/></g>';
-      // avion : repère local 0..120 × 0..45, mis à l'échelle et cabré
-      s += '<g transform="translate(62,42) rotate(-22) scale(0.66) translate(-60,-25)">';
-      // aile éloignée
-      s += '<path d="M66,21 L52,21 L42,9 L47,9Z" fill="#0b2366"/>';
-      // fuselage
-      s += '<path d="M117,29 C111,26.5 103,24 95,23 L87,22.5 C82,15 72,13 62,17 L56,19.5 L32,20 L22,5 L13,5 L9,21 L4,23.5 L5,27 L12,30 L40,33 L62,34 L82,33 C98,32 109,31 117,29Z" fill="url(#aB' + u + ')" stroke="#061542" stroke-width=".8"/>';
-      // bandes blanche et rouge le long du fuselage + dérive
-      s += '<g clip-path="url(#aK' + u + ')"><path d="M118,27.5 L60,25 L28,23 L16,4 L11,4 L14,25 L60,28.5 L118,30Z" fill="#ffffff"/>' +
-        '<path d="M118,30 L60,28.5 L14,25 L13,28.5 L60,31.5 L118,32Z" fill="#e8283a"/>' +
-        '<path d="M120,21 L60,17 L60,26 L120,27Z" fill="#ffffff" opacity=".18"/></g>';
-      // entrée d'air
-      s += '<path d="M70,24.5 L80,24 L82,29 L71,29.5Z" fill="#081a4d" opacity=".75"/>';
-      // verrière biplace
-      s += '<path d="M87,22.5 C82,15 72,13 62,17 L56,19.5 L60,21.5 L86,22.8Z" fill="url(#aC' + u + ')" stroke="#061542" stroke-width=".6"/>';
-      s += '<path d="M74,15 L74,22 M66,16.5 L67,21.8" stroke="#061542" stroke-width=".7"/>';
-      s += '<path d="M64,17 C70,14.5 77,14.6 82,17" stroke="#ffffff" stroke-width=".9" fill="none" opacity=".8"/>';
-      // empennage horizontal + aile proche (en flèche, légèrement vers le bas)
-      s += '<path d="M24,21.5 L6,27 L2,27 L15,21.5Z" fill="url(#aW' + u + ')" stroke="#061542" stroke-width=".5"/>';
-      s += '<path d="M74,25 L50,25 L33,44 L41,44.5Z" fill="url(#aW' + u + ')" stroke="#061542" stroke-width=".7"/>';
-      s += '<path d="M50,25 L33,44 L36.5,44.2 L53,25Z" fill="#ffffff" opacity=".9"/><path d="M53,25 L36.5,44.2 L39.5,44.4 L56,25Z" fill="#e8283a" opacity=".95"/>';
-      // tuyère + reflet nez
-      s += '<ellipse cx="6" cy="25.2" rx="1.6" ry="2.2" fill="#20242c"/>';
-      s += '<path d="M112,27.6 C106,25.6 100,24.4 95,24" stroke="#ffffff" stroke-width=".8" opacity=".45" fill="none"/>';
-      s += '</g>';
-      return s;
+      var fus = sym([[0, 0], [1.2, 4], [2.4, 10], [3.3, 17], [3.9, 25], [4.2, 31], [7.4, 34], [7.8, 40], [7.8, 58], [7.2, 66], [5.2, 72], [4.2, 80], [3.6, 92], [3.2, 99.5]]);
+      var wingR = [[7, 42], [33.5, 57.5], [34.5, 58.5], [34.5, 65.5], [7, 66.5]], wingL = mirror(wingR);
+      var tailR = [[3.6, 83], [16.5, 91.5], [16.8, 92.5], [16.8, 96.5], [3.3, 98]], tailL = mirror(tailR);
+      var d = '<defs>' + lin('af' + u, -8, 0, 8, 0, [[0, '#0d2566'], [0.35, '#2f63d6'], [0.55, '#4f85ec'], [1, '#0d2566']], true) +
+        lin('aw' + u, 0, 40, 0, 68, [[0, '#3a72e2'], [0.3, '#2556c4'], [1, '#14348c']], true) +
+        lin('ac' + u, -3, 0, 3, 0, [[0, '#0b1830'], [0.45, '#3d6f9c'], [0.6, '#a9d6f2'], [1, '#0b1830']], true) +
+        '<clipPath id="ak' + u + '"><path d="' + fus + ' ' + poly(wingR) + ' ' + poly(wingL) + '"/></clipPath>' + blur('sh' + u, 1.4) + blur('sm' + u, 1.8) + '</defs>';
+      var plane = '';
+      // fumigènes (depuis les tuyères, derrière l'avion)
+      plane += '<g filter="url(#sm' + u + ')" stroke-linecap="round" opacity=".92"><path d="M-4.5,74 L-9,170" stroke="#2a57e8" stroke-width="7"/><path d="M0,100 L0,175" stroke="#ffffff" stroke-width="7.5"/><path d="M4.5,74 L9,170" stroke="#e8283c" stroke-width="7"/></g>';
+      plane += '<path d="' + poly(tailR) + ' ' + poly(tailL) + '" fill="url(#aw' + u + ')" stroke="#081a4a" stroke-width=".5"/>';
+      plane += '<path d="' + poly(wingR) + ' ' + poly(wingL) + '" fill="url(#aw' + u + ')" stroke="#081a4a" stroke-width=".5"/>';
+      plane += '<path d="' + fus + '" fill="url(#af' + u + ')" stroke="#081a4a" stroke-width=".5"/>';
+      // bandes blanche et rouge (flèches vers l'arrière, à travers ailes et fuselage)
+      plane += '<g clip-path="url(#ak' + u + ')"><path d="M-40,72 L0,40 L40,72 L40,78 L0,46 L-40,78Z" fill="#f5f7fa"/><path d="M-40,78 L0,46 L40,78 L40,84 L0,52 L-40,84Z" fill="#e3263a"/></g>';
+      // gouvernes : lignes de charnière
+      plane += '<path d="M14,63.6 L33.8,63 M-14,63.6 L-33.8,63 M5,95 L15.8,94.6 M-5,95 L-15.8,94.6" stroke="#081a4a" stroke-width=".45" opacity=".8"/>';
+      // dérive (vue de dessus) + entrées d'air + verrière biplace
+      plane += '<path d="M0,80 L.9,86 L.9,99 L-.9,99 L-.9,86Z" fill="#14348c" stroke="#081a4a" stroke-width=".4"/>';
+      plane += '<path d="M4.4,31.6 L7.3,34.2 L7.3,37 L4.4,35Z M-4.4,31.6 L-7.3,34.2 L-7.3,37 L-4.4,35Z" fill="#06102b"/>';
+      plane += '<path d="M0,13 C2.6,15 2.9,22 2.7,30 C2.6,35 1.8,38 0,39 C-1.8,38 -2.6,35 -2.7,30 C-2.9,22 -2.6,15 0,13Z" fill="url(#ac' + u + ')" stroke="#06102b" stroke-width=".5"/>';
+      plane += '<path d="M-2.6,26 L2.6,26" stroke="#06102b" stroke-width=".6"/><path d="M-1,16 C-1.6,20 -1.7,25 -1.5,30" stroke="#fff" stroke-width=".7" opacity=".7" fill="none"/>';
+      plane += '<path d="M0,1 L0,12" stroke="#9fc0ff" stroke-width=".5" opacity=".6"/>';
+      var shadow = '<path d="' + fus + ' ' + poly(wingR) + ' ' + poly(wingL) + ' ' + poly(tailR) + ' ' + poly(tailL) + '" fill="#0a1830"/>';
+      return d + sky(u, '#2a6fc9', '#79b6ec', '#d9ecfb') + place(u, { plane: plane, shadow: shadow }, 52, 46, -38, 0.82, [7, 10]);
     },
 
-    // ---------- Rafale : montée au crépuscule, post-combustion ----------
+    /* ---------- Rafale (L 15,3 m, E 10,9 m ; delta + canards) — gris deux tons, post-combustion ---------- */
     rafale: function (u) {
-      var d = '<defs>' +
-        lin('rS' + u, 0, 1, [[0, '#1b2140'], [0.45, '#5b3f6e'], [0.75, '#e0785a'], [1, '#ffc27a']]) +
-        lin('rB' + u, 0, 1, [[0, '#b9c4cf'], [0.45, '#7d8996'], [1, '#3f4853']]) +
-        lin('rW' + u, 0, 1, [[0, '#8995a2'], [1, '#4b5561']]) +
-        lin('rC' + u, 0, 1, [[0, '#ffe7b8'], [0.45, '#c88a63'], [1, '#3d2c3a']]) +
-        rad('rG' + u, '0.5', '0.5', '0.5', [[0, '#ffffff'], [0.25, '#ffe08a'], [0.6, '#ff7a2e', 0.8], [1, '#ff4d1a', 0]]) +
-        rad('rN' + u, '0.85', '0.95', '0.6', [[0, '#ffd28a', 0.7], [1, '#ffd28a', 0]]) +
-        blur('rF' + u, 1.4) +
-        '</defs>';
-      var s = d + '<rect width="100" height="100" fill="url(#rS' + u + ')"/><rect width="100" height="100" fill="url(#rN' + u + ')"/>';
-      // étoiles discrètes en haut
-      s += '<g fill="#ffffff" opacity=".6"><circle cx="14" cy="12" r=".6"/><circle cx="30" cy="7" r=".5"/><circle cx="82" cy="10" r=".6"/><circle cx="66" cy="18" r=".4"/></g>';
-      // relief à l'horizon
-      s += '<path d="M0,92 L14,86 L26,90 L40,83 L55,89 L70,84 L86,90 L100,85 L100,100 L0,100Z" fill="#2a1d33" opacity=".85"/>';
-      s += '<g transform="translate(52,52) rotate(-26) scale(0.7) translate(-62,-25)">';
-      // post-combustion
-      s += '<g filter="url(#rF' + u + ')"><ellipse cx="-4" cy="25" rx="14" ry="4.6" fill="url(#rG' + u + ')"/></g>';
-      // aile éloignée (delta)
-      s += '<path d="M70,21 L36,21 L22,12 L30,12Z" fill="#3f4853"/>';
-      // fuselage
-      s += '<path d="M120,26 C113,24.5 104,22.5 96,22 L88,21.5 C84,16 75,15 68,18 L60,19.5 L30,19.5 L20,3 L13,3 L12,20 L5,21.5 L5,28.5 L14,30 L60,31 L84,29.5 C100,28.6 112,27.6 120,26Z" fill="url(#rB' + u + ')" stroke="#262c34" stroke-width=".7"/>';
-      // verrière
-      s += '<path d="M88,21.5 C84,16 75,15 68,18 L62,20 L87,21.8Z" fill="url(#rC' + u + ')" stroke="#262c34" stroke-width=".5"/>';
-      s += '<path d="M70,18 C75,16.2 80,16.4 84,18.4" stroke="#fff3d6" stroke-width=".8" fill="none" opacity=".85"/>';
-      // plan canard
-      s += '<path d="M76,24 L62,24 L56,30 L60,30.2Z" fill="#59636f" stroke="#262c34" stroke-width=".5"/>';
-      // entrée d'air
-      s += '<path d="M60,25 L72,25 L70,30.5 L58,30.6Z" fill="#20252c" opacity=".85"/>';
-      // aile proche (delta)
-      s += '<path d="M64,27 L16,27 L8,44 L22,44Z" fill="url(#rW' + u + ')" stroke="#262c34" stroke-width=".6"/>';
-      s += '<path d="M64,27 L22,44 L24,44 L66,27.6Z" fill="#c9d3dc" opacity=".55"/>';
-      // perche de ravitaillement, sonde, tuyère
-      s += '<path d="M92,21.6 L100,19.5" stroke="#5a6470" stroke-width=".9"/>';
-      s += '<path d="M120,26 L127,25.3" stroke="#3a424c" stroke-width=".7"/>';
-      s += '<rect x="3" y="21.5" width="3.5" height="7" rx="1.2" fill="#2b2f36"/>';
-      // reflet chaud sur le dessous
-      s += '<path d="M20,29.5 L60,30.5 L84,29" stroke="#ffb874" stroke-width=".9" opacity=".55" fill="none"/>';
-      s += '</g>';
-      return s;
+      var fus = sym([[0, 0], [1, 5], [2.2, 12], [3.4, 20], [4.6, 28], [6.4, 36], [6.6, 46], [6.4, 84], [5.6, 95], [4.6, 100]]);
+      var wingR = [[6.2, 44], [33.5, 79], [34.6, 80.5], [34.6, 86.5], [6.2, 93]], wingL = mirror(wingR);
+      var canR = [[5.8, 29], [18.5, 38.5], [19, 39.5], [18.8, 42], [5.8, 39.5]], canL = mirror(canR);
+      var d = '<defs>' + lin('rf' + u, -8, 0, 8, 0, [[0, '#3a434d'], [0.4, '#8f9aa6'], [0.55, '#b6c0ca'], [1, '#3a434d']], true) +
+        lin('rw' + u, 0, 44, 0, 94, [[0, '#a3adb8'], [0.45, '#7d8893'], [1, '#56606b']], true) +
+        lin('rc' + u, -3, 0, 3, 0, [[0, '#2a2016'], [0.45, '#8a6a3c'], [0.62, '#f2d79a'], [1, '#2a2016']], true) +
+        rad('rg' + u, 0.5, 0.5, 0.5, [[0, '#ffffff'], [0.3, '#ffe38a'], [0.65, '#ff7a2c', 0.8], [1, '#ff4a12', 0]]) + blur('sh' + u, 1.4) + blur('ab' + u, 1.1) + '</defs>';
+      var plane = '';
+      plane += '<g filter="url(#ab' + u + ')"><ellipse cx="-2.6" cy="106" rx="2.6" ry="7" fill="url(#rg' + u + ')"/><ellipse cx="2.6" cy="106" rx="2.6" ry="7" fill="url(#rg' + u + ')"/></g>';
+      plane += '<path d="' + poly(wingR) + ' ' + poly(wingL) + '" fill="url(#rw' + u + ')" stroke="#262d35" stroke-width=".5"/>';
+      plane += '<path d="M8,90.6 L33.8,85.4 M-8,90.6 L-33.8,85.4" stroke="#262d35" stroke-width=".45" opacity=".75"/>';
+      plane += '<path d="' + poly(canR) + ' ' + poly(canL) + '" fill="url(#rw' + u + ')" stroke="#262d35" stroke-width=".45"/>';
+      plane += '<path d="' + fus + '" fill="url(#rf' + u + ')" stroke="#262d35" stroke-width=".5"/>';
+      plane += '<path d="M0,64 L.9,72 L.9,99 L-.9,99 L-.9,72Z" fill="#69737e" stroke="#262d35" stroke-width=".4"/>';
+      plane += '<path d="M0,12 C2.4,14.5 2.8,20 2.6,25 C2.4,28.5 1.5,30.5 0,31 C-1.5,30.5 -2.4,28.5 -2.6,25 C-2.8,20 -2.4,14.5 0,12Z" fill="url(#rc' + u + ')" stroke="#151a20" stroke-width=".5"/>';
+      plane += '<path d="M-1,15 C-1.6,19 -1.6,23 -1.3,27" stroke="#fff" stroke-width=".7" opacity=".75" fill="none"/>';
+      plane += '<path d="M3.2,8 L5.4,1.5" stroke="#596470" stroke-width=".7"/>'; // perche de ravitaillement
+      plane += roundel(24, 79, 3.1) + roundel(-24, 79, 3.1);
+      var shadow = '<path d="' + fus + ' ' + poly(wingR) + ' ' + poly(wingL) + ' ' + poly(canR) + ' ' + poly(canL) + '" fill="#0a1830"/>';
+      return d + sky(u, '#14365f', '#4f86b8', '#c9dcec') + place(u, { plane: plane, shadow: shadow }, 51, 52, -32, 0.82, [8, 11]);
     },
 
-    // ---------- Transall C-160 : croisière au-dessus d'une mer de nuages ----------
+    /* ---------- Transall C-160 (L 32,4 m, E 40 m ; aile haute droite, 2 turbopropulseurs) — gris ---------- */
     transall: function (u) {
-      var d = '<defs>' +
-        lin('tS' + u, 0, 1, [[0, '#2f6fb3'], [0.6, '#8ec2ea'], [1, '#e9f4ff']]) +
-        lin('tB' + u, 0, 1, [[0, '#a7b0b8'], [0.5, '#7e8892'], [1, '#4c555e']]) +
-        lin('tW' + u, 0, 1, [[0, '#8b949d'], [1, '#59626b']]) +
-        rad('tP' + u, '0.5', '0.5', '0.5', [[0, '#cfd6dc', 0.15], [0.85, '#cfd6dc', 0.35], [1, '#cfd6dc', 0]]) +
-        rad('tU' + u, '0.2', '0.15', '0.5', [[0, '#fff6d8', 0.9], [1, '#fff6d8', 0]]) +
-        '</defs>';
-      var s = d + '<rect width="100" height="100" fill="url(#tS' + u + ')"/><rect width="100" height="100" fill="url(#tU' + u + ')"/>';
-      // mer de nuages
-      s += cloud(18, 84, 1.6, '#ffffff', 0.95) + cloud(52, 90, 1.9, '#ffffff', 0.95) + cloud(88, 82, 1.5, '#ffffff', 0.95);
-      s += '<rect x="0" y="88" width="100" height="12" fill="#ffffff"/>';
-      s += cloud(70, 74, 0.8, '#f2f7fc', 0.8);
-      s += '<g transform="translate(50,48) rotate(-6) scale(0.8) translate(-62,-18)">';
-      // aile éloignée + moteur éloigné
-      s += '<path d="M78,13 L56,13 L50,7 L58,7Z" fill="#59626b"/>';
-      // fuselage (gros cargo, arrière relevé)
-      s += '<path d="M118,26 C117,20 112,16.5 104,15.5 L60,14.5 L30,15 L20,2 L12,2 L13,16 L6,18 L8,22 L26,26 L44,31.5 L100,32 C111,32 118,30 118,26Z" fill="url(#tB' + u + ')" stroke="#2c3238" stroke-width=".7"/>';
-      // poste de pilotage
-      s += '<path d="M112,18.5 L106,16.4 L103,16.3 L104,19.3 L111.5,20Z" fill="#1d2a36"/>';
-      s += '<path d="M106,16.4 L104.8,19.4" stroke="#a7b0b8" stroke-width=".5"/>';
-      // hublots
-      s += '<g fill="#2b3640">';
-      for (var i = 0; i < 7; i++) s += '<circle cx="' + (52 + i * 6.5) + '" cy="20.5" r=".9"/>';
-      s += '</g>';
-      // carénage de train
-      s += '<path d="M56,30.5 C60,34.5 80,34.5 84,30.5Z" fill="#6c7680" stroke="#2c3238" stroke-width=".5"/>';
-      // empennage horizontal
-      s += '<path d="M26,14.5 L4,16.5 L4,18.5 L24,17.5Z" fill="url(#tW' + u + ')" stroke="#2c3238" stroke-width=".5"/>';
-      // aile haute (proche) vue légèrement de dessous
-      s += '<path d="M86,15 L58,15 L50,28 L54,28.4Z" fill="url(#tW' + u + ')" stroke="#2c3238" stroke-width=".6"/>';
-      // nacelle + hélice (disque flou) du moteur proche
-      s += '<path d="M84,18 L62,18.5 L62,24 L83,24 C86,23.5 87,22 87,21 C87,19.5 86,18.2 84,18Z" fill="#7a848d" stroke="#2c3238" stroke-width=".5"/>';
-      s += '<ellipse cx="88.5" cy="21" rx="2.2" ry="13" fill="url(#tP' + u + ')"/>';
-      s += '<ellipse cx="88" cy="21" rx="1.2" ry="1.5" fill="#3a4148"/>';
-      // nacelle éloignée (en partie masquée)
-      s += '<path d="M76,11.5 L64,11.8 L64,14.6 L77,14.6Z" fill="#59626b"/>';
-      // reflet dorsal
-      s += '<path d="M104,16.3 L60,15.6 L32,16" stroke="#e4eaef" stroke-width=".9" fill="none" opacity=".7"/>';
-      // cocarde discrète (rond tricolore générique)
-      s += '<circle cx="36" cy="22.5" r="2.3" fill="#1f3fa8"/><circle cx="36" cy="22.5" r="1.5" fill="#ffffff"/><circle cx="36" cy="22.5" r=".8" fill="#d6283a"/>';
-      s += '</g>';
-      return s;
+      // longueur ramenée à 100 → envergure ≈ 124 : l'avion est dessiné plus petit
+      var fus = sym([[0, 0], [3.2, 1.6], [5.4, 5], [6.4, 10], [6.6, 18], [6.6, 62], [6, 72], [4.6, 82], [3.4, 92], [2.6, 100]]);
+      var wingR = [[6.6, 33], [62, 37.5], [62, 43], [6.6, 48]], wingL = mirror(wingR);
+      var tailR = [[2.6, 86], [21.5, 90], [21.5, 95], [2.6, 98.5]], tailL = mirror(tailR);
+      var nac = function (x) { return '<path d="M' + (x - 2.6) + ',27 C' + (x - 2.8) + ',22 ' + (x - 1.6) + ',18.6 ' + x + ',18.4 C' + (x + 1.6) + ',18.6 ' + (x + 2.8) + ',22 ' + (x + 2.6) + ',27 L' + (x + 2.4) + ',52 L' + (x - 2.4) + ',52Z" fill="url(#tn' + u + ')" stroke="#2b3238" stroke-width=".45"/>'; };
+      var prop = function (x) { return '<ellipse cx="' + x + '" cy="17.2" rx="9" ry="1.7" fill="url(#tp' + u + ')"/><circle cx="' + x + '" cy="17.6" r="1.1" fill="#2b3238"/>'; };
+      var d = '<defs>' + lin('tf' + u, -8, 0, 8, 0, [[0, '#4d5760'], [0.4, '#9ba5ae'], [0.56, '#c3ccd3'], [1, '#4d5760']], true) +
+        lin('tw' + u, 0, 32, 0, 49, [[0, '#a9b2ba'], [0.4, '#8c969f'], [1, '#626c75']], true) +
+        lin('tn' + u, -3, 0, 3, 0, [[0, '#5b656e'], [0.5, '#aab3bb'], [1, '#5b656e']], true) +
+        rad('tp' + u, 0.5, 0.5, 0.5, [[0, '#dfe6ec', 0.1], [0.75, '#dfe6ec', 0.45], [1, '#dfe6ec', 0]]) + blur('sh' + u, 1.6) + '</defs>';
+      var plane = '';
+      plane += '<path d="' + poly(tailR) + ' ' + poly(tailL) + '" fill="url(#tw' + u + ')" stroke="#2b3238" stroke-width=".5"/>';
+      plane += '<path d="' + fus + '" fill="url(#tf' + u + ')" stroke="#2b3238" stroke-width=".5"/>';
+      plane += '<path d="M0,74 L1.2,80 L1.2,99 L-1.2,99 L-1.2,80Z" fill="#7a848d" stroke="#2b3238" stroke-width=".4"/>';
+      plane += '<path d="' + poly(wingR) + ' ' + poly(wingL) + '" fill="url(#tw' + u + ')" stroke="#2b3238" stroke-width=".5"/>';
+      plane += '<path d="M8,45.6 L60,41.8 M-8,45.6 L-60,41.8" stroke="#2b3238" stroke-width=".45" opacity=".75"/>';
+      plane += nac(20) + nac(-20) + prop(20) + prop(-20);
+      plane += '<path d="M-3.4,3.6 C-1.8,2.4 1.8,2.4 3.4,3.6 L3,6 C1.2,5.2 -1.2,5.2 -3,6Z" fill="#17202a"/>'; // vitres du poste
+      plane += '<path d="M-1.5,10 L-1.5,62" stroke="#fff" stroke-width=".8" opacity=".35"/>';
+      plane += roundel(44, 40.6, 2.9) + roundel(-44, 40.6, 2.9);
+      var shadow = '<path d="' + fus + ' ' + poly(wingR) + ' ' + poly(wingL) + ' ' + poly(tailR) + ' ' + poly(tailL) + '" fill="#0a1830"/>';
+      return d + sky(u, '#2f6aa8', '#84b8e3', '#e5f1fb') + place(u, { plane: plane, shadow: shadow }, 50, 50, -28, 0.6, [6, 9]);
     },
 
-    // ---------- Invité : casque de pilote, visière reflétant le ciel ----------
+    /* ---------- Invité : casque de pilote, visière reflétant le ciel ---------- */
     guest: function (u) {
-      var d = '<defs>' +
-        rad('gS' + u, '0.5', '0.3', '0.8', [[0, '#34507a'], [1, '#0f1626']]) +
-        lin('gH' + u, 0.4, 1, [[0, '#f4f6f9'], [0.55, '#b9c2cd'], [1, '#6d7784']]) +
-        lin('gV' + u, 0, 1, [[0, '#ffd88a'], [0.35, '#ff8a4c'], [0.6, '#b8456e'], [1, '#2b2350']]) +
-        '</defs>';
+      var d = '<defs>' + rad('gS' + u, 0.5, 0.3, 0.8, [[0, '#34507a'], [1, '#0f1626']]) +
+        lin('gH' + u, 0, 0, 0.4, 1, [[0, '#f4f6f9'], [0.55, '#b9c2cd'], [1, '#6d7784']]) +
+        lin('gV' + u, 0, 0, 0, 1, [[0, '#ffd88a'], [0.35, '#ff8a4c'], [0.6, '#b8456e'], [1, '#2b2350']]) + '</defs>';
       var s = d + '<rect width="100" height="100" fill="url(#gS' + u + ')"/>';
-      // épaules / combinaison
-      s += '<path d="M14,100 C16,80 30,72 50,72 C70,72 84,80 86,100Z" fill="#4b5a3c"/>';
-      s += '<path d="M44,74 L50,90 L56,74" stroke="#3a4630" stroke-width="2" fill="none"/>';
-      // casque
+      s += '<path d="M14,100 C16,80 30,72 50,72 C70,72 84,80 86,100Z" fill="#4b5a3c"/><path d="M44,74 L50,90 L56,74" stroke="#3a4630" stroke-width="2" fill="none"/>';
       s += '<path d="M24,52 C22,28 36,16 50,16 C64,16 78,28 76,52 C76,64 70,72 62,74 L38,74 C30,72 24,64 24,52Z" fill="url(#gH' + u + ')" stroke="#3d4550" stroke-width="1"/>';
-      // visière
       s += '<path d="M28,44 C30,32 40,28 50,28 C60,28 70,32 72,44 C72,52 66,56 50,56 C34,56 28,52 28,44Z" fill="url(#gV' + u + ')" stroke="#1d2230" stroke-width="1"/>';
       s += '<path d="M33,38 C38,32 46,31 52,31" stroke="#ffffff" stroke-width="2.4" fill="none" opacity=".6" stroke-linecap="round"/>';
-      // petite silhouette d'avion reflétée dans la visière
       s += '<path d="M54,45 L64,43 L65,44 L59,46 L62,49 L61,49.6 L57,47 L55,47.5Z" fill="#1d2230" opacity=".8"/>';
-      // masque à oxygène + tuyau
       s += '<path d="M42,58 C42,55 58,55 58,58 L57,68 C55,72 45,72 43,68Z" fill="#2c323b" stroke="#15191f" stroke-width=".8"/>';
-      s += '<path d="M57,66 C66,70 70,78 68,90" stroke="#2c323b" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
-      // bande décorative du casque
-      s += '<path d="M50,16 L50,27" stroke="#17a6b3" stroke-width="3.2"/>';
+      s += '<path d="M57,66 C66,70 70,78 68,90" stroke="#2c323b" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M50,16 L50,27" stroke="#17a6b3" stroke-width="3.2"/>';
       return s;
     }
   };
@@ -13430,9 +14693,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   A.kind = function (pid) { return MAP[pid] || 'guest'; };
   A.label = function (pid) { return LABEL[A.kind(pid)]; };
   A.svg = function (pid, size) {
-    var k = A.kind(pid);
-    var u = ++n;
-    return '<svg class="avatar" viewBox="0 0 100 100" width="' + (size || 46) + '" height="' + (size || 46) + '" role="img" aria-label="' + LABEL[k] + '"><clipPath id="avc' + u + '"><circle cx="50" cy="50" r="49"/></clipPath><g clip-path="url(#avc' + u + ')">' + DRAW[k](u) + '</g><circle cx="50" cy="50" r="48.5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/></svg>';
+    var k = A.kind(pid), u = ++n;
+    return '<svg class="avatar" viewBox="0 0 100 100" width="' + (size || 46) + '" height="' + (size || 46) + '" role="img" aria-label="' + LABEL[k] + '"><clipPath id="avc' + u + '"><circle cx="50" cy="50" r="49"/></clipPath><g clip-path="url(#avc' + u + ')">' + DRAW[k](u) + '</g><circle cx="50" cy="50" r="48.6" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/><circle cx="50" cy="50" r="47.2" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1"/></svg>';
   };
 })(this);
 
@@ -13453,7 +14715,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
   /* ---------------- Accueil : choix du pilote ---------------- */
   S.splash = function (onPick) {
     var el = K.$('splash'), h = '<div class="sp-in"><img class="sp-logo" src="assets/logo-512.png" alt="TIFFAN\'IR (ME)">';
-    h += '<div class="sp-slogan">5 pilotes. 2 moteurs. 6 vols. Zéro flow oublié.</div><div class="sp-sub">Les Casseurs Flowteurs · DA42 VI Cockpit & Procedure Trainer · Airbus Flight Academy Angoulême</div><div class="sp-pilots">';
+    h += '<div class="sp-pilots">';
     TF.Profiles.all().forEach(function (p) {
       var n = p.history.filter(function (x) { return x.kind === 'flow'; }).length;
       var sub = p.guest ? 'Essai sans sauvegarde' : (n ? n + ' flow' + (n > 1 ? 's' : '') + ' travaillé' + (n > 1 ? 's' : '') : 'Nouveau');
