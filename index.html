@@ -1102,6 +1102,20 @@ body.immersion #immExit{display:block}
 .rc-newb .rc-badge { opacity: 1; }
 @media (max-width: 560px) { .rc-stats span { font-size: 18px; } .rc-cta .big { font-size: 18px; } .rc-lr > span { width: 58px; font-size: 13px; } .rc-brand .rc-k { display: none; } .rc-score { font-size: 34px; } }
 
+/* ======================= Fiche « Panne moteur N-1 » (v7.4) ======================= */
+.n1-intro { font-size: 13px; color: #cfe3f7; background: rgba(255,174,69,.08); border: 1px solid rgba(255,174,69,.35); border-radius: 12px; padding: 9px 12px; margin-bottom: 10px; }
+.n1-chain { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; -webkit-align-items: center; align-items: center; margin-bottom: 12px; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+.n1-chain span { background: #13284a; border: 1px solid #2a4a78; border-radius: 999px; padding: 4px 10px; margin: 3px 0; } .n1-chain i { font-style: normal; color: #f2c21b; margin: 0 5px; font-weight: 900; }
+.n1-n { display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; background: #f2c21b; color: #0b1526; font-size: 13px; margin-right: 8px; }
+.n1-w { margin-top: 7px; padding: 7px 9px; border-radius: 8px; background: rgba(255,174,69,.08); border: 1px solid rgba(255,174,69,.3); color: #ffd9a8; font-size: 12px; line-height: 1.4; }
+.n1-doubt { margin-top: 6px; color: #8fa1b8; font-size: 11.5px; font-style: italic; }
+.n1-src, .n1-s { display: block; margin-top: 6px; color: #6f86a3; font-size: 11px; }
+.n1-h { font-size: 15px; margin: 6px 0 8px; color: #ff8a80; }
+.n1-mem { border-color: #c0392b; background: linear-gradient(160deg, #3a1515, #1a0c10); } .n1-mem .ec-h { color: #ff8a80; font-size: 14px; letter-spacing: .03em; }
+.ess-card.n1-wide { width: auto; margin: 0 0 10px; } .n1-l { font-size: 13px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,.06); line-height: 1.45; } .n1-l b { color: #f2c21b; }
+.n1-conf ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; } .n1-conf li { margin: 4px 0; }
+.n1-srcs { font-size: 11.5px; color: #6f86a3; margin: 4px 0 14px; }
+
 </style>
 </head>
 <body>
@@ -1170,7 +1184,7 @@ body.immersion #immExit{display:block}
 (function (root) {
   'use strict';
   var TF = root.TF = root.TF || {};
-  TF.VERSION = '7.3';
+  TF.VERSION = '7.4';
   TF.DATA = TF.DATA || {};
 
   /* ---------- Bus d'événements minimal ---------- */
@@ -7175,6 +7189,72 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
 })(this);
 
 </script>
+<script>/* js/data/n1.js */
+/* Fiche résumé « Panne moteur N-1 » (v7.4).
+ * Sources : OM-B DA42 VI Issue C (p.95, 98-108), check-list DA42-VI Issue C (p.1), PDP DA42 VI V1.2 (flow charts OEI p.237-239),
+ * notes de cours « Vol asymétrique » + « Retex BM 3+4 » (N-1.pdf, manuscrit — lecture à confirmer là où c'est signalé).
+ * Les items de check-list sont recopiés tels quels (anglais). L'OM-B prévaut. Aucun document ne décrit de méthode de « bilan » (FORDEC/DODAR) : non inventée.
+ */
+(function (root) {
+  'use strict';
+  var TF = root.TF; TF.DATA = TF.DATA || {};
+  TF.DATA.n1 = {
+    title: 'Panne moteur N-1',
+    intro: 'Résumé pour réviser au sol. Ce n\'est pas la check-list : en vol, on applique la check-list et l\'OM-B, qui prévaut. Les items en anglais sont recopiés tels quels.',
+    // déroulé : t = titre, s = source, l = lignes [texte, valeur à mémoriser (masquable)], w = mise en garde
+    steps: [
+      { n: 1, t: 'PIED + TRAJECTOIRE', i: '🦶', s: 'OM-B p.98 et 101-102 · notes de cours',
+        l: [['Rudder', 'MAINTAIN directional control'], ['Méthode école sur DA42', 'pied à fond, puis adapter'], ['Sous PA', 'déconnecter le PA tout de suite (notes de cours)'], ['En montée, priorités', 'palonnier → ailerons → profondeur (vers Vyse, assiette ≈ +7°)']],
+        w: 'Contrôle en lacet surtout au palonnier, complété aux ailerons (OM-B p.98).' },
+      { n: 2, t: 'PUISSANCE', i: '⚡', s: 'Check-list p.1 · OM-B p.100-102',
+        l: [['Décollage / montée initiale', 'Power Lever (BOTH) … MAX'], ['En vol', 'Operative Engine … INCREASE power as required'], ['Vitesse', 'Vyse = 85 KIAS (au décollage) / as required (en vol)']] },
+      { n: 3, t: 'TRAÎNÉES', i: '⬆️', s: 'Check-list p.1 · Retex (notes)',
+        l: [['Landing Gear', 'UP'], ['Flaps', 'UP'], ['En remise de gaz (Retex)', 'flaps APP → gear UP → Vi ≥ 85 kt → flaps UP']] },
+      { n: 4, t: 'IDENTIFIER', i: '🔎', s: 'OM-B p.98 · notes de cours',
+        l: [['Moyen mnémotechnique', '« Dead foot – dead engine »'], ['Puis', 'page ENG (paramètres moteur) pour confirmer'], ['Règle école', 'n\'agir sur un moteur que si deux indices concordent']],
+        w: 'Le pied qui ne pousse pas est du côté du moteur en panne.', doubt: 'Règle école : lecture du manuscrit (« 2 sens … disent pareil ») à confirmer.' },
+      { n: 5, t: 'CONFIRMER', i: '✋', s: 'OM-B p.108 (1er item de l\'Engine Securing)',
+        l: [['Power Lever (AFFECTED ENGINE)', 'REDUCED'], ['Contrôle', 'pas de changement en lacet → c\'est bien ce moteur']],
+        w: 'L\'OM-B n\'en fait pas une étape séparée : c\'est le 1er item de la sécurisation.' },
+      { n: 6, t: 'SÉCURISER', i: '🔒', s: 'OM-B p.108 · check-list p.1',
+        l: [['Engine Master (AFFECTED ENGINE)', 'OFF'], ['Propeller (AFFECTED ENGINE)', 'FEATHER CHECKED'], ['Power Lever (GOOD ENGINE)', 'AS REQUIRED']],
+        w: 'Sur le DA42, couper l\'Engine Master met l\'hélice en drapeau (RPM ≥ 1 300). Ne jamais couper un moteur avec le FUEL SELECTOR : la pompe haute pression peut être endommagée.' },
+      { n: 7, t: 'CHECK-LIST (suite, à lire)', i: '📋', s: 'Check-list p.1 · OM-B p.108',
+        l: [['Air Conditioning', 'OFF'], ['Alternator (AFFECTED ENGINE)', 'OFF'], ['Fuel Pump (AFFECTED ENGINE)', 'CHECK OFF'], ['Fuel Selector (AFFECTED ENGINE)', 'OFF'], ['Puis', 'glissade mini : ≈ ½ bille vers le bon moteur, 3 à 5° d\'inclinaison'], ['Givrage', 'quitter la zone · DE-ICE … HIGH']] },
+      { n: 8, t: 'SUITE DU VOL', i: '🛬', s: 'OM-B p.102-107',
+        l: [['Décision', 'Land as soon as possible (terrain approprié le plus proche)'], ['Moteur restant / carburant', 'surveiller en continu'], ['Fuel Selector du bon moteur', 'CROSSFEED ou ON pour équilibrer'], ['Glissade prolongée', 'risque de LOW FUEL → vol coordonné ou CROSSFEED']],
+        w: 'Pas de méthode de « bilan » (FORDEC, DODAR…) dans les documents fournis : à voir avec l\'instructeur.' }
+    ],
+    // actions de mémoire = encadré de la check-list (p.1)
+    memory: [
+      { t: 'ENGINE FAILURE ON TAKE-OFF / INITIAL CLIMB', items: [['Power Lever (BOTH)', 'MAX'], ['Airspeed', 'VYSE = 85 KIAS'], ['Landing Gear', 'UP'], ['Flaps', 'UP'], ['Power Lever (AFFECTED ENGINE)', 'REDUCED'], ['Engine Master (AFFECTED ENGINE)', 'OFF'], ['Propeller (AFFECTED ENGINE)', 'FEATHER CHECKED'], ['Power Lever (GOOD ENGINE)', 'AS REQUIRED']] },
+      { t: 'ENGINE FAILURE IN FLIGHT', items: [['Operative Engine', 'INCREASE power as required'], ['Power Lever (AFFECTED ENGINE)', 'REDUCED'], ['Engine Master (AFFECTED ENGINE)', 'OFF'], ['Propeller (AFFECTED ENGINE)', 'FEATHER CHECKED'], ['Power Lever (GOOD ENGINE)', 'AS REQUIRED']] }
+    ],
+    ground: { t: 'PANNE PENDANT LA COURSE AU DÉCOLLAGE (OM-B p.99)', items: [['', 'Abort take-off'], ['Power lever (BOTH)', 'IDLE'], ['Rudder', 'MAINTAIN directional control'], ['Brakes', 'AS REQUIRED'], ['Si le temps le permet', 'Engine Master (BOTH) OFF · Fuel Selector (BOTH) OFF · Elect. Master OFF']],
+      note: 'Après le décollage, train encore sorti et piste suffisante : interrompre et se poser droit devant. Décollage poursuivi déconseillé si la pente de montée N-1 est inférieure à 3,3 % (OM-B p.99-100).' },
+    speeds: [
+      ['Vmca flaps UP (trait rouge)', '71 KIAS', 'OM-B p.95'], ['Vmca flaps APP', '68 KIAS', 'OM-B p.95'], ['Vyse (trait bleu)', '85 KIAS', 'OM-B p.95'],
+      ['Vyse en givrage', '88 KIAS ≤ 1 900 kg · 90 KIAS au-dessus', 'OM-B p.95'], ['Vref N-1, flaps APP', '84 KIAS ≤ 1 900 kg · 88 KIAS au-dessus', 'OM-B p.103'],
+      ['Repère école en monomoteur', '85 kt mini · approche 90 kt · vent arrière 100 kt', 'Retex (notes)'], ['Inclinaison école en monomoteur', '20° max', 'Retex (notes)']
+    ],
+    landing: [
+      ['Atterrissage N-1', 'flaps APP et train seulement quand on est sûr d\'atteindre la piste (« making the field ») · trim de direction au neutre (OM-B p.103-104)'],
+      ['Circuit N-1 (PDP p.238)', 'vent arrière 105 kt, configuration approche (flaps APP, charge 80 %) · travers seuil 100 kt, 1 min (−1 s par kt de vent arrière) · dernier virage −500 ft/min · gear DOWN à l\'interception du plan final · finale 90 kt · stabilisé à 300 ft · Vref 84 kt flaps APP'],
+      ['Notes de cours', 'trim de direction au neutre en finale, ou au plus tard à 1 000 ft en IFR · check à 300 ft AGL'],
+      ['Remise de gaz N-1 (OM-B p.104)', 'Power Lever MAX · Rudder MAINTAIN · Vyse 85 KIAS · Landing Gear UP · Flaps UP'],
+      ['Remise de gaz N-1 (PDP p.239)', 'assiette 0° · charge 100 % · gear UP · flaps UP si ≥ 85 kt · puis assiette +5 à +7°, 85 kt = Vyse · charge 92 % en passant l\'altitude de sécurité']
+    ],
+    confirm: [
+      'Ordre des premières actions : les notes de cours donnent « ØPA → PWR → Traînées » puis identification ; la check-list de décollage commence par la puissance ; l\'OM-B en vol commence par le palonnier. Faire préciser l\'ordre attendu en contrôle.',
+      'Hauteur de remise de gaz N-1 : l\'OM-B (p.104) la déconseille sous 800 ft sol ; le PDP (p.239) indique une « Asymmetric Committal Height » d\'environ 50 à 75 ft.',
+      'Circuit N-1 : les notes de cours donnent 100 kt de base et flaps ½ au travers du seuil (Vi ≥ 100), le PDP (p.238) donne la configuration approche dès la vent arrière à 105 kt.',
+      'Méthode de « bilan » / prise de décision : absente des documents fournis.'
+    ],
+    sources: ['OM-B DA42 VI Issue C — p.95 (vitesses), p.98-108 (A.2 Engine failure, A.3 Engine securing)', 'Check-list DA42-VI Issue C — p.1', 'PDP DA42 VI V1.2 — flow charts OEI p.237-239', 'Notes de cours « Vol asymétrique » et « Retex BM 3+4 » (manuscrit)']
+  };
+})(this);
+
+</script>
 <!-- D. moteur pédagogique, F. profils -->
 <script>/* js/pedagogy/trainer.js */
 /* D. MOTEUR PÉDAGOGIQUE — planification des révisions, sessions, exercices ciblés.
@@ -11554,9 +11634,10 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     brief: { sp: 'prep', i: '🗣', s: 'Briefings', t: 'Briefings', d: 'Le briefing départ à répéter à voix haute.' },
     test: { sp: 'prep', i: '📝', s: 'Class test', t: 'Class test', d: 'Les questions du class test, avec correction.' },
     avion: { sp: 'learn', i: '✈️', s: 'L\'avion', t: 'L\'avion en chiffres', d: 'Vitesses, limitations et systèmes du DA42 VI.' },
-    tour: { sp: 'learn', i: '🚶', s: 'Tour avion', t: 'Tour avion', d: 'La visite prévol, point par point.' }
+    tour: { sp: 'learn', i: '🚶', s: 'Tour avion', t: 'Tour avion', d: 'La visite prévol, point par point.' },
+    n1: { sp: 'ground', i: '🔥', s: 'Panne N-1', t: 'Panne moteur N-1', d: 'Fiche résumé : pied, puissance, traînées, identifier, confirmer, sécuriser, check-list, suite du vol.' }
   };
-  var TABS = ['flow', 'mem', 'brief', 'test', 'avion', 'tour'];
+  var TABS = ['flow', 'mem', 'n1', 'brief', 'test', 'avion', 'tour'];
   function spacesHtml() {
     function tile(k, body) { var p = SP[k]; return '<div class="sp-tile sp-' + k + '" style="border-top-color:' + p.c + '"><div class="sp-h"><span class="sp-i" style="background:' + p.c + '">' + p.i + '</span><div><b>' + esc(p.t) + '</b><small>' + esc(p.d) + '</small></div></div><div class="sp-b">' + body + '</div></div>'; }
     function big(act, cls, t, d, extra) { return '<button class="sp-big ' + cls + '" data-act="' + act + '"' + (extra || '') + '><b>' + t + '</b><small>' + d + '</small></button>'; }
@@ -11571,7 +11652,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     var h = '<div class="sp-grid">';
     h += tile('fly', big('trip', 'mh-trip', '🛫 VOL IFR LFBU ⇄ LFBL', 'Roulage, radio AFIS, décollage, montée, ILS à Limoges, retour et atterrissage') + '<div class="sp-row">' + '<button class="sp-chip mh-free" data-act="free">🎮 COCKPIT LIBRE</button></div>');
     h += tile('prep', big('mepmap', 'mh-mep', '✈ MES VOLS MEP', 'Prépare chaque vol, réussis les missions, arrive prêt devant ton instructeur') + '<div class="sp-row">' + chip('brief') + chip('test') + '</div>');
-    h += tile('ground', '<div class="sp-row">' + '<button class="sp-chip' + (E.tab === 'flow' ? ' on' : '') + '" data-act="flowfolder">📁 Le flow détaillé</button>' + chip('mem') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
+    h += tile('ground', '<div class="sp-row">' + '<button class="sp-chip' + (E.tab === 'flow' ? ' on' : '') + '" data-act="flowfolder">📁 Le flow détaillé</button>' + chip('mem') + chip('n1') + '<button class="sp-chip" data-act="home">📖 Procédures complètes</button></div>');
     h += tile('learn', big('ifr', 'mh-ifr', '📚 L\'IFR POUR LES NULS', 'Les bases de l\'IFR expliquées simplement') + big('reclear', 'mh-rc', '🎓 RE-CLEAR — RÉVISION ATPL', 'Mission du jour, 13 matières, simulation de sélection compagnie, points faibles') + '<div class="sp-row">' + chip('avion') + chip('tour') + '</div>');
     return h + '</div>';
   }
@@ -11595,7 +11676,7 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
     h += '<div class="ess-sec" id="essSec"><div class="ess-sec-h" style="border-color:' + SP[T.sp].c + '"><span class="ess-sec-k" style="color:' + SP[T.sp].c + '">' + SP[T.sp].i + ' ' + esc(SP[T.sp].t) + '</span><b>' + T.i + ' ' + esc(T.t) + '</b><small>' + esc(T.d) + '</small></div>';
     h += '<div class="ess-tabs">' + TABS.map(function (k) { var t = TAB[k];
       return '<button data-act="tab" data-v="' + k + '" class="' + (E.tab === k ? 'on' : '') + '" style="' + (E.tab === k ? 'background:' + SP[t.sp].c : '') + '">' + t.i + ' ' + esc(t.s) + '</button>'; }).join('') + '</div>';
-    h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : folderHtml();
+    h += E.tab === 'mem' ? memHtml() : E.tab === 'avion' ? ficheHtml() : E.tab === 'n1' ? n1Html() : E.tab === 'tour' ? walkHtml() : E.tab === 'test' ? testHtml() : E.tab === 'brief' ? briefHtml() : folderHtml();
     h += '</div><div class="hm-foot"><button data-act="voices">🗣 Voix de l\'instructeur</button><button data-act="cloud">👥 Équipe, classement et sauvegarde</button><span class="hm-ver">version ' + TF.VERSION + '</span></div>';
     h += '</div>';
     }
@@ -11643,6 +11724,8 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       walktab: function () { E.show('tour'); },
       // fiche
       rev: function () { E.hide = !E.hide; E.show('avion'); },
+      n1rev: function () { E.n1hide = !E.n1hide; E.show('n1'); },
+      n1all: function () { E.n1hide = false; E.show('n1'); },
       reveal: function (b) { b.classList.remove('hid'); },
       info: function (b) { var d = b.parentNode.parentNode.querySelector('.ec-def'); if (d) { d.classList.toggle('hidden'); b.classList.toggle('on'); } },
       quiz: function () { quiz(); },
@@ -11677,6 +11760,26 @@ TF.DATA.imcPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAIyCAYAAAAz
       h += '</div>';
     });
     return h + '</div>';
+  }
+  /* Fiche résumé « Panne moteur N-1 » (js/data/n1.js) : mode révision = les valeurs à dire sont masquées (toucher pour voir) */
+  function n1Html() {
+    var N = TF.DATA.n1, hid = !!E.n1hide;
+    function v(x) { return '<span class="ec-v' + (hid ? ' hid' : '') + '" data-act="reveal"><b>' + esc(x) + '</b></span>'; }
+    function rows(list) { return list.map(function (r) { return '<div class="ec-f">' + (r[0] ? '<span class="ec-k">' + esc(r[0]) + '</span>' : '<span class="ec-k"></span>') + v(r[1]) + '</div>'; }).join(''); }
+    var h = '<div class="n1-intro">' + esc(N.intro) + '</div><div class="ess-bar"><button class="btn ' + (hid ? 'primary' : '') + '" data-act="n1rev">' + (hid ? '👁 Tout montrer' : '🙈 Mode révision (cacher les réponses)') + '</button></div>';
+    h += '<div class="n1-chain">' + N.steps.map(function (s) { return '<span>' + s.i + ' ' + esc(s.t.split(' (')[0]) + '</span>'; }).join('<i>›</i>') + '</div>';
+    h += '<div class="ess-grid">' + N.steps.map(function (s) {
+      return '<div class="ess-card n1-step"><div class="ec-h"><span class="n1-n">' + s.n + '</span>' + s.i + ' ' + esc(s.t) + '</div>' + rows(s.l) +
+        (s.w ? '<div class="n1-w">⚠︎ ' + esc(s.w) + '</div>' : '') + (s.doubt ? '<div class="n1-doubt">? ' + esc(s.doubt) + '</div>' : '') + '<div class="n1-src">📄 ' + esc(s.s) + '</div></div>';
+    }).join('') + '</div>';
+    h += '<h3 class="n1-h">🟥 Actions de mémoire — encadré de la check-list (p.1)</h3><div class="ess-grid">' + N.memory.map(function (m) {
+      return '<div class="ess-card n1-mem"><div class="ec-h">' + esc(m.t) + '</div>' + rows(m.items) + '</div>'; }).join('') + '</div>';
+    h += '<div class="ess-grid"><div class="ess-card"><div class="ec-h">🛑 ' + esc(N.ground.t) + '</div>' + rows(N.ground.items) + '<div class="n1-w">' + esc(N.ground.note) + '</div></div>' +
+      '<div class="ess-card"><div class="ec-h">🏁 Vitesses</div>' + N.speeds.map(function (r) { return '<div class="ec-f"><span class="ec-k">' + esc(r[0]) + '<small class="n1-s">' + esc(r[2]) + '</small></span>' + v(r[1]) + '</div>'; }).join('') + '</div></div>';
+    h += '<div class="ess-card n1-wide"><div class="ec-h">🛬 Atterrissage et remise de gaz N-1</div>' + N.landing.map(function (r) { return '<div class="n1-l"><b>' + esc(r[0]) + '</b> — ' + esc(r[1]) + '</div>'; }).join('') + '</div>';
+    h += '<div class="ess-card n1-wide n1-conf"><div class="ec-h">❓ À faire confirmer par l\'instructeur</div><ul>' + N.confirm.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>';
+    h += '<div class="n1-srcs">Sources : ' + N.sources.map(esc).join(' · ') + '. L\'OM-B prévaut.</div>';
+    return h;
   }
   /* Quiz flash : une question claire, 4 réponses de même unité, explication + source */
   function quiz() {
